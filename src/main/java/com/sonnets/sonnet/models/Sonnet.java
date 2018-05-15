@@ -3,8 +3,11 @@ package com.sonnets.sonnet.models;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Model to store the sonnet info in MySQL
@@ -32,6 +35,10 @@ public class Sonnet {
     @Column
     @ElementCollection(targetClass = String.class)
     private List<String> text;
+
+    public Sonnet() {
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
+    }
 
     public Long getId() {
         return id;
@@ -91,6 +98,17 @@ public class Sonnet {
 
     public int countNumberOfLines() {
         return this.text.size();
+    }
+
+    public Map<String, String> getTextAsMap() {
+        int lineIndex = 1;
+        Map<String, String> textMap = new HashMap<>();
+        for (String s : this.text) {
+            textMap.put("line" + lineIndex, s);
+            lineIndex++;
+        }
+
+        return textMap;
     }
 
     @Override

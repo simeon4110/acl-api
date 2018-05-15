@@ -1,11 +1,13 @@
 package com.sonnets.sonnet.models;
 
 import com.sonnets.sonnet.repositories.SonnetRepository;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Basic service to interface with SonnetRepository. More search and analytics will be added here.
@@ -15,6 +17,7 @@ import java.util.List;
 @Service
 public class SonnetDetailsService {
     private final SonnetRepository sonnetRepository;
+    private static final Logger logger = Logger.getLogger(SonnetDetailsService.class);
 
     @Autowired
     public SonnetDetailsService(SonnetRepository sonnetRepository) {
@@ -29,6 +32,10 @@ public class SonnetDetailsService {
      */
     public Sonnet addNewSonnet(SonnetDTO newSonnet) {
         Sonnet toAddSonnet = new Sonnet();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
+        }
 
         toAddSonnet.setFirstName(newSonnet.getFirstName());
         toAddSonnet.setLastName(newSonnet.getLastName());
@@ -61,4 +68,15 @@ public class SonnetDetailsService {
     public List<Sonnet> getAllSonnets() {
         return sonnetRepository.findAll();
     }
+
+    public Sonnet getSonnetByID(String ID) {
+        Optional<Sonnet> sonnet = sonnetRepository.findById(Long.parseLong(ID));
+        if (sonnet.isPresent()) {
+            return sonnet.get();
+        } else {
+            logger.error("Sonnet with id: " + "'" + ID + "'" + "does not exist.");
+            return null;
+        }
+    }
+
 }

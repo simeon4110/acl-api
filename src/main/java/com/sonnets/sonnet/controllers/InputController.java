@@ -25,13 +25,6 @@ public class InputController {
         this.sonnetDetailsService = sonnetDetailsService;
     }
 
-    // :TODO: Remove this once a real index is in place.
-    @GetMapping("/")
-    public String showIndex(Model model) {
-        model.addAttribute("SonnetDTO", new SonnetDTO());
-        return "input";
-    }
-
     @GetMapping("/insert")
     public String showInsertPage(Model model) {
         model.addAttribute("SonnetDTO", new SonnetDTO());

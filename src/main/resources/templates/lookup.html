@@ -26,6 +26,7 @@
                     </span>
                 </ul>
                 <p th:text="${Sonnet.getUpdatedAt()}">Added</p>
+                <p>Download: <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}">XML</a></p>
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
