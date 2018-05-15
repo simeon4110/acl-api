@@ -57,4 +57,8 @@ public class SonnetDetailsService {
         sonnetRepository.save(toAddSonnet);
         return toAddSonnet;
     }
+
+    public List<Sonnet> getAllSonnets() {
+        return sonnetRepository.findAll();
+    }
 }

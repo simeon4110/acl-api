@@ -1,12 +1,16 @@
 package com.sonnets.sonnet.models;
 
+import javax.validation.constraints.NotEmpty;
+
 /**
  * DTO object handles input from controller. :TODO: add validation.
  *
  * @author Josh Harkema
  */
 public class SonnetDTO {
+    @NotEmpty
     private String firstName;
+    @NotEmpty
     private String lastName;
     private String title;
     private String publicationYear;

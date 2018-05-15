@@ -5,6 +5,7 @@
     <div th:replace="fragments/header :: head"></div>
 </head>
 <main>
+    <div th:replace="fragments/header :: nav-bar"></div>
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
@@ -14,13 +15,16 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <form action="" th:object="${SonnetDTO}" method="POST" class="form mx-3">
+                    <div th:if="${param.error}" class="alert alert-error">
+                        An error occurred.
+                    </div>
                     <div class="form-group">
                         <label for="firstName" class="control-label">Author's first name:</label>
-                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
+                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus required/>
                     </div>
                     <div class="form-group">
                         <label for="lastName" class="control-label">Author's last name:</label>
-                        <input id="lastName" class="form-control" th:field="*{lastName}"/>
+                        <input id="lastName" class="form-control" th:field="*{lastName}" required/>
                     </div>
                     <div class="form-group">
                         <label for="title" class="control-label">Sonnet's title:</label>
@@ -32,59 +36,59 @@
                     </div>
                     <div class="form-group">
                         <label for="line1" class="control-label">Line one:</label>
-                        <input id="line1" class="form-control" th:field="*{line1}"/>
+                        <input id="line1" class="form-control" th:field="*{line1}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line2" class="control-label">Line two:</label>
-                        <input id="line2" class="form-control" th:field="*{line2}"/>
+                        <input id="line2" class="form-control" th:field="*{line2}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line3" class="control-label">Line three:</label>
-                        <input id="line3" class="form-control" th:field="*{line3}"/>
+                        <input id="line3" class="form-control" th:field="*{line3}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line4" class="control-label">Line four:</label>
-                        <input id="line4" class="form-control" th:field="*{line4}"/>
+                        <input id="line4" class="form-control" th:field="*{line4}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line5" class="control-label">Line five:</label>
-                        <input id="line5" class="form-control" th:field="*{line5}"/>
+                        <input id="line5" class="form-control" th:field="*{line5}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line6" class="control-label">Line six:</label>
-                        <input id="line6" class="form-control" th:field="*{line6}"/>
+                        <input id="line6" class="form-control" th:field="*{line6}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line7" class="control-label">Line seven:</label>
-                        <input id="line7" class="form-control" th:field="*{line7}"/>
+                        <input id="line7" class="form-control" th:field="*{line7}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line8" class="control-label">Line eight:</label>
-                        <input id="line8" class="form-control" th:field="*{line8}"/>
+                        <input id="line8" class="form-control" th:field="*{line8}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line9" class="control-label">Line nine:</label>
-                        <input id="line9" class="form-control" th:field="*{line9}"/>
+                        <input id="line9" class="form-control" th:field="*{line9}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line10" class="control-label">Line ten:</label>
-                        <input id="line10" class="form-control" th:field="*{line10}"/>
+                        <input id="line10" class="form-control" th:field="*{line10}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line11" class="control-label">Line eleven:</label>
-                        <input id="line11" class="form-control" th:field="*{line11}"/>
+                        <input id="line11" class="form-control" th:field="*{line11}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line12" class="control-label">Line twelve:</label>
-                        <input id="line12" class="form-control" th:field="*{line12}"/>
+                        <input id="line12" class="form-control" th:field="*{line12}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line13" class="control-label">Line thirteen:</label>
-                        <input id="line13" class="form-control" th:field="*{line13}"/>
+                        <input id="line13" class="form-control" th:field="*{line13}" required/>
                     </div>
                     <div class="form-group">
                         <label for="line14" class="control-label">Line fourteen:</label>
-                        <input id="line14" class="form-control" th:field="*{line14}"/>
+                        <input id="line14" class="form-control" th:field="*{line14}" required/>
                     </div>
                     <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
                     <button type="submit" class="btn btn-primary">submit</button>

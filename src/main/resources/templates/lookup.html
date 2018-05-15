@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Sonnet - Add Sonnet</title>
+    <div th:replace="fragments/header :: head"></div>
+</head>
+<main>
+    <div th:replace="fragments/header :: nav-bar"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h1 class="display-4 pb-3">All the sonnets:</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <span th:each="Sonnet : ${sonnets}">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="display-4" th:text="${Sonnet.getTitle()}">Title</h1>
+                <p class="lead"
+                   th:text="${Sonnet.getFirstName()} + ' ' + ${Sonnet.getLastName()} ">Author</p>
+                <ul class="list-unstyled mx-2">
+                    <span th:each="line : ${Sonnet.getText()}">
+                        <li th:text="${line}">Text</li>
+                    </span>
+                </ul>
+                <p th:text="${Sonnet.getUpdatedAt()}">Added</p>
+                <hr class="m-4" style="border-color: black"/>
+            </div>
+        </div>
+        </span>
+    </div>
+    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/footer :: scripts"></div>
+</main>
+</html>

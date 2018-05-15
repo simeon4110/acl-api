@@ -18,4 +18,24 @@
         }</style>
     </div>
 </head>
+<body>
+<!--Navbar snippet-->
+<nav class="navbar fixed-top navbar-expand-md mb-4 bg-light" th:fragment="nav-bar">
+    <a class="navbar-brand ml-3" href="/">Sonnet</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="oi oi-menu"></span>
+    </button>
+    <div class="collapse navbar-collapse" item="navbarCollapse">
+        <ul class="nav navbar-nav navbar-right mr-3">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/insert}">Input</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/lookup}">Lookup</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+</body>
 </html>
