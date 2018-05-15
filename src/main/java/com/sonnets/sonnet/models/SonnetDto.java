@@ -3,11 +3,12 @@ package com.sonnets.sonnet.models;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * DTO object handles input from controller. :TODO: add validation.
+ * DTO object handles input from controller. Only very basic input validation is done here. Bootstrap has front end,
+ * implementation, but much more is needed.
  *
  * @author Josh Harkema
  */
-public class SonnetDTO {
+public class SonnetDto {
     @NotEmpty
     private String firstName;
     @NotEmpty
@@ -175,7 +176,7 @@ public class SonnetDTO {
 
     @Override
     public String toString() {
-        return "SonnetDTO{" +
+        return "SonnetDto{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +

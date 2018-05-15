@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SonnetRepository extends JpaRepository<Sonnet, Long> {
-
+    // Empty by design.
 }

@@ -25,12 +25,13 @@ public class SonnetDetailsService {
     }
 
     /**
-     * Add a new Sonnet object from a @Valid SonnetDTO.
+     * Add a new Sonnet object from a @Valid SonnetDto.
      *
-     * @param newSonnet a valid SonnetDTO object.
+     * @param newSonnet a valid SonnetDto object.
      * @return the Sonnet object created.
      */
-    public Sonnet addNewSonnet(SonnetDTO newSonnet) {
+    @SuppressWarnings("UnusedReturnValue")
+    public Sonnet addNewSonnet(SonnetDto newSonnet) {
         Sonnet toAddSonnet = new Sonnet();
 
         if (logger.isDebugEnabled()) {

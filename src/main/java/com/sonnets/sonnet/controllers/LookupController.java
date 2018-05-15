@@ -30,6 +30,7 @@ public class LookupController {
         this.sonnetDetailsService = sonnetDetailsService;
     }
 
+    @SuppressWarnings("SameReturnValue")
     @GetMapping("/lookup")
     public String showLookupPage(Model model) {
         model.addAttribute("sonnets", sonnetDetailsService.getAllSonnets());
