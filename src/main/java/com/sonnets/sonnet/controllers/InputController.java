@@ -5,13 +5,9 @@ import com.sonnets.sonnet.models.SonnetDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 
@@ -43,10 +39,10 @@ public class InputController {
     }
 
     @PostMapping("/insert")
-    public ModelAndView getInsertPOST(@ModelAttribute("SonnetDTO") @Valid SonnetDTO sonnetDTO, Model model,
-                                      BindingResult result, WebRequest request, Errors errors) {
+    public String getInsertPOST(@ModelAttribute("SonnetDTO") @Valid SonnetDTO sonnetDTO, Model model) {
 
         sonnetDetailsService.addNewSonnet(sonnetDTO);
-        return new ModelAndView("input", "SonnetDTO", sonnetDTO);
+        model.addAttribute("SonnetDTO", new SonnetDTO());
+        return "input";
     }
 }
