@@ -69,12 +69,12 @@ public class SonnetDetailsService {
         return sonnetRepository.findAll();
     }
 
-    public Sonnet getSonnetByID(String ID) {
-        Optional<Sonnet> sonnet = sonnetRepository.findById(Long.parseLong(ID));
+    public Sonnet getSonnetByID(String id) {
+        Optional<Sonnet> sonnet = sonnetRepository.findById(Long.parseLong(id));
         if (sonnet.isPresent()) {
             return sonnet.get();
         } else {
-            logger.error("Sonnet with id: " + "'" + ID + "'" + "does not exist.");
+            logger.error("Sonnet with id: " + "'" + id + "'" + "does not exist.");
             return null;
         }
     }
