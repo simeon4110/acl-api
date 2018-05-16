@@ -29,13 +29,13 @@ public class InputController {
     @GetMapping("/insert")
     public String showInsertPage(Model model) {
         model.addAttribute("SonnetDto", new SonnetDto());
-        return "input";
+        return "insert";
     }
 
     @PostMapping("/insert")
     public String getInsertPOST(@ModelAttribute("SonnetDTO") @Valid SonnetDto sonnetDto, Model model) {
         sonnetDetailsService.addNewSonnet(sonnetDto);
         model.addAttribute("SonnetDto", new SonnetDto());
-        return "input";
+        return "insert";
     }
 }

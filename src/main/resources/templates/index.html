@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Sonnet - Home</title>
+    <div th:replace="fragments/header :: head"></div>
+</head>
+<main>
+    <div th:replace="fragments/header :: nav-bar"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 pb-3">English 523 Sonnet Database</h1>
+                <p class="lead">
+                    Collecting <strong>all</strong> the sonnets!
+                </p>
+                <p>This is a work in progress, if for some reason you find yourself here, don't break it!</p>
+                <a th:href="@{/insert}">
+                    <button type="button" class="btn btn-primary">Add a sonnet</button>
+                </a>
+                <a th:href="@{/lookup}">
+                    <button type="button" class="btn btn-primary">Read the sonnets</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/footer :: scripts"></div>
+</main>
+</html>
