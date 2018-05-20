@@ -58,7 +58,7 @@ public class LookupController {
         }
     }
 
-    @GetMapping("/lookup/csv/get_csv/{ids}")
+    @GetMapping(value = "/lookup/csv/get_csv/{ids}", produces = "application/csv")
     public void getCSV(@PathVariable("ids") String[] ids, HttpServletResponse response) {
         logger.debug(ids);
 

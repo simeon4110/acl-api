@@ -80,4 +80,23 @@ public class SonnetDetailsService {
         }
     }
 
+    public List<Sonnet> getSonnetsByIds(String[] ids) {
+        List<Sonnet> sonnets = new ArrayList<>();
+
+        for (String s : ids) {
+            Sonnet sonnet = this.getSonnetByID(s);
+            sonnets.add(sonnet);
+        }
+
+        return sonnets;
+    }
+
+    public List<Sonnet> getSonnetsByAuthorLastName(String author) {
+        return sonnetRepository.findAllByLastName(author);
+    }
+
+    public List<Sonnet> getSonnetsByAuthorFirstName(String author) {
+        return sonnetRepository.findAllByFirstName(author);
+    }
+
 }

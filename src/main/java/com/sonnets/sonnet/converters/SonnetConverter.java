@@ -81,7 +81,7 @@ public abstract class SonnetConverter {
         sb.append(sonnet.getLastName()).append(SEPARATOR).append(sonnet.getFirstName())
                 .append(SEPARATOR).append(sonnet.getTitle()).append(SEPARATOR);
         for (String s : sonnet.getText()) {
-            sb.append(s).append(SEPARATOR);
+            sb.append("\"").append(s).append("\"").append(SEPARATOR);
         }
 
         sb.append("\n");
