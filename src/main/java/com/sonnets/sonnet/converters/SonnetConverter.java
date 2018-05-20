@@ -38,7 +38,7 @@ public abstract class SonnetConverter {
 
         for (String s : sonnet.getText()) {
             sb.append("\n\t\t<line").append(lineNumber)
-                    .append(">").append(s).append("</line")
+                    .append(">").append(s.trim()).append("</line")
                     .append(lineNumber).append(">");
             lineNumber++;
         }
@@ -81,7 +81,7 @@ public abstract class SonnetConverter {
         sb.append(sonnet.getLastName()).append(SEPARATOR).append(sonnet.getFirstName())
                 .append(SEPARATOR).append(sonnet.getTitle()).append(SEPARATOR);
         for (String s : sonnet.getText()) {
-            sb.append("\"").append(s).append("\"").append(SEPARATOR);
+            sb.append("\"").append(s.trim()).append("\"").append(SEPARATOR);
         }
 
         sb.append("\n");
