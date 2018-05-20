@@ -16,6 +16,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Josh Harkema
@@ -53,5 +56,35 @@ public class LookupController {
         } catch (IOException e) {
             logger.error(e);
         }
+    }
+
+    @GetMapping("/lookup/csv/get_csv/{ids}")
+    public void getCSV(@PathVariable("ids") String[] ids, HttpServletResponse response) {
+        logger.debug(ids);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Parsing sonnet ids: " + Arrays.toString(ids));
+        }
+
+        try {
+            List<Sonnet> sonnets = new ArrayList<>();
+            for (String s : ids) {
+                sonnets.add(sonnetDetailsService.getSonnetByID(s));
+            }
+
+            String sonnetCSV = SonnetConverter.sonnetsToCSV(sonnets);
+
+            InputStream inputStream = new ByteArrayInputStream(sonnetCSV.getBytes(StandardCharsets.UTF_8));
+            IOUtils.copy(inputStream, response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
+
+    @GetMapping("/lookup/csv")
+    public String showSelectionPage(Model model) {
+        model.addAttribute("sonnets", sonnetDetailsService.getAllSonnets());
+        return "select";
     }
 }

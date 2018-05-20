@@ -4,6 +4,8 @@ import com.sonnets.sonnet.models.Sonnet;
 import com.sonnets.sonnet.models.SonnetDetailsService;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 /**
  * Here are the sonnet file type converters.
  *
@@ -11,6 +13,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class SonnetConverter {
     private static final Logger logger = Logger.getLogger(SonnetDetailsService.class);
+    private static final String SEPARATOR = ", ";
 
     private SonnetConverter() {
     }
@@ -45,6 +48,43 @@ public abstract class SonnetConverter {
 
         logger.debug("Raw XML: " + sb.toString());
 
+        return sb.toString();
+    }
+
+    /**
+     * Outputs a list of sonnets to a csv file.
+     *
+     * @param sonnets a list of sonnets.
+     * @return a string of csv separated sonnets (one sonnet per line).
+     */
+    public static String sonnetsToCSV(List<Sonnet> sonnets) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Sonnet sonnet : sonnets) {
+            sb.append(writeSonnetToLine(sonnet));
+        }
+
+        logger.debug("Raw CSV: " + sb.toString());
+
+        return sb.toString();
+    }
+
+    /**
+     * Writes a sonnet to a line in CSV format. Prints new line after each sonnet.
+     *
+     * @param sonnet the sonnet to write.
+     * @return a string of CSV separated sonnet values.
+     */
+    private static String writeSonnetToLine(Sonnet sonnet) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(sonnet.getLastName()).append(SEPARATOR).append(sonnet.getFirstName())
+                .append(SEPARATOR).append(sonnet.getTitle()).append(SEPARATOR);
+        for (String s : sonnet.getText()) {
+            sb.append(s).append(SEPARATOR);
+        }
+
+        sb.append("\n");
         return sb.toString();
     }
 }
