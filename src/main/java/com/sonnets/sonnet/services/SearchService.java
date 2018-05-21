@@ -42,6 +42,7 @@ public class SearchService {
         List<Sonnet> results = null;
 
         try {
+            //noinspection unchecked
             results = (List<Sonnet>) fullTextQuery.getResultList();
             logger.debug("Found matching sonnets: " + results.size());
         } catch (NoResultException e) {

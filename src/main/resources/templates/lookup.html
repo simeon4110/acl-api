@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress ALL -->
 <html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <title>Sonnet - Lookup</title>
@@ -46,10 +47,10 @@
 
                         <span th:each="Sonnet : ${sonnets}">
                             <div class="card border-light mr-2 mb-2">
-                                <h5 class="card-header"
-                                    th:text="${Sonnet.getFirstName()} + ' ' + ${Sonnet.getLastName()}">Author</h5>
+                                <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
                                 <div class="card-body">
-                                <h5 class="card-title" th:text="${Sonnet.getTitle()}">Title</h5>
+                                <h5 class="card-title"
+                                    th:text="${Sonnet.getFirstName()} + ' ' + ${Sonnet.getLastName()}">Author</h5>
                                 <ul class="list-unstyled">
                                     <span th:each="line : ${Sonnet.getText()}">
                                         <li th:text="${line}">Text</li>
@@ -57,9 +58,13 @@
                                 </ul>
                                 </div>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Download:
+                                    <li class="list-group-item">
                                         <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
                                            class="card-link">XML</a>
+                                        <a th:href="@{/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank"
+                                           class="card-link">JSON</a>
+                                        <a th:href="@{/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
+                                           class="card-link">TEI</a>
                                     </li>
                                 </ul>
                             </div>
@@ -71,7 +76,6 @@
         </div>
 
 
-    </div>
     </div>
     <div th:replace="fragments/footer :: footer"></div>
     <div th:replace="fragments/footer :: scripts"></div>

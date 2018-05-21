@@ -25,7 +25,7 @@ public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEve
     private EntityManager entityManager;
 
     @Override
-    public void onApplicationEvent(final ApplicationReadyEvent event) {
+    public void onApplicationEvent(@SuppressWarnings("NullableProblems") final ApplicationReadyEvent event) {
         try {
             FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
             manager.createIndexer(Sonnet.class).startAndWait();

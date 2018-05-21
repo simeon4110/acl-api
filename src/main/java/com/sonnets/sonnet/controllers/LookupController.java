@@ -7,6 +7,7 @@ import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import java.util.List;
  *
  * @author Josh Harkema
  */
+@SuppressWarnings("SameReturnValue")
 @Controller
 public class LookupController {
     private final SonnetDetailsService sonnetDetailsService;
@@ -63,11 +65,9 @@ public class LookupController {
         return "lookup";
     }
 
-    @GetMapping("/lookup/xml/{id}")
+    @GetMapping(value = "/lookup/xml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public void getXML(@PathVariable("id") String id, HttpServletResponse response) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Parsing sonnet: " + "'" + id + "'" + " to xml.");
-        }
+        logger.debug("Parsing sonnet to XML: " + id);
 
         try {
             Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
@@ -81,7 +81,22 @@ public class LookupController {
         }
     }
 
-    @GetMapping(value = "/lookup/csv/get_csv/{ids}", produces = "application/csv")
+    @GetMapping(value = "/lookup/tei/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+    public void getTEI(@PathVariable("id") String id, HttpServletResponse response) {
+        logger.debug("Parsing sonnet to TEI: " + id);
+        try {
+            Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
+            String sonnetTEI = SonnetConverter.sonnetToTEI(sonnet);
+
+            InputStream inputStream = new ByteArrayInputStream(sonnetTEI.getBytes(StandardCharsets.UTF_8));
+            IOUtils.copy(inputStream, response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
+
+    @GetMapping(value = "/lookup/csv/get_csv/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
     public void getCSV(@PathVariable("ids") String[] ids, HttpServletResponse response) {
         logger.debug(ids);
 

@@ -45,7 +45,7 @@ public abstract class SonnetConverter {
         sb.append("\n\t</text>");
         sb.append("\n</sonnet>");
 
-        logger.debug("Raw XML: " + sb.toString());
+        logger.debug("Raw XML:\n" + sb.toString());
 
         return sb.toString();
     }
@@ -63,7 +63,7 @@ public abstract class SonnetConverter {
             sb.append(writeSonnetToLine(sonnet));
         }
 
-        logger.debug("Raw CSV: " + sb.toString());
+        logger.debug("Raw CSV:\n" + sb.toString());
 
         return sb.toString();
     }
@@ -84,6 +84,48 @@ public abstract class SonnetConverter {
         }
 
         sb.append("\n");
+        return sb.toString();
+    }
+
+    /**
+     * Converts to TEI format. Validated by Josh Harkema on May 21, 2018.
+     *
+     * @param sonnet the sonnet to convert.
+     * @return a TEI formatted sonnet.
+     */
+    public static String sonnetToTEI(Sonnet sonnet) {
+        StringBuilder sb = new StringBuilder();
+
+        // TEI header data.
+        sb.append("<TEI xmlns=\"http://www.tei-c.org/ns/1.0\">");
+        sb.append("\n<teiHeader>");
+        sb.append("\n\t<fileDesc>");
+        sb.append("\n\t\t<titleStmt>");
+        sb.append("\n\t\t\t<title>").append(sonnet.getTitle()).append("</title>");
+        sb.append("\n\t\t\t<author>").append(sonnet.getFirstName()).append(" ").append(sonnet.getLastName())
+                .append("</author>");
+        sb.append("\n\t\t</titleStmt>");
+        sb.append("\n\t\t<publicationStmt>");
+        sb.append("\n\t\t\t<p>Public Domain</p>");
+        sb.append("\n\t\t</publicationStmt>");
+        sb.append("\n\t\t<sourceDesc>");
+        sb.append("\n\t\t\t<p>Taken from Shakespeare's published works</p>");
+        sb.append("\n\t\t</sourceDesc>");
+        sb.append("\n\t</fileDesc>");
+        sb.append("\n</teiHeader>");
+
+        // TEI text data.
+        sb.append("\n<text>");
+        sb.append("\n\t<body>");
+        for (String s : sonnet.getText()) {
+            sb.append("\n\t\t<p>").append(s.trim()).append("</p>");
+        }
+        sb.append("\n\t</body>");
+        sb.append("\n</text>");
+        sb.append("\n</TEI>");
+
+        logger.debug("Raw TEI:\n" + sb);
+
         return sb.toString();
     }
 }
