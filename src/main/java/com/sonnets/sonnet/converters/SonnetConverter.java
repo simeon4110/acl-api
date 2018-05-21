@@ -98,7 +98,7 @@ public abstract class SonnetConverter {
 
         // TEI header data.
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        sb.append("<TEI xmlns=\"http://www.tei-c.org/ns/1.0\">");
+        sb.append("\n<TEI xmlns=\"http://www.tei-c.org/ns/1.0\">");
         sb.append("\n<teiHeader>");
         sb.append("\n\t<fileDesc>");
         sb.append("\n\t\t<titleStmt>");
