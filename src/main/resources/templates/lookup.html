@@ -9,28 +9,69 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <h1 class="display-4 pb-3">All the sonnets:</h1>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <span th:each="Sonnet : ${sonnets}">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <h1 class="display-4" th:text="${Sonnet.getTitle()}">Title</h1>
-                <p class="lead"
-                   th:text="${Sonnet.getFirstName()} + ' ' + ${Sonnet.getLastName()} ">Author</p>
-                <ul class="list-unstyled mx-2">
-                    <span th:each="line : ${Sonnet.getText()}">
-                        <li th:text="${line}">Text</li>
-                    </span>
-                </ul>
-                <p th:text="${Sonnet.getUpdatedAt()}">Added</p>
-                <p>Download: <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}">XML</a></p>
+                <h1 class="display-4 pb-3">Search:</h1>
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
-        </span>
+    </div>
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-3">
+
+            <div class="col-lg-2">
+                <form action="" th:object="${Sonnet}" role="form" method="post" class="form mx-3">
+                    <div class="form-group">
+                        <label for="firstName" class="control-label">Author's first name:</label>
+                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName" class="control-label">Author's last name:</label>
+                        <input id="lastName" class="form-control" th:field="*{lastName}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="title" class="control-label">Sonnet title:</label>
+                        <input id="title" class="form-control" th:field="*{title}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contains" class="control-label">Sonnet contains:</label>
+                        <input id="contains" class="form-control" th:field="*{text}"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+
+
+            <div class="col-lg-8 ml-4">
+                <div th:if="${not #lists.isEmpty(sonnets)}">
+                    <div class="card-group">
+
+                        <span th:each="Sonnet : ${sonnets}">
+                            <div class="card border-light mr-2 mb-2">
+                                <h5 class="card-header"
+                                    th:text="${Sonnet.getFirstName()} + ' ' + ${Sonnet.getLastName()}">Author</h5>
+                                <div class="card-body">
+                                <h5 class="card-title" th:text="${Sonnet.getTitle()}">Title</h5>
+                                <ul class="list-unstyled">
+                                    <span th:each="line : ${Sonnet.getText()}">
+                                        <li th:text="${line}">Text</li>
+                                    </span>
+                                </ul>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Download:
+                                        <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
+                                           class="card-link">XML</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
     </div>
     <div th:replace="fragments/footer :: footer"></div>
     <div th:replace="fragments/footer :: scripts"></div>

@@ -1,5 +1,9 @@
 package com.sonnets.sonnet.models;
 
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
@@ -8,20 +12,25 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Model to store the sonnet info in MySQL
+ * Model to store the sonnet info in MySQL.
  *
  * @author Josh Harkema
  */
+@Indexed
 @Entity
 @Table(name = "sonnets")
 public class Sonnet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @DocumentId
     private Long id;
+    @Field(name = "firstName")
     @Column
     private String firstName;
+    @Field(name = "lastName")
     @Column
     private String lastName;
+    @Field(name = "title")
     @Column
     private String title;
     @Column
@@ -31,7 +40,9 @@ public class Sonnet {
     @LastModifiedDate
     private Date updatedAt;
     @Column
-    @ElementCollection(targetClass = String.class)
+    @IndexedEmbedded
+    @Field(name = "text")
+    @ElementCollection
     private List<String> text;
 
     /**

@@ -2,7 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 
 import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDetailsService;
+import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * REST handler for sonnet db searches.
+ * REST handler for sonnet db searches via api interface.
  *
  * @author Josh Harkema
  */
 @RestController
 public class SonnetRestController {
-    private static final Logger logger = Logger.getLogger(LookupController.class);
+    private static final Logger logger = Logger.getLogger(SonnetRestController.class);
     private final SonnetDetailsService sonnetDetailsService;
 
     @Autowired

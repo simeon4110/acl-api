@@ -6,6 +6,8 @@ import javax.validation.constraints.NotEmpty;
  * DTO object handles input from controller. Only very basic input validation is done here. Bootstrap has front end,
  * implementation, but much more is needed.
  *
+ * :TODO: add more lines.
+ *
  * @author Josh Harkema
  */
 public class SonnetDto {

@@ -2,14 +2,17 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.converters.SonnetConverter;
 import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDetailsService;
+import com.sonnets.sonnet.services.SearchService;
+import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -21,22 +24,42 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * This controller handles all the search functionality, the xml conversion functionality, and the csv conversion
+ * functionality. This should probably be in more than one class.
+ *
  * @author Josh Harkema
  */
 @Controller
 public class LookupController {
     private final SonnetDetailsService sonnetDetailsService;
+    private final SearchService searchService;
     private static final Logger logger = Logger.getLogger(LookupController.class);
 
     @Autowired
-    public LookupController(SonnetDetailsService sonnetDetailsService) {
+    public LookupController(SonnetDetailsService sonnetDetailsService, SearchService searchService) {
         this.sonnetDetailsService = sonnetDetailsService;
+        this.searchService = searchService;
     }
 
-    @SuppressWarnings("SameReturnValue")
     @GetMapping("/lookup")
-    public String showLookupPage(Model model) {
-        model.addAttribute("sonnets", sonnetDetailsService.getAllSonnets());
+    public String showSearchPage(Model model) {
+        model.addAttribute("Sonnet", new Sonnet());
+        return "lookup";
+    }
+
+    @PostMapping("/lookup")
+    public String search(@ModelAttribute Sonnet sonnet, Model model) {
+        List sonnets = null;
+        logger.debug(sonnet.toString());
+
+        try {
+            sonnets = searchService.search(sonnet);
+        } catch (Exception e) {
+            logger.error(e);
+        }
+
+        model.addAttribute("Sonnet", new Sonnet());
+        model.addAttribute("sonnets", sonnets);
         return "lookup";
     }
 

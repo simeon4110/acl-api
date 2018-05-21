@@ -13,8 +13,6 @@ import java.util.List;
  */
 @Repository
 public interface SonnetRepository extends JpaRepository<Sonnet, Long> {
-    // Empty by design.
-
     List<Sonnet> findAllByLastName(final String lastName);
 
     List<Sonnet> findAllByFirstName(final String firstName);

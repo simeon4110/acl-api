@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.converters;
 
 import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDetailsService;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 public abstract class SonnetConverter {
-    private static final Logger logger = Logger.getLogger(SonnetDetailsService.class);
+    private static final Logger logger = Logger.getLogger(SonnetConverter.class);
     private static final String SEPARATOR = ", ";
 
     private SonnetConverter() {

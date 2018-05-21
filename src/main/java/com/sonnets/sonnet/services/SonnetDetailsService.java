@@ -1,5 +1,7 @@
-package com.sonnets.sonnet.models;
+package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.models.Sonnet;
+import com.sonnets.sonnet.models.SonnetDto;
 import com.sonnets.sonnet.repositories.SonnetRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

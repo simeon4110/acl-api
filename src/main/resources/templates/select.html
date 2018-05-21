@@ -9,7 +9,8 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <h1 class="display-4 pb-3">Select sonnets to convert:</h1>
+                <h1 class="display-4 pb-3">Converter:</h1>
+                <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
     </div>
@@ -54,7 +55,8 @@
                     ids.push(this["id"]);
                 });
 
-                window.location = "/lookup/csv/get_csv/" + ids;
+                var win = window.open("/lookup/csv/get_csv/" + ids, '_blank');
+                win.focus();
             });
 
         });

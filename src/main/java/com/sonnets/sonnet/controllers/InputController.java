@@ -1,7 +1,8 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.models.SonnetDetailsService;
 import com.sonnets.sonnet.models.SonnetDto;
+import com.sonnets.sonnet.services.SonnetDetailsService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 @Controller
 public class InputController {
     private final SonnetDetailsService sonnetDetailsService;
+    private static final Logger logger = Logger.getLogger(InputController.class);
 
     @Autowired
     public InputController(SonnetDetailsService sonnetDetailsService) {
@@ -33,7 +35,8 @@ public class InputController {
     }
 
     @PostMapping("/insert")
-    public String getInsertPOST(@ModelAttribute("SonnetDTO") @Valid SonnetDto sonnetDto, Model model) {
+    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model) {
+        logger.debug("Adding sonnet: " + sonnetDto.toString());
         sonnetDetailsService.addNewSonnet(sonnetDto);
         model.addAttribute("SonnetDto", new SonnetDto());
         return "insert";
