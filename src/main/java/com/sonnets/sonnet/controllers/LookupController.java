@@ -39,7 +39,7 @@ public class LookupController {
     private static final Logger logger = Logger.getLogger(LookupController.class);
 
     private static final String LOOKUP = "lookup";
-    private static final String SONNET = "sonnet";
+    private static final String SONNET = "Sonnet";
     private static final String EDIT = "edit";
 
     @Autowired
