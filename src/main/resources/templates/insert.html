@@ -21,10 +21,10 @@
                     </div>
                     <div class="form-group">
                         <label for="firstName" class="control-label">Author's first name:</label>
-                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus required/>
+                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
                     </div>
                     <div class="form-group">
-                        <label for="lastName" class="control-label">Author's last name:</label>
+                        <label for="lastName" class="control-label">Author's last name:*</label>
                         <input id="lastName" class="form-control" th:field="*{lastName}" required/>
                     </div>
                     <div class="form-group">
@@ -32,69 +32,26 @@
                         <input id="title" class="form-control" th:field="*{title}"/>
                     </div>
                     <div class="form-group">
-                        <label for="publicationYear" class="control-label">Sonnet's year of publication:</label>
-                        <input id="publicationYear" class="form-control" th:field="*{publicationYear}"/>
+                        <label for="publicationStatement" class="control-label">
+                            Publication statement (i.e. "Not for distribution"):*
+                        </label>
+                        <input id="publicationStatement" class="form-control" th:field="*{publicationStmt}"/>
                     </div>
                     <div class="form-group">
-                        <label for="line1" class="control-label">Line one:</label>
-                        <input id="line1" class="form-control" th:field="*{line1}" required/>
+                        <label for="sourceDescription" class="control-label">
+                            Source description: (i.e. "Shakespeare's collected works")*
+                        </label>
+                        <input id="sourceDescription" class="form-control" th:field="*{sourceDesc}"/>
                     </div>
                     <div class="form-group">
-                        <label for="line2" class="control-label">Line two:</label>
-                        <input id="line2" class="form-control" th:field="*{line2}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line3" class="control-label">Line three:</label>
-                        <input id="line3" class="form-control" th:field="*{line3}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line4" class="control-label">Line four:</label>
-                        <input id="line4" class="form-control" th:field="*{line4}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line5" class="control-label">Line five:</label>
-                        <input id="line5" class="form-control" th:field="*{line5}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line6" class="control-label">Line six:</label>
-                        <input id="line6" class="form-control" th:field="*{line6}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line7" class="control-label">Line seven:</label>
-                        <input id="line7" class="form-control" th:field="*{line7}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line8" class="control-label">Line eight:</label>
-                        <input id="line8" class="form-control" th:field="*{line8}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line9" class="control-label">Line nine:</label>
-                        <input id="line9" class="form-control" th:field="*{line9}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line10" class="control-label">Line ten:</label>
-                        <input id="line10" class="form-control" th:field="*{line10}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line11" class="control-label">Line eleven:</label>
-                        <input id="line11" class="form-control" th:field="*{line11}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line12" class="control-label">Line twelve:</label>
-                        <input id="line12" class="form-control" th:field="*{line12}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line13" class="control-label">Line thirteen:</label>
-                        <input id="line13" class="form-control" th:field="*{line13}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="line14" class="control-label">Line fourteen:</label>
-                        <input id="line14" class="form-control" th:field="*{line14}" required/>
+                        <label for="text" class="control-label">Sonnet text (please preserve lines):*</label>
+                        <textarea id="text" class="form-control" th:field="*{text}" rows="14" required></textarea>
                     </div>
                     <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
                         submit
                     </button>
+                    <p class="mt-2">* indicates required fields.</p>
                     <!--Modal popup -->
                     <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
                         <div class="modal-dialog" role="document">

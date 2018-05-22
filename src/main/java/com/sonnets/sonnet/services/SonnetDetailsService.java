@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,26 +44,14 @@ public class SonnetDetailsService {
         toAddSonnet.setFirstName(newSonnet.getFirstName());
         toAddSonnet.setLastName(newSonnet.getLastName());
         toAddSonnet.setTitle(newSonnet.getTitle());
-        toAddSonnet.setPublicationYear(newSonnet.getPublicationYear());
+        toAddSonnet.setPublicationStmt(newSonnet.getPublicationStmt());
+        toAddSonnet.setSourceDesc(newSonnet.getSourceDesc());
 
-        // Push the lines into a list array.
-        List<String> text = new ArrayList<>();
-        text.add(newSonnet.getLine1());
-        text.add(newSonnet.getLine2());
-        text.add(newSonnet.getLine3());
-        text.add(newSonnet.getLine4());
-        text.add(newSonnet.getLine5());
-        text.add(newSonnet.getLine6());
-        text.add(newSonnet.getLine7());
-        text.add(newSonnet.getLine8());
-        text.add(newSonnet.getLine9());
-        text.add(newSonnet.getLine10());
-        text.add(newSonnet.getLine11());
-        text.add(newSonnet.getLine12());
-        text.add(newSonnet.getLine13());
-        text.add(newSonnet.getLine14());
+        String[] text = newSonnet.getText().split("\\r?\\n");
+        List<String> strings = new ArrayList<>();
+        Collections.addAll(strings, text);
 
-        toAddSonnet.setText(text);
+        toAddSonnet.setText(strings);
 
         sonnetRepository.save(toAddSonnet);
         return toAddSonnet;

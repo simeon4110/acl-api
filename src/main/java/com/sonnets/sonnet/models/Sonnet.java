@@ -34,7 +34,9 @@ public class Sonnet {
     @Column
     private String title;
     @Column
-    private String publicationYear;
+    private String publicationStmt;
+    @Column
+    private String sourceDesc;
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
@@ -84,12 +86,20 @@ public class Sonnet {
         this.title = title;
     }
 
-    public String getPublicationYear() {
-        return publicationYear;
+    public String getPublicationStmt() {
+        return publicationStmt;
     }
 
-    public void setPublicationYear(String publicationYear) {
-        this.publicationYear = publicationYear;
+    public void setPublicationStmt(String publicationStmt) {
+        this.publicationStmt = publicationStmt;
+    }
+
+    public String getSourceDesc() {
+        return sourceDesc;
+    }
+
+    public void setSourceDesc(String sourceDesc) {
+        this.sourceDesc = sourceDesc;
     }
 
     public Date getUpdatedAt() {
@@ -108,10 +118,6 @@ public class Sonnet {
         this.text = text;
     }
 
-    public int countNumberOfLines() {
-        return this.text.size();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -123,8 +129,9 @@ public class Sonnet {
         if (firstName != null ? !firstName.equals(sonnet.firstName) : sonnet.firstName != null) return false;
         if (lastName != null ? !lastName.equals(sonnet.lastName) : sonnet.lastName != null) return false;
         if (title != null ? !title.equals(sonnet.title) : sonnet.title != null) return false;
-        if (publicationYear != null ? !publicationYear.equals(sonnet.publicationYear) : sonnet.publicationYear != null)
+        if (publicationStmt != null ? !publicationStmt.equals(sonnet.publicationStmt) : sonnet.publicationStmt != null)
             return false;
+        if (sourceDesc != null ? !sourceDesc.equals(sonnet.sourceDesc) : sonnet.sourceDesc != null) return false;
         if (updatedAt != null ? !updatedAt.equals(sonnet.updatedAt) : sonnet.updatedAt != null) return false;
         return text != null ? text.equals(sonnet.text) : sonnet.text == null;
     }
@@ -135,7 +142,8 @@ public class Sonnet {
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (publicationYear != null ? publicationYear.hashCode() : 0);
+        result = 31 * result + (publicationStmt != null ? publicationStmt.hashCode() : 0);
+        result = 31 * result + (sourceDesc != null ? sourceDesc.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         result = 31 * result + (text != null ? text.hashCode() : 0);
         return result;
@@ -148,7 +156,8 @@ public class Sonnet {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +
-                ", publicationYear='" + publicationYear + '\'' +
+                ", publicationStmt='" + publicationStmt + '\'' +
+                ", sourceDesc='" + sourceDesc + '\'' +
                 ", updatedAt=" + updatedAt +
                 ", text=" + text +
                 '}';
