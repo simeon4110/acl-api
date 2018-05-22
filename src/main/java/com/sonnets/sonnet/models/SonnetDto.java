@@ -11,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
  * @author Josh Harkema
  */
 public class SonnetDto {
+    private Long id;
     @NotEmpty
     private String firstName;
     @NotEmpty
@@ -22,6 +23,14 @@ public class SonnetDto {
     private String sourceDesc;
     @NotEmpty
     private String text;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;

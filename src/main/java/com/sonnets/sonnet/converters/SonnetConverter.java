@@ -107,10 +107,10 @@ public abstract class SonnetConverter {
                 .append("</author>");
         sb.append("\n\t\t</titleStmt>");
         sb.append("\n\t\t<publicationStmt>");
-        sb.append("\n\t\t\t<p>Public Domain</p>");
+        sb.append("\n\t\t\t<p>").append(sonnet.getPublicationStmt()).append("</p>");
         sb.append("\n\t\t</publicationStmt>");
         sb.append("\n\t\t<sourceDesc>");
-        sb.append("\n\t\t\t<p>Taken from Shakespeare's published works</p>");
+        sb.append("\n\t\t\t<p>").append(sonnet.getSourceDesc()).append("</p>");
         sb.append("\n\t\t</sourceDesc>");
         sb.append("\n\t</fileDesc>");
         sb.append("\n</teiHeader>");

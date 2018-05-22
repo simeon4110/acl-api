@@ -57,6 +57,41 @@ public class SonnetDetailsService {
         return toAddSonnet;
     }
 
+    public Sonnet updateSonnet(SonnetDto newSonnet) {
+        Sonnet sonnet;
+
+        if (sonnetRepository.findById(newSonnet.getId()).isPresent()) {
+            sonnet = sonnetRepository.findById(newSonnet.getId()).get();
+        } else {
+            logger.error("Sonnet does not exist with id: " + newSonnet.getId());
+            return null;
+        }
+
+        sonnet.setFirstName(newSonnet.getFirstName());
+        sonnet.setLastName(newSonnet.getLastName());
+        sonnet.setTitle(newSonnet.getTitle());
+        sonnet.setPublicationStmt(newSonnet.getPublicationStmt());
+        sonnet.setSourceDesc(newSonnet.getSourceDesc());
+
+        String[] text = newSonnet.getText().split("\\r?\\n");
+        List<String> strings = new ArrayList<>();
+        Collections.addAll(strings, text);
+
+        sonnet.setText(strings);
+
+        sonnetRepository.save(sonnet);
+        return sonnet;
+    }
+
+    public void deleteSonnet(String id) {
+        Optional<Sonnet> sonnet = sonnetRepository.findById(Long.parseLong(id));
+        if (sonnet.isPresent()) {
+            sonnetRepository.delete(sonnet.get());
+        } else {
+            logger.error("Sonnet does not exist with id: " + id);
+        }
+    }
+
     public List<Sonnet> getAllSonnets() {
         return sonnetRepository.findAll();
     }

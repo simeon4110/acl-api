@@ -114,6 +114,15 @@ public class Sonnet {
         return text;
     }
 
+    public String getTextPretty() {
+        StringBuilder sb = new StringBuilder();
+        for (String s : text) {
+            sb.append(s + "\n");
+        }
+
+        return sb.toString();
+    }
+
     public void setText(List<String> text) {
         this.text = text;
     }
