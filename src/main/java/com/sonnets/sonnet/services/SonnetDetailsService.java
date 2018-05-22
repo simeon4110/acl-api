@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,49 +34,24 @@ public class SonnetDetailsService {
      */
     @SuppressWarnings("UnusedReturnValue")
     public Sonnet addNewSonnet(SonnetDto newSonnet) {
-        Sonnet toAddSonnet = new Sonnet();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
-        }
-
-        toAddSonnet.setFirstName(newSonnet.getFirstName());
-        toAddSonnet.setLastName(newSonnet.getLastName());
-        toAddSonnet.setTitle(newSonnet.getTitle());
-        toAddSonnet.setPublicationStmt(newSonnet.getPublicationStmt());
-        toAddSonnet.setSourceDesc(newSonnet.getSourceDesc());
-
-        String[] text = newSonnet.getText().split("\\r?\\n");
-        List<String> strings = new ArrayList<>();
-        Collections.addAll(strings, text);
-
-        toAddSonnet.setText(strings);
-
+        logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
+        Sonnet toAddSonnet = new Sonnet(newSonnet);
         sonnetRepository.save(toAddSonnet);
+
         return toAddSonnet;
     }
 
     public Sonnet updateSonnet(SonnetDto newSonnet) {
+        Optional<Sonnet> sonnetToEdit = sonnetRepository.findById(newSonnet.getId());
         Sonnet sonnet;
-
-        if (sonnetRepository.findById(newSonnet.getId()).isPresent()) {
-            sonnet = sonnetRepository.findById(newSonnet.getId()).get();
+        if (sonnetToEdit.isPresent()) {
+            sonnet = sonnetToEdit.get();
         } else {
             logger.error("Sonnet does not exist with id: " + newSonnet.getId());
             return null;
         }
 
-        sonnet.setFirstName(newSonnet.getFirstName());
-        sonnet.setLastName(newSonnet.getLastName());
-        sonnet.setTitle(newSonnet.getTitle());
-        sonnet.setPublicationStmt(newSonnet.getPublicationStmt());
-        sonnet.setSourceDesc(newSonnet.getSourceDesc());
-
-        String[] text = newSonnet.getText().split("\\r?\\n");
-        List<String> strings = new ArrayList<>();
-        Collections.addAll(strings, text);
-
-        sonnet.setText(strings);
+        sonnet = sonnet.update(newSonnet);
 
         sonnetRepository.save(sonnet);
         return sonnet;

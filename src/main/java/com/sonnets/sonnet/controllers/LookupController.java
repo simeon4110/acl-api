@@ -38,6 +38,10 @@ public class LookupController {
     private final SearchService searchService;
     private static final Logger logger = Logger.getLogger(LookupController.class);
 
+    private static final String LOOKUP = "lookup";
+    private static final String SONNET = "sonnet";
+    private static final String EDIT = "edit";
+
     @Autowired
     public LookupController(SonnetDetailsService sonnetDetailsService, SearchService searchService) {
         this.sonnetDetailsService = sonnetDetailsService;
@@ -46,8 +50,8 @@ public class LookupController {
 
     @GetMapping("/lookup")
     public String showSearchPage(Model model) {
-        model.addAttribute("Sonnet", new Sonnet());
-        return "lookup";
+        model.addAttribute(SONNET, new Sonnet());
+        return LOOKUP;
     }
 
     @PostMapping("/lookup")
@@ -61,41 +65,37 @@ public class LookupController {
             logger.error(e);
         }
 
-        model.addAttribute("Sonnet", new Sonnet());
+        model.addAttribute(SONNET, new Sonnet());
         model.addAttribute("sonnets", sonnets);
-        return "lookup";
+        return LOOKUP;
     }
 
     @GetMapping("/lookup/edit/{id}")
     public String editSonnet(@PathVariable("id") String id, Model model) {
         logger.debug("Editing sonnet: " + id);
         Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
-        SonnetDto sonnetDto = new SonnetDto();
-        sonnetDto.setId(sonnet.getId());
-        sonnetDto.setFirstName(sonnet.getFirstName());
-        sonnetDto.setLastName(sonnet.getLastName());
-        sonnetDto.setTitle(sonnet.getTitle());
-        sonnetDto.setPublicationStmt(sonnet.getPublicationStmt());
-        sonnetDto.setSourceDesc(sonnet.getSourceDesc());
-        sonnetDto.setText(sonnet.getTextPretty());
-        logger.debug(sonnet.getText());
-        model.addAttribute("Sonnet", sonnetDto);
-        return "edit";
+        SonnetDto sonnetDto = new SonnetDto(sonnet);
+        model.addAttribute(SONNET, sonnetDto);
+
+        return EDIT;
+    }
+
+    @PostMapping("/lookup/edit/{id}")
+    public String postEditSonnet(@ModelAttribute SonnetDto sonnet, Model model) {
+        logger.debug("Posting new sonnet details for id: " + sonnet.getId());
+        Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
+        sonnet = new SonnetDto(newSonnet);
+        model.addAttribute(SONNET, sonnet);
+
+        return EDIT;
     }
 
     @GetMapping("/lookup/delete/{id}")
     public String deleteSonnet(@PathVariable("id") String id, Model model) {
         sonnetDetailsService.deleteSonnet(id);
         model.addAttribute("Sonnet", new Sonnet());
-        return "lookup";
-    }
 
-    @PostMapping("/lookup/edit/{id}")
-    public String postEditSonnet(@ModelAttribute SonnetDto sonnet, Model model) {
-        logger.debug("Posting new sonnet details for id: " + sonnet.getId());
-        sonnetDetailsService.updateSonnet(sonnet);
-        model.addAttribute("Sonnet", sonnet);
-        return "edit";
+        return LOOKUP;
     }
 
     @GetMapping(value = "/lookup/xml/{id}", produces = MediaType.APPLICATION_XML_VALUE)

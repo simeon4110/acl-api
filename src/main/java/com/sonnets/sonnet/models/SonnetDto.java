@@ -22,6 +22,20 @@ public class SonnetDto {
     @NotEmpty
     private String text;
 
+    public SonnetDto() {
+
+    }
+
+    public SonnetDto(Sonnet sonnet) {
+        this.id = sonnet.getId();
+        this.firstName = sonnet.getFirstName();
+        this.lastName = sonnet.getLastName();
+        this.title = sonnet.getTitle();
+        this.publicationStmt = sonnet.getPublicationStmt();
+        this.sourceDesc = sonnet.getSourceDesc();
+        this.text = sonnet.getTextPretty();
+    }
+
     public Long getId() {
         return id;
     }

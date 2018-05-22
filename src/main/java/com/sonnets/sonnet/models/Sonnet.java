@@ -8,6 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +54,16 @@ public class Sonnet {
      */
     public Sonnet() {
         this.updatedAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Sonnet(SonnetDto sonnetDto) {
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
+        this.firstName = sonnetDto.getFirstName();
+        this.lastName = sonnetDto.getLastName();
+        this.title = sonnetDto.getTitle();
+        this.publicationStmt = sonnetDto.getPublicationStmt();
+        this.sourceDesc = sonnetDto.getSourceDesc();
+        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
     }
 
     public Long getId() {
@@ -112,6 +124,25 @@ public class Sonnet {
 
     public List<String> getText() {
         return text;
+    }
+
+    private static List<String> parseText(String[] text) {
+        List<String> strings = new ArrayList<>();
+        Collections.addAll(strings, text);
+
+        return strings;
+    }
+
+    public Sonnet update(SonnetDto sonnetDto) {
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
+        this.firstName = sonnetDto.getFirstName();
+        this.lastName = sonnetDto.getLastName();
+        this.title = sonnetDto.getTitle();
+        this.publicationStmt = sonnetDto.getPublicationStmt();
+        this.sourceDesc = sonnetDto.getSourceDesc();
+        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
+
+        return this;
     }
 
     public String getTextPretty() {
