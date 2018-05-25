@@ -160,7 +160,7 @@ public class Sonnet {
     public String getTextPretty() {
         StringBuilder sb = new StringBuilder();
         for (String s : text) {
-            sb.append(s + "\n");
+            sb.append(s).append("\n");
         }
 
         return sb.toString();

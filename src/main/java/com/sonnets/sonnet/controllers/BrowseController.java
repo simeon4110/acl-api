@@ -23,6 +23,7 @@ public class BrowseController {
      * @param pageRequest the page request passed.
      * @return a paged json of all the sonnets paged. Default size 20 objs.
      */
+    @SuppressWarnings("SameReturnValue")
     @GetMapping(value = "/browse")
     public String getPagedList(Pageable pageRequest, Model model) {
         model.addAttribute("page", sonnetDetailsService.getAllSonnetsPaged(pageRequest));
