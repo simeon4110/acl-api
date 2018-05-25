@@ -59,6 +59,6 @@ public class SearchService {
             total = 0;
         }
 
-        return new PageImpl<Sonnet>(results, pageRequest, total);
+        return new PageImpl<>(results, pageRequest, total);
     }
 }

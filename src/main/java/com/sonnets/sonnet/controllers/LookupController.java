@@ -98,7 +98,7 @@ public class LookupController {
     @GetMapping("/lookup/delete/{id}")
     public String deleteSonnet(@PathVariable("id") String id, Model model) {
         sonnetDetailsService.deleteSonnet(id);
-        model.addAttribute("Sonnet", new Sonnet());
+        model.addAttribute(SONNET, new Sonnet());
 
         return LOOKUP;
     }
