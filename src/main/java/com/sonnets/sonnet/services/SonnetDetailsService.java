@@ -5,6 +5,8 @@ import com.sonnets.sonnet.models.SonnetDto;
 import com.sonnets.sonnet.repositories.SonnetRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -68,6 +70,10 @@ public class SonnetDetailsService {
 
     public List<Sonnet> getAllSonnets() {
         return sonnetRepository.findAll();
+    }
+
+    public Page<Sonnet> getAllSonnetsPaged(Pageable pageRequest) {
+        return sonnetRepository.findAll(pageRequest);
     }
 
     public Sonnet getSonnetByID(String id) {

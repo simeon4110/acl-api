@@ -16,6 +16,8 @@ public class SonnetDto {
     private String lastName;
     private String title;
     @NotEmpty
+    private String publicationYear;
+    @NotEmpty
     private String publicationStmt;
     @NotEmpty
     private String sourceDesc;
@@ -31,6 +33,7 @@ public class SonnetDto {
         this.firstName = sonnet.getFirstName();
         this.lastName = sonnet.getLastName();
         this.title = sonnet.getTitle();
+        this.publicationYear = sonnet.getPublicationYear();
         this.publicationStmt = sonnet.getPublicationStmt();
         this.sourceDesc = sonnet.getSourceDesc();
         this.text = sonnet.getTextPretty();
@@ -64,6 +67,14 @@ public class SonnetDto {
         return title;
     }
 
+    public String getPublicationYear() {
+        return publicationYear;
+    }
+
+    public void setPublicationYear(String publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -95,12 +106,15 @@ public class SonnetDto {
     @Override
     public String toString() {
         return "SonnetDto{" +
-                "firstName='" + firstName + '\'' +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +
+                ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", text='" + text + '\'' +
                 '}';
     }
+
 }

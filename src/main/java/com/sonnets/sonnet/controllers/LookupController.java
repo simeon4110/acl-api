@@ -8,6 +8,8 @@ import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,24 +51,27 @@ public class LookupController {
     }
 
     @GetMapping("/lookup")
-    public String showSearchPage(Model model) {
+    public String showSearchPage(Model model, Pageable pageRequest) {
         model.addAttribute(SONNET, new Sonnet());
+        model.addAttribute("page", sonnetDetailsService.getAllSonnetsPaged(pageRequest));
         return LOOKUP;
     }
 
     @PostMapping("/lookup")
-    public String search(@ModelAttribute Sonnet sonnet, Model model) {
-        List sonnets = null;
+    public String search(@ModelAttribute Sonnet sonnet, Model model, Pageable pageRequest) {
+        Page<Sonnet> sonnets = null;
         logger.debug(sonnet.toString());
 
         try {
-            sonnets = searchService.search(sonnet);
+            sonnets = searchService.search(sonnet, pageRequest);
         } catch (Exception e) {
             logger.error(e);
         }
 
+        logger.debug(sonnets);
+
         model.addAttribute(SONNET, new Sonnet());
-        model.addAttribute("sonnets", sonnets);
+        model.addAttribute("page", sonnets);
         return LOOKUP;
     }
 

@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
+
+import static java.lang.Math.toIntExact;
 
 /**
  * VERY basic search impl. Can be extended later.
@@ -26,7 +30,7 @@ public class SearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<Sonnet> search(Sonnet sonnet) {
+    public PageImpl<Sonnet> search(Sonnet sonnet, Pageable pageRequest) {
         logger.debug("Searching for: " + sonnet.toString());
 
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
@@ -34,21 +38,27 @@ public class SearchService {
 
         // Fuzzy query isn't super strict and returns many sonnets. It's a feature, not a bug.
         org.apache.lucene.search.Query luceneQuery = queryBuilder.keyword().fuzzy().withEditDistanceUpTo(1)
-                .withPrefixLength(1).onFields("firstName", "lastName", "title", "text")
+                .withPrefixLength(1).onFields("firstName", "lastName", "title", "publicationYear", "text")
                 .matching(sonnet.toString()).createQuery();
 
+
         Query fullTextQuery = manager.createFullTextQuery(luceneQuery, Sonnet.class);
+        long total = fullTextQuery.getResultList().size();
+
+        fullTextQuery.setFirstResult(toIntExact(pageRequest.getOffset())).setMaxResults(pageRequest.getPageSize());
 
         List<Sonnet> results = null;
 
         try {
             //noinspection unchecked
-            results = (List<Sonnet>) fullTextQuery.getResultList();
-            logger.debug("Found matching sonnets: " + results.size());
+            results = fullTextQuery.getResultList();
+            logger.debug("Found matching sonnets: " + total);
+
         } catch (NoResultException e) {
             logger.error(e);
+            total = 0;
         }
 
-        return results;
+        return new PageImpl<Sonnet>(results, pageRequest, total);
     }
 }

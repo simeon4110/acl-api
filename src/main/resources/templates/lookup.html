@@ -14,12 +14,9 @@
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
-    </div>
-    <div class="container-fluid">
         <div class="row justify-content-center mt-3">
-
-            <div class="col-lg-2">
-                <form action="" th:object="${Sonnet}" role="form" method="post" class="form mx-3">
+            <div class="col-md-2">
+                <form action="/lookup" th:object="${Sonnet}" role="form" method="post" class="form">
                     <div class="form-group">
                         <label for="firstName" class="control-label">Author's first name:</label>
                         <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
@@ -33,20 +30,21 @@
                         <input id="title" class="form-control" th:field="*{title}"/>
                     </div>
                     <div class="form-group">
+                        <label for="publicationYear" class="control-label">Year of publication:</label>
+                        <input id="publicationYear" type="number" class="form-control" th:field="*{publicationYear}"/>
+                    </div>
+                    <div class="form-group">
                         <label for="contains" class="control-label">Sonnet contains:</label>
                         <input id="contains" class="form-control" th:field="*{text}"/>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary mb-2">Search</button>
                 </form>
             </div>
-
-
-            <div class="col-lg-8 ml-4">
-                <div th:if="${not #lists.isEmpty(sonnets)}">
-                    <div class="card-group">
-
-                        <span th:each="Sonnet : ${sonnets}">
-                            <div class="card border-light mr-2 mb-2">
+            <div class="col-lg-8">
+                <div th:if="${not #lists.isEmpty(page)}">
+                    <div class="card-group justify-content-center">
+                        <span th:each="Sonnet : ${page}">
+                            <div class="card border-light m-2">
                                 <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
                                 <div class="card-body">
                                 <h5 class="card-title"
@@ -72,6 +70,33 @@
                         </span>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <hr class="m-4" style="border-color: black"/>
+            </div>
+            <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
+                <ul class="pagination justify-content-center">
+                    <li th:class="${page.number == 0} ? disabled">
+                        <a class="page-link" th:href="@{/lookup/(pageSize=10, page=0)}">&laquo;</a>
+                    </li>
+                    <li th:class="${page.number == 0} ? disabled">
+                        <a class="page-link" th:href="@{/lookup/(pageSize=10, page=${page.number - 1})}">
+                            Previous
+                        </a>
+                    </li>
+                    <li th:class="${page.number == page.totalPages} ? disabled">
+                        <a class="page-link"
+                           th:href="@{/lookup/(pageSize=10, page=${page.number + 1})}">
+                            Next
+                        </a>
+                    </li>
+                    <li th:class="${page.number + 1 == page.totalPages} ? disabled">
+                        <a class="page-link"
+                           th:href="@{/lookup/(pageSize=10, page=${page.totalPages})}">&raquo;</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

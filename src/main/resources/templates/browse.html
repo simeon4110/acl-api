@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Sonnet - Lookup</title>
+    <div th:replace="fragments/header :: head"></div>
+</head>
+<main>
+    <div th:replace="fragments/header :: nav-bar"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <h1 class="display-4 pb-3">Browse</h1>
+                <hr class="m-4" style="border-color: black"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card-group justify-content-center">
+                    <span th:each="Sonnet : ${page}">
+                        <div class="card border-light m-2">
+                            <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
+                            <div class="card-body">
+                            <h5 class="card-title"
+                                th:text="${Sonnet.getFirstName()} + ' ' + ${Sonnet.getLastName()}">Author</h5>
+                            <ul class="list-unstyled">
+                                <span th:each="line : ${Sonnet.getText()}">
+                                    <li th:text="${line}">Text</li>
+                                </span>
+                            </ul>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">XML</a>
+                                    <a th:href="@{/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">JSON</a>
+                                    <a th:href="@{/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">TEI</a>
+                                    <a th:href="@{/lookup/edit/} + ${Sonnet.getId()}" class="card-link">Edit</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <hr class="m-4" style="border-color: black"/>
+            </div>
+            <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
+                <ul class="pagination justify-content-center">
+                    <li th:class="${page.number == 0} ? disabled">
+                        <a class="page-link" th:href="@{/browse/(pageSize=10, page=0)}">&laquo;</a>
+                    </li>
+                    <li th:class="${page.number == 0} ? disabled">
+                        <a class="page-link" th:href="@{/browse/(pageSize=10, page=${page.number - 1})}">
+                            Previous
+                        </a>
+                    </li>
+                    <li th:class="${page.number == page.totalPages} ? disabled">
+                        <a class="page-link"
+                           th:href="@{/browse/(pageSize=10, page=${page.number + 1})}">
+                            Next
+                        </a>
+                    </li>
+                    <li th:class="${page.number + 1 == page.totalPages} ? disabled">
+                        <a class="page-link"
+                           th:href="@{/browse/(pageSize=10, page=${page.totalPages})}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/footer :: scripts"></div>
+</main>
+</html>
