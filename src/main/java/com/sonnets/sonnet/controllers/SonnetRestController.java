@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * REST handler for sonnet db searches via api interface.
- * :TODO: add other search interfaces.
  *
  * @author Josh Harkema
  */

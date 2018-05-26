@@ -59,7 +59,6 @@ public class LookupController {
 
     /**
      * This is terrible, but I don't want to screw with passing POST requests around. Deal with it.
-     *
      * @param sonnet      the sonnet object containing lookup params.
      * @param model       the model to get/add the sonnets to.
      * @param pageRequest the pageable request data.
@@ -87,7 +86,6 @@ public class LookupController {
 
     /**
      * Edit a sonnet by ID.
-     *
      * @param id    the id of the sonnet to edit.
      * @param model the model with/out the sonnet object.
      * @return a html page with the sonnet data populated for editing.

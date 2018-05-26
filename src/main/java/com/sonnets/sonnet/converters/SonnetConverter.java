@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import java.util.List;
 
 /**
- * Here are the sonnet file type converters.
+ * Here are the sonnet file type converters. Tool class, cannot instantiate.
  *
  * @author Josh Harkema
  */
@@ -19,7 +19,6 @@ public abstract class SonnetConverter {
 
     /**
      * Converts a Sonnet object into an XML string.
-     *
      * @param sonnet a Sonnet object.
      * @return and XML string.
      */
@@ -52,7 +51,6 @@ public abstract class SonnetConverter {
 
     /**
      * Outputs a list of sonnets to a csv file.
-     *
      * @param sonnets a list of sonnets.
      * @return a string of csv separated sonnets (one sonnet per line).
      */
@@ -70,7 +68,6 @@ public abstract class SonnetConverter {
 
     /**
      * Writes a sonnet to a line in CSV format. Prints new line after each sonnet.
-     *
      * @param sonnet the sonnet to write.
      * @return a string of CSV separated sonnet values.
      */
@@ -84,12 +81,12 @@ public abstract class SonnetConverter {
         }
 
         sb.append("\n");
+
         return sb.toString();
     }
 
     /**
      * Converts to TEI format. Validated by Josh Harkema on May 21, 2018.
-     *
      * @param sonnet the sonnet to convert.
      * @return a TEI formatted sonnet.
      */

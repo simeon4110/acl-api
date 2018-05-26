@@ -138,6 +138,12 @@ public class Sonnet {
         return text;
     }
 
+    /**
+     * Parses text input into an Array for database storage.
+     *
+     * @param text a string[] of the text.
+     * @return an ArrayList of the string[].
+     */
     private static List<String> parseText(String[] text) {
         List<String> strings = new ArrayList<>();
         Collections.addAll(strings, text);
@@ -145,6 +151,11 @@ public class Sonnet {
         return strings;
     }
 
+    /**
+     * Update an existing sonnet from a SonnetDto object.
+     * @param sonnetDto the SonnetDto with the new data.
+     * @return the updated Sonnet object.
+     */
     public Sonnet update(SonnetDto sonnetDto) {
         this.updatedAt = new Timestamp(System.currentTimeMillis());
         this.firstName = sonnetDto.getFirstName();
@@ -158,6 +169,10 @@ public class Sonnet {
         return this;
     }
 
+    /**
+     * This parses a Sonnet so it shows "pretty" in html <textarea></textarea> elements. (adds \n for newlines.)
+     * @return a nicely formatted string.
+     */
     public String getTextPretty() {
         StringBuilder sb = new StringBuilder();
         for (String s : text) {

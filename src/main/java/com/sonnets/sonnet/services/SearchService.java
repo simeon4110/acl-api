@@ -33,7 +33,6 @@ public class SearchService {
 
     /**
      * Dynamically generates a query based on which field is selected.
-     *
      * @param sonnet       the sonnet object with the query params.
      * @param queryBuilder the query builder to build the query for.
      * @return a lucene query.
@@ -41,35 +40,41 @@ public class SearchService {
     private static org.apache.lucene.search.Query evalFields(Sonnet sonnet, QueryBuilder queryBuilder) {
         org.apache.lucene.search.Query query = null;
 
+        // firstName
         if (sonnet.getFirstName() != null && !Objects.equals(sonnet.getFirstName(), "")) {
             logger.debug(sonnet.getFirstName());
             query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("firstName")
                     .matching(sonnet.getFirstName()).createQuery();
         }
 
+        // lastName
         if (sonnet.getLastName() != null && !Objects.equals(sonnet.getLastName(), "")) {
             logger.debug(sonnet.getLastName());
             query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("lastName")
                     .matching(sonnet.getLastName()).createQuery();
         }
 
+        // title
         if (sonnet.getTitle() != null && !Objects.equals(sonnet.getTitle(), "")) {
             logger.debug(sonnet.getTitle());
             query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("title")
                     .matching(sonnet.getTitle()).createQuery();
         }
 
+        // publicationYear
         if (sonnet.getPublicationYear() != null && !Objects.equals(sonnet.getPublicationYear(), "")) {
             logger.debug(sonnet.getPublicationYear());
             query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1)
                     .onField("publicationYear").matching(sonnet.getPublicationYear()).createQuery();
         }
 
+        // text
         if (sonnet.getText() != null && !sonnet.getText().isEmpty()) {
             logger.debug(sonnet.getText());
             query = queryBuilder.phrase().onField("text").sentence(sonnet.getText().toString()).createQuery();
         }
 
+        // default
         if (query == null) {
             query = queryBuilder.all().createQuery();
         }
@@ -79,7 +84,6 @@ public class SearchService {
 
     /**
      * Searches the db based on user params from front end.
-     *
      * @param sonnet      the sonnet holding the params.
      * @param pageRequest the pagination object for paging results.
      * @return a paged list of search results.
@@ -108,4 +112,5 @@ public class SearchService {
 
         return new PageImpl<>(results, pageRequest, total);
     }
+
 }

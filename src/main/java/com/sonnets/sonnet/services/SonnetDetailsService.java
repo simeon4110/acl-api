@@ -34,7 +34,6 @@ public class SonnetDetailsService {
      * @param newSonnet a valid SonnetDto object.
      * @return the Sonnet object created.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public Sonnet addNewSonnet(SonnetDto newSonnet) {
         logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
         try {
@@ -63,12 +62,13 @@ public class SonnetDetailsService {
             sonnet = sonnetToEdit.get();
         } else {
             logger.error("Sonnet does not exist with id: " + newSonnet.getId());
+
             return null;
         }
 
         sonnet = sonnet.update(newSonnet);
-
         sonnetRepository.save(sonnet);
+
         return sonnet;
     }
 

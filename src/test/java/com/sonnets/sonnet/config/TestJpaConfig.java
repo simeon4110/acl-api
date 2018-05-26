@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 /**
+ * Provides configuration for the sonnet_test database used in testing.
+ *
  * @author Josh Harkema
  */
 @Configuration
@@ -21,6 +23,11 @@ import javax.sql.DataSource;
 })
 @EnableTransactionManagement
 public class TestJpaConfig {
+    /**
+     * The test specific data source bean.
+     *
+     * @return a test specific DataSource.
+     */
     @Bean
     @Profile("test")
     public DataSource dataSource() {
