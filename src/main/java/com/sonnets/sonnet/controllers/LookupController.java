@@ -104,12 +104,14 @@ public class LookupController {
 
     /**
      * Parse the new edited data.
+     * @param id the id of the sonnet to modify (unused)
      * @param sonnet the sonnet's new data.
      * @param model the model with/out the sonnet object.
      * @return an html page with the NEW sonnet data populated for editing.
      */
-    @PostMapping("/lookup/edit/{id}")
-    public String postEditSonnet(@ModelAttribute SonnetDto sonnet, Model model) {
+    @PostMapping(value = "/lookup/edit/{id}")
+    public String postEditSonnet(@PathVariable("id") String id,
+                                 @ModelAttribute SonnetDto sonnet, Model model) {
         logger.debug("Posting new sonnet details for id: " + sonnet.getId());
         Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
         sonnet = new SonnetDto(newSonnet);

@@ -95,16 +95,15 @@ public class SearchService {
 
         fullTextQuery.setFirstResult(toIntExact(pageRequest.getOffset())).setMaxResults(pageRequest.getPageSize());
 
-        List<Sonnet> results = null;
+        List<Sonnet> results;
 
         try {
             //noinspection unchecked
             results = fullTextQuery.getResultList();
             logger.debug("Found matching sonnets: " + total);
-
         } catch (NoResultException e) {
             logger.error(e);
-            total = 0;
+            return null;
         }
 
         return new PageImpl<>(results, pageRequest, total);
