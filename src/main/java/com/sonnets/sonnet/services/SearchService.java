@@ -20,7 +20,7 @@ import java.util.Objects;
 import static java.lang.Math.toIntExact;
 
 /**
- * VERY basic search impl. Can be extended later.
+ * Field specific searching. Can only query one field at a time.
  *
  * @author Josh Harkema
  */
@@ -31,6 +31,13 @@ public class SearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Dynamically generates a query based on which field is selected.
+     *
+     * @param sonnet       the sonnet object with the query params.
+     * @param queryBuilder the query builder to build the query for.
+     * @return a lucene query.
+     */
     private static org.apache.lucene.search.Query evalFields(Sonnet sonnet, QueryBuilder queryBuilder) {
         org.apache.lucene.search.Query query = null;
 
@@ -54,8 +61,8 @@ public class SearchService {
 
         if (sonnet.getPublicationYear() != null && !Objects.equals(sonnet.getPublicationYear(), "")) {
             logger.debug(sonnet.getPublicationYear());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("publicationYear")
-                    .matching(sonnet.getPublicationYear()).createQuery();
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1)
+                    .onField("publicationYear").matching(sonnet.getPublicationYear()).createQuery();
         }
 
         if (sonnet.getText() != null && !sonnet.getText().isEmpty()) {
@@ -70,6 +77,13 @@ public class SearchService {
         return query;
     }
 
+    /**
+     * Searches the db based on user params from front end.
+     *
+     * @param sonnet      the sonnet holding the params.
+     * @param pageRequest the pagination object for paging results.
+     * @return a paged list of search results.
+     */
     public PageImpl<Sonnet> search(Sonnet sonnet, Pageable pageRequest) {
         logger.debug("Searching for: " + sonnet.toString());
 

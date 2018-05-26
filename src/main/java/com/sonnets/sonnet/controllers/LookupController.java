@@ -43,6 +43,7 @@ public class LookupController {
     private final SearchService searchService;
     private static final Logger logger = Logger.getLogger(LookupController.class);
 
+    // Define constants
     private static final String LOOKUP = "lookup";
     private static final String SONNET = "Sonnet";
     private static final String EDIT = "edit";
@@ -56,6 +57,14 @@ public class LookupController {
         this.searchService = searchService;
     }
 
+    /**
+     * This is terrible, but I don't want to screw with passing POST requests around. Deal with it.
+     *
+     * @param sonnet      the sonnet object containing lookup params.
+     * @param model       the model to get/add the sonnets to.
+     * @param pageRequest the pageable request data.
+     * @return a ModelAndView of the search form and search results.
+     */
     @GetMapping(value = "/lookup", name = LOOKUP)
     public ModelAndView showSearchPage(@ModelAttribute Sonnet sonnet, @ModelAttribute ModelMap model, Pageable pageRequest) {
         Page<Sonnet> sonnets = null;
@@ -76,6 +85,13 @@ public class LookupController {
         return new ModelAndView(LOOKUP, model);
     }
 
+    /**
+     * Edit a sonnet by ID.
+     *
+     * @param id    the id of the sonnet to edit.
+     * @param model the model with/out the sonnet object.
+     * @return a html page with the sonnet data populated for editing.
+     */
     @GetMapping("/lookup/edit/{id}")
     public String editSonnet(@PathVariable("id") String id, Model model) {
         logger.debug("Editing sonnet: " + id);
@@ -86,6 +102,12 @@ public class LookupController {
         return EDIT;
     }
 
+    /**
+     * Parse the new edited data.
+     * @param sonnet the sonnet's new data.
+     * @param model the model with/out the sonnet object.
+     * @return an html page with the NEW sonnet data populated for editing.
+     */
     @PostMapping("/lookup/edit/{id}")
     public String postEditSonnet(@ModelAttribute SonnetDto sonnet, Model model) {
         logger.debug("Posting new sonnet details for id: " + sonnet.getId());
@@ -96,14 +118,11 @@ public class LookupController {
         return EDIT;
     }
 
-    @GetMapping("/lookup/delete/{id}")
-    public String deleteSonnet(@PathVariable("id") String id, Model model) {
-        sonnetDetailsService.deleteSonnet(id);
-        model.addAttribute(SONNET, new Sonnet());
-
-        return LOOKUP;
-    }
-
+    /**
+     * Returns a sonnet in XML format.
+     * @param id the id of the sonnet to return.
+     * @param response the response to attach the data to.
+     */
     @GetMapping(value = "/lookup/xml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public void getXML(@PathVariable("id") String id, HttpServletResponse response) {
         logger.debug("Parsing sonnet to XML: " + id);
@@ -120,6 +139,11 @@ public class LookupController {
         }
     }
 
+    /**
+     * Returns a sonnet in TEI format.
+     * @param id the id of the sonnet to return.
+     * @param response the response to attach the data to.
+     */
     @GetMapping(value = "/lookup/tei/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public void getTEI(@PathVariable("id") String id, HttpServletResponse response) {
         logger.debug("Parsing sonnet to TEI: " + id);
@@ -135,6 +159,11 @@ public class LookupController {
         }
     }
 
+    /**
+     * Takes multiple sonnets and parses them into a list of CSV values.
+     * @param ids the sonnet ids to parse.
+     * @param response the response to attach the data to.
+     */
     @GetMapping(value = "/lookup/csv/get_csv/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
     public void getCSV(@PathVariable("ids") String[] ids, HttpServletResponse response) {
         logger.debug(ids);
@@ -159,6 +188,11 @@ public class LookupController {
         }
     }
 
+    /**
+     * Shows the selection page for the multi selector.
+     * @param model the model to attach all the sonnet objects to.
+     * @return the multi selector page.
+     */
     @GetMapping("/lookup/csv")
     public String showSelectionPage(Model model) {
         model.addAttribute("sonnets", sonnetDetailsService.getAllSonnets());

@@ -43,6 +43,12 @@ public class SonnetDetailsService {
         return toAddSonnet;
     }
 
+    /**
+     * Updates an existing sonnet.
+     *
+     * @param newSonnet the SonnetDto of the new data.
+     * @return the sonnet with the updated data.
+     */
     public Sonnet updateSonnet(SonnetDto newSonnet) {
         Optional<Sonnet> sonnetToEdit = sonnetRepository.findById(newSonnet.getId());
         Sonnet sonnet;
@@ -57,15 +63,6 @@ public class SonnetDetailsService {
 
         sonnetRepository.save(sonnet);
         return sonnet;
-    }
-
-    public void deleteSonnet(String id) {
-        Optional<Sonnet> sonnet = sonnetRepository.findById(Long.parseLong(id));
-        if (sonnet.isPresent()) {
-            sonnetRepository.delete(sonnet.get());
-        } else {
-            logger.error("Sonnet does not exist with id: " + id);
-        }
     }
 
     public List<Sonnet> getAllSonnets() {

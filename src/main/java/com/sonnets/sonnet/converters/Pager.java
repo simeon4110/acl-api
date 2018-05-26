@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.converters;
 
 /**
- * Used to calculate span of buttons which will be displayed on a page
+ * Used to calculate span of buttons which will be displayed on a page. Taken shamelessly from the authors below.
  *
  * @author Branislav Lazic
  * @author Bruno Raljic

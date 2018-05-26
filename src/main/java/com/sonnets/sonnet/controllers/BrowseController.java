@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.Objects;
 
 /**
+ * Handles requests to the browse page.
+ *
  * @author Josh Harkema
  */
 @Controller
@@ -21,13 +23,12 @@ public class BrowseController {
     private final SonnetDetailsService sonnetDetailsService;
     private static final Logger logger = Logger.getLogger(BrowseController.class);
 
+    // Constants.
     private static final int[] PAGE_SIZES = {5, 10, 20, 50};
     private static final String[][] SORT_BY = {{"firstName", "First Name"}, {"lastName", "Last Name"},
             {"title", "Title"}, {"publicationYear", "Publication Year"}};
     private static final int BUTTONS_TO_SHOW = 5;
     private static final String DEFAULT_SORT = "lastName";
-
-
 
     @Autowired
     public BrowseController(SonnetDetailsService sonnetDetailsService) {
@@ -36,7 +37,7 @@ public class BrowseController {
 
     /**
      * @param pageRequest the page request passed.
-     * @return a paged json of all the sonnets paged. Default size 20 objs.
+     * @return a paged HTML page of all the sonnets paged. Default size 20 items.
      */
     @SuppressWarnings("SameReturnValue")
     @GetMapping(value = "/browse")
@@ -45,6 +46,7 @@ public class BrowseController {
         String[] sort = pageRequest.getSort().toString().split(":");
         Page<Sonnet> sonnets = sonnetDetailsService.getAllSonnetsPaged(pageRequest);
 
+        // Catch unsorted requests and set the default.
         String sortBy = sort[0].replace(':', ' ').trim();
         if (Objects.equals(sortBy, "UNSORTED")) {
             sortBy = DEFAULT_SORT;
