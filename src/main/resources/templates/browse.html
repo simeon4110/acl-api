@@ -13,11 +13,28 @@
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
-        <div class="row justify-content-center">
+        <div class="row justify-content-center my-2">
+            <div class="form">
+                <div class="form-group">
+                    <label for="pageSizeSelect" class="control-label">Items per page:</label>
+                    <select class="form-control pagination" id="pageSizeSelect">
+                        <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}"
+                                th:selected="${pageSize} == ${selectedPageSize}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sortSelect" class="control-label">Sort by:</label>
+                    <select class="form-control pagination" id="sortSelect">
+                        <option th:each="sort : ${sortBy}" th:text="${sort[1]}" th:value="${sort[0]}"
+                                th:selected="${sort[0]} == ${selectedSortBy}"></option>
+                    </select>
+                </div>
+                <button type="button" onclick="updatePageSettings()" class="btn btn-primary">Update</button>
+            </div>
             <div class="col-lg-10">
                 <div class="card-group justify-content-center">
                     <span th:each="Sonnet : ${page}">
-                        <div class="card border-light m-2">
+                        <div class="card border-light m-2" style="width: 26rem;">
                             <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
                             <div class="card-body">
                             <h5 class="card-title"
@@ -28,7 +45,14 @@
                                 </span>
                             </ul>
                             </div>
-                            <ul class="list-group list-group-flush">
+                                <ul class="list-group list-group-flush">
+                                <li class="list-group-item"
+                                    th:utext="'<strong>Year of publication: </strong>'
+                                    + ${Sonnet.getPublicationYear()}">Year</li>
+                                <li class="list-group-item"
+                                    th:utext="'<strong>Source: </strong>' + ${Sonnet.getSourceDesc()}">Source</li>
+                                <li class="list-group-item"
+                                    th:utext="'<strong>Rights: </strong>' + ${Sonnet.getPublicationStmt()}">Rights</li>
                                 <li class="list-group-item">
                                     <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
                                        class="card-link">XML</a>
@@ -51,22 +75,36 @@
             <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
                 <ul class="pagination justify-content-center">
                     <li th:class="${page.number == 0} ? disabled">
-                        <a class="page-link" th:href="@{/browse/(pageSize=10, page=0)}">&laquo;</a>
+                        <a class="page-link"
+                           th:href="@{/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
+                            &laquo;
+                        </a>
                     </li>
                     <li th:class="${page.number == 0} ? disabled">
-                        <a class="page-link" th:href="@{/browse/(pageSize=10, page=${page.number - 1})}">
+                        <a class="page-link"
+                           th:href="@{/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
                             Previous
                         </a>
                     </li>
-                    <li th:class="${page.number == page.totalPages} ? disabled">
+                    <li th:class="${page.number == (number - 1)} ? 'active pointer-disabled'"
+                        th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
                         <a class="page-link"
-                           th:href="@{/browse/(pageSize=10, page=${page.number + 1})}">
+                           th:href="@{/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
+                           th:text="${number}">
+                            Page
+                        </a>
+                    </li>
+                    <li th:class="${page.number + 1 == page.totalPages} ? disabled">
+                        <a class="page-link"
+                           th:href="@{/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
                             Next
                         </a>
                     </li>
                     <li th:class="${page.number + 1 == page.totalPages} ? disabled">
                         <a class="page-link"
-                           th:href="@{/browse/(pageSize=10, page=${page.totalPages})}">&raquo;</a>
+                           th:href="@{/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages})}">
+                            &raquo;
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -75,5 +113,25 @@
     </div>
     <div th:replace="fragments/footer :: footer"></div>
     <div th:replace="fragments/footer :: scripts"></div>
+    <script th:inline="javascript">
+        <!--JS to handle page sort / size updates-->
+        var pageSize = /*[[${selectedPageSize}]]*/;
+        var sortBy = /*[[${selectedSortBy}]]*/;
+
+        function updatePageSettings() {
+            window.location = "/browse/?size=" + pageSize + "&sort=" + sortBy + ",asc";
+        }
+
+        $('#pageSizeSelect').on('change', function () {
+            pageSize = (this.value);
+            console.log(pageSize);
+        });
+
+        $('#sortSelect').on('change', function () {
+            sortBy = (this.value);
+            console.log(sortBy);
+        });
+
+    </script>
 </main>
 </html>

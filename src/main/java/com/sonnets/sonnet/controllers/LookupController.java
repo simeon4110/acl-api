@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.converters.Pager;
 import com.sonnets.sonnet.converters.SonnetConverter;
 import com.sonnets.sonnet.models.Sonnet;
 import com.sonnets.sonnet.models.SonnetDto;
@@ -13,10 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -43,6 +46,9 @@ public class LookupController {
     private static final String LOOKUP = "lookup";
     private static final String SONNET = "Sonnet";
     private static final String EDIT = "edit";
+    private static final String PAGER = "pager";
+    private static final String PAGE = "page";
+    private static final int BUTTONS_TO_SHOW = 5;
 
     @Autowired
     public LookupController(SonnetDetailsService sonnetDetailsService, SearchService searchService) {
@@ -50,29 +56,24 @@ public class LookupController {
         this.searchService = searchService;
     }
 
-    @GetMapping("/lookup")
-    public String showSearchPage(Model model, Pageable pageRequest) {
-        model.addAttribute(SONNET, new Sonnet());
-        model.addAttribute("page", sonnetDetailsService.getAllSonnetsPaged(pageRequest));
-        return LOOKUP;
-    }
-
-    @PostMapping("/lookup")
-    public String search(@ModelAttribute Sonnet sonnet, Model model, Pageable pageRequest) {
+    @GetMapping(value = "/lookup", name = LOOKUP)
+    public ModelAndView showSearchPage(@ModelAttribute Sonnet sonnet, @ModelAttribute ModelMap model, Pageable pageRequest) {
         Page<Sonnet> sonnets = null;
-        logger.debug(sonnet.toString());
+        Pager pager = null;
 
         try {
             sonnets = searchService.search(sonnet, pageRequest);
-        } catch (Exception e) {
+            pager = new Pager(sonnets.getTotalPages(), pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
+        } catch (NullPointerException e) {
             logger.error(e);
         }
 
-        logger.debug(sonnets);
+        model.addAttribute(SONNET, sonnet);
+        model.addAttribute(PAGER, pager);
+        model.addAttribute(PAGE, sonnets);
+        logger.debug("Returning search page: " + model.toString());
 
-        model.addAttribute(SONNET, new Sonnet());
-        model.addAttribute("page", sonnets);
-        return LOOKUP;
+        return new ModelAndView(LOOKUP, model);
     }
 
     @GetMapping("/lookup/edit/{id}")

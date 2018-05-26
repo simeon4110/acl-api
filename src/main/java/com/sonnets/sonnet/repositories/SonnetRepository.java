@@ -16,4 +16,6 @@ public interface SonnetRepository extends JpaRepository<Sonnet, Long> {
     List<Sonnet> findAllByLastName(final String lastName);
 
     List<Sonnet> findAllByFirstName(final String firstName);
+
+    List<Sonnet> findAllByLastNameStartingWith(final char startsWith);
 }

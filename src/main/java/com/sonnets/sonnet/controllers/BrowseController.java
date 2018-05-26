@@ -1,11 +1,17 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.converters.Pager;
+import com.sonnets.sonnet.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.Objects;
 
 /**
  * @author Josh Harkema
@@ -13,6 +19,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class BrowseController {
     private final SonnetDetailsService sonnetDetailsService;
+    private static final Logger logger = Logger.getLogger(BrowseController.class);
+
+    private static final int[] PAGE_SIZES = {5, 10, 20, 50};
+    private static final String[][] SORT_BY = {{"firstName", "First Name"}, {"lastName", "Last Name"},
+            {"title", "Title"}, {"publicationYear", "Publication Year"}};
+    private static final int BUTTONS_TO_SHOW = 5;
+    private static final String DEFAULT_SORT = "lastName";
+
+
 
     @Autowired
     public BrowseController(SonnetDetailsService sonnetDetailsService) {
@@ -26,7 +41,26 @@ public class BrowseController {
     @SuppressWarnings("SameReturnValue")
     @GetMapping(value = "/browse")
     public String getPagedList(Pageable pageRequest, Model model) {
-        model.addAttribute("page", sonnetDetailsService.getAllSonnetsPaged(pageRequest));
+        int pageSize = pageRequest.getPageSize();
+        String[] sort = pageRequest.getSort().toString().split(":");
+        Page<Sonnet> sonnets = sonnetDetailsService.getAllSonnetsPaged(pageRequest);
+
+        String sortBy = sort[0].replace(':', ' ').trim();
+        if (Objects.equals(sortBy, "UNSORTED")) {
+            sortBy = DEFAULT_SORT;
+        }
+
+        Pager pager = new Pager(sonnets.getTotalPages(), pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
+
+        logger.debug("Page size: " + pageSize);
+        logger.debug("Sort by: " + sortBy);
+
+        model.addAttribute("page", sonnets);
+        model.addAttribute("pageSizes", PAGE_SIZES);
+        model.addAttribute("selectedPageSize", pageSize);
+        model.addAttribute("pager", pager);
+        model.addAttribute("selectedSortBy", sortBy);
+        model.addAttribute("sortBy", SORT_BY);
         return "browse";
     }
 

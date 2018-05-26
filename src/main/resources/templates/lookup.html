@@ -16,7 +16,7 @@
         </div>
         <div class="row justify-content-center mt-3">
             <div class="col-md-2">
-                <form action="/lookup" th:object="${Sonnet}" role="form" method="post" class="form">
+                <form action="/lookup" th:object="${Sonnet}" role="form" method="GET" class="form">
                     <div class="form-group">
                         <label for="firstName" class="control-label">Author's first name:</label>
                         <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
@@ -44,7 +44,7 @@
                 <div th:if="${not #lists.isEmpty(page)}">
                     <div class="card-group justify-content-center">
                         <span th:each="Sonnet : ${page}">
-                            <div class="card border-light m-2">
+                            <div class="card border-light m-2" style="width: 26rem;">
                                 <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
                                 <div class="card-body">
                                 <h5 class="card-title"
@@ -56,16 +56,23 @@
                                 </ul>
                                 </div>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
-                                           class="card-link">XML</a>
-                                        <a th:href="@{/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank"
-                                           class="card-link">JSON</a>
-                                        <a th:href="@{/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
-                                           class="card-link">TEI</a>
-                                        <a th:href="@{/lookup/edit/} + ${Sonnet.getId()}" class="card-link">Edit</a>
-                                    </li>
-                                </ul>
+                                <li class="list-group-item"
+                                    th:utext="'<strong>Year of publication: </strong>'
+                                    + ${Sonnet.getPublicationYear()}">Year</li>
+                                <li class="list-group-item"
+                                    th:utext="'<strong>Source: </strong>' + ${Sonnet.getSourceDesc()}">Source</li>
+                                <li class="list-group-item"
+                                    th:utext="'<strong>Rights: </strong>' + ${Sonnet.getPublicationStmt()}">Rights</li>
+                                <li class="list-group-item">
+                                    <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">XML</a>
+                                    <a th:href="@{/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">JSON</a>
+                                    <a th:href="@{/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">TEI</a>
+                                    <a th:href="@{/lookup/edit/} + ${Sonnet.getId()}" class="card-link">Edit</a>
+                                </li>
+                            </ul>
                             </div>
                         </span>
                     </div>
@@ -79,22 +86,26 @@
             <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
                 <ul class="pagination justify-content-center">
                     <li th:class="${page.number == 0} ? disabled">
-                        <a class="page-link" th:href="@{/lookup/(pageSize=10, page=0)}">&laquo;</a>
+                        <a class="page-link" th:href="@{/lookup/(page=0)}">&laquo;</a>
                     </li>
                     <li th:class="${page.number == 0} ? disabled">
-                        <a class="page-link" th:href="@{/lookup/(pageSize=10, page=${page.number - 1})}">
+                        <a class="page-link" th:href="@{/lookup/(page=${page.number - 1})}">
                             Previous
                         </a>
                     </li>
-                    <li th:class="${page.number == page.totalPages} ? disabled">
-                        <a class="page-link"
-                           th:href="@{/lookup/(pageSize=10, page=${page.number + 1})}">
+                    <li th:class="${page.number == (number - 1)} ? 'active pointer-disabled'"
+                        th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                        <a class="page-link" th:href="@{/lookup/(page=${number})}" th:text="${number}">
+                            Page
+                        </a>
+                    </li>
+                    <li th:class="${page.number + 1 == page.totalPages} ? disabled">
+                        <a class="page-link" th:href="@{/lookup/(page=${page.number + 1})}">
                             Next
                         </a>
                     </li>
                     <li th:class="${page.number + 1 == page.totalPages} ? disabled">
-                        <a class="page-link"
-                           th:href="@{/lookup/(pageSize=10, page=${page.totalPages})}">&raquo;</a>
+                        <a class="page-link" th:href="@{/lookup/(page=${page.totalPages})}">&raquo;</a>
                     </li>
                 </ul>
             </div>

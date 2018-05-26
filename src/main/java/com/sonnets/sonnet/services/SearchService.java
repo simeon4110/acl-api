@@ -15,6 +15,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.Math.toIntExact;
 
@@ -30,19 +31,52 @@ public class SearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private static org.apache.lucene.search.Query evalFields(Sonnet sonnet, QueryBuilder queryBuilder) {
+        org.apache.lucene.search.Query query = null;
+
+        if (sonnet.getFirstName() != null && !Objects.equals(sonnet.getFirstName(), "")) {
+            logger.debug(sonnet.getFirstName());
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("firstName")
+                    .matching(sonnet.getFirstName()).createQuery();
+        }
+
+        if (sonnet.getLastName() != null && !Objects.equals(sonnet.getLastName(), "")) {
+            logger.debug(sonnet.getLastName());
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("lastName")
+                    .matching(sonnet.getLastName()).createQuery();
+        }
+
+        if (sonnet.getTitle() != null && !Objects.equals(sonnet.getTitle(), "")) {
+            logger.debug(sonnet.getTitle());
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("title")
+                    .matching(sonnet.getTitle()).createQuery();
+        }
+
+        if (sonnet.getPublicationYear() != null && !Objects.equals(sonnet.getPublicationYear(), "")) {
+            logger.debug(sonnet.getPublicationYear());
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("publicationYear")
+                    .matching(sonnet.getPublicationYear()).createQuery();
+        }
+
+        if (sonnet.getText() != null && !sonnet.getText().isEmpty()) {
+            logger.debug(sonnet.getText());
+            query = queryBuilder.phrase().onField("text").sentence(sonnet.getText().toString()).createQuery();
+        }
+
+        if (query == null) {
+            query = queryBuilder.all().createQuery();
+        }
+
+        return query;
+    }
+
     public PageImpl<Sonnet> search(Sonnet sonnet, Pageable pageRequest) {
         logger.debug("Searching for: " + sonnet.toString());
 
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
 
-        // Fuzzy query isn't super strict and returns many sonnets. It's a feature, not a bug.
-        org.apache.lucene.search.Query luceneQuery = queryBuilder.keyword().fuzzy().withEditDistanceUpTo(1)
-                .withPrefixLength(1).onFields("firstName", "lastName", "title", "publicationYear", "text")
-                .matching(sonnet.toString()).createQuery();
-
-
-        Query fullTextQuery = manager.createFullTextQuery(luceneQuery, Sonnet.class);
+        Query fullTextQuery = manager.createFullTextQuery(evalFields(sonnet, queryBuilder), Sonnet.class);
         long total = fullTextQuery.getResultList().size();
 
         fullTextQuery.setFirstResult(toIntExact(pageRequest.getOffset())).setMaxResults(pageRequest.getPageSize());
