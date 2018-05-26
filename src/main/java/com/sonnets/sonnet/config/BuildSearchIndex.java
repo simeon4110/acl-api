@@ -31,6 +31,7 @@ public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEve
             manager.createIndexer(Sonnet.class).startAndWait();
         } catch (InterruptedException e) {
             logger.error(e);
+            Thread.currentThread().interrupt();
         }
     }
 }

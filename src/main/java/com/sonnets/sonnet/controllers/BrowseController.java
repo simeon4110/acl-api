@@ -25,10 +25,10 @@ public class BrowseController {
 
     // Constants.
     private static final int[] PAGE_SIZES = {5, 10, 20, 50};
-    private static final String[][] SORT_BY = {{"firstName", "First Name"}, {"lastName", "Last Name"},
-            {"title", "Title"}, {"publicationYear", "Publication Year"}};
     private static final int BUTTONS_TO_SHOW = 5;
     private static final String DEFAULT_SORT = "lastName";
+    private static final String[][] SORT_BY = {{"firstName", "First Name"}, {DEFAULT_SORT, "Last Name"},
+            {"title", "Title"}, {"publicationYear", "Publication Year"}};
 
     @Autowired
     public BrowseController(SonnetDetailsService sonnetDetailsService) {
