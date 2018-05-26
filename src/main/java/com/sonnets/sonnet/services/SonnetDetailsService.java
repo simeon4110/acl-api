@@ -109,6 +109,10 @@ public class SonnetDetailsService {
         return sonnetRepository.findAllByFirstName(author);
     }
 
+    public Sonnet getSonnetByTitleAndLastName(String title, String lastName) {
+        return sonnetRepository.findByTitleAndLastName(title, lastName);
+    }
+
     /**
      * Checks if a sonnet by that title and author exists and throws an exception if it does.
      *
