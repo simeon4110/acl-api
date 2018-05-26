@@ -54,13 +54,13 @@
                                 <li class="list-group-item"
                                     th:utext="'<strong>Rights: </strong>' + ${Sonnet.getPublicationStmt()}">Rights</li>
                                 <li class="list-group-item">
-                                    <a th:href="@{/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
+                                    <a th:href="@{~/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
                                        class="card-link">XML</a>
-                                    <a th:href="@{/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank"
+                                    <a th:href="@{~/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank"
                                        class="card-link">JSON</a>
-                                    <a th:href="@{/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
+                                    <a th:href="@{~/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
                                        class="card-link">TEI</a>
-                                    <a th:href="@{/lookup/edit/} + ${Sonnet.getId()}" class="card-link">Edit</a>
+                                    <a th:href="@{~/lookup/edit/} + ${Sonnet.getId()}" class="card-link">Edit</a>
                                 </li>
                             </ul>
                         </div>
@@ -76,33 +76,33 @@
                 <ul class="pagination justify-content-center">
                     <li th:class="${page.number == 0} ? disabled">
                         <a class="page-link"
-                           th:href="@{/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
+                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
                             &laquo;
                         </a>
                     </li>
                     <li th:class="${page.number == 0} ? disabled">
                         <a class="page-link"
-                           th:href="@{/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
+                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
                             Previous
                         </a>
                     </li>
                     <li th:class="${page.number == (number - 1)} ? 'active pointer-disabled'"
                         th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
                         <a class="page-link"
-                           th:href="@{/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
+                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
                            th:text="${number}">
                             Page
                         </a>
                     </li>
                     <li th:class="${page.number + 1 == page.totalPages} ? disabled">
                         <a class="page-link"
-                           th:href="@{/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
+                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
                             Next
                         </a>
                     </li>
                     <li th:class="${page.number + 1 == page.totalPages} ? disabled">
                         <a class="page-link"
-                           th:href="@{/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages})}">
+                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages})}">
                             &raquo;
                         </a>
                     </li>
