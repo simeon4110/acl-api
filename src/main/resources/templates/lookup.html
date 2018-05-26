@@ -16,7 +16,7 @@
         </div>
         <div class="row justify-content-center mt-3">
             <div class="col-md-2">
-                <form action="/lookup" th:object="${Sonnet}" role="form" method="GET" class="form">
+                <form th:action="@{/lookup}" th:object="${Sonnet}" role="form" method="GET" class="form">
                     <div class="form-group">
                         <label for="firstName" class="control-label">Author's first name:</label>
                         <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>

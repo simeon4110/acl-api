@@ -26,7 +26,8 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <form action="" id="insertForm" th:object="${SonnetDto}" role="form" method="POST" class="form mx-3">
+                <form th:action="@{/insert}" id="insertForm" th:object="${SonnetDto}" role="form"
+                      method="POST" class="form mx-3">
                     <div th:if="${param.error}" class="alert alert-error">
                         An error occurred.
                     </div>
