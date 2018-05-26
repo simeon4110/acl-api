@@ -13,6 +13,17 @@
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
+        <div class="row justify-content-center" th:if="${error != null}">
+            <div class="col-lg-8">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-header">Whoops! Something went wrong.</div>
+                    <div class="card-body text-dark bg-light">
+                        <h5 class="card-title">Error Message: </h5>
+                        <p class="card-text" th:text="${error}">Error message.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <form action="" id="insertForm" th:object="${SonnetDto}" role="form" method="POST" class="form mx-3">

@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.models.Sonnet;
 import com.sonnets.sonnet.models.SonnetDto;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
@@ -37,8 +38,19 @@ public class InputController {
     @PostMapping("/insert")
     public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model) {
         logger.debug("Adding sonnet: " + sonnetDto.toString());
-        sonnetDetailsService.addNewSonnet(sonnetDto);
-        model.addAttribute("SonnetDto", new SonnetDto());
+        Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
+
+        // Catch duplicate sonnets.
+        if (sonnet == null) {
+            model.addAttribute("error", "It looks like this sonnet already exists. Please search for a " +
+                    "sonnet by clicking 'Search' in the menu above before attempting to add to the database. To edit " +
+                    "a sonnet in the database, simply click the 'edit' link under its card once you have searched " +
+                    "the database for it. If " +
+                    "you have received this message in error, please email joshua.harkema@ucalgary.ca");
+        } else {
+            model.addAttribute("SonnetDto", new SonnetDto(sonnet));
+        }
+
         return "insert";
     }
 }

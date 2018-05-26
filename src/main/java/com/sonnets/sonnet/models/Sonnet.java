@@ -64,6 +64,7 @@ public class Sonnet {
         this.firstName = sonnetDto.getFirstName();
         this.lastName = sonnetDto.getLastName();
         this.title = sonnetDto.getTitle();
+        this.publicationYear = sonnetDto.getPublicationYear();
         this.publicationStmt = sonnetDto.getPublicationStmt();
         this.sourceDesc = sonnetDto.getSourceDesc();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));

@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.exceptions.SonnetAlreadyExistsException;
 import com.sonnets.sonnet.models.Sonnet;
 import com.sonnets.sonnet.models.SonnetDto;
 import com.sonnets.sonnet.repositories.SonnetRepository;
@@ -30,22 +31,28 @@ public class SonnetDetailsService {
 
     /**
      * Add a new Sonnet object from a @Valid SonnetDto.
-     *
      * @param newSonnet a valid SonnetDto object.
      * @return the Sonnet object created.
      */
     @SuppressWarnings("UnusedReturnValue")
     public Sonnet addNewSonnet(SonnetDto newSonnet) {
         logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
-        Sonnet toAddSonnet = new Sonnet(newSonnet);
-        sonnetRepository.save(toAddSonnet);
+        try {
+            checkIfSonnetExists(newSonnet);
+            Sonnet toAddSonnet = new Sonnet(newSonnet);
+            sonnetRepository.save(toAddSonnet);
 
-        return toAddSonnet;
+            return toAddSonnet;
+        } catch (SonnetAlreadyExistsException e) {
+            logger.error(e);
+
+            return null;
+        }
+
     }
 
     /**
      * Updates an existing sonnet.
-     *
      * @param newSonnet the SonnetDto of the new data.
      * @return the sonnet with the updated data.
      */
@@ -100,6 +107,18 @@ public class SonnetDetailsService {
 
     public List<Sonnet> getSonnetsByAuthorFirstName(String author) {
         return sonnetRepository.findAllByFirstName(author);
+    }
+
+    /**
+     * Checks if a sonnet by that title and author exists and throws an exception if it does.
+     *
+     * @param sonnetDto the sonnet to check if it exists.
+     */
+    private void checkIfSonnetExists(SonnetDto sonnetDto) {
+        if (sonnetRepository.findByTitleAndLastName(sonnetDto.getTitle(), sonnetDto.getLastName()) != null) {
+            throw new SonnetAlreadyExistsException("Sonnet with title: " + sonnetDto.getTitle() + " by author " +
+                    sonnetDto.getLastName() + " already exists.");
+        }
     }
 
 }
