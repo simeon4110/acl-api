@@ -5,11 +5,11 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-DEV</version>
     <packaging>jar</packaging>
 
-    <name>sonnet</name>
-    <description>Demo project for Spring Boot</description>
+    <name>Sonnet</name>
+    <description>Sonnet database for ENGL 523 at the University of Calgary</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
