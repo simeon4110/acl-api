@@ -5,11 +5,12 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <version>0.0.1-DEPLOY</version>
+    <packaging>war</packaging>
 
     <name>sonnet</name>
     <description>Demo project for Spring Boot</description>
+    <url>https://beyondaporia.com</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -25,6 +26,12 @@
     </properties>
 
     <dependencies>
+        <!-- marked the embedded servlet container as provided -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
