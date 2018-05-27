@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         // @formatter:off
         http.authorizeRequests()
-            .antMatchers("/login", "/login/**", "/sonnet/login", "/sonnet/login/**").permitAll()
+            .antMatchers("/login", "/login/**").permitAll()
             .antMatchers("/css/**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/lookup/", "/lookup/**").permitAll()
@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/admin", "/admin/add/", "/admin/**").hasAuthority("ADMIN")
             .antMatchers("/profile", "/profile/**").hasAuthority("USER")
             .anyRequest().authenticated()
-            .and().formLogin().loginPage("/login").defaultSuccessUrl("/", true).permitAll()
+            .and().formLogin().loginPage("/login").permitAll()
             .and().logout().permitAll()
             .and().csrf().disable();
             // @formatter:on
