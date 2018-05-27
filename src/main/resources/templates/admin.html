@@ -19,7 +19,7 @@
                     To add a user with input permissions use the form below, checking the 'Administrator' box will
                     allow the user to add new users to the database.
                 </p>
-                <form action="" th:object="${UserAddDto}" class="form" th:action="@{/admin/add}" method="POST">
+                <form action="" th:object="${UserAddDto}" class="form" th:action="@{~/admin/add}" method="POST">
                     <div th:if="${param.error}" class="alert alert-danger">
                         Invalid username or password.
                     </div>
