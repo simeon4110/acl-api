@@ -1,11 +1,11 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.converters.Pager;
-import com.sonnets.sonnet.converters.SonnetConverter;
-import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDto;
+import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
+import com.sonnets.sonnet.tools.Pager;
+import com.sonnets.sonnet.tools.SonnetConverter;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;

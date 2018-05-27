@@ -1,9 +1,9 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.exceptions.SonnetAlreadyExistsException;
-import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDto;
-import com.sonnets.sonnet.repositories.SonnetRepository;
+import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.exceptions.SonnetAlreadyExistsException;
+import com.sonnets.sonnet.persistence.models.Sonnet;
+import com.sonnets.sonnet.persistence.repositories.SonnetRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDto;
+import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class InputController {
     @GetMapping("/insert")
     public String showInsertPage(Model model) {
         model.addAttribute("SonnetDto", new SonnetDto());
-        return "insert";
+        return "input";
     }
 
     /**
@@ -63,6 +63,6 @@ public class InputController {
             model.addAttribute("SonnetDto", new SonnetDto(sonnet));
         }
 
-        return "insert";
+        return "input";
     }
 }

@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -33,6 +33,7 @@ public class SearchService {
 
     /**
      * Dynamically generates a query based on which field is selected.
+     *
      * @param sonnet       the sonnet object with the query params.
      * @param queryBuilder the query builder to build the query for.
      * @return a lucene query.
@@ -43,14 +44,14 @@ public class SearchService {
         // firstName
         if (sonnet.getFirstName() != null && !Objects.equals(sonnet.getFirstName(), "")) {
             logger.debug(sonnet.getFirstName());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("firstName")
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(2).withEditDistanceUpTo(2).onField("firstName")
                     .matching(sonnet.getFirstName()).createQuery();
         }
 
         // lastName
         if (sonnet.getLastName() != null && !Objects.equals(sonnet.getLastName(), "")) {
             logger.debug(sonnet.getLastName());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("lastName")
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(2).withEditDistanceUpTo(2).onField("lastName")
                     .matching(sonnet.getLastName()).createQuery();
         }
 
@@ -84,6 +85,7 @@ public class SearchService {
 
     /**
      * Searches the db based on user params from front end.
+     *
      * @param sonnet      the sonnet holding the params.
      * @param pageRequest the pagination object for paging results.
      * @return a paged list of search results.

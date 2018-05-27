@@ -1,6 +1,6 @@
 package com.sonnets.sonnet;
 
-import com.sonnets.sonnet.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +17,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = {"com.sonnets.sonnet"})
 @EnableAutoConfiguration
 @EntityScan(basePackageClasses = Sonnet.class)
-@EnableJpaRepositories("com.sonnets.sonnet.repositories")
+@EnableJpaRepositories("com.sonnets.sonnet.persistence.repositories")
 public class SonnetApplication extends SpringBootServletInitializer {
 
     @Override

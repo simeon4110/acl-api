@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.config;
 
-import com.sonnets.sonnet.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;

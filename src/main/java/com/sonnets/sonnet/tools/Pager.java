@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.converters;
+package com.sonnets.sonnet.tools;
 
 /**
  * Used to calculate span of buttons which will be displayed on a page. Taken shamelessly from the authors below.

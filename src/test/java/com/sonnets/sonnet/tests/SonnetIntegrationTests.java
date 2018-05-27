@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.tests;
 
 import com.sonnets.sonnet.config.TestJpaConfig;
-import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDto;
+import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.junit.Assert;
 import org.junit.Test;

@@ -9,14 +9,14 @@
     <div th:replace="fragments/header :: nav-bar"></div>
     <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
+            <div class="col-lg-11">
                 <h1 class="display-4 pb-3">Search:</h1>
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
         <div class="row justify-content-center mt-3">
-            <div class="col-md-2">
-                <form th:action="@{~/lookup}" th:object="${Sonnet}" role="form" method="GET" class="form">
+            <div class="col-sm-2 mr-0">
+                <form action="/lookup" th:object="${Sonnet}" role="form" method="GET" class="form">
                     <div class="form-group">
                         <label for="firstName" class="control-label">Author's first name:</label>
                         <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
@@ -40,9 +40,9 @@
                     <button type="submit" class="btn btn-primary mb-2">Search</button>
                 </form>
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 <div th:if="${not #lists.isEmpty(page)}">
-                    <div class="card-group justify-content-center">
+                    <div class="card-group">
                         <span th:each="Sonnet : ${page}">
                             <div class="card border-light m-2" style="width: 26rem;">
                                 <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>

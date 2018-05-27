@@ -9,20 +9,97 @@
     <div th:replace="fragments/header :: nav-bar"></div>
     <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 pb-3">English 523 Sonnet Database</h1>
-                <p class="lead">
-                    Collecting <strong>all</strong> the sonnets!
-                </p>
-                <p>This is a work in progress, if for some reason you find yourself here, don't break it!</p>
-                <a th:href="@{~/insert}">
-                    <button type="button" class="btn btn-primary">Add a sonnet</button>
-                </a>
-                <a th:href="@{~/lookup}">
-                    <button type="button" class="btn btn-primary">Read the sonnets</button>
-                </a>
+            <div class="col-lg-10">
+                <div class="jumbotron">
+                    <h1 class="display-4">Digital Sonnet Database</h1>
+                    <p class="lead">
+                        Our goal is to digitize and encode all English language Sonnets in an interoperable format for
+                        those working in the digital humanities. The database is open to public use. However, due to
+                        stringent data integrity requirements, only authorized users may contribute to the database.
+                    </p>
+                    <hr class="my-4">
+                    <p>
+                        This site is a work in progress. If you have any issues with its operation or suggestions for
+                        improving its functionality email <a href="mailto:joshua.harkema@ucalgary.ca">
+                        joshua.harkema@ucalgary.ca</a>.
+                    </p>
+                    <p>
+                        <a class="btn btn-primary btl-lg" th:href="@{~/browse}" role="button">Browse the Databaase</a>
+                        <a class="btn btn-primary btl-lg" th:href="@{~/lookup}" role="button">Search the Database</a>
+                    </p>
+                </div>
             </div>
         </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card-deck justify-content-center">
+                    <div class="card">
+                        <h5 class="card-header">Text Encoding Initiative</h5>
+                        <div class="card-body">
+                            <p class="card-text">
+                                The Text Encoding Initiative (TEI) is a consortium which collectively develops and
+                                maintains a standard for the representation of texts in digital form. Its chief
+                                deliverable is a set of Guidelines which specify encoding methods for machine-readable
+                                texts, chiefly in the humanities, social sciences and linguistics.
+                            </p>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="http://www.tei-c.org/index.xml" class="btn btn-primary card-link">
+                                    TEI Website
+                                </a>
+                                <a href="http://teibyexample.org/xquery/TBEvalidator.xq"
+                                   class="btn btn-primary card-link">
+                                    TEI Validator
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header">Python Database Connector</h5>
+                        <div class="card-body">
+                            <p class="card-text">
+                                We provide and maintain a Python class for easilly connecting to our database via the
+                                RESTful API. This class provides basic query functions and JSON object serialization.
+                                This allows a user to skip most of the data parsing and jump straight into NLTK or NLP
+                                analysis of the data.
+                            </p>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="https://github.com/simeon4110/sonnet_analysis"
+                                   class="btn btn-primary card-link">
+                                    GitHub Repository
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h5 class="card-header">Text Encoding Initiative</h5>
+                        <div class="card-body">
+                            <p class="card-text">
+                                The Text Encoding Initiative (TEI) is a consortium which collectively develops and
+                                maintains a standard for the representation of texts in digital form. Its chief
+                                deliverable is a set of Guidelines which specify encoding methods for machine-readable
+                                texts, chiefly in the humanities, social sciences and linguistics.
+                            </p>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="http://www.tei-c.org/index.xml" class="btn btn-primary card-link">
+                                    TEI Website
+                                </a>
+                                <a href="http://teibyexample.org/xquery/TBEvalidator.xq"
+                                   class="btn btn-primary card-link">
+                                    TEI Validator
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
     <div th:replace="fragments/footer :: footer"></div>
     <div th:replace="fragments/footer :: scripts"></div>

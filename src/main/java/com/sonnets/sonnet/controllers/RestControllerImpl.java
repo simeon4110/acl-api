@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
 
-import com.sonnets.sonnet.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ import java.util.List;
  * @author Josh Harkema
  */
 @RestController
-public class SonnetRestController {
-    private static final Logger logger = Logger.getLogger(SonnetRestController.class);
+public class RestControllerImpl {
+    private static final Logger logger = Logger.getLogger(RestControllerImpl.class);
     private final SonnetDetailsService sonnetDetailsService;
 
     @Autowired
-    public SonnetRestController(SonnetDetailsService sonnetDetailsService) {
+    public RestControllerImpl(SonnetDetailsService sonnetDetailsService) {
         this.sonnetDetailsService = sonnetDetailsService;
     }
 

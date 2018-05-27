@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Sonnet - Login</title>
+    <div th:replace="fragments/header :: head"></div>
+</head>
+<main>
+    <div th:replace="fragments/header :: nav-bar"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h1 class="display-4 pb-3">Login:</h1>
+                <hr class="m-4" style="border-color: black"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <p class="lead">
+                    You must login to edit or add a sonnet to the database. Database access is public, but to protect
+                    the integrity of the corpus only verified users can contribute. Please email (insert email) for more
+                    information or to request access.
+                </p>
+                <form name="f" class="form" th:action="@{/login}" method="POST">
+                    <div th:if="${param.error}" class="alert alert-danger">
+                        Invalid username and/or password.
+                    </div>
+                    <div th:if="${param.logout}" class="alert alert-success">
+                        You have been logged out successfully.
+                    </div>
+                    <div class="form-group">
+                        <label for="username" class="control-label">Username:</label>
+                        <input id="username" name="username" class="form-control" autocomplete="off" autofocus
+                               required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="control-label">Password:</label>
+                        <input id="password" name="password" type="password" class="form-control" autocomplete="off"
+                               required/>
+                    </div>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/footer :: scripts"></div>
+</main>
