@@ -1,9 +1,9 @@
 package com.sonnets.sonnet.config;
 
-import com.sonnets.sonnet.models.Privilege;
-import com.sonnets.sonnet.models.User;
-import com.sonnets.sonnet.repositories.PrivilegeRepository;
-import com.sonnets.sonnet.repositories.UserRepository;
+import com.sonnets.sonnet.persistence.models.Privilege;
+import com.sonnets.sonnet.persistence.models.User;
+import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
+import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -68,8 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and().formLogin().loginPage("/login").permitAll()
             .and().logout().permitAll()
             .and().csrf();
-            ;
-        // @formatter:on
+            // @formatter:on
     }
 
     @Bean

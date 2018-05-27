@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.tools;
 
-import com.sonnets.sonnet.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.apache.log4j.Logger;
 
 import java.util.List;

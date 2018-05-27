@@ -18,8 +18,8 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan(basePackages = {"com.sonnets.sonnet"})
 @EnableJpaRepositories(basePackages = {
-        "com.sonnets.sonnet.models",
-        "com.sonnets.sonnet.repositories"
+        "com.sonnets.sonnet.persistence.models",
+        "com.sonnets.sonnet.persistence.repositories"
 })
 @EnableTransactionManagement
 public class TestJpaConfig {

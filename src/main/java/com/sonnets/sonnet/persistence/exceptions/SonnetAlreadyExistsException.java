@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.exceptions;
+package com.sonnets.sonnet.persistence.exceptions;
 
 /**
  * @author Josh Harkema

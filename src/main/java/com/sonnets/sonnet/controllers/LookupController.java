@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.models.Sonnet;
-import com.sonnets.sonnet.models.SonnetDto;
+import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import com.sonnets.sonnet.tools.Pager;

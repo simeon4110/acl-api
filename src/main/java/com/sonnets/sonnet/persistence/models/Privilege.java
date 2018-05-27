@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.models;
+package com.sonnets.sonnet.persistence.models;
 
 import javax.persistence.*;
 

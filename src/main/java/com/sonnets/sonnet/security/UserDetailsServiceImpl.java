@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.security;
 
-import com.sonnets.sonnet.models.User;
-import com.sonnets.sonnet.repositories.UserRepository;
+import com.sonnets.sonnet.persistence.models.User;
+import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

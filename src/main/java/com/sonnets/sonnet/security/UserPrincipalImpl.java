@@ -1,11 +1,12 @@
 package com.sonnets.sonnet.security;
 
-import com.sonnets.sonnet.models.Privilege;
-import com.sonnets.sonnet.models.User;
+import com.sonnets.sonnet.persistence.models.Privilege;
+import com.sonnets.sonnet.persistence.models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 public class UserPrincipalImpl implements UserDetails {
+    @Transient
     private User user;
 
     public UserPrincipalImpl(User user) {
@@ -34,7 +36,7 @@ public class UserPrincipalImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        final List<GrantedAuthority> authorities = new ArrayList<>();
         for (final Privilege privilege : user.getPrivileges()) {
             authorities.add(new SimpleGrantedAuthority(privilege.getName()));
         }

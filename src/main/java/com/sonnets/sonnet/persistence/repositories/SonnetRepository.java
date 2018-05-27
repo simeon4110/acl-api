@@ -1,6 +1,6 @@
-package com.sonnets.sonnet.repositories;
+package com.sonnets.sonnet.persistence.repositories;
 
-import com.sonnets.sonnet.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

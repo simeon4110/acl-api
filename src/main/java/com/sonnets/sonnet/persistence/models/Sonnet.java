@@ -1,5 +1,6 @@
-package com.sonnets.sonnet.models;
+package com.sonnets.sonnet.persistence.models;
 
+import com.sonnets.sonnet.persistence.dtos.SonnetDto;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
