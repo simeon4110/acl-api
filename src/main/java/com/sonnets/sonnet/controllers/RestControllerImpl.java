@@ -18,12 +18,12 @@ import java.util.List;
  * @author Josh Harkema
  */
 @RestController
-public class SonnetRestController {
-    private static final Logger logger = Logger.getLogger(SonnetRestController.class);
+public class RestControllerImpl {
+    private static final Logger logger = Logger.getLogger(RestControllerImpl.class);
     private final SonnetDetailsService sonnetDetailsService;
 
     @Autowired
-    public SonnetRestController(SonnetDetailsService sonnetDetailsService) {
+    public RestControllerImpl(SonnetDetailsService sonnetDetailsService) {
         this.sonnetDetailsService = sonnetDetailsService;
     }
 

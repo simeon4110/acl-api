@@ -38,7 +38,7 @@ public class InputController {
     @GetMapping("/insert")
     public String showInsertPage(Model model) {
         model.addAttribute("SonnetDto", new SonnetDto());
-        return "insert";
+        return "input";
     }
 
     /**
@@ -63,6 +63,6 @@ public class InputController {
             model.addAttribute("SonnetDto", new SonnetDto(sonnet));
         }
 
-        return "insert";
+        return "input";
     }
 }

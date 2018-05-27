@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.converters;
+package com.sonnets.sonnet.tools;
 
 import com.sonnets.sonnet.models.Sonnet;
 import org.apache.log4j.Logger;
@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import java.util.List;
 
 /**
- * Here are the sonnet file type converters. Tool class, cannot instantiate.
+ * Here are the sonnet file type tools. Tool class, cannot instantiate.
  *
  * @author Josh Harkema
  */
