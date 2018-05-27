@@ -5,13 +5,11 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.0.1-DEPLOY</version>
+    <version>0.0.2-DEPLOY</version>
     <packaging>war</packaging>
 
-    <name>sonnet</name>
-    <description>Demo project for Spring Boot</description>
-    <url>https://beyondaporia.com</url>
     <name>Sonnet</name>
+    <url>https://beyondaporia.com</url>
     <description>Sonnet database for ENGL 523 at the University of Calgary</description>
 
     <parent>
