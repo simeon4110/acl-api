@@ -20,7 +20,7 @@
                     the integrity of the corpus only verified users can contribute. Please email (insert email) for more
                     information or to request access.
                 </p>
-                <form name="f" class="form" th:action="@{~/login}" method="POST">
+                <form name="f" class="form" th:action="@{/sonnet/login}" method="POST">
                     <div th:if="${param.error}" class="alert alert-danger">
                         Invalid username and/or password.
                     </div>
