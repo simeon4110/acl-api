@@ -18,7 +18,7 @@
                 <p class="lead">
                     To change your password use the form below.
                 </p>
-                <form th:object="${PasswordChangeDto}" class="form" action="" method="POST">
+                <form th:object="${PasswordChangeDto}" class="form" th:action="@{~/profile}" method="POST">
                     <div th:if="${param.error}" class="alert alert-danger">
                         Invalid password.
                     </div>
