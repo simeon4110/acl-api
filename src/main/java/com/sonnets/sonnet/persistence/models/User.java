@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.persistence.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * User model for storing auth info and user details.
@@ -11,7 +11,8 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 3953225636947318796L;
     @Id
     @GeneratedValue
     private Long id;
@@ -23,8 +24,6 @@ public class User {
     @JoinTable(name = "users_privileges", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private Set<Privilege> privileges;
-    @Column
-    private UUID inviteToken;
 
     public Long getId() {
         return id;
@@ -58,14 +57,6 @@ public class User {
         this.privileges = privileges;
     }
 
-    public UUID getInviteToken() {
-        return inviteToken;
-    }
-
-    public void setInviteToken(UUID inviteToken) {
-        this.inviteToken = inviteToken;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,8 +67,7 @@ public class User {
         if (id != null ? !id.equals(user.id) : user.id != null) return false;
         if (username != null ? !username.equals(user.username) : user.username != null) return false;
         if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        if (privileges != null ? !privileges.equals(user.privileges) : user.privileges != null) return false;
-        return inviteToken != null ? inviteToken.equals(user.inviteToken) : user.inviteToken == null;
+        return privileges != null ? privileges.equals(user.privileges) : user.privileges == null;
     }
 
     @Override
@@ -86,7 +76,6 @@ public class User {
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (privileges != null ? privileges.hashCode() : 0);
-        result = 31 * result + (inviteToken != null ? inviteToken.hashCode() : 0);
         return result;
     }
 
@@ -97,7 +86,6 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", privileges=" + privileges +
-                ", inviteToken=" + inviteToken +
                 '}';
     }
 

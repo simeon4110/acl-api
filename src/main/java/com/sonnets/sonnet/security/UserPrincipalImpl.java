@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 public class UserPrincipalImpl implements UserDetails {
-    @Transient
+    private static final long serialVersionUID = 3195560688097836277L;
     private User user;
 
     public UserPrincipalImpl(User user) {

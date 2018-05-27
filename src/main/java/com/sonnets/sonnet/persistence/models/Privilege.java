@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.persistence.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Privilege object to generate user roles. Currently only "USER" and "ADMIN" exist.
@@ -9,7 +10,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "privileges")
-public class Privilege {
+public class Privilege implements Serializable {
+    private static final long serialVersionUID = 3568710389315424523L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
