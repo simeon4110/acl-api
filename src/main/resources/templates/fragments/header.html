@@ -36,13 +36,13 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" th:href="@{~/insert}">Input</a>
+                <a class="nav-link" th:href="@{/insert}">Input</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{~/lookup}">Search</a>
+                <a class="nav-link" th:href="@{/lookup}">Search</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{~/browse}">Browse</a>
+                <a class="nav-link" th:href="@{/browse}">Browse</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:href="@{~/lookup/csv}">Manual Selection</a>
@@ -65,7 +65,7 @@
                 </a>
             </li>
             <li class="nav-item" sec:authorize="isAuthenticated()">
-                <form th:action="@{~/logout}" method="post">
+                <form action="logout" method="post">
                     <button type="submit" class="btn btn-primary btn-sm mx-1">Logout</button>
                 </form>
             </li>
