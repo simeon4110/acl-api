@@ -78,7 +78,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         userRepository.save(user);
 
-        return "redirect:/admin?success";
+        return "redirect:admin?success";
     }
 
     /**
