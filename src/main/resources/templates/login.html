@@ -22,18 +22,20 @@
                 </p>
                 <form name="f" class="form" th:action="@{/login}" method="POST">
                     <div th:if="${param.error}" class="alert alert-danger">
-                        Invalid username and password.
+                        Invalid username and/or password.
                     </div>
                     <div th:if="${param.logout}" class="alert alert-success">
-                        You have been logged out.
+                        You have been logged out successfully.
                     </div>
                     <div class="form-group">
                         <label for="username" class="control-label">Username:</label>
-                        <input id="username" name="username" class="form-control" autofocus required/>
+                        <input id="username" name="username" class="form-control" autocomplete="off" autofocus
+                               required/>
                     </div>
                     <div class="form-group">
                         <label for="password" class="control-label">Password:</label>
-                        <input id="password" name="password" class="form-control" required/>
+                        <input id="password" name="password" type="password" class="form-control" autocomplete="off"
+                               required/>
                     </div>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-primary">Login</button>

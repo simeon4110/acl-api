@@ -1,10 +1,12 @@
 package com.sonnets.sonnet.persistence.models;
 
 import com.sonnets.sonnet.persistence.dtos.SonnetDto;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Parameter;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
@@ -22,21 +24,28 @@ import java.util.List;
 @Indexed
 @Entity
 @Table(name = "sonnets")
+@AnalyzerDef(name = "noStopWords", tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+        filters = {@TokenFilterDef(factory = LowerCaseFilterFactory.class),
+                @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
+                        @Parameter(name = "language", value = "English")
+                })})
 public class Sonnet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     private Long id;
-    @Field(name = "firstName")
+    @Field(name = "firstName", index = Index.YES, analyze = Analyze.YES)
+    @Analyzer(definition = "noStopWords")
     @Column
     private String firstName;
-    @Field(name = "lastName")
+    @Field(name = "lastName", index = Index.YES, analyze = Analyze.YES)
+    @Analyzer(definition = "noStopWords")
     @Column
     private String lastName;
-    @Field(name = "title")
+    @Field(name = "title", index = Index.YES, analyze = Analyze.YES)
     @Column
     private String title;
-    @Field(name = "publicationYear")
+    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.YES)
     @Column
     private String publicationYear;
     @Column
@@ -49,7 +58,7 @@ public class Sonnet {
     private Date updatedAt;
     @Column
     @IndexedEmbedded
-    @Field(name = "text")
+    @Field(name = "text", index = Index.YES, analyze = Analyze.YES)
     @ElementCollection
     private List<String> text;
 

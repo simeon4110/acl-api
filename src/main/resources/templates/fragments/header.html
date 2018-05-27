@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 
 <!--Header snippet for css and meta-->
 <head>
@@ -29,14 +29,14 @@
 </head>
 <body>
 <!--Navbar snippet-->
-<nav class="navbar fixed-top navbar-expand-md mb-4 bg-light" th:fragment="nav-bar">
+<nav class="navbar fixed-top navbar-expand-md mb-4" th:fragment="nav-bar">
     <a class="navbar-brand ml-3" href="/"><span class="oi oi-book"></span> Sonnet</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="oi oi-menu"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="nav navbar-nav navbar-right mr-3">
+        <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/insert}">Input</a>
             </li>
@@ -48,6 +48,23 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/lookup/csv}">Manual Selection</a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right mr-3">
+            <li class="nav-item" sec:authorize="isAnonymous()">
+                <a th:href="@{/login}">
+                    <button type="button" class="btn btn-primary btn-sm mx-1">Login</button>
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+                <a th:href="@{/admin}">
+                    <button type="button" class="btn btn-primary btn-sm mx-1">Admin</button>
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-primary btn-sm mx-1">Logout</button>
+                </form>
             </li>
         </ul>
     </div>

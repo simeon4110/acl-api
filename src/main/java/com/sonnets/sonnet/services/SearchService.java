@@ -43,7 +43,7 @@ public class SearchService {
         // firstName
         if (sonnet.getFirstName() != null && !Objects.equals(sonnet.getFirstName(), "")) {
             logger.debug(sonnet.getFirstName());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("firstName")
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(2).withEditDistanceUpTo(2).onField("firstName")
                     .matching(sonnet.getFirstName()).createQuery();
         }
 
