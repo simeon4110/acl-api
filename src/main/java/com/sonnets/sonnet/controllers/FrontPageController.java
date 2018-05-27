@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class FrontPageController {
     @SuppressWarnings("SameReturnValue")
-    @GetMapping("/")
+    @GetMapping("")
     public String showFrontPage() {
         return "index";
     }
