@@ -62,7 +62,8 @@
                         <label for="text" class="control-label">Sonnet text (please preserve lines):*</label>
                         <textarea id="text" class="form-control" th:field="*{text}" rows="14" required></textarea>
                     </div>
-                    <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
                         submit
                     </button>

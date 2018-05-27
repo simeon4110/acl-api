@@ -33,6 +33,7 @@ public class SearchService {
 
     /**
      * Dynamically generates a query based on which field is selected.
+     *
      * @param sonnet       the sonnet object with the query params.
      * @param queryBuilder the query builder to build the query for.
      * @return a lucene query.
@@ -50,7 +51,7 @@ public class SearchService {
         // lastName
         if (sonnet.getLastName() != null && !Objects.equals(sonnet.getLastName(), "")) {
             logger.debug(sonnet.getLastName());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("lastName")
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(2).withEditDistanceUpTo(2).onField("lastName")
                     .matching(sonnet.getLastName()).createQuery();
         }
 
@@ -84,6 +85,7 @@ public class SearchService {
 
     /**
      * Searches the db based on user params from front end.
+     *
      * @param sonnet      the sonnet holding the params.
      * @param pageRequest the pagination object for paging results.
      * @return a paged list of search results.

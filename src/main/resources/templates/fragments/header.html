@@ -21,15 +21,13 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.bootstrap4.min.css"
               integrity="sha384-n1hs6qRhjguK+Jtu+RyFfScT5qaZklM9JofOTMl4IhU02wc+vh/OpW4lP7n9cbxD"
               crossorigin="anonymous">
-        <!--Adds padding for navbar-->
-        <style>body {
-            margin-top: 4.5rem;
-        }</style>
+        <link rel="stylesheet" th:href="@{/css/style.min.css}">
+
     </div>
 </head>
 <body>
 <!--Navbar snippet-->
-<nav class="navbar fixed-top navbar-expand-md mb-4" th:fragment="nav-bar">
+<nav class="navbar bg-light fixed-top navbar-expand-md mb-4" th:fragment="nav-bar">
     <a class="navbar-brand ml-3" href="/"><span class="oi oi-book"></span> Sonnet</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +57,11 @@
             <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
                 <a th:href="@{/admin}">
                     <button type="button" class="btn btn-primary btn-sm mx-1">Admin</button>
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasAuthority('USER')">
+                <a th:href="@{/profile}">
+                    <button type="button" class="btn btn-primary btn-sm mx-1">Profile</button>
                 </a>
             </li>
             <li class="nav-item" sec:authorize="isAuthenticated()">
