@@ -5,11 +5,11 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.0.2-DEV</version>
+    <version>0.0.4-DEV</version>
     <packaging>jar</packaging>
 
     <name>Sonnet</name>
-    <description>Sonnet database for ENGL 523 at the University of Calgary</description>
+    <description>The beyond aporia digital sonnet database.</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

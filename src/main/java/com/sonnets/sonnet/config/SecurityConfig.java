@@ -44,7 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         // @formatter:off
         http.authorizeRequests()
-            .antMatchers("/login").permitAll()
+            .antMatchers("/sonnets", "/sonnets/**").permitAll()
+            .antMatchers("/sonnets/by_id/**", "/sonnets/by_author_last_name/**",
+                    "/sonnets/by_author_first_name/**").permitAll()
+            .antMatchers("/login", "/login/**").permitAll()
             .antMatchers("/css/**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/lookup/", "/lookup/**").permitAll()
@@ -57,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
             .and().formLogin().loginPage("/login").permitAll()
             .and().logout().permitAll()
-            .and().csrf();
+            .and().csrf().disable();
             // @formatter:on
     }
 
