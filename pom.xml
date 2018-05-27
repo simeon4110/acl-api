@@ -11,6 +11,8 @@
     <name>sonnet</name>
     <description>Demo project for Spring Boot</description>
     <url>https://beyondaporia.com</url>
+    <name>Sonnet</name>
+    <description>Sonnet database for ENGL 523 at the University of Calgary</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

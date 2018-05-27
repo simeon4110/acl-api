@@ -1,4 +1,4 @@
-package com.sonnets.sonnet;
+package com.sonnets.sonnet.tests;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +11,7 @@ public class SonnetApplicationTests {
 
     @Test
     public void contextLoads() {
+        // I haven't written and tests yet. I'm a bad programmer.
     }
 
 }

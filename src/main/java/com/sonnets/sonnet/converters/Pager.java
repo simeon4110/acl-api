@@ -7,17 +7,12 @@ package com.sonnets.sonnet.converters;
  * @author Bruno Raljic
  */
 public class Pager {
-
     private int buttonsToShow = 5;
-
     private int startPage;
-
     private int endPage;
 
     public Pager(int totalPages, int currentPage, int buttonsToShow) {
-
         setButtonsToShow(buttonsToShow);
-
         int halfPagesToShow = getButtonsToShow() / 2;
 
         if (totalPages <= getButtonsToShow()) {

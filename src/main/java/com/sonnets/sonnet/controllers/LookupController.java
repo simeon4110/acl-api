@@ -66,7 +66,8 @@ public class LookupController {
      * @return a ModelAndView of the search form and search results.
      */
     @GetMapping(value = "/lookup", name = LOOKUP)
-    public ModelAndView showSearchPage(@ModelAttribute Sonnet sonnet, @ModelAttribute ModelMap model, Pageable pageRequest) {
+    public ModelAndView showSearchPage(@ModelAttribute Sonnet sonnet, @ModelAttribute ModelMap model,
+                                       Pageable pageRequest) {
         Page<Sonnet> sonnets = null;
         Pager pager = null;
 
@@ -104,12 +105,15 @@ public class LookupController {
 
     /**
      * Parse the new edited data.
+     *
+     * @param id     the id of the sonnet to modify (unused)
      * @param sonnet the sonnet's new data.
-     * @param model the model with/out the sonnet object.
+     * @param model  the model with/out the sonnet object.
      * @return an html page with the NEW sonnet data populated for editing.
      */
-    @PostMapping("/lookup/edit/{id}")
-    public String postEditSonnet(@ModelAttribute SonnetDto sonnet, Model model) {
+    @PostMapping(value = "/lookup/edit/{id}")
+    public String postEditSonnet(@PathVariable("id") String id,
+                                 @ModelAttribute SonnetDto sonnet, Model model) {
         logger.debug("Posting new sonnet details for id: " + sonnet.getId());
         Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
         sonnet = new SonnetDto(newSonnet);
@@ -120,7 +124,8 @@ public class LookupController {
 
     /**
      * Returns a sonnet in XML format.
-     * @param id the id of the sonnet to return.
+     *
+     * @param id       the id of the sonnet to return.
      * @param response the response to attach the data to.
      */
     @GetMapping(value = "/lookup/xml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
@@ -141,7 +146,8 @@ public class LookupController {
 
     /**
      * Returns a sonnet in TEI format.
-     * @param id the id of the sonnet to return.
+     *
+     * @param id       the id of the sonnet to return.
      * @param response the response to attach the data to.
      */
     @GetMapping(value = "/lookup/tei/{id}", produces = MediaType.APPLICATION_XML_VALUE)
@@ -161,7 +167,8 @@ public class LookupController {
 
     /**
      * Takes multiple sonnets and parses them into a list of CSV values.
-     * @param ids the sonnet ids to parse.
+     *
+     * @param ids      the sonnet ids to parse.
      * @param response the response to attach the data to.
      */
     @GetMapping(value = "/lookup/csv/get_csv/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -190,6 +197,7 @@ public class LookupController {
 
     /**
      * Shows the selection page for the multi selector.
+     *
      * @param model the model to attach all the sonnet objects to.
      * @return the multi selector page.
      */

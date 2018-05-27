@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.validation.Valid;
 
 /**
- * View controller. This is just a prototype. Handles all current Sonnet insert methods for the front end.
+ * View controller for Sonnet insert requests.
  *
  * @author Josh Harkema
  */
@@ -29,12 +29,24 @@ public class InputController {
         this.sonnetDetailsService = sonnetDetailsService;
     }
 
+    /**
+     * Shows the insert page (i.e. add a sonnet to the db.)
+     *
+     * @param model the model to attach the SonnetDto to.
+     * @return the insert page with SonnetDto attached.
+     */
     @GetMapping("/insert")
     public String showInsertPage(Model model) {
         model.addAttribute("SonnetDto", new SonnetDto());
         return "insert";
     }
 
+    /**
+     * Handles incoming add sonnet post requests.
+     * @param sonnetDto the SonnetDto from the form submission.
+     * @param model the model from the request, needed to attach errors, or valid Sonnet objects.
+     * @return the insert page with error or newly added sonnet attached.
+     */
     @PostMapping("/insert")
     public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model) {
         logger.debug("Adding sonnet: " + sonnetDto.toString());
