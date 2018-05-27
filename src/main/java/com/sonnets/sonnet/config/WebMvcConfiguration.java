@@ -22,7 +22,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/sonnet/login").setViewName("login_processing");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 
