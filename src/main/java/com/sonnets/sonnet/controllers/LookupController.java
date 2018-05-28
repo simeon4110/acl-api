@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.SonnetDto;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
@@ -18,7 +17,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -43,10 +41,8 @@ public class LookupController {
     private final SearchService searchService;
     private static final Logger logger = Logger.getLogger(LookupController.class);
 
-    // Define constants
     private static final String LOOKUP = "lookup";
     private static final String SONNET = "Sonnet";
-    private static final String EDIT = "edit";
     private static final String PAGER = "pager";
     private static final String PAGE = "page";
     private static final int BUTTONS_TO_SHOW = 5;
@@ -84,40 +80,6 @@ public class LookupController {
         logger.debug("Returning search page: " + model.toString());
 
         return new ModelAndView(LOOKUP, model);
-    }
-
-    /**
-     * Edit a sonnet by ID.
-     *
-     * @param id    the id of the sonnet to edit.
-     * @param model the model with/out the sonnet object.
-     * @return a html page with the sonnet data populated for editing.
-     */
-    @GetMapping("/lookup/edit/{id}")
-    public String editSonnet(@PathVariable("id") String id, Model model) {
-        logger.debug("Editing sonnet: " + id);
-        Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
-        SonnetDto sonnetDto = new SonnetDto(sonnet);
-        model.addAttribute(SONNET, sonnetDto);
-
-        return EDIT;
-    }
-
-    /**
-     * Parse the new edited data.
-     *
-     * @param sonnet the sonnet's new data.
-     * @param model  the model with/out the sonnet object.
-     * @return an html page with the NEW sonnet data populated for editing.
-     */
-    @PostMapping(value = "/lookup/edit")
-    public String postEditSonnet(@ModelAttribute SonnetDto sonnet, Model model) {
-        logger.debug("Posting new sonnet details for id: " + sonnet.getId());
-        Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
-        sonnet = new SonnetDto(newSonnet);
-        model.addAttribute(SONNET, sonnet);
-
-        return EDIT;
     }
 
     /**

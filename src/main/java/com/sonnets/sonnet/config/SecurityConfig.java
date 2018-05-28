@@ -45,13 +45,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // @formatter:off
         http.authorizeRequests()
             .antMatchers("/sonnets", "/sonnets/**").permitAll()
-            .antMatchers("/sonnets/by_id/**", "/sonnets/by_author_last_name/**",
-                    "/sonnets/by_author_first_name/**").permitAll()
             .antMatchers("/login", "/login/**").permitAll()
             .antMatchers("/css/**").permitAll()
             .antMatchers("/").permitAll()
-            .antMatchers("/lookup/", "/lookup/tei/**", "/lookup/xml/**").permitAll()
-            .antMatchers("/lookup/edit", "/lookup/edit/**").hasAuthority("USER")
+            .antMatchers("/lookup/", "/lookup/**").permitAll()
             .antMatchers("/browse/", "/browse/**").permitAll()
             .antMatchers("/sonnets/", "/sonnets/**").permitAll()
             .antMatchers("/edit/", "/edit/**").hasAuthority("USER")
