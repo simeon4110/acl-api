@@ -15,8 +15,8 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <form th:action="@{~/edit}" id="insertForm" th:object="${Sonnet}" role="form" method="POST"
-                      class="form mx-3">
+                <form th:action="@{~/edit/} + ${Sonnet.getId()}" id="insertForm" th:object="${Sonnet}" role="form"
+                      method="POST" class="form mx-3">
                     <div th:if="${param.error}" class="alert alert-error">
                         An error occurred.
                     </div>
