@@ -51,8 +51,8 @@ public class EditController {
      * @param model  the model with/out the sonnet object.
      * @return an html page with the NEW sonnet data populated for editing.
      */
-    @PostMapping(value = "/edit")
-    public String postEditSonnet(@ModelAttribute SonnetDto sonnet, Model model) {
+    @PostMapping(value = "/edit/{id}")
+    public String postEditSonnet(@PathVariable("id") String id, @ModelAttribute SonnetDto sonnet, Model model) {
         logger.debug("Posting new sonnet details for id: " + sonnet.getId());
         Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
         sonnet = new SonnetDto(newSonnet);
