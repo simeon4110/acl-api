@@ -1,5 +1,8 @@
 package com.sonnets.sonnet.persistence.models;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
@@ -11,6 +14,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "users")
+@Transactional(propagation = Propagation.REQUIRED)
 public class User implements Serializable {
     private static final long serialVersionUID = 3953225636947318796L;
     @Id

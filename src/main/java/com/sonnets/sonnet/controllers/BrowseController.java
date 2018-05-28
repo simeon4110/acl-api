@@ -2,7 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
-import com.sonnets.sonnet.tools.Pager;
+import com.sonnets.sonnet.tests.tools.Pager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

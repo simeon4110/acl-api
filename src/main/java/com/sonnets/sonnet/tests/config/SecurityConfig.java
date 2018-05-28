@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.config;
+package com.sonnets.sonnet.tests.config;
 
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.Optional;
  * @author Josh Harkema
  */
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 public class SonnetDetailsService {
     private final SonnetRepository sonnetRepository;
     private static final Logger logger = Logger.getLogger(SonnetDetailsService.class);

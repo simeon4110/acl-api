@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.config;
+package com.sonnets.sonnet.tests.config;
 
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.apache.log4j.Logger;
