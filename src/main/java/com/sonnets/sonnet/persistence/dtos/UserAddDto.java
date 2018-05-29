@@ -48,4 +48,14 @@ public class UserAddDto {
         this.admin = admin;
     }
 
+    @Override
+    public String toString() {
+        return "UserAddDto{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", password1='" + password1 + '\'' +
+                ", admin=" + admin +
+                '}';
+    }
+
 }

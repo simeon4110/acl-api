@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.tests.config;
+package com.sonnets.sonnet.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,6 +22,7 @@ import javax.sql.DataSource;
         "com.sonnets.sonnet.persistence.repositories"
 })
 @EnableTransactionManagement
+@Profile("test")
 public class TestJpaConfig {
     /**
      * The test specific data source bean.

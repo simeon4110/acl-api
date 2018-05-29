@@ -58,7 +58,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     public String addUser(final UserAddDto userAddDto) {
         // Return error if username already exists.
+        logger.debug("Adding user with details: " + userAddDto.toString());
         if (userRepository.findByUsername(userAddDto.getUsername()) != null) {
+            logger.debug("User with username already exists: " + userAddDto.getUsername());
             return "redirect:/admin?exists";
         }
 
@@ -76,7 +78,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         user.setPrivileges(privileges);
 
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
 
         return "redirect:/admin?success";
     }

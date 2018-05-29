@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.tests.config;
+package com.sonnets.sonnet.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

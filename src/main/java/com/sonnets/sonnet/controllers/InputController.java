@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -48,8 +49,10 @@ public class InputController {
      * @return the insert page with error or newly added sonnet attached.
      */
     @PostMapping("/insert")
-    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model) {
+    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model,
+                                HttpServletRequest request) {
         logger.debug("Adding sonnet: " + sonnetDto.toString());
+        sonnetDto.setAddedBy(request.getUserPrincipal().getName());
         Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
 
         // Catch duplicate sonnets.

@@ -53,6 +53,8 @@ public class Sonnet {
     @Column
     private String sourceDesc;
     @Column
+    private String addedBy;
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updatedAt;
@@ -136,6 +138,14 @@ public class Sonnet {
         this.sourceDesc = sourceDesc;
     }
 
+    public String getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
+    }
+
     public Date getUpdatedAt() {
         return updatedAt;
     }
@@ -173,6 +183,7 @@ public class Sonnet {
         this.title = sonnetDto.getTitle();
         this.publicationYear = sonnetDto.getPublicationYear();
         this.publicationStmt = sonnetDto.getPublicationStmt();
+        this.addedBy = sonnetDto.getAddedBy();
         this.sourceDesc = sonnetDto.getSourceDesc();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
 
@@ -212,6 +223,7 @@ public class Sonnet {
         if (publicationStmt != null ? !publicationStmt.equals(sonnet.publicationStmt) : sonnet.publicationStmt != null)
             return false;
         if (sourceDesc != null ? !sourceDesc.equals(sonnet.sourceDesc) : sonnet.sourceDesc != null) return false;
+        if (addedBy != null ? !addedBy.equals(sonnet.addedBy) : sonnet.addedBy != null) return false;
         if (updatedAt != null ? !updatedAt.equals(sonnet.updatedAt) : sonnet.updatedAt != null) return false;
         return text != null ? text.equals(sonnet.text) : sonnet.text == null;
     }
@@ -225,6 +237,7 @@ public class Sonnet {
         result = 31 * result + (publicationYear != null ? publicationYear.hashCode() : 0);
         result = 31 * result + (publicationStmt != null ? publicationStmt.hashCode() : 0);
         result = 31 * result + (sourceDesc != null ? sourceDesc.hashCode() : 0);
+        result = 31 * result + (addedBy != null ? addedBy.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         result = 31 * result + (text != null ? text.hashCode() : 0);
         return result;
@@ -237,9 +250,10 @@ public class Sonnet {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +
-                ", publicationYear=" + publicationYear +
+                ", publicationYear='" + publicationYear + '\'' +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
+                ", addedBy='" + addedBy + '\'' +
                 ", updatedAt=" + updatedAt +
                 ", text=" + text +
                 '}';

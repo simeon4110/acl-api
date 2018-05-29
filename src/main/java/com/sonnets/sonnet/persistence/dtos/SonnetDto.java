@@ -24,6 +24,8 @@ public class SonnetDto {
     @NotEmpty
     private String sourceDesc;
     @NotEmpty
+    private String addedBy;
+    @NotEmpty
     private String text;
 
     public SonnetDto() {
@@ -38,6 +40,7 @@ public class SonnetDto {
         this.publicationYear = sonnet.getPublicationYear();
         this.publicationStmt = sonnet.getPublicationStmt();
         this.sourceDesc = sonnet.getSourceDesc();
+        this.addedBy = sonnet.getAddedBy();
         this.text = sonnet.getTextPretty();
     }
 
@@ -97,6 +100,14 @@ public class SonnetDto {
         this.sourceDesc = sourceDesc;
     }
 
+    public String getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
+    }
+
     public String getText() {
         return text;
     }
@@ -112,9 +123,10 @@ public class SonnetDto {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +
-                ", publicationYear=" + publicationYear +
+                ", publicationYear='" + publicationYear + '\'' +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
+                ", addedBy='" + addedBy + '\'' +
                 ", text='" + text + '\'' +
                 '}';
     }
