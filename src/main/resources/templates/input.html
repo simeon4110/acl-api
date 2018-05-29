@@ -64,7 +64,7 @@
                         <textarea id="text" class="form-control" th:field="*{text}" rows="14" required></textarea>
                     </div>
 
-                    <input type="hidden" th:field="*{addedBy}" value="${user}"/>
+                    <input type="hidden" name="addedBy" value="${user}"/>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
                         submit
