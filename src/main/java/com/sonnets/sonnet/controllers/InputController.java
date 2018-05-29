@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -36,8 +37,9 @@ public class InputController {
      * @return the insert page with SonnetDto attached.
      */
     @GetMapping("/insert")
-    public String showInsertPage(Model model) {
+    public String showInsertPage(Model model, HttpServletRequest request) {
         model.addAttribute("SonnetDto", new SonnetDto());
+        model.addAttribute("user", request.getUserPrincipal().getName());
         return "input";
     }
 
@@ -48,7 +50,8 @@ public class InputController {
      * @return the insert page with error or newly added sonnet attached.
      */
     @PostMapping("/insert")
-    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model) {
+    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model,
+                                HttpServletRequest request) {
         logger.debug("Adding sonnet: " + sonnetDto.toString());
         Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
 
@@ -59,8 +62,10 @@ public class InputController {
                     "a sonnet in the database, simply click the 'edit' link under its card once you have searched " +
                     "the database for it. If " +
                     "you have received this message in error, please email joshua.harkema@ucalgary.ca");
+            model.addAttribute("user", request.getUserPrincipal().getName());
         } else {
             model.addAttribute("SonnetDto", new SonnetDto(sonnet));
+            model.addAttribute("user", request.getUserPrincipal().getName());
         }
 
         return "input";
