@@ -22,6 +22,7 @@ import javax.sql.DataSource;
         "com.sonnets.sonnet.persistence.repositories"
 })
 @EnableTransactionManagement
+@Profile("test")
 public class TestJpaConfig {
     /**
      * The test specific data source bean.

@@ -122,7 +122,7 @@ public class SonnetDto {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +
-                ", publicationYear=" + publicationYear +
+                ", publicationYear='" + publicationYear + '\'' +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", addedBy='" + addedBy + '\'' +

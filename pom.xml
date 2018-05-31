@@ -60,7 +60,6 @@
             <artifactId>thymeleaf-extras-springsecurity4</artifactId>
             <version>3.0.2.RELEASE</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -90,12 +89,6 @@
             <artifactId>spring-test</artifactId>
             <version>5.0.5.RELEASE</version>
         </dependency>
-        <!--In memory db for testing.-->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.194</version>
-        </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -118,7 +111,6 @@
             <artifactId>hibernate-search-orm</artifactId>
             <version>5.9.1.Final</version>
         </dependency>
-
         <!-- Optional: to use JPA 2.1 -->
         <dependency>
             <groupId>org.hibernate</groupId>
