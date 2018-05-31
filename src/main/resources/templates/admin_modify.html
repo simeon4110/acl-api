@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Sonnet - Modify User</title>
+    <div th:replace="fragments/header :: head"></div>
+</head>
+<main>
+    <div th:replace="fragments/header :: nav-bar"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-center mb-3">
+            <div class="col-lg-10">
+                <h1 class="display-4 pb-3">Modify User:</h1>
+                <hr class="m-4" style="border-color: black"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10 mb-3">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{~/admin}">Add User</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{~/admin/user/modify}">Modify User</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{~/admin/sonnets/all}">Review Records</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-6 mb-3">
+                <div th:if="${param.notFound}" class="alert alert-danger">
+                    User with that username was not found.
+                </div>
+                <div th:if="${param.noMatch}" class="alert alert-danger">
+                    Password reset failed: passwords don't match.
+                </div>
+                <div th:if="${param.success}" class="alert alert-success">
+                    User modified successfully.
+                </div>
+                <form th:object="${UserModifyDto}" class="form" th:action="@{~/admin/user/modify}" method="POST">
+                    <div class="form-group">
+                        <label for="username" class="control-label">Select user:</label>
+                        <select id="username" class="custom-select custom-select-lg mb-3" th:field="*{username}">
+                        <span th:each="User : ${Users}">
+                            <option th:value="${User.getUsername()}" th:text="${User.getUsername()}">name</option>
+                        </span>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="control-label">Password (make sure reset password is
+                            checked):</label>
+                        <input id="password" type="password" class="form-control" th:field="*{passwordReset}"
+                               autocomplete="off"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password1" class="control-label">Confirm password:</label>
+                        <input id="password1" type="password" class="form-control" th:field="*{passwordReset1}"
+                               autocomplete="off"/>
+                    </div>
+                    <div class="form-check my-2">
+                        <input id="delete" type="checkbox" class="form-check-input" th:field="*{delete}">
+                        <label for="delete" class="form-check-label">Delete user</label>
+                    </div>
+                    <div class="form-check my-2">
+                        <input id="admin" type="checkbox" class="form-check-input" th:field="*{admin}">
+                        <label for="admin" class="form-check-label">Set admin</label>
+                    </div>
+                    <div class="form-check my-2">
+                        <input id="resetPassword" type="checkbox" class="form-check-input" th:field="*{resetPassword}">
+                        <label for="resetPassword" class="form-check-label">Reset Password</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/footer :: scripts"></div>
+</main>
+</html>

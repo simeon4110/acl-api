@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <title>Sonnet - Profile</title>
+    <title>Sonnet - Add User</title>
     <div th:replace="fragments/header :: head"></div>
 </head>
 <main>
@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <h1 class="display-4 pb-3">Change Password:</h1>
+                <h1 class="display-4 pb-3">Add User:</h1>
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
@@ -17,13 +17,13 @@
             <div class="col-lg-10">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{~/profile}">Change Password</a>
+                        <a class="nav-link active" th:href="@{~/admin}">Add User</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{~/profile/my_sonnets}">Review My Sonnets</a>
+                        <a class="nav-link" th:href="@{~/admin/user/modify}">Modify User</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Classify Records</a>
+                        <a class="nav-link" th:href="@{~/admin/sonnets/all}">Review Records</a>
                     </li>
                 </ul>
             </div>
@@ -31,19 +31,22 @@
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <p class="lead">
-                    To change your password use the form below.
+                    To add a user with input permissions use the form below, checking the 'Administrator' box will
+                    allow the user to add new users to the database.
                 </p>
-                <form th:object="${PasswordChangeDto}" class="form" th:action="@{~/profile}" method="POST">
+                <form th:object="${UserAddDto}" class="form" th:action="@{~/admin/user/add}" method="POST">
                     <div th:if="${param.error}" class="alert alert-danger">
-                        Invalid password.
+                        Invalid username or password.
+                    </div>
+                    <div th:if="${param.exists}" class="alert alert-danger">
+                        A user with that username already exists.
                     </div>
                     <div th:if="${param.success}" class="alert alert-success">
-                        Password changed.
+                        User added.
                     </div>
                     <div class="form-group">
-                        <label for="currentPassword" class="control-label">Current Password:</label>
-                        <input id="currentPassword" type="password" class="form-control" th:field="*{currentPassword}"
-                               autocomplete="off" autofocus required/>
+                        <label for="username" class="control-label">Username:</label>
+                        <input id="username" class="form-control" th:field="*{username}" autofocus required/>
                     </div>
                     <div class="form-group">
                         <label for="password" class="control-label">Password:</label>
@@ -55,7 +58,10 @@
                         <input id="password1" type="password" class="form-control" th:field="*{password1}"
                                autocomplete="off" required/>
                     </div>
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <div class="form-check my-2">
+                        <input id="admin" type="checkbox" class="form-check-input" th:field="*{admin}">
+                        <label for="admin" class="form-check-label">Administrator</label>
+                    </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
@@ -65,3 +71,4 @@
     <div th:replace="fragments/footer :: footer"></div>
     <div th:replace="fragments/footer :: scripts"></div>
 </main>
+</html>

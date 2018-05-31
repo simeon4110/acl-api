@@ -62,13 +62,6 @@ public class SearchService {
                     .matching(sonnet.getTitle()).createQuery();
         }
 
-        // publicationYear
-        if (sonnet.getPublicationYear() != null && !Objects.equals(sonnet.getPublicationYear(), "")) {
-            logger.debug(sonnet.getPublicationYear());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1)
-                    .onField("publicationYear").matching(sonnet.getPublicationYear()).createQuery();
-        }
-
         // text
         if (sonnet.getText() != null && !sonnet.getText().isEmpty()) {
             logger.debug(sonnet.getText());

@@ -1,7 +1,8 @@
 package com.sonnets.sonnet.security;
 
-import com.sonnets.sonnet.persistence.dtos.PasswordChangeDto;
-import com.sonnets.sonnet.persistence.dtos.UserAddDto;
+import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
+import com.sonnets.sonnet.persistence.dtos.user.UserAddDto;
+import com.sonnets.sonnet.persistence.dtos.user.UserModifyDto;
 import com.sonnets.sonnet.persistence.models.Privilege;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,6 +33,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private static final Logger logger = Logger.getLogger(UserDetailsServiceImpl.class);
     private final PrivilegeRepository privilegeRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final String USER_PRIV = "USER";
+    private static final String ADMIN_PRIV = "ADMIN";
 
     @Autowired
     public UserDetailsServiceImpl(UserRepository userRepository, PrivilegeRepository privilegeRepository) {
@@ -38,7 +42,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.privilegeRepository = privilegeRepository;
         this.passwordEncoder = new BCryptPasswordEncoder(11);
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -48,6 +51,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         return new UserPrincipalImpl(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     /**
@@ -70,15 +77,64 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         Set<Privilege> privileges = new HashSet<>();
-        privileges.add(privilegeRepository.findByName("USER"));
+        privileges.add(privilegeRepository.findByName(USER_PRIV));
         if (userAddDto.isAdmin()) {
-            privileges.add(privilegeRepository.findByName("ADMIN"));
+            privileges.add(privilegeRepository.findByName(ADMIN_PRIV));
         }
         user.setPrivileges(privileges);
 
         userRepository.save(user);
 
         return "redirect:/admin?success";
+    }
+
+    /**
+     * Modify an existing user.
+     *
+     * @param userModifyDto valid UserModifyDto
+     * @return error / success redirect.
+     */
+    public String modifyUser(final UserModifyDto userModifyDto) {
+        User user;
+        Privilege privilege = privilegeRepository.findByName(ADMIN_PRIV);
+
+        // Check if user exists.
+        if (userRepository.findByUsername(userModifyDto.getUsername()) == null) {
+            logger.debug("User " + userModifyDto.getUsername() + " does not exist.");
+
+            return "redirect:/admin/user/modify?notFound";
+        } else {
+            logger.debug("Modifying user: " + userModifyDto.getUsername());
+            user = userRepository.findByUsername(userModifyDto.getUsername());
+        }
+
+        // Do reset password.
+        if (userModifyDto.isResetPassword()) {
+            if (Objects.equals(userModifyDto.getPasswordReset(), userModifyDto.getPasswordReset1())) {
+                logger.debug("    Changing password...");
+                user.setPassword(passwordEncoder.encode(userModifyDto.getPasswordReset()));
+            } else {
+                logger.debug("     Password change failed, no match.");
+
+                return "redirect:/admin/user/modify?noMatch";
+            }
+        }
+
+        // Add admin.
+        if (userModifyDto.isAdmin() && !user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIV))) {
+            logger.debug("Granting admin to: " + user.getUsername());
+            user.getPrivileges().add(privilege);
+        }
+
+        // Remove admin.
+        if (!userModifyDto.isAdmin() && user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIV))) {
+            logger.debug("Removing admin rights from: " + user.getUsername());
+            user.getPrivileges().remove(privilege);
+        }
+
+        userRepository.save(user);
+
+        return "redirect:/admin/user/modify?success";
     }
 
     /**

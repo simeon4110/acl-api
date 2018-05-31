@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.tests;
 
+import com.sonnets.sonnet.config.TestJpaConfig;
 import com.sonnets.sonnet.services.SonnetDetailsService;
-import com.sonnets.sonnet.tests.config.TestJpaConfig;
-import com.sonnets.sonnet.tests.tools.SonnetGenerator;
+import com.sonnets.sonnet.tools.SonnetGenerator;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ public class ThreadSafeTests {
      * @throws InterruptedException if the thread is interrupted.
      */
     private static void runMultithreaded(Runnable runnable, int threadCount) throws InterruptedException {
-        List<Thread> threadList = new LinkedList<Thread>();
+        List<Thread> threadList = new LinkedList<>();
         for (int i = 0; i < threadCount; i++) {
             threadList.add(new Thread(runnable));
         }

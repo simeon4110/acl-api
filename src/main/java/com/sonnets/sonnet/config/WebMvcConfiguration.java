@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.tests.config;
+package com.sonnets.sonnet.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

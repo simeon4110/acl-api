@@ -1,6 +1,7 @@
-package com.sonnets.sonnet.tests.tools;
+package com.sonnets.sonnet.tools;
 
-import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+
+import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ public abstract class SonnetGenerator {
         sonnet.setFirstName(UUID.randomUUID().toString());
         sonnet.setLastName(UUID.randomUUID().toString());
         sonnet.setTitle(UUID.randomUUID().toString());
-        sonnet.setPublicationYear(UUID.randomUUID().toString());
+        sonnet.setPublicationYear(2222);
         sonnet.setPublicationStmt(UUID.randomUUID().toString());
         sonnet.setSourceDesc(UUID.randomUUID().toString());
         sonnet.setText(UUID.randomUUID().toString());

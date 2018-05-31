@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.models;
 
-import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
@@ -11,10 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Model to store the sonnet info in MySQL.
@@ -45,9 +42,12 @@ public class Sonnet {
     @Field(name = "title", index = Index.YES, analyze = Analyze.YES)
     @Column
     private String title;
-    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.YES)
+    @Field(name = "line_length", index = Index.YES, analyze = Analyze.NO)
     @Column
-    private String publicationYear;
+    private Integer numOfLines;
+    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.NO)
+    @Column
+    private Integer publicationYear;
     @Column
     private String publicationStmt;
     @Column
@@ -56,6 +56,8 @@ public class Sonnet {
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updatedAt;
+    @Column
+    private String addedBy;
     @Column
     @IndexedEmbedded
     @Field(name = "text", index = Index.YES, analyze = Analyze.YES)
@@ -77,7 +79,57 @@ public class Sonnet {
         this.publicationYear = sonnetDto.getPublicationYear();
         this.publicationStmt = sonnetDto.getPublicationStmt();
         this.sourceDesc = sonnetDto.getSourceDesc();
+        this.addedBy = sonnetDto.getAddedBy();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
+        this.numOfLines = this.text.size();
+    }
+
+    /**
+     * Parses text input into an Array for database storage.
+     *
+     * @param text a string[] of the text.
+     * @return an ArrayList of the string[].
+     */
+    private static List<String> parseText(String[] text) {
+        List<String> strings = new ArrayList<>();
+        Collections.addAll(strings, text);
+
+        return strings;
+    }
+
+    /**
+     * Update an existing sonnet from a SonnetDto object.
+     *
+     * @param sonnetDto the SonnetDto with the new data.
+     * @return the updated Sonnet object.
+     */
+    public Sonnet update(SonnetDto sonnetDto) {
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
+        this.firstName = sonnetDto.getFirstName();
+        this.lastName = sonnetDto.getLastName();
+        this.title = sonnetDto.getTitle();
+        this.publicationYear = sonnetDto.getPublicationYear();
+        this.publicationStmt = sonnetDto.getPublicationStmt();
+        this.sourceDesc = sonnetDto.getSourceDesc();
+        this.addedBy = sonnetDto.getAddedBy();
+        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
+        this.numOfLines = this.text.size();
+
+        return this;
+    }
+
+    /**
+     * This parses a Sonnet so it shows "pretty" in html <textarea></textarea> elements. (adds \n for newlines.)
+     *
+     * @return a nicely formatted string.
+     */
+    public String getTextPretty() {
+        StringBuilder sb = new StringBuilder();
+        for (String s : text) {
+            sb.append(s).append("\n");
+        }
+
+        return sb.toString();
     }
 
     public Long getId() {
@@ -112,11 +164,19 @@ public class Sonnet {
         this.title = title;
     }
 
-    public String getPublicationYear() {
+    public Integer getNumOfLines() {
+        return numOfLines;
+    }
+
+    public void setNumOfLines(Integer numOfLines) {
+        this.numOfLines = numOfLines;
+    }
+
+    public Integer getPublicationYear() {
         return publicationYear;
     }
 
-    public void setPublicationYear(String publicationYear) {
+    public void setPublicationYear(Integer publicationYear) {
         this.publicationYear = publicationYear;
     }
 
@@ -144,52 +204,16 @@ public class Sonnet {
         this.updatedAt = updatedAt;
     }
 
+    public String getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
+    }
+
     public List<String> getText() {
         return text;
-    }
-
-    /**
-     * Parses text input into an Array for database storage.
-     *
-     * @param text a string[] of the text.
-     * @return an ArrayList of the string[].
-     */
-    private static List<String> parseText(String[] text) {
-        List<String> strings = new ArrayList<>();
-        Collections.addAll(strings, text);
-
-        return strings;
-    }
-
-    /**
-     * Update an existing sonnet from a SonnetDto object.
-     * @param sonnetDto the SonnetDto with the new data.
-     * @return the updated Sonnet object.
-     */
-    public Sonnet update(SonnetDto sonnetDto) {
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
-        this.firstName = sonnetDto.getFirstName();
-        this.lastName = sonnetDto.getLastName();
-        this.title = sonnetDto.getTitle();
-        this.publicationYear = sonnetDto.getPublicationYear();
-        this.publicationStmt = sonnetDto.getPublicationStmt();
-        this.sourceDesc = sonnetDto.getSourceDesc();
-        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
-
-        return this;
-    }
-
-    /**
-     * This parses a Sonnet so it shows "pretty" in html <textarea></textarea> elements. (adds \n for newlines.)
-     * @return a nicely formatted string.
-     */
-    public String getTextPretty() {
-        StringBuilder sb = new StringBuilder();
-        for (String s : text) {
-            sb.append(s).append("\n");
-        }
-
-        return sb.toString();
     }
 
     public void setText(List<String> text) {
@@ -200,34 +224,24 @@ public class Sonnet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Sonnet sonnet = (Sonnet) o;
-
-        if (id != null ? !id.equals(sonnet.id) : sonnet.id != null) return false;
-        if (firstName != null ? !firstName.equals(sonnet.firstName) : sonnet.firstName != null) return false;
-        if (lastName != null ? !lastName.equals(sonnet.lastName) : sonnet.lastName != null) return false;
-        if (title != null ? !title.equals(sonnet.title) : sonnet.title != null) return false;
-        if (publicationYear != null ? !publicationYear.equals(sonnet.publicationYear) : sonnet.publicationYear != null)
-            return false;
-        if (publicationStmt != null ? !publicationStmt.equals(sonnet.publicationStmt) : sonnet.publicationStmt != null)
-            return false;
-        if (sourceDesc != null ? !sourceDesc.equals(sonnet.sourceDesc) : sonnet.sourceDesc != null) return false;
-        if (updatedAt != null ? !updatedAt.equals(sonnet.updatedAt) : sonnet.updatedAt != null) return false;
-        return text != null ? text.equals(sonnet.text) : sonnet.text == null;
+        return Objects.equals(id, sonnet.id) &&
+                Objects.equals(firstName, sonnet.firstName) &&
+                Objects.equals(lastName, sonnet.lastName) &&
+                Objects.equals(title, sonnet.title) &&
+                Objects.equals(numOfLines, sonnet.numOfLines) &&
+                Objects.equals(publicationYear, sonnet.publicationYear) &&
+                Objects.equals(publicationStmt, sonnet.publicationStmt) &&
+                Objects.equals(sourceDesc, sonnet.sourceDesc) &&
+                Objects.equals(updatedAt, sonnet.updatedAt) &&
+                Objects.equals(addedBy, sonnet.addedBy) &&
+                Objects.equals(text, sonnet.text);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (publicationYear != null ? publicationYear.hashCode() : 0);
-        result = 31 * result + (publicationStmt != null ? publicationStmt.hashCode() : 0);
-        result = 31 * result + (sourceDesc != null ? sourceDesc.hashCode() : 0);
-        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
-        result = 31 * result + (text != null ? text.hashCode() : 0);
-        return result;
+
+        return Objects.hash(id, firstName, lastName, title, numOfLines, publicationYear, publicationStmt, sourceDesc, updatedAt, addedBy, text);
     }
 
     @Override
@@ -237,10 +251,12 @@ public class Sonnet {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +
+                ", numOfLines=" + numOfLines +
                 ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", updatedAt=" + updatedAt +
+                ", addedBy='" + addedBy + '\'' +
                 ", text=" + text +
                 '}';
     }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <title>Sonnet - Manual Selection</title>
+    <title>Sonnet - Review My Records</title>
     <div th:replace="fragments/header :: head"></div>
 </head>
 <main>
@@ -9,22 +9,38 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-11">
-                <h1 class="display-4 pb-3">Manual Selection:</h1>
+                <h1 class="display-4 pb-3">Review my Records:</h1>
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
     </div>
+    <div class="row justify-content-center mb-3">
+        <div class="col-lg-10">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/profile}">Change Password</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{~/profile/my_sonnets}">Review My Sonnets</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Classify Records</a>
+                </li>
+            </ul>
+        </div>
+    </div>
     <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-lg-11 mb-3">
+            <div class="col-lg-10 mb-3">
                 <button type="button" id="csvbutton" class="btn btn-primary my-3 ml-2">Get CSV</button>
                 <button type="button" id="jsonbutton" class="btn btn-primary my-3 ml-1">Get JSON</button>
                 <table id="sonnets" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Last Name</th>
-                        <th>First Name</th>
+                        <th>Action</th>
+                        <th>Author Last Name</th>
+                        <th>Author First Name</th>
                         <th>Sonnet Title</th>
                     </tr>
                     </thead>
@@ -34,21 +50,29 @@
     </div>
     <div th:replace="fragments/footer :: footer"></div>
     <div th:replace="fragments/footer :: scripts"></div>
-    <script>
+    <script th:inline="javascript">
         $(document).ready(function () {
             var table = $('#sonnets').DataTable({
                 select: true,
-                "sAjaxSource": "/sonnets/all",
-                "sAjaxDataProp": "",
+                'ajax': {
+                    'url': "/sonnets/by_added_by/" + [[${#authentication.getName()}]],
+                    'dataSrc': ''
+                },
                 "columns": [
                     {"mData": "id"},
+                    {
+                        "mData": "id",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html("<p><a href='/edit/" + oData.id + "'>edit</a></p>");
+                        }
+                    },
                     {"mData": "lastName"},
                     {"mData": "firstName"},
                     {"mData": "title"}
                 ]
             });
 
-//          Creates the link to parse the CSV files.
+            // Creates the link to parse the CSV files.
             $('#csvbutton').click(function () {
                 var ids = [];
 
@@ -72,8 +96,8 @@
                 win.focus();
 
             })
-
         });
+
     </script>
 </main>
 </html>

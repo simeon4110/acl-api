@@ -19,4 +19,5 @@ public interface SonnetRepository extends JpaRepository<Sonnet, Long> {
 
     Sonnet findByTitleAndLastName(final String title, final String lastName);
 
+    List<Sonnet> findAllByAddedBy(final String addedBy);
 }

@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.dtos;
+package com.sonnets.sonnet.persistence.dtos.sonnet;
 
 import com.sonnets.sonnet.persistence.models.Sonnet;
 
@@ -17,12 +17,13 @@ public class SonnetDto {
     @NotEmpty
     private String lastName;
     private String title;
-    @NotEmpty
-    private String publicationYear;
+    private int publicationYear;
     @NotEmpty
     private String publicationStmt;
     @NotEmpty
     private String sourceDesc;
+    @NotEmpty
+    private String addedBy;
     @NotEmpty
     private String text;
 
@@ -38,6 +39,7 @@ public class SonnetDto {
         this.publicationYear = sonnet.getPublicationYear();
         this.publicationStmt = sonnet.getPublicationStmt();
         this.sourceDesc = sonnet.getSourceDesc();
+        this.addedBy = sonnet.getAddedBy();
         this.text = sonnet.getTextPretty();
     }
 
@@ -69,11 +71,11 @@ public class SonnetDto {
         return title;
     }
 
-    public String getPublicationYear() {
+    public int getPublicationYear() {
         return publicationYear;
     }
 
-    public void setPublicationYear(String publicationYear) {
+    public void setPublicationYear(int publicationYear) {
         this.publicationYear = publicationYear;
     }
 
@@ -97,6 +99,14 @@ public class SonnetDto {
         this.sourceDesc = sourceDesc;
     }
 
+    public String getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
+    }
+
     public String getText() {
         return text;
     }
@@ -115,8 +125,8 @@ public class SonnetDto {
                 ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
+                ", addedBy='" + addedBy + '\'' +
                 ", text='" + text + '\'' +
                 '}';
     }
-
 }

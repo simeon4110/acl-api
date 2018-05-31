@@ -3,8 +3,8 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
-import com.sonnets.sonnet.tests.tools.Pager;
-import com.sonnets.sonnet.tests.tools.SonnetConverter;
+import com.sonnets.sonnet.tools.Pager;
+import com.sonnets.sonnet.tools.SonnetConverter;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,19 +64,19 @@ public class LookupController {
     @GetMapping(value = "/lookup", name = LOOKUP)
     public ModelAndView showSearchPage(@ModelAttribute Sonnet sonnet, @ModelAttribute ModelMap model,
                                        Pageable pageRequest) {
-        Page<Sonnet> sonnets = null;
-        Pager pager = null;
+        Page<Sonnet> sonnets;
+        Pager pager;
 
         try {
             sonnets = searchService.search(sonnet, pageRequest);
             pager = new Pager(sonnets.getTotalPages(), pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
+            model.addAttribute(PAGER, pager);
+            model.addAttribute(PAGE, sonnets);
         } catch (NullPointerException e) {
             logger.error(e);
         }
 
         model.addAttribute(SONNET, sonnet);
-        model.addAttribute(PAGER, pager);
-        model.addAttribute(PAGE, sonnets);
         logger.debug("Returning search page: " + model.toString());
 
         return new ModelAndView(LOOKUP, model);

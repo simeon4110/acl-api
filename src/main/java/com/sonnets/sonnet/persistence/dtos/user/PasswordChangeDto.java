@@ -1,27 +1,26 @@
-package com.sonnets.sonnet.persistence.dtos;
+package com.sonnets.sonnet.persistence.dtos.user;
 
 import javax.validation.constraints.NotEmpty;
 
 /**
- * Simple POJO for passing data from view to controller.
+ * Simple POJO for passing password data from View to Controller.
  *
  * @author Josh Harkema
  */
-public class UserAddDto {
+public class PasswordChangeDto {
     @NotEmpty
-    private String username;
+    private String currentPassword;
     @NotEmpty
     private String password;
     @NotEmpty
     private String password1;
-    private boolean admin;
 
-    public String getUsername() {
-        return username;
+    public String getCurrentPassword() {
+        return currentPassword;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
     }
 
     public String getPassword() {
@@ -38,14 +37,6 @@ public class UserAddDto {
 
     public void setPassword1(String password1) {
         this.password1 = password1;
-    }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
     }
 
 }

@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.exceptions.SonnetAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.persistence.repositories.SonnetRepository;
@@ -34,6 +34,7 @@ public class SonnetDetailsService {
 
     /**
      * Add a new Sonnet object from a @Valid SonnetDto.
+     *
      * @param newSonnet a valid SonnetDto object.
      * @return the Sonnet object created.
      */
@@ -55,6 +56,7 @@ public class SonnetDetailsService {
 
     /**
      * Updates an existing sonnet.
+     *
      * @param newSonnet the SonnetDto of the new data.
      * @return the sonnet with the updated data.
      */
@@ -73,6 +75,15 @@ public class SonnetDetailsService {
         sonnetRepository.save(sonnet);
 
         return sonnet;
+    }
+
+    /**
+     * For updating an actual sonnet object.
+     *
+     * @param sonnet the sonnet to update.
+     */
+    public void updateSonnet(Sonnet sonnet) {
+        sonnetRepository.save(sonnet);
     }
 
     public List<Sonnet> getAllSonnets() {
@@ -110,6 +121,41 @@ public class SonnetDetailsService {
 
     public List<Sonnet> getSonnetsByAuthorFirstName(String author) {
         return sonnetRepository.findAllByFirstName(author);
+    }
+
+    public List<Sonnet> getSonnetsByAddedBy(String addedBy) {
+        return sonnetRepository.findAllByAddedBy(addedBy);
+    }
+
+    /**
+     * Delete a specific sonnet by its id.
+     *
+     * @param id the id as a String.
+     * @return success / error redirect.
+     */
+    public String deleteSonnetById(String id) {
+        Long idNum;
+        try {
+            idNum = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            logger.error("Invalid number format: " + id);
+
+            return "redirect:/admin/sonnets/all?invalidId";
+        }
+
+        Optional<Sonnet> sonnetOp = sonnetRepository.findById(idNum);
+        Sonnet sonnet;
+        if (sonnetOp.isPresent()) {
+            sonnet = sonnetOp.get();
+            sonnetRepository.delete(sonnet);
+
+            return "redirect:/admin/sonnets/all?success";
+        } else {
+            logger.error("Sonnet does not exist with id: " + idNum);
+
+            return "redirect:/admin/sonnets/all?doesNotExist";
+        }
+
     }
 
     public Sonnet getSonnetByTitleAndLastName(String title, String lastName) {

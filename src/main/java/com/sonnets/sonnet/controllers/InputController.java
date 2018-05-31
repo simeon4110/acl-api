@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -36,8 +37,10 @@ public class InputController {
      * @return the insert page with SonnetDto attached.
      */
     @GetMapping("/insert")
-    public String showInsertPage(Model model) {
+    public String showInsertPage(Model model, HttpServletRequest request) {
         model.addAttribute("SonnetDto", new SonnetDto());
+        model.addAttribute("username", request.getUserPrincipal().getName());
+
         return "input";
     }
 

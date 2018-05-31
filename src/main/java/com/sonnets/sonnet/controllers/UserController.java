@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.PasswordChangeDto;
+import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ import javax.validation.Valid;
  * @author Josh Harkema
  */
 @Controller
-public class ProfileController {
-    private static final Logger logger = Logger.getLogger(ProfileController.class);
+public class UserController {
+    private static final Logger logger = Logger.getLogger(UserController.class);
     private static final String PASS_DTO = "PasswordChangeDto";
     private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    public ProfileController(UserDetailsServiceImpl userDetailsService) {
+    public UserController(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -57,5 +57,11 @@ public class ProfileController {
         model.addAttribute(PASS_DTO, new PasswordChangeDto());
 
         return userDetailsService.updatePassword(request.getUserPrincipal(), passwordChangeDto);
+    }
+
+    @GetMapping("/profile/my_sonnets")
+    public String showUserSonnets(Model model, HttpServletRequest request) {
+        model.addAttribute("username", request.getUserPrincipal().getName());
+        return "user_sonnets";
     }
 }

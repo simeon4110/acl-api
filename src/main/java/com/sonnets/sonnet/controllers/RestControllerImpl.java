@@ -66,4 +66,13 @@ public class RestControllerImpl {
         return sonnetDetailsService.getSonnetsByAuthorFirstName(firstName);
     }
 
+    /**
+     * @param addedBy the username of the sonnet's contributor.
+     * @return a list of all a user's sonnets.
+     */
+    @GetMapping(value = "/sonnets/by_added_by/{addedBy}", produces = "application/json")
+    public List<Sonnet> getAllByAddedBy(@PathVariable String addedBy) {
+        return sonnetDetailsService.getSonnetsByAddedBy(addedBy);
+    }
+
 }

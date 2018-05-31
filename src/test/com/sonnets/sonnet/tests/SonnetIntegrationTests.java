@@ -1,10 +1,11 @@
 package com.sonnets.sonnet.tests;
 
-import com.sonnets.sonnet.persistence.dtos.SonnetDto;
+
+import com.sonnets.sonnet.config.TestJpaConfig;
+import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
-import com.sonnets.sonnet.tests.config.TestJpaConfig;
-import com.sonnets.sonnet.tests.tools.SonnetGenerator;
+import com.sonnets.sonnet.tools.SonnetGenerator;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,6 +33,6 @@ public class SonnetIntegrationTests {
         Assert.assertEquals(sonnetDto.getTitle(), sonnet.getTitle());
 
         Sonnet sonnet1 = sonnetDetailsService.addNewSonnet(sonnetDto);
-        Assert.assertEquals(sonnet1, null);
+        Assert.assertNull(sonnet1);
     }
 }
