@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.tests;
 
 import com.sonnets.sonnet.config.TestJpaConfig;
-import com.sonnets.sonnet.persistence.dtos.PasswordChangeDto;
-import com.sonnets.sonnet.persistence.dtos.UserAddDto;
+import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
+import com.sonnets.sonnet.persistence.dtos.user.UserAddDto;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.tools.TestUserDtoFactory;

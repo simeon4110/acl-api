@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.tests;
 
 import com.sonnets.sonnet.config.TestJpaConfig;
-import com.sonnets.sonnet.persistence.dtos.UserAddDto;
+import com.sonnets.sonnet.persistence.dtos.user.UserAddDto;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;

@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.tools;
 
-import com.sonnets.sonnet.persistence.dtos.UserAddDto;
+
+import com.sonnets.sonnet.persistence.dtos.user.UserAddDto;
 
 /**
  * @author Josh Harkema
