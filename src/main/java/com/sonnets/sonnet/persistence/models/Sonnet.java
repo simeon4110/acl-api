@@ -73,12 +73,12 @@ public class Sonnet {
 
     public Sonnet(SonnetDto sonnetDto) {
         this.updatedAt = new Timestamp(System.currentTimeMillis());
-        this.firstName = sonnetDto.getFirstName();
-        this.lastName = sonnetDto.getLastName();
-        this.title = sonnetDto.getTitle();
+        this.firstName = sonnetDto.getFirstName().trim();
+        this.lastName = sonnetDto.getLastName().trim();
+        this.title = sonnetDto.getTitle().trim();
         this.publicationYear = sonnetDto.getPublicationYear();
-        this.publicationStmt = sonnetDto.getPublicationStmt();
-        this.sourceDesc = sonnetDto.getSourceDesc();
+        this.publicationStmt = sonnetDto.getPublicationStmt().trim();
+        this.sourceDesc = sonnetDto.getSourceDesc().trim();
         this.addedBy = sonnetDto.getAddedBy();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
         this.numOfLines = this.text.size();
@@ -92,6 +92,10 @@ public class Sonnet {
      */
     private static List<String> parseText(String[] text) {
         List<String> strings = new ArrayList<>();
+
+        for (String s : text) {
+            s.trim();
+        }
         Collections.addAll(strings, text);
 
         return strings;

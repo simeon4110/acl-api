@@ -43,7 +43,7 @@ public class SonnetDetailsService {
         try {
             checkIfSonnetExists(newSonnet);
             Sonnet toAddSonnet = new Sonnet(newSonnet);
-            sonnetRepository.save(toAddSonnet);
+            sonnetRepository.saveAndFlush(toAddSonnet);
 
             return toAddSonnet;
         } catch (SonnetAlreadyExistsException e) {
@@ -72,18 +72,18 @@ public class SonnetDetailsService {
         }
 
         sonnet = sonnet.update(newSonnet);
-        sonnetRepository.save(sonnet);
+        sonnetRepository.saveAndFlush(sonnet);
 
         return sonnet;
     }
 
     /**
-     * For updating an actual sonnet object.
+     * For updating an actual sonnet object. HELPER METHOD, DO NOT DELETE.
      *
      * @param sonnet the sonnet to update.
      */
     public void updateSonnet(Sonnet sonnet) {
-        sonnetRepository.save(sonnet);
+        sonnetRepository.saveAndFlush(sonnet);
     }
 
     public List<Sonnet> getAllSonnets() {
