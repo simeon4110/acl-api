@@ -11,7 +11,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Model to store the sonnet info in MySQL.
@@ -94,9 +97,8 @@ public class Sonnet {
         List<String> strings = new ArrayList<>();
 
         for (String s : text) {
-            s.trim();
+            strings.add(s.trim());
         }
-        Collections.addAll(strings, text);
 
         return strings;
     }
