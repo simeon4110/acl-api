@@ -46,12 +46,14 @@ public class InputController {
 
     /**
      * Handles incoming add sonnet post requests.
+     *
      * @param sonnetDto the SonnetDto from the form submission.
-     * @param model the model from the request, needed to attach errors, or valid Sonnet objects.
+     * @param model     the model from the request, needed to attach errors, or valid Sonnet objects.
      * @return the insert page with error or newly added sonnet attached.
      */
     @PostMapping("/insert")
-    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model) {
+    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model,
+                                HttpServletRequest request) {
         logger.debug("Adding sonnet: " + sonnetDto.toString());
         Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
 
@@ -64,6 +66,7 @@ public class InputController {
                     "you have received this message in error, please email joshua.harkema@ucalgary.ca");
         } else {
             model.addAttribute("SonnetDto", sonnetDto);
+            model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
         }
 
         return "input";
