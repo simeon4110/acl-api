@@ -52,7 +52,8 @@ public class BrowseController {
             sortBy = DEFAULT_SORT;
         }
 
-        Pager pager = new Pager(sonnets.getTotalPages(), pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
+        // One is subtracted to fix strange offset issues.
+        Pager pager = new Pager(sonnets.getTotalPages() - 1, pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
 
         logger.debug("Page size: " + pageSize);
         logger.debug("Sort by: " + sortBy);

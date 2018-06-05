@@ -69,7 +69,8 @@ public class LookupController {
 
         try {
             sonnets = searchService.search(sonnet, pageRequest);
-            pager = new Pager(sonnets.getTotalPages(), pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
+            // One is subtracted to fix strange offset issues.
+            pager = new Pager(sonnets.getTotalPages() - 1, pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
             model.addAttribute(PAGER, pager);
             model.addAttribute(PAGE, sonnets);
         } catch (NullPointerException e) {

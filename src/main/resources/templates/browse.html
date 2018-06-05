@@ -74,19 +74,19 @@
             </div>
             <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
                 <ul class="pagination justify-content-center">
-                    <li th:class="${page.number == 0} ? disabled">
+                    <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
                         <a class="page-link"
                            th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
                             &laquo;
                         </a>
                     </li>
-                    <li th:class="${page.number == 0} ? disabled">
+                    <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
                         <a class="page-link"
                            th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
                             Previous
                         </a>
                     </li>
-                    <li th:class="${page.number == (number - 1)} ? 'active pointer-disabled'"
+                    <li th:class="${page.number == (number)} ? 'page-item active' : 'page-item'"
                         th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
                         <a class="page-link"
                            th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
@@ -94,15 +94,15 @@
                             Page
                         </a>
                     </li>
-                    <li th:class="${page.number + 1 == page.totalPages} ? disabled">
+                    <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
                         <a class="page-link"
                            th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
                             Next
                         </a>
                     </li>
-                    <li th:class="${page.number + 1 == page.totalPages} ? disabled">
+                    <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
                         <a class="page-link"
-                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages})}">
+                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages - 1})}">
                             &raquo;
                         </a>
                     </li>
