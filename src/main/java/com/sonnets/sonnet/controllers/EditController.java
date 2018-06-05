@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class EditController {
     private static final Logger logger = Logger.getLogger(EditController.class);
-    private static final String SONNET = "Sonnet";
+    private static final String SONNET = "SonnetDto";
     private static final String EDIT = "edit";
     private final SonnetDetailsService sonnetDetailsService;
 
@@ -45,6 +45,7 @@ public class EditController {
         Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
         SonnetDto sonnetDto = new SonnetDto(sonnet);
         model.addAttribute(SONNET, sonnetDto);
+        model.addAttribute("id", sonnet.getId());
         model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
 
         return EDIT;

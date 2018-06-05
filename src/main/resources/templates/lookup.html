@@ -73,7 +73,15 @@
                                        class="card-link">JSON</a>
                                     <a th:href="@{~/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
                                        class="card-link">TEI</a>
-                                    <a th:href="@{~/edit/} + ${Sonnet.getId()}" class="card-link">Edit</a>
+                                    <a sec:authorize="hasAuthority('USER')" target="_blank" class="card-link"
+                                       th:href="@{~/edit/} + ${Sonnet.getId()}">
+                                        Edit
+                                    </a>
+                                    <a sec:authorize="hasAuthority('ADMIN')"
+                                       th:href="@{~/admin/sonnets/all/delete/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">
+                                        Delete
+                                    </a>
                                 </li>
                             </ul>
                             </div>
