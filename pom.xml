@@ -5,7 +5,7 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.0.5-DEV</version>
+    <version>0.5.1-DEV</version>
     <packaging>jar</packaging>
 
     <name>Sonnet</name>
