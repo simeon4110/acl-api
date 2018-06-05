@@ -5,7 +5,7 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.5.2-DEV</version>
+    <version>0.5.3-DEV</version>
     <packaging>jar</packaging>
 
     <name>Sonnet</name>
@@ -58,6 +58,12 @@
             <artifactId>spring-security-test</artifactId>
             <version>5.0.4.RELEASE</version>
             <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-springsecurity4 -->
         <dependency>
