@@ -23,7 +23,7 @@
                         <a class="nav-link" th:href="@{~/profile/my_sonnets}">Review My Sonnets</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Classify Records</a>
+                        <a class="nav-link" th:href="@{~/profile/classify}">Classify Records</a>
                     </li>
                 </ul>
             </div>
@@ -33,27 +33,45 @@
                 <p class="lead">
                     To change your password use the form below.
                 </p>
-                <form th:object="${PasswordChangeDto}" class="form" th:action="@{~/profile}" method="POST">
+                <form th:object="${PasswordChangeDto}" class="form" th:action="@{~/profile}" method="POST" role="form">
                     <div th:if="${param.error}" class="alert alert-danger">
-                        Invalid password.
+                        Invalid current password.
                     </div>
                     <div th:if="${param.success}" class="alert alert-success">
                         Password changed.
                     </div>
                     <div class="form-group">
-                        <label for="currentPassword" class="control-label">Current Password:</label>
-                        <input id="currentPassword" type="password" class="form-control" th:field="*{currentPassword}"
-                               autocomplete="off" autofocus required/>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                            </div>
+                            <input id="currentPassword" type="password" class="form-control"
+                                   placeholder="Current password" th:field="*{currentPassword}" autocomplete="off"
+                                   autofocus required/>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="password" class="control-label">Password:</label>
-                        <input id="password" type="password" class="form-control" th:field="*{password}"
-                               autocomplete="off" autofocus required/>
+                    <div class="form-group" th:classappend="${#fields.hasErrors('password')}? 'has-warning' : ''">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                            </div>
+                            <input id="password" type="password" class="form-control" placeholder="New password"
+                                   th:field="*{password}" autocomplete="off" autofocus required/>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="password1" class="control-label">Repeat Password:</label>
-                        <input id="password1" type="password" class="form-control" th:field="*{password1}"
-                               autocomplete="off" required/>
+                    <div class="form-group" th:classappend="${#fields.hasErrors('password1')}? 'has-warning' : ''">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                            </div>
+                            <input id="password1" type="password" class="form-control" placeholder="Confirm password"
+                                   th:field="*{password1}" autocomplete="off" required/>
+                        </div>
+                        <ul class="list-unstyled mt-2" th:each="error: ${#fields.errors('password1')}">
+                            <li th:each="message : ${error.split(',')}" th:text="${message}" style="color: red;">
+                                Text
+                            </li>
+                        </ul>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>

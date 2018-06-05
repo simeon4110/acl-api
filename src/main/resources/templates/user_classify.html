@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-11">
-                <h1 class="display-4 pb-3">Review my Records:</h1>
+                <h1 class="display-4 pb-3">Classify Records:</h1>
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
@@ -24,14 +24,19 @@
                     <a class="nav-link" th:href="@{~/profile/my_sonnets}">Review My Sonnets</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">Classify Records</a>
+                    <a class="nav-link active" th:href="@{~/profile/classify}">Classify Records</a>
                 </li>
             </ul>
         </div>
     </div>
-    <p class="lead">
-        NOT IMPLEMENTED YET.
-    </p>
+    <div class="row justify-content-center">
+        <div class="col-lg-4">
+            <p class="lead">
+                NOT IMPLEMENTED YET.
+            </p>
+        </div>
+    </div>
+
     <div th:replace="fragments/footer :: footer"></div>
     <div th:replace="fragments/footer :: scripts"></div>
 </main>

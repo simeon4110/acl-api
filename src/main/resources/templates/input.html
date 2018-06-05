@@ -13,101 +13,109 @@
                 <hr class="m-4" style="border-color: black"/>
             </div>
         </div>
-        <div class="row justify-content-center" th:if="${error != null}">
-            <div class="col-lg-8">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-header">Whoops! Something went wrong.</div>
-                    <div class="card-body text-dark bg-light">
-                        <h5 class="card-title">Error Message: </h5>
-                        <p class="card-text" th:text="${error}">Error message.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <form action="#" th:action="@{~/insert}" id="insertForm" th:object="${SonnetDto}" role="form"
-                      method="POST" class="form mx-3">
+                      method="POST" class="mx-3" th:classappend="${#fields.hasErrors('global')}? 'was-validated' : ''">
                     <div th:if="${param.error}" class="alert alert-error">
-                        An error occurred.
+                        An error occurred, please try again. If this issue persists please use the "Report a Bug" link
+                        in the top menu.
                     </div>
                     <div class="form-group">
-                        <label for="firstName" class="control-label">Author's first name:</label>
-                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
-                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
-                             th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-person"></span></span>
+                            </div>
+                            <input id="firstName" class="form-control" placeholder="Author's first name"
+                                   th:field="*{firstName}"
+                                   th:classappend="${#fields.hasErrors('firstName')}? 'is-invalid' : ''"
+                                   autocomplete="off" autofocus/>
+                            <div class="invalid-feedback" role="alert" th:if="${#fields.hasErrors('firstName')}"
+                                 th:errors="*{firstName}">
+                                error
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="lastName" class="control-label">Author's last name:*</label>
-                        <input id="lastName" class="form-control" th:field="*{lastName}" required/>
-                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
-                             th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-person"></span></span>
+                            </div>
+                            <input id="lastName" class="form-control" placeholder="Author's last name"
+                                   th:field="*{lastName}"
+                                   th:classappend="${#fields.hasErrors('lastName')}? 'is-invalid' : ''"
+                                   autocomplete="off"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}"
+                                 th:errors="*{lastName}">
+                                error
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="title" class="control-label">Sonnet's title:</label>
-                        <input id="title" class="form-control" th:field="*{title}"/>
-                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
-                             th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-pencil"></span></span>
+                            </div>
+                            <input id="title" class="form-control" placeholder="Sonnet's title" th:field="*{title}"
+                                   th:classappend="${#fields.hasErrors('title')}? 'is-invalid' : ''"
+                                   autocomplete="off"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                                error
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="publicationYear" class="control-label">Year of publication:*</label>
-                        <input id="publicationYear" type="number" class="form-control" th:field="*{publicationYear}"
-                               required/>
-                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
-                             th:if="${#fields.hasErrors('publicationYear')}" th:errors="*{publicationYear}">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-calendar"></span></span>
+                            </div>
+                            <input id="publicationYear" type="number" class="form-control"
+                                   placeholder="1660" th:field="*{publicationYear}"
+                                   th:classappend="${#fields.hasErrors('publicationYear')}? 'is-invalid' : ''"
+                                   autocomplete="off"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('publicationYear')}"
+                                 th:errors="*{publicationYear}">
+                                error
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="publicationStatement" class="control-label">
-                            Publication statement:*
-                        </label>
-                        <select id="publicationStatement" class="custom-select custom-select-lg mb-3"
-                                th:field="*{publicationStmt}">
-                            <option value="Not for distribution.">Not for distribution.</option>
-                            <option value="Public domain.">Public domain.</option>
-                        </select>
-                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
-                             th:if="${#fields.hasErrors('publicationStmt')}" th:errors="*{publicationStmt}">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-copywriting"></span></span>
+                            </div>
+                            <select id="publicationStatement" class="custom-select custom-select-md"
+                                    title="Publication Statement" th:field="*{publicationStmt}"
+                                    th:classappend="${#fields.hasErrors('publicationStmt')}? 'is-invalid' : ''"
+                                    autocomplete="off">
+                                <option value="Not for distribution.">Not for distribution.</option>
+                                <option value="Public domain.">Public domain.</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="sourceDescription" class="control-label">
-                            Source description: (i.e. "Shakespeare's collected works")
-                        </label>
-                        <input id="sourceDescription" class="form-control" th:field="*{sourceDesc}"/>
-                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
-                             th:if="${#fields.hasErrors('sourceDesc')}" th:errors="*{sourceDesc}">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-book"></span></span>
+                            </div>
+                            <input id="sourceDescription" class="form-control" placeholder="Source description"
+                                   th:field="*{sourceDesc}"
+                                   th:classappend="${#fields.hasErrors('sourceDesc')}? 'is-invalid' : ''"
+                                   autocomplete="off"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('sourceDesc')}"
+                                 th:errors="*{sourceDesc}">
+                                error
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="text" class="control-label">Sonnet text (please preserve lines):*</label>
-                        <textarea id="text" class="form-control" th:field="*{text}" rows="14" required></textarea>
-                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
-                             th:if="${#fields.hasErrors('text')}" th:errors="*{text}">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <textarea id="text" class="form-control"
+                                  placeholder="Copy sonnet text here. Please preserve formatting from original. Leading and trailing whitespace is automatically removed after submission."
+                                  th:field="*{text}"
+                                  th:classappend="${#fields.hasErrors('text')}? 'is-invalid' : ''"
+                                  rows="14"></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('text')}" th:errors="*{text}">
+                            error
                         </div>
                     </div>
 
@@ -115,7 +123,6 @@
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
                         submit
                     </button>
-                    <p class="mt-2">* indicates required fields.</p>
                     <!--Modal popup -->
                     <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
                         <div class="modal-dialog" role="document">
@@ -150,6 +157,19 @@
         function hideModal() {
             $('#confirmModal').modal('hide');
         }
+
+        $('#firstName').tooltip({'trigger': 'hover', 'title': 'Author\'s first name'});
+        $('#lastName').tooltip({'trigger': 'hover', 'title': 'Author\'s last name'});
+        $('#title')
+            .tooltip({
+                'trigger': 'hover', 'title': 'Sequential sonnets should be named as "Ode to the Westwind - I", ' +
+                '"Ode to the Westwind - II", etc'
+            });
+        $('#publicationYear').tooltip({'trigger': 'hover', 'title': 'Year of publication'});
+        $('#publicationStatement').tooltip({'trigger': 'hover', 'title': 'Can this sonnet be shared?'});
+        $('#sourceDescription')
+            .tooltip({'trigger': 'hover', 'title': 'A short description of where the sonnet came from'});
+
     </script>
 </main>
 </html>

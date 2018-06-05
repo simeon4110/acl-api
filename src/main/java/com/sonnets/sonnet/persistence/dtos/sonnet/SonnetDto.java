@@ -18,6 +18,7 @@ public class SonnetDto {
     private String firstName;
     @NotEmpty
     private String lastName;
+    @NotEmpty
     private String title;
     @Range(min = 1400, max = 2018)
     private int publicationYear;

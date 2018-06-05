@@ -40,8 +40,4 @@ public class SonnetIntegrationTests {
         Assert.assertNull(sonnet1);
     }
 
-    @Test
-    public void testDateRange() {
-
-    }
 }

@@ -1,5 +1,7 @@
 package com.sonnets.sonnet.persistence.dtos.user;
 
+import com.sonnets.sonnet.tools.ValidPassword;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -11,8 +13,10 @@ public class PasswordChangeDto {
     @NotEmpty
     private String currentPassword;
     @NotEmpty
+    @ValidPassword
     private String password;
     @NotEmpty
+    @ValidPassword
     private String password1;
 
     public String getCurrentPassword() {

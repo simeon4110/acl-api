@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,7 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfilePage(Model model) {
         model.addAttribute(PASS_DTO, new PasswordChangeDto());
+
         return "profile";
     }
 
@@ -51,17 +53,32 @@ public class UserController {
      * @return a success / error redirect based on outcome from UserDetailsService.
      */
     @PostMapping("/profile")
-    public String postChangePassword(@ModelAttribute @Valid PasswordChangeDto passwordChangeDto,
-                                     HttpServletRequest request, Model model) {
+    public String postChangePassword(@ModelAttribute(PASS_DTO) @Valid PasswordChangeDto passwordChangeDto,
+                                     BindingResult result, HttpServletRequest request, Model model) {
         logger.debug("Changing password for: " + request.getUserPrincipal().getName());
-        model.addAttribute(PASS_DTO, new PasswordChangeDto());
 
-        return userDetailsService.updatePassword(request.getUserPrincipal(), passwordChangeDto);
+        if (result.hasErrors()) { // Catch password validation errors.
+            logger.debug("Password validation error: " + result.getAllErrors().toString());
+            model.addAttribute(PASS_DTO, passwordChangeDto);
+
+            return "profile";
+        } else {
+            model.addAttribute(PASS_DTO, new PasswordChangeDto());
+
+            return userDetailsService.updatePassword(request.getUserPrincipal(), passwordChangeDto);
+        }
     }
 
     @GetMapping("/profile/my_sonnets")
     public String showUserSonnets(Model model, HttpServletRequest request) {
         model.addAttribute("username", request.getUserPrincipal().getName());
+
         return "user_sonnets";
+    }
+
+    @GetMapping("/profile/classify")
+    public String showVerifyPage() {
+
+        return "user_classify";
     }
 }
