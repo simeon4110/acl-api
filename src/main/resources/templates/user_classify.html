@@ -1,10 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Beyond Aporia - Classify Records</title>
+    <div th:replace="fragments/header :: head"></div>
 </head>
-<body>
-
-</body>
-</html>
+<main>
+    <div th:replace="fragments/header :: nav-bar"></div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <h1 class="display-4 pb-3">Review my Records:</h1>
+                <hr class="m-4" style="border-color: black"/>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mb-3">
+        <div class="col-lg-10">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/profile}">Change Password</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/profile/my_sonnets}">Review My Sonnets</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Classify Records</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <p class="lead">
+        NOT IMPLEMENTED YET.
+    </p>
+    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/footer :: scripts"></div>
+</main>

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Controller for all sonnet edit requests.
  *
@@ -37,11 +39,13 @@ public class EditController {
      * @return a html page with the sonnet data populated for editing.
      */
     @GetMapping("/edit/{id}")
-    public String editSonnet(@PathVariable("id") String id, Model model) {
+    public String editSonnet(@PathVariable("id") String id, Model model,
+                             HttpServletRequest request) {
         logger.debug("Editing sonnet: " + id);
         Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
         SonnetDto sonnetDto = new SonnetDto(sonnet);
         model.addAttribute(SONNET, sonnetDto);
+        model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
 
         return EDIT;
     }
@@ -54,11 +58,13 @@ public class EditController {
      * @return an html page with the NEW sonnet data populated for editing.
      */
     @PostMapping(value = "/edit/{id}")
-    public String postEditSonnet(@PathVariable("id") String id, @ModelAttribute SonnetDto sonnet, Model model) {
+    public String postEditSonnet(@PathVariable("id") String id, @ModelAttribute SonnetDto sonnet, Model model,
+                                 HttpServletRequest request) {
         logger.debug("Posting new sonnet details for id: " + sonnet.getId());
         Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
         sonnet = new SonnetDto(newSonnet);
         model.addAttribute(SONNET, sonnet);
+        model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
 
         return EDIT;
     }

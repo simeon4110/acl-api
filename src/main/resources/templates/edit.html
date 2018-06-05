@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-    <title>Sonnet - Edit</title>
+    <title>Beyond Aporia - Edit</title>
     <div th:replace="fragments/header :: head"></div>
 </head>
 <main>
@@ -38,9 +38,13 @@
                     </div>
                     <div class="form-group">
                         <label for="publicationStatement" class="control-label">
-                            Publication statement (i.e. "Not for distribution"):*
+                            Publication statement:*
                         </label>
-                        <input id="publicationStatement" class="form-control" th:field="*{publicationStmt}"/>
+                        <select id="publicationStatement" class="custom-select custom-select-lg mb-3"
+                                th:field="*{publicationStmt}">
+                            <option value="Not for distribution.">Not for distribution.</option>
+                            <option value="Public domain.">Public domain.</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="sourceDescription" class="control-label">
