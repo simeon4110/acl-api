@@ -63,7 +63,7 @@ public class InputController {
                     "the database for it. If " +
                     "you have received this message in error, please email joshua.harkema@ucalgary.ca");
         } else {
-            model.addAttribute("SonnetDto", new SonnetDto(sonnet));
+            model.addAttribute("SonnetDto", sonnetDto);
         }
 
         return "input";
