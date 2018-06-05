@@ -26,6 +26,10 @@ public class InputController {
     private final SonnetDetailsService sonnetDetailsService;
     private static final Logger logger = Logger.getLogger(InputController.class);
 
+    private static final String SONNET_DTO = "SonnetDto"; // Name of dto attached to model.
+    private static final String USERNAME = "username"; // Name of user attached to model.
+    private static final String INPUT = "input"; // Name of page returned.
+
     @Autowired
     public InputController(SonnetDetailsService sonnetDetailsService) {
         this.sonnetDetailsService = sonnetDetailsService;
@@ -39,10 +43,10 @@ public class InputController {
      */
     @GetMapping("/insert")
     public String showInsertPage(Model model, HttpServletRequest request) {
-        model.addAttribute("SonnetDto", new SonnetDto());
-        model.addAttribute("username", request.getUserPrincipal().getName());
+        model.addAttribute(SONNET_DTO, new SonnetDto());
+        model.addAttribute(USERNAME, request.getUserPrincipal().getName());
 
-        return "input";
+        return INPUT;
     }
 
     /**
@@ -55,11 +59,13 @@ public class InputController {
     @PostMapping("/insert")
     public String getInsertPOST(@Valid @ModelAttribute("SonnetDto") SonnetDto sonnetDto, BindingResult result,
                                 Model model, HttpServletRequest request) {
-        if (result.hasErrors()) {
-            model.addAttribute("SonnetDto", sonnetDto);
-            model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
 
-            return "input";
+        // Catch validation errors.
+        if (result.hasErrors()) {
+            model.addAttribute(SONNET_DTO, sonnetDto);
+            model.addAttribute(USERNAME, request.getUserPrincipal().getName()); // Don't forget!
+
+            return INPUT;
         }
 
         logger.debug("Adding sonnet: " + sonnetDto.toString());
@@ -73,10 +79,10 @@ public class InputController {
                     "the database for it. If " +
                     "you have received this message in error, please email joshua.harkema@ucalgary.ca");
         } else {
-            model.addAttribute("SonnetDto", sonnetDto);
-            model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
+            model.addAttribute(SONNET_DTO, sonnetDto);
+            model.addAttribute(USERNAME, request.getUserPrincipal().getName()); // Don't forget!
         }
 
-        return "input";
+        return INPUT;
     }
 }

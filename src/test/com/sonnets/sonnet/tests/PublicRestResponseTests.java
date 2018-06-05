@@ -24,6 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+/**
+ * MockMvc test for public REST endpoints.
+ *
+ * @author Josh Harkema
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
 @WebAppConfiguration
@@ -41,8 +46,13 @@ public class PublicRestResponseTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
     }
 
+    /**
+     * Tests to ensure all rest endpoints return valid files.
+     *
+     * @throws Exception it's a test...
+     */
     @Test
-    public void testRestTests() throws Exception {
+    public void testRestEndpoints() throws Exception {
         mockMvc.perform(get("/sonnets/by_id/{id}", testIdStr).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
