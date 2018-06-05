@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,8 +53,15 @@ public class InputController {
      * @return the insert page with error or newly added sonnet attached.
      */
     @PostMapping("/insert")
-    public String getInsertPOST(@ModelAttribute("SonnetDto") @Valid SonnetDto sonnetDto, Model model,
-                                HttpServletRequest request) {
+    public String getInsertPOST(@Valid @ModelAttribute("SonnetDto") SonnetDto sonnetDto, BindingResult result,
+                                Model model, HttpServletRequest request) {
+        if (result.hasErrors()) {
+            model.addAttribute("SonnetDto", sonnetDto);
+            model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
+
+            return "input";
+        }
+
         logger.debug("Adding sonnet: " + sonnetDto.toString());
         Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
 

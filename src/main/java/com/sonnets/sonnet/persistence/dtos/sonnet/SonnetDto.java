@@ -1,8 +1,10 @@
 package com.sonnets.sonnet.persistence.dtos.sonnet;
 
 import com.sonnets.sonnet.persistence.models.Sonnet;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
+
 
 /**
  * DTO object handles input from controller. Only very basic input validation is done here. Bootstrap has front end,
@@ -17,6 +19,7 @@ public class SonnetDto {
     @NotEmpty
     private String lastName;
     private String title;
+    @Range(min = 1400, max = 2018)
     private int publicationYear;
     @NotEmpty
     private String publicationStmt;

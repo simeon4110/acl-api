@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Josh Harkema
@@ -23,6 +24,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @ContextConfiguration(classes = {TestJpaConfig.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
+@Transactional
 public class SonnetIntegrationTests {
     private static final Logger logger = Logger.getLogger(SonnetIntegrationTests.class);
     @Autowired
@@ -36,5 +38,10 @@ public class SonnetIntegrationTests {
 
         Sonnet sonnet1 = sonnetDetailsService.addNewSonnet(sonnetDto);
         Assert.assertNull(sonnet1);
+    }
+
+    @Test
+    public void testDateRange() {
+
     }
 }

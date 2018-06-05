@@ -26,7 +26,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <form action="" id="insertForm" th:object="${SonnetDto}" role="form"
+                <form action="#" th:action="@{~/insert}" id="insertForm" th:object="${SonnetDto}" role="form"
                       method="POST" class="form mx-3">
                     <div th:if="${param.error}" class="alert alert-error">
                         An error occurred.
@@ -34,19 +34,43 @@
                     <div class="form-group">
                         <label for="firstName" class="control-label">Author's first name:</label>
                         <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
+                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
+                             th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="lastName" class="control-label">Author's last name:*</label>
                         <input id="lastName" class="form-control" th:field="*{lastName}" required/>
+                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
+                             th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="title" class="control-label">Sonnet's title:</label>
                         <input id="title" class="form-control" th:field="*{title}"/>
+                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
+                             th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="publicationYear" class="control-label">Year of publication:*</label>
                         <input id="publicationYear" type="number" class="form-control" th:field="*{publicationYear}"
                                required/>
+                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
+                             th:if="${#fields.hasErrors('publicationYear')}" th:errors="*{publicationYear}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="publicationStatement" class="control-label">
@@ -57,16 +81,34 @@
                             <option value="Not for distribution.">Not for distribution.</option>
                             <option value="Public domain.">Public domain.</option>
                         </select>
+                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
+                             th:if="${#fields.hasErrors('publicationStmt')}" th:errors="*{publicationStmt}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="sourceDescription" class="control-label">
                             Source description: (i.e. "Shakespeare's collected works")
                         </label>
                         <input id="sourceDescription" class="form-control" th:field="*{sourceDesc}"/>
+                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
+                             th:if="${#fields.hasErrors('sourceDesc')}" th:errors="*{sourceDesc}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="text" class="control-label">Sonnet text (please preserve lines):*</label>
                         <textarea id="text" class="form-control" th:field="*{text}" rows="14" required></textarea>
+                        <div class="alert alert-danger alert-dismissible fade show my-1" role="alert"
+                             th:if="${#fields.hasErrors('text')}" th:errors="*{text}">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
 
                     <input type="hidden" name="addedBy" th:value="${username}"/>

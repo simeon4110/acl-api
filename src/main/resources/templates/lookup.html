@@ -15,36 +15,39 @@
             </div>
         </div>
         <div class="row justify-content-center mt-3">
-            <div class="col-sm-2 mr-0">
-                <form action="" th:object="${Sonnet}" role="form" method="GET" class="form">
-                    <div class="form-group">
-                        <label for="firstName" class="control-label">Author's first name:</label>
-                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName" class="control-label">Author's last name:</label>
-                        <input id="lastName" class="form-control" th:field="*{lastName}"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="title" class="control-label">Sonnet title:</label>
-                        <input id="title" class="form-control" th:field="*{title}"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="publicationYear" class="control-label">Year of publication:</label>
-                        <input id="publicationYear" type="number" class="form-control" th:field="*{publicationYear}"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="contains" class="control-label">Sonnet contains:</label>
-                        <input id="contains" class="form-control" th:field="*{text}"/>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2">Search</button>
-                </form>
+            <div class="col-lg-2 justify-content-center mb-2">
+                <div class="form">
+                    <form action="" th:object="${Sonnet}" role="form" method="GET" class="form">
+                        <div class="form-group">
+                            <label for="firstName" class="control-label">Author's first name:</label>
+                            <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName" class="control-label">Author's last name:</label>
+                            <input id="lastName" class="form-control" th:field="*{lastName}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="title" class="control-label">Sonnet title:</label>
+                            <input id="title" class="form-control" th:field="*{title}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="publicationYear" class="control-label">Year of publication:</label>
+                            <input id="publicationYear" type="number" class="form-control"
+                                   th:field="*{publicationYear}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="contains" class="control-label">Sonnet contains:</label>
+                            <input id="contains" class="form-control" th:field="*{text}"/>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-2">Search</button>
+                    </form>
+                </div>
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-8">
                 <div th:if="${not #lists.isEmpty(page)}">
-                    <div class="card-group">
+                    <div class="card-deck">
                         <span th:each="Sonnet : ${page}">
-                            <div class="card border-light m-2" style="width: 26rem;">
+                            <div class="card border-light mb-2">
                                 <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
                                 <div class="card-body">
                                 <h5 class="card-title"
