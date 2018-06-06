@@ -1,0 +1,8 @@
+stages:
+  - build
+
+maven-build:
+  script: "mvn build"
+  artifacts:
+    paths:
+      - target/*.jar

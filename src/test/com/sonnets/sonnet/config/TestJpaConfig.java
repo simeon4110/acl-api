@@ -24,11 +24,11 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @Profile("test")
 public class TestJpaConfig {
-    public static final String SQL_SERVER_IP = "";
-    public static final String SQL_DATABASE_NAME = "";
-    public static final String SQL_PORT "";
-    public static final String SQL_USER = "";
-    public static final String SQL_PASS = "";
+    public static final String SQL_SERVER_IP = "127.0.0.1";
+    public static final String SQL_DATABASE_NAME = "sonnet_test";
+    public static final String SQL_PORT = "3306";
+    public static final String SQL_USER = "sonnet_test";
+    public static final String SQL_PASS = "r4q^KpghTyACZgH0";
     
     /**
      * The test specific data source bean.
