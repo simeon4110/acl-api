@@ -12,6 +12,7 @@ stages:
 maven_build:
   image: maven:3-jdk-8
   stage: test
-  tags: maven
+  tags:
+    - maven
   script:
     - mvn verify
