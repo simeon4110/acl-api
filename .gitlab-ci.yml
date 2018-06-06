@@ -1,4 +1,14 @@
 image: maven:3-jdk-8
+cache:
+  paths:
+    - /root/.m2/repository/
+
+before_script:
+  -apt-get update -y && apt-get upgrade -y
 
 build:
-  script: "mvn install -B"
+  script:
+    - mvn install -B
+  artifacts:
+    paths:
+      - ./target/*.jar
