@@ -1,8 +1,7 @@
 stages:
-  - build
+  - test
 
-build:
-  script: "mvn build"
-  artifacts:
-    paths:
-      - target/*.jar
+maven_build:
+  stage: test
+  script:
+    - mvn verify
