@@ -1,7 +1,7 @@
 stages:
   - build
 
-maven-build:
+build:
   script: "mvn build"
   artifacts:
     paths:
