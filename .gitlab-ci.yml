@@ -3,7 +3,5 @@ stages:
 
 maven_build:
   stage: test
-  tags:
-    - maven
   script:
     - mvn verify
