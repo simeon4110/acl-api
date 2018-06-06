@@ -1,14 +1,21 @@
 image: maven:3-jdk-8
-cache:
-  paths:
-    - /root/.m2/repository/
+stages:
+  - build
+  - test
 
 before_script:
   - apt-get update -y && apt-get upgrade -y
 
-build:
+cache:
+  paths:
+    - /root/.m2/repository/
+
+compile:
+  stage: build
   script:
-    - mvn install -B
-  artifacts:
-    paths:
-      - ./target/*.jar
+    - mvn compile -B
+
+verify:
+  stage: test
+  script:
+    - mvn verify -B
