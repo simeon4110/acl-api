@@ -6,7 +6,6 @@ import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import com.sonnets.sonnet.tools.SonnetGenerator;
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 @Transactional
 public class SonnetIntegrationTests {
-    private static final Logger logger = Logger.getLogger(SonnetIntegrationTests.class);
     @Autowired
     private SonnetDetailsService sonnetDetailsService;
 

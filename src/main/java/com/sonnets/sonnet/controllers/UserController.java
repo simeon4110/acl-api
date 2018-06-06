@@ -19,6 +19,7 @@ import javax.validation.Valid;
  *
  * @author Josh Harkema
  */
+@SuppressWarnings("SameReturnValue")
 @Controller
 public class UserController {
     private static final Logger logger = Logger.getLogger(UserController.class);

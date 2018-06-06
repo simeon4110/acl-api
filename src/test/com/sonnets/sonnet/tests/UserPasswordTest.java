@@ -29,9 +29,9 @@ import java.util.UUID;
 @ActiveProfiles("test")
 public class UserPasswordTest {
     private static final Logger logger = Logger.getLogger(UserPasswordTest.class);
-    private static final String OLDPASSWORD = "password1";
-    private static final String NEWPASSWORD = "password2";
-    private static PasswordEncoder encoder = new BCryptPasswordEncoder(11);
+    private static final String OLD_PASSWORD = "password1";
+    private static final String NEW_PASSWORD = "password2";
+    private static final PasswordEncoder encoder = new BCryptPasswordEncoder(11);
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
     @Autowired
@@ -46,12 +46,12 @@ public class UserPasswordTest {
         logger.debug("Verifying password change for user: " + username);
 
         PasswordChangeDto passwordChangeDto = new PasswordChangeDto();
-        passwordChangeDto.setCurrentPassword(OLDPASSWORD);
-        passwordChangeDto.setPassword(NEWPASSWORD);
-        passwordChangeDto.setPassword1(NEWPASSWORD);
+        passwordChangeDto.setCurrentPassword(OLD_PASSWORD);
+        passwordChangeDto.setPassword(NEW_PASSWORD);
+        passwordChangeDto.setPassword1(NEW_PASSWORD);
 
         userDetailsService.updatePassword(() -> username, passwordChangeDto);
-        Assert.assertTrue(encoder.matches(NEWPASSWORD, userRepository.findByUsername(username).getPassword()));
+        Assert.assertTrue(encoder.matches(NEW_PASSWORD, userRepository.findByUsername(username).getPassword()));
         logger.debug("Assertion [] password change is valid.");
     }
 

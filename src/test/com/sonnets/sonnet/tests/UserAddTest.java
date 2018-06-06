@@ -31,7 +31,7 @@ import java.util.UUID;
 public class UserAddTest {
     private static final Logger logger = Logger.getLogger(UserAddTest.class);
     private static final String PASSWORD = "password1";
-    private static PasswordEncoder encoder = new BCryptPasswordEncoder(11);
+    private static final PasswordEncoder encoder = new BCryptPasswordEncoder(11);
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
     @Autowired

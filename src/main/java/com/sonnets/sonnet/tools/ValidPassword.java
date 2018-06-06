@@ -7,6 +7,7 @@ import java.lang.annotation.*;
 /**
  * @author Josh Harkema
  */
+@SuppressWarnings("unused")
 @Documented
 @Constraint(validatedBy = PasswordConstraintValidator.class)
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.ANNOTATION_TYPE})

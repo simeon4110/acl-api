@@ -1,11 +1,9 @@
 package com.sonnets.sonnet.config;
 
 import com.sonnets.sonnet.persistence.models.Sonnet;
-import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
 import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -25,8 +23,6 @@ public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEve
     private static final Logger logger = Logger.getLogger(BuildSearchIndex.class);
     @PersistenceContext
     private EntityManager entityManager;
-    @Autowired
-    private PrivilegeRepository privilegeRepository;
 
     @Override
     public void onApplicationEvent(@SuppressWarnings("NullableProblems") final ApplicationReadyEvent event) {

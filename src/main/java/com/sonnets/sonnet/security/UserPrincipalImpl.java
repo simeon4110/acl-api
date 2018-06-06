@@ -15,11 +15,11 @@ import java.util.List;
  *
  * @author Josh Harkema
  */
-public class UserPrincipalImpl implements UserDetails {
+class UserPrincipalImpl implements UserDetails {
     private static final long serialVersionUID = 3195560688097836277L;
-    private User user;
+    private final User user;
 
-    public UserPrincipalImpl(User user) {
+    UserPrincipalImpl(User user) {
         this.user = user;
     }
 

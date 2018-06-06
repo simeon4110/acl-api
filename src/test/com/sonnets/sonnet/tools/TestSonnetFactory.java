@@ -13,6 +13,7 @@ public abstract class TestSonnetFactory {
         // Nuh-uh, you can't make me.
     }
 
+    @SuppressWarnings("unused")
     public static SonnetDto randomSonnetGenerator() {
         SonnetDto sonnetDto = new SonnetDto();
         sonnetDto.setFirstName(UUID.randomUUID().toString());
