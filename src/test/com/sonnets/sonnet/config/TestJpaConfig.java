@@ -29,6 +29,7 @@ public class TestJpaConfig {
     public static final String SQL_PORT "";
     public static final String SQL_USER = "";
     public static final String SQL_PASS = "";
+    
     /**
      * The test specific data source bean.
      *
