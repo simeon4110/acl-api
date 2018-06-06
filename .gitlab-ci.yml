@@ -1,7 +1,2 @@
-stages:
-  - test
-
 maven_build:
-  stage: test
-  script:
-    - mvn verify
+  script: mvn verify
