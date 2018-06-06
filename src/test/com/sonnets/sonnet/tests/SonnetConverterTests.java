@@ -4,7 +4,6 @@ import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.tools.SonnetConverter;
 import com.sonnets.sonnet.tools.TestSonnetFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -24,7 +23,7 @@ import java.util.List;
 public class SonnetConverterTests {
     private static final Logger logger = Logger.getLogger(SonnetConverterTests.class);
     @Test
-    public void testXMLConverter() throws Exception {
+    public void testXMLConverter() {
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append("\n<sonnet>");
@@ -48,7 +47,7 @@ public class SonnetConverterTests {
     }
 
     @Test
-    public void testCSVConverter() throws Exception {
+    public void testCSVConverter() {
         SonnetDto toTestDto = TestSonnetFactory.specificSonnetGenerator();
         Sonnet toTest = new Sonnet(toTestDto);
         Sonnet toTest1 = new Sonnet(toTestDto);
@@ -78,7 +77,7 @@ public class SonnetConverterTests {
     }
 
     @Test
-    public void testTEIConverter() throws Exception {
+    public void testTEIConverter() {
         SonnetDto toTestDto = TestSonnetFactory.specificSonnetGenerator();
         Sonnet toTest = new Sonnet(toTestDto);
 
