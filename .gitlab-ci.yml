@@ -1,6 +1,4 @@
 image: maven:3-jdk-8
 
 build:
-  tags:
-    - sonnet
   script: "mvn install -B"
