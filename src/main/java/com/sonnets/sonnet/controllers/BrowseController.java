@@ -24,6 +24,7 @@ public class BrowseController {
     private static final Logger logger = Logger.getLogger(BrowseController.class);
 
     // Constants.
+    private static final String PAGE_TITLE = "pageTitle";
     private static final int[] PAGE_SIZES = {5, 10, 20, 50};
     private static final int BUTTONS_TO_SHOW = 5;
     private static final String DEFAULT_SORT = "lastName";
@@ -64,6 +65,7 @@ public class BrowseController {
         model.addAttribute("pager", pager);
         model.addAttribute("selectedSortBy", sortBy);
         model.addAttribute("sortBy", SORT_BY);
+        model.addAttribute(PAGE_TITLE, "Browse");
         return "browse";
     }
 

@@ -126,4 +126,21 @@ public abstract class SonnetConverter {
 
         return sb.toString();
     }
+
+    /**
+     * Converts a list of Sonnets into plain text version of only the lines of poetry. No metadata.
+     *
+     * @param sonnets the sonnets to convert.
+     * @return a string with all the sonnets.
+     */
+    public static String sonnetsToText(List<Sonnet> sonnets) {
+        StringBuilder sb = new StringBuilder();
+        for (Sonnet sonnet : sonnets) {
+            for (String s : sonnet.getText()) {
+                sb.append(s.trim()).append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
 }

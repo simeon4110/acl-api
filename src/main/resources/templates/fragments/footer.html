@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<!--suppress JSUnresolvedLibraryURL, JSUnresolvedLibraryURL -->
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
-<body>
-
+<!--suppress ALL -->
 <!--Scripts snippet-->
 <div th:fragment="scripts">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
@@ -51,18 +47,16 @@
         })();
     </script>
 </div>
-
 <!--Footer snippet-->
-<div th:fragment="footer">
-    <footer class="footer">
-        <div class="container">
+<footer class="footer" th:fragment="footer">
+    <div class="container">
         <span class="text-muted">This site is licensed under the
             <a href="https://creativecommons.org/licenses/by-sa/2.0/ca/">
                 Creative Commons Attribution-ShareAlike 2.0 Canada License.
             </a>
         </span>
-        </div>
-    </footer>
-</div>
+    </div>
+</footer>
+
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.tools;
+package com.sonnets.sonnet.security.password;
 
 import org.passay.*;
 

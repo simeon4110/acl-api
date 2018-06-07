@@ -1,79 +1,73 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <title>Beyond Aporia - Manual Selection</title>
-    <div th:replace="fragments/header :: head"></div>
-</head>
-<main>
-    <div th:replace="fragments/header :: nav-bar"></div>
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <h1 class="display-4 pb-3">Manual Selection:</h1>
-                <hr class="m-4" style="border-color: black"/>
-            </div>
+<!--suppress ALL -->
+
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="display-4 pb-3">Manual Selection:</h1>
+            <hr class="m-4" style="border-color: black"/>
         </div>
     </div>
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 mb-3">
-                <button type="button" id="csvbutton" class="btn btn-primary my-3 ml-2">Get CSV</button>
-                <button type="button" id="jsonbutton" class="btn btn-primary my-3 ml-1">Get JSON</button>
-                <table id="sonnets" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Last Name</th>
-                        <th>First Name</th>
-                        <th>Sonnet Title</th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
+</div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 mb-3">
+            <button type="button" id="csvbutton" class="btn btn-primary my-3 ml-2">Get CSV</button>
+            <button type="button" id="jsonbutton" class="btn btn-primary my-3 ml-1">Get JSON</button>
+            <table id="sonnets" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Last Name</th>
+                    <th>First Name</th>
+                    <th>Sonnet Title</th>
+                </tr>
+                </thead>
+            </table>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/footer :: scripts"></div>
-    <script>
-        $(document).ready(function () {
-            var table = $('#sonnets').DataTable({
-                select: true,
-                "sAjaxSource": "/sonnets/all",
-                "sAjaxDataProp": "",
-                "columns": [
-                    {"mData": "id"},
-                    {"mData": "lastName"},
-                    {"mData": "firstName"},
-                    {"mData": "title"}
-                ]
-            });
+</div>
+<div th:replace="fragments/footer :: scripts"></div>
+<script>
+    $(document).ready(function () {
+        var table = $('#sonnets').DataTable({
+            select: true,
+            "sAjaxSource": "/sonnets/all",
+            "sAjaxDataProp": "",
+            "columns": [
+                {"mData": "id"},
+                {"mData": "lastName"},
+                {"mData": "firstName"},
+                {"mData": "title"}
+            ]
+        });
 
 //          Creates the link to parse the CSV files.
-            $('#csvbutton').click(function () {
-                var ids = [];
+        $('#csvbutton').click(function () {
+            var ids = [];
 
-                $.each(table.rows('.selected').data(), function () {
-                    ids.push(this["id"]);
-                });
-
-                var win = window.open("/lookup/csv/get_csv/" + ids, '_blank');
-                win.focus();
+            $.each(table.rows('.selected').data(), function () {
+                ids.push(this["id"]);
             });
 
-            // Create the link to JSON parse.
-            $('#jsonbutton').click(function () {
-                var ids = [];
-
-                $.each(table.rows('.selected').data(), function () {
-                    ids.push(this["id"]);
-                });
-
-                var win = window.open("/sonnets/by_id/" + ids, '_blank');
-                win.focus();
-
-            })
-
+            var win = window.open("/lookup/csv/get_csv/" + ids, '_blank');
+            win.focus();
         });
-    </script>
-</main>
-</html>
+
+        // Create the link to JSON parse.
+        $('#jsonbutton').click(function () {
+            var ids = [];
+
+            $.each(table.rows('.selected').data(), function () {
+                ids.push(this["id"]);
+            });
+
+            var win = window.open("/sonnets/by_id/" + ids, '_blank');
+            win.focus();
+
+        })
+
+    });
+</script>
+<div th:replace="fragments/footer :: footer"></div>

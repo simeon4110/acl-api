@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.dtos.user;
 
-import com.sonnets.sonnet.tools.ValidPassword;
+import com.sonnets.sonnet.security.password.ValidPassword;
 
 import javax.validation.constraints.NotEmpty;
 

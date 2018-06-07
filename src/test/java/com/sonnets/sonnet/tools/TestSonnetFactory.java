@@ -13,12 +13,10 @@ public abstract class TestSonnetFactory {
         // Nuh-uh, you can't make me.
     }
 
-    @SuppressWarnings("unused")
     public static SonnetDto randomSonnetGenerator() {
         SonnetDto sonnetDto = new SonnetDto();
         sonnetDto.setFirstName(UUID.randomUUID().toString());
         sonnetDto.setLastName(UUID.randomUUID().toString());
-        sonnetDto.setTitle(UUID.randomUUID().toString());
         sonnetDto.setPublicationYear(2222);
         sonnetDto.setPublicationStmt(UUID.randomUUID().toString());
         sonnetDto.setAddedBy("Admin");
@@ -32,7 +30,6 @@ public abstract class TestSonnetFactory {
         SonnetDto sonnetDto = new SonnetDto();
         sonnetDto.setFirstName("Bobby");
         sonnetDto.setLastName("Brown");
-        sonnetDto.setTitle("Auto Generated Test Sonnet");
         sonnetDto.setPublicationYear(2222);
         sonnetDto.setPublicationStmt("TestSonnetFactory()");
         sonnetDto.setSourceDesc("Made literally a second ago.");

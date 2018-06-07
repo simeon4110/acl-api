@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.tools;
+package com.sonnets.sonnet.security.password;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -7,7 +7,6 @@ import java.lang.annotation.*;
 /**
  * @author Josh Harkema
  */
-@SuppressWarnings("unused")
 @Documented
 @Constraint(validatedBy = PasswordConstraintValidator.class)
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.ANNOTATION_TYPE})

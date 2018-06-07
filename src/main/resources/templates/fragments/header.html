@@ -2,28 +2,26 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
 
 <!--Header snippet for css and meta-->
-<head>
-    <div th:fragment="head">
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-              crossorigin="anonymous"/>
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
-              integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous"/>
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"
-              integrity="sha384-bsGkvB1NLsaPUZL6GG0N5H9GOW9DK6KiHrrDvO57EJXoD9H3gzlohtuPENw9/24L"
-              crossorigin="anonymous"/>
-        <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.5/css/select.bootstrap4.min.css"
-              integrity="sha384-GT95DpievPCoEMQK7wFUKNSmBUItft1absIeFqP30FKpnjz8YPvV34CC79GirigE"
-              crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.bootstrap4.min.css"
-              integrity="sha384-n1hs6qRhjguK+Jtu+RyFfScT5qaZklM9JofOTMl4IhU02wc+vh/OpW4lP7n9cbxD"
-              crossorigin="anonymous">
-        <link rel="stylesheet" th:href="@{~/css/style.min.css}">
-
-    </div>
+<head th:fragment="head">
+    <title th:text="'Beyond Aporia - ' + ${pageTitle}"></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
+          integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"
+          integrity="sha384-bsGkvB1NLsaPUZL6GG0N5H9GOW9DK6KiHrrDvO57EJXoD9H3gzlohtuPENw9/24L"
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.5/css/select.bootstrap4.min.css"
+          integrity="sha384-GT95DpievPCoEMQK7wFUKNSmBUItft1absIeFqP30FKpnjz8YPvV34CC79GirigE"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.bootstrap4.min.css"
+          integrity="sha384-n1hs6qRhjguK+Jtu+RyFfScT5qaZklM9JofOTMl4IhU02wc+vh/OpW4lP7n9cbxD"
+          crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{~/css/style.min.css}">
 </head>
 <body>
 <!--Navbar snippet-->
@@ -77,5 +75,3 @@
         </ul>
     </div>
 </nav>
-</body>
-</html>

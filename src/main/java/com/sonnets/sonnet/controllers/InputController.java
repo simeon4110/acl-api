@@ -26,6 +26,8 @@ public class InputController {
     private final SonnetDetailsService sonnetDetailsService;
     private static final Logger logger = Logger.getLogger(InputController.class);
 
+    private static final String PAGE_TITLE = "pageTitle";
+    private static final String PAGE_TITLE_TEXT = "Add Sonnet";
     private static final String SONNET_DTO = "SonnetDto"; // Name of dto attached to model.
     private static final String USERNAME = "username"; // Name of user attached to model.
     private static final String INPUT = "input"; // Name of page returned.
@@ -45,6 +47,7 @@ public class InputController {
     public String showInsertPage(Model model, HttpServletRequest request) {
         model.addAttribute(SONNET_DTO, new SonnetDto());
         model.addAttribute(USERNAME, request.getUserPrincipal().getName());
+        model.addAttribute(PAGE_TITLE, PAGE_TITLE_TEXT);
 
         return INPUT;
     }
@@ -64,6 +67,7 @@ public class InputController {
         if (result.hasErrors()) {
             model.addAttribute(SONNET_DTO, sonnetDto);
             model.addAttribute(USERNAME, request.getUserPrincipal().getName()); // Don't forget!
+            model.addAttribute(PAGE_TITLE, PAGE_TITLE_TEXT);
 
             return INPUT;
         }
@@ -73,16 +77,14 @@ public class InputController {
 
         // Catch duplicate sonnets.
         if (sonnet == null) {
-            model.addAttribute("error", "It looks like this sonnet already exists. Please search for a " +
-                    "sonnet by clicking 'Search' in the menu above before attempting to add to the database. To edit " +
-                    "a sonnet in the database, simply click the 'edit' link under its card once you have searched " +
-                    "the database for it. If " +
-                    "you have received this message in error, please email joshua.harkema@ucalgary.ca");
+            return "redirect:insert?exists";
         } else {
             model.addAttribute(SONNET_DTO, sonnetDto);
             model.addAttribute(USERNAME, request.getUserPrincipal().getName()); // Don't forget!
+            model.addAttribute(PAGE_TITLE, PAGE_TITLE_TEXT);
+
         }
 
-        return INPUT;
+        return "redirect:insert?success";
     }
 }

@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.persistence.dtos.sonnet;
 
 import com.sonnets.sonnet.persistence.models.Sonnet;
-import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -18,9 +17,9 @@ public class SonnetDto {
     private String firstName;
     @NotEmpty
     private String lastName;
-    @NotEmpty
     private String title;
-    @Range(min = 1400, max = 2018)
+    @NotEmpty
+    private String period;
     private int publicationYear;
     @NotEmpty
     private String publicationStmt;
@@ -40,6 +39,7 @@ public class SonnetDto {
         this.firstName = sonnet.getFirstName();
         this.lastName = sonnet.getLastName();
         this.title = sonnet.getTitle();
+        this.period = sonnet.getPeriod();
         this.publicationYear = sonnet.getPublicationYear();
         this.publicationStmt = sonnet.getPublicationStmt();
         this.sourceDesc = sonnet.getSourceDesc();
@@ -73,6 +73,14 @@ public class SonnetDto {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
     }
 
     public int getPublicationYear() {

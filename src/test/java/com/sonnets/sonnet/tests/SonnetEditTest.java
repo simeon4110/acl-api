@@ -58,6 +58,7 @@ public class SonnetEditTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/edit/" + SONNET_ID)
                 .param("id", sonnet.getId().toString()).param("firstName", sonnet.getFirstName())
                 .param("lastName", sonnet.getLastName()).param("title", newTitle)
+                .param("period", "1500-1550")
                 .param("publicationYear", sonnet.getPublicationYear().toString())
                 .param("sourceDesc", sonnet.getSourceDesc()).param("addedBy", sonnet.getAddedBy())
                 .param("text", sonnet.getTextPretty()).principal(testPrincipal))

@@ -1,107 +1,104 @@
-<!DOCTYPE html>
 <!--suppress ALL -->
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <title>Beyond Aporia - Home</title>
-    <div th:replace="fragments/header :: head"></div>
-</head>
-<main>
-    <div th:replace="fragments/header :: nav-bar"></div>
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="jumbotron">
-                    <h1 class="display-4">Digital Sonnet Database</h1>
-                    <p class="lead">
-                        Our goal is to digitize and encode all English language Sonnets in an interoperable format for
-                        those working in the digital humanities. The database is open to public use. However, due to
-                        stringent data integrity requirements, only authorized users may contribute to the database.
-                    </p>
-                    <hr class="my-4">
-                    <p>
-                        This site is a work in progress. If you have any issues with its operation or suggestions for
-                        improving its functionality email <a href="mailto:joshua.harkema@ucalgary.ca">
-                        joshua.harkema@ucalgary.ca</a>.
-                    </p>
-                    <p>
-                        <a class="btn btn-primary btl-lg mb-1" th:href="@{~/browse}" role="button">
-                            Browse the Databaase
-                        </a>
-                        <a class="btn btn-primary btl-lg mb-1" th:href="@{~/lookup}" role="button">
-                            Search the Database
-                        </a>
-                        <a class="btn btn-primary btl-lg mb-1"
-                           href="https://git.joshharkema.com/jharkema/sonnet-issue-tracking" role="button">
-                            Report a Bug
-                        </a>
-                    </p>
-                </div>
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="jumbotron">
+                <h1 class="display-4">Digital Sonnet Database</h1>
+                <p class="lead">
+                    A database that will offer every sonnet in the English language, from the sixteenth century to the
+                    present, in interoperable formats.. The database is open to public use. However, due to stringent
+                    data integrity requirements, only authorized users may contribute to the database.
+                </p>
+                <hr class="my-4">
+                <p>
+                    This site is a work in progress. If you have any issues with its operation or suggestions for
+                    improving its functionality email <a href="mailto:joshua.harkema@ucalgary.ca">
+                    joshua.harkema@ucalgary.ca</a>.
+                </p>
+                <p>
+                    <a class="btn btn-primary btl-lg mb-1" th:href="@{~/browse}" role="button">
+                        Browse the Database
+                    </a>
+                    <a class="btn btn-primary btl-lg mb-1" th:href="@{~/lookup}" role="button">
+                        Search the Database
+                    </a>
+                    <a class="btn btn-primary btl-lg mb-1"
+                       href="https://git.joshharkema.com/jharkema/sonnet-issue-tracking" role="button">
+                        Report a Bug
+                    </a>
+                </p>
             </div>
         </div>
-        <div class="row justify-content-center mb-2">
-            <div class="col-lg-10 mx-2">
-                <div class="card-deck justify-content-center">
-                    <div class="card">
-                        <h5 class="card-header">Text Encoding Initiative</h5>
-                        <div class="card-body">
-                            <p class="card-text">
-                                The Text Encoding Initiative (TEI) is a consortium which collectively develops and
-                                maintains a standard for the representation of texts in digital form. Its chief
-                                deliverable is a set of Guidelines which specify encoding methods for machine-readable
-                                texts, chiefly in the humanities, social sciences and linguistics.
-                            </p>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="http://www.tei-c.org/index.xml" class="btn btn-primary card-link">
-                                    TEI Website
-                                </a>
-                            </li>
-                        </ul>
+    </div>
+    <div class="row justify-content-center mb-2">
+        <div class="col-lg-9">
+            <div class="card-deck justify-content-center">
+                <div class="card">
+                    <h5 class="card-header">Text Encoding Initiative</h5>
+                    <div class="card-body">
+                        <p class="card-text">
+                            The Text Encoding Initiative (TEI) is a consortium which collectively develops and
+                            maintains a standard for the representation of texts in digital form. Its chief
+                            deliverable is a set of Guidelines which specify encoding methods for machine-readable
+                            texts, chiefly in the humanities, social sciences and linguistics.
+                        </p>
                     </div>
-                    <div class="card">
-                        <h5 class="card-header">Python Database Connector</h5>
-                        <div class="card-body">
-                            <p class="card-text">
-                                We provide and maintain a Python class for easilly connecting to our database via the
-                                RESTful API. This class provides basic query functions and JSON object serialization.
-                                This allows a user to skip most of the data parsing and jump straight into NLTK or NLP
-                                analysis of the data.
-                            </p>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="https://github.com/simeon4110/sonnet_analysis"
-                                   class="btn btn-primary card-link">
-                                    GitHub Repository
-                                </a>
-                            </li>
-                        </ul>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="http://www.tei-c.org/index.xml" class="btn btn-primary card-link">
+                                TEI Website
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h5 class="card-header">Python Database Connector</h5>
+                    <div class="card-body">
+                        <p class="card-text">
+                            We provide and maintain a Python class for easilly connecting to our database via the
+                            RESTful API. This class provides basic query functions and JSON object serialization.
+                            This allows a user to skip most of the data parsing and jump straight into NLTK or NLP
+                            analysis of the data.
+                        </p>
                     </div>
-                    <div class="card">
-                        <h5 class="card-header">Augmented Criticism Lab</h5>
-                        <div class="card-body">
-                            <p class="card-text">
-                                The Augmented Criticism Lab is a digital initiative that investigates the relationship
-                                between computational literary studies and traditional philology. Building on theories
-                                of corpus linguistics, algorithmic criticism, and scalable reading, we strive for an
-                                augmented criticism—a brand of literary investigation that boasts a distinct blend of
-                                computational processes and artful introspection.
-                            </p>
-                        </div>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="http://http://acriticismlab.org/" class="btn btn-primary card-link">
-                                    ACL Website
-                                </a>
-                            </li>
-                        </ul>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="https://github.com/simeon4110/sonnet_analysis"
+                               class="btn btn-primary card-link">
+                                GitHub Repository
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h5 class="card-header">Augmented Criticism Lab</h5>
+                    <div class="card-body">
+                        <p class="card-text">
+                            The Augmented Criticism Lab is a digital initiative that investigates the relationship
+                            between computational literary studies and traditional philology. Building on theories
+                            of corpus linguistics, algorithmic criticism, and scalable reading, we strive for an
+                            augmented criticism—a brand of literary investigation that boasts a distinct blend of
+                            computational processes and artful introspection.
+                        </p>
                     </div>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="http://acriticismlab.org/" class="btn btn-primary card-link">
+                                ACL Website
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="http://ullyot.ucalgaryblogs.ca/" class="btn btn-primary card-link">
+                                Michael Ullyot
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/footer :: scripts"></div>
-</main>
-</html>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: scripts"></div>

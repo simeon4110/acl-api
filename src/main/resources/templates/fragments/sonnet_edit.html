@@ -1,0 +1,158 @@
+<!--suppress ALL -->
+<div class="row justify-content-center" th:fragment="sonnet_edit">
+    <div class="col-lg-5">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><span class="oi oi-person"></span></span>
+                </div>
+                <input id="firstName" class="form-control" placeholder="Author's first name (Optional)"
+                       th:field="*{firstName}"
+                       th:classappend="${#fields.hasErrors('firstName')}? 'is-invalid' : ''" autofocus/>
+                <div class="invalid-feedback" role="alert" th:if="${#fields.hasErrors('firstName')}"
+                     th:errors="*{firstName}">
+                    error
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><span class="oi oi-person"></span></span>
+                </div>
+                <input id="lastName" class="form-control" placeholder="Author's last name (Required)"
+                       th:field="*{lastName}" th:classappend="${#fields.hasErrors('lastName')}? 'is-invalid' : ''"/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">
+                    error
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><span class="oi oi-pencil"></span></span>
+                </div>
+                <input id="title" class="form-control" placeholder="Sonnet's title (Optional)" th:field="*{title}"/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+                    error
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><span class="oi oi-calendar"></span></span>
+                </div>
+                <select id="period" class="custom-select custom-select-md" title="Period" th:field="*{period}"
+                        th:classappend="${#fields.hasErrors('period')}? 'is-invalid' : ''"/>
+                <option value="1500-1550">1500-1550</option>
+                <option value="1550-1600">1550-1600</option>
+                <option value="1600-1650">1600-1650</option>
+                <option value="1650-1700">1650-1700</option>
+                <option value="1700-1750">1700-1750</option>
+                <option value="1750-1800">1750-1800</option>
+                <option value="1800-1850">1800-1850</option>
+                <option value="1850-1900">1850-1900</option>
+                <option value="1900-1950">1900-1950</option>
+                <option value="1950-2000">1950-2000</option>
+                <option value="2000-present">2000-present</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><span class="oi oi-calendar"></span></span>
+                </div>
+                <input id="publicationYear" type="number" class="form-control" placeholder="1660"
+                       th:field="*{publicationYear}"
+                       th:classappend="${#fields.hasErrors('publicationYear')}? 'is-invalid' : ''"/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('publicationYear')}"
+                     th:errors="*{publicationYear}">
+                    error
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><span class="oi oi-copywriting"></span></span>
+                </div>
+                <select id="publicationStatement" class="custom-select custom-select-md" title="Publication Statement"
+                        th:field="*{publicationStmt}"
+                        th:classappend="${#fields.hasErrors('publicationStmt')}? 'is-invalid' : ''"/>
+                <option value="Not for distribution.">Not for distribution</option>
+                <option value="Public domain.">Copyrighted</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><span class="oi oi-book"></span></span>
+                </div>
+                <input id="sourceDescription" class="form-control" placeholder="Source description (Required)"
+                       th:field="*{sourceDesc}" th:classappend="${#fields.hasErrors('sourceDesc')}? 'is-invalid' : ''"/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('sourceDesc')}" th:errors="*{sourceDesc}">
+                    error
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="form-group">
+            <textarea id="text" class="form-control"
+                      placeholder="Copy sonnet text here. Please preserve all formatting (line breaks, punctuation, etc.) from original, but remove any annotations and line numbers. Leading and trailing whitespace is automatically removed after submission."
+                      th:field="*{text}" th:classappend="${#fields.hasErrors('text')}? 'is-invalid' : ''"
+                      rows="14"></textarea>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('text')}" th:errors="*{text}">
+                error
+            </div>
+        </div>
+        <input type="hidden" name="addedBy" th:value="${username}"/>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
+            submit
+        </button>
+        <button class="btn btn-warning" type="reset">Clear</button>
+    </div>
+    <!--Modal popup -->
+    <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure? Please make sure the data is accurate.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" onclick="hideModal()">
+                        Save changes
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--For the tooltips and to hide the modal confirm-->
+<script th:fragment="insert_script">
+    function hideModal() {
+        $('#confirmModal').modal('hide');
+    }
+
+    $('#period').tooltip({'trigger': 'active', 'title': 'Period of initial publication.'});
+    $('#publicationYear').tooltip({'trigger': 'active', 'title': 'Exact date of first publication, if known.'});
+    $('#publicationStatement').tooltip({'trigger': 'active', 'title': 'Can this sonnet be shared?'});
+    $('#sourceDescription')
+        .tooltip({
+            'trigger': 'hover',
+            'active': 'The title and year of the book (digital or print) the sonnet is from.'
+        });
+</script>

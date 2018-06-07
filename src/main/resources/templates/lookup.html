@@ -1,51 +1,45 @@
-<!DOCTYPE html>
 <!--suppress ALL -->
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <title>Beyond Aporia - Search</title>
-    <div th:replace="fragments/header :: head"></div>
-</head>
-<main>
-    <div th:replace="fragments/header :: nav-bar"></div>
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-11">
-                <h1 class="display-4 pb-3">Search:</h1>
-                <hr class="m-4" style="border-color: black"/>
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <h1 class="display-4 pb-3">Search:</h1>
+            <hr class="m-4" style="border-color: black"/>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-3">
+        <div class="col-lg-2 justify-content-center mb-2">
+            <div class="form">
+                <form action="" th:object="${Sonnet}" role="form" method="GET" class="form">
+                    <div class="form-group">
+                        <label for="firstName" class="control-label">Author's first name:</label>
+                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName" class="control-label">Author's last name:</label>
+                        <input id="lastName" class="form-control" th:field="*{lastName}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="title" class="control-label">Sonnet title:</label>
+                        <input id="title" class="form-control" th:field="*{title}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="publicationYear" class="control-label">Year of publication:</label>
+                        <input id="publicationYear" type="number" class="form-control"
+                               th:field="*{publicationYear}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="contains" class="control-label">Sonnet contains:</label>
+                        <input id="contains" class="form-control" th:field="*{text}"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Search</button>
+                </form>
             </div>
         </div>
-        <div class="row justify-content-center mt-3">
-            <div class="col-lg-2 justify-content-center mb-2">
-                <div class="form">
-                    <form action="" th:object="${Sonnet}" role="form" method="GET" class="form">
-                        <div class="form-group">
-                            <label for="firstName" class="control-label">Author's first name:</label>
-                            <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName" class="control-label">Author's last name:</label>
-                            <input id="lastName" class="form-control" th:field="*{lastName}"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="title" class="control-label">Sonnet title:</label>
-                            <input id="title" class="form-control" th:field="*{title}"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="publicationYear" class="control-label">Year of publication:</label>
-                            <input id="publicationYear" type="number" class="form-control"
-                                   th:field="*{publicationYear}"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="contains" class="control-label">Sonnet contains:</label>
-                            <input id="contains" class="form-control" th:field="*{text}"/>
-                        </div>
-                        <button type="submit" class="btn btn-primary mb-2">Search</button>
-                    </form>
-                </div>
-            </div>
-            <div class="col-lg-8">
-                <div th:if="${not #lists.isEmpty(page)}">
-                    <div class="card-deck">
+        <div class="col-lg-8">
+            <div th:if="${not #lists.isEmpty(page)}">
+                <div class="card-deck">
                         <span th:each="Sonnet : ${page}">
                             <div class="card border-light mb-2">
                                 <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
@@ -86,53 +80,51 @@
                             </ul>
                             </div>
                         </span>
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <hr class="m-4" style="border-color: black"/>
-            </div>
-            <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
-                <ul class="pagination justify-content-center">
-                    <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
-                            &laquo;
-                        </a>
-                    </li>
-                    <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
-                            Previous
-                        </a>
-                    </li>
-                    <li th:class="${page.number == (number)} ? 'page-item active' : 'page-item'"
-                        th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
-                        <a class="page-link"
-                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
-                           th:text="${number}">
-                            Page
-                        </a>
-                    </li>
-                    <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
-                            Next
-                        </a>
-                    </li>
-                    <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages - 1})}">
-                            &raquo;
-                        </a>
-                    </li>
-                </ul>
-            </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <hr class="m-4" style="border-color: black"/>
+        </div>
+        <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
+            <ul class="pagination justify-content-center">
+                <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
+                        &laquo;
+                    </a>
+                </li>
+                <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
+                        Previous
+                    </a>
+                </li>
+                <li th:class="${page.number == (number)} ? 'page-item active' : 'page-item'"
+                    th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                    <a class="page-link"
+                       th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
+                       th:text="${number}">
+                        Page
+                    </a>
+                </li>
+                <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
+                        Next
+                    </a>
+                </li>
+                <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages - 1})}">
+                        &raquo;
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/footer :: scripts"></div>
-</main>
-</html>
+</div>
+<div th:replace="fragments/footer :: scripts"></div>
+<div th:replace="fragments/footer :: footer"></div>

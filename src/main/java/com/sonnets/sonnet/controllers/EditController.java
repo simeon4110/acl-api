@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class EditController {
     private static final Logger logger = Logger.getLogger(EditController.class);
+
+    private static final String PAGE_TITLE = "pageTitle";
     private static final String SONNET = "SonnetDto";
     private static final String EDIT = "edit";
     private final SonnetDetailsService sonnetDetailsService;
@@ -47,6 +49,7 @@ public class EditController {
         model.addAttribute(SONNET, sonnetDto);
         model.addAttribute("id", sonnet.getId());
         model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
+        model.addAttribute(PAGE_TITLE, "Modify " + sonnet.getId());
 
         return EDIT;
     }
@@ -67,6 +70,6 @@ public class EditController {
         model.addAttribute(SONNET, sonnet);
         model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
 
-        return EDIT;
+        return "redirect:" + id + "?success";
     }
 }

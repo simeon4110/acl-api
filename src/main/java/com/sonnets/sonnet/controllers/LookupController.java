@@ -41,6 +41,7 @@ public class LookupController {
     private final SearchService searchService;
     private static final Logger logger = Logger.getLogger(LookupController.class);
 
+    private static final String PAGE_TITLE = "pageTitle";
     private static final String LOOKUP = "lookup";
     private static final String SONNET = "Sonnet";
     private static final String PAGER = "pager";
@@ -73,6 +74,7 @@ public class LookupController {
             pager = new Pager(sonnets.getTotalPages() - 1, pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
             model.addAttribute(PAGER, pager);
             model.addAttribute(PAGE, sonnets);
+            model.addAttribute(PAGE_TITLE, "Search");
         } catch (NullPointerException e) {
             logger.error(e);
         }
@@ -165,6 +167,7 @@ public class LookupController {
     @GetMapping("/lookup/csv")
     public String showSelectionPage(Model model) {
         model.addAttribute("sonnets", sonnetDetailsService.getAllSonnets());
+        model.addAttribute(PAGE_TITLE, "Manual Selection");
         return "select";
     }
 }

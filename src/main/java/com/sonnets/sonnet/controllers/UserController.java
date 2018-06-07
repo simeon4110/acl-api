@@ -19,10 +19,11 @@ import javax.validation.Valid;
  *
  * @author Josh Harkema
  */
-@SuppressWarnings("SameReturnValue")
 @Controller
 public class UserController {
     private static final Logger logger = Logger.getLogger(UserController.class);
+
+    private static final String PAGE_TITLE = "pageTitle";
     private static final String PASS_DTO = "PasswordChangeDto";
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -40,6 +41,7 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfilePage(Model model) {
         model.addAttribute(PASS_DTO, new PasswordChangeDto());
+        model.addAttribute(PAGE_TITLE, "Reset Password");
 
         return "profile";
     }
@@ -73,12 +75,14 @@ public class UserController {
     @GetMapping("/profile/my_sonnets")
     public String showUserSonnets(Model model, HttpServletRequest request) {
         model.addAttribute("username", request.getUserPrincipal().getName());
+        model.addAttribute(PAGE_TITLE, "My Sonnets");
 
         return "user_sonnets";
     }
 
     @GetMapping("/profile/classify")
-    public String showVerifyPage() {
+    public String showVerifyPage(Model model) {
+        model.addAttribute(PAGE_TITLE, "Classify Items");
 
         return "user_classify";
     }

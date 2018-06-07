@@ -5,7 +5,6 @@ import javax.validation.constraints.NotEmpty;
 /**
  * @author Josh Harkema
  */
-@SuppressWarnings("ALL")
 public class UserModifyDto {
     @NotEmpty
     private String username;

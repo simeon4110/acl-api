@@ -6,7 +6,6 @@ package com.sonnets.sonnet.tools;
  * @author Branislav Lazic
  * @author Bruno Raljic
  */
-@SuppressWarnings("WeakerAccess")
 public class Pager {
     private int buttonsToShow = 5;
     private int startPage;

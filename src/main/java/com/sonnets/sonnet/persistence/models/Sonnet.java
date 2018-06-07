@@ -50,6 +50,8 @@ public class Sonnet {
     private Integer numOfLines;
     @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.NO)
     @Column
+    private String period;
+    @Column
     private Integer publicationYear;
     @Column
     private String publicationStmt;
@@ -78,12 +80,17 @@ public class Sonnet {
         this.updatedAt = new Timestamp(System.currentTimeMillis());
         this.firstName = sonnetDto.getFirstName().trim();
         this.lastName = sonnetDto.getLastName().trim();
-        this.title = sonnetDto.getTitle().trim();
+        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
+        if (Objects.equals(sonnetDto.getTitle(), "") || sonnetDto.getTitle() == null) {
+            this.title = this.text.get(0);
+        } else {
+            this.title = sonnetDto.getTitle().trim().replace("\n", "");
+        }
         this.publicationYear = sonnetDto.getPublicationYear();
+        this.period = sonnetDto.getPeriod();
         this.publicationStmt = sonnetDto.getPublicationStmt().trim();
         this.sourceDesc = sonnetDto.getSourceDesc().trim();
         this.addedBy = sonnetDto.getAddedBy();
-        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
         this.numOfLines = this.text.size();
     }
 
@@ -97,7 +104,7 @@ public class Sonnet {
         List<String> strings = new ArrayList<>();
 
         for (String s : text) {
-            strings.add(s.trim());
+            strings.add(s.trim().replace("\n", ""));
         }
 
         return strings;
@@ -113,12 +120,17 @@ public class Sonnet {
         this.updatedAt = new Timestamp(System.currentTimeMillis());
         this.firstName = sonnetDto.getFirstName();
         this.lastName = sonnetDto.getLastName();
-        this.title = sonnetDto.getTitle();
+        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
+        if (Objects.equals(sonnetDto.getTitle(), "") || sonnetDto.getTitle() == null) {
+            this.title = this.text.get(0);
+        } else {
+            this.title = sonnetDto.getTitle().trim().replace("\n", "");
+        }
+        this.period = sonnetDto.getPeriod();
         this.publicationYear = sonnetDto.getPublicationYear();
         this.publicationStmt = sonnetDto.getPublicationStmt();
         this.sourceDesc = sonnetDto.getSourceDesc();
         this.addedBy = sonnetDto.getAddedBy();
-        this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
         this.numOfLines = this.text.size();
 
         return this;
@@ -176,6 +188,14 @@ public class Sonnet {
 
     public void setNumOfLines(Integer numOfLines) {
         this.numOfLines = numOfLines;
+    }
+
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
     }
 
     public Integer getPublicationYear() {
@@ -236,6 +256,7 @@ public class Sonnet {
                 Objects.equals(lastName, sonnet.lastName) &&
                 Objects.equals(title, sonnet.title) &&
                 Objects.equals(numOfLines, sonnet.numOfLines) &&
+                Objects.equals(period, sonnet.period) &&
                 Objects.equals(publicationYear, sonnet.publicationYear) &&
                 Objects.equals(publicationStmt, sonnet.publicationStmt) &&
                 Objects.equals(sourceDesc, sonnet.sourceDesc) &&
@@ -247,7 +268,7 @@ public class Sonnet {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, firstName, lastName, title, numOfLines, publicationYear, publicationStmt, sourceDesc, updatedAt, addedBy, text);
+        return Objects.hash(id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt, sourceDesc, updatedAt, addedBy, text);
     }
 
     @Override
@@ -258,6 +279,7 @@ public class Sonnet {
                 ", lastName='" + lastName + '\'' +
                 ", title='" + title + '\'' +
                 ", numOfLines=" + numOfLines +
+                ", period='" + period + '\'' +
                 ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
@@ -266,5 +288,4 @@ public class Sonnet {
                 ", text=" + text +
                 '}';
     }
-
 }

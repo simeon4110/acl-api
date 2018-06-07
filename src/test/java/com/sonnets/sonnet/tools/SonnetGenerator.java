@@ -17,7 +17,6 @@ public abstract class SonnetGenerator {
         SonnetDto sonnet = new SonnetDto();
         sonnet.setFirstName(UUID.randomUUID().toString());
         sonnet.setLastName(UUID.randomUUID().toString());
-        sonnet.setTitle(UUID.randomUUID().toString());
         sonnet.setPublicationYear(2222);
         sonnet.setPublicationStmt(UUID.randomUUID().toString());
         sonnet.setSourceDesc(UUID.randomUUID().toString());

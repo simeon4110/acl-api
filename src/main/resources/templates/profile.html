@@ -1,84 +1,78 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <title>Beyond Aporia - Profile</title>
-    <div th:replace="fragments/header :: head"></div>
-</head>
-<main>
-    <div th:replace="fragments/header :: nav-bar"></div>
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <h1 class="display-4 pb-3">Change Password:</h1>
-                <hr class="m-4" style="border-color: black"/>
-            </div>
+<!--suppress ALL -->
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="display-4 pb-3">Change Password:</h1>
+            <hr class="m-4" style="border-color: black"/>
         </div>
-        <div class="row justify-content-center mb-3">
-            <div class="col-lg-10">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" th:href="@{~/profile}">Change Password</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{~/profile/my_sonnets}">Review My Sonnets</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{~/profile/classify}">Classify Records</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <p class="lead">
-                    To change your password use the form below.
-                </p>
-                <form th:object="${PasswordChangeDto}" class="form" th:action="@{~/profile}" method="POST" role="form">
-                    <div th:if="${param.error}" class="alert alert-danger">
-                        Invalid current password.
-                    </div>
-                    <div th:if="${param.success}" class="alert alert-success">
-                        Password changed.
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
-                            </div>
-                            <input id="currentPassword" type="password" class="form-control"
-                                   placeholder="Current password" th:field="*{currentPassword}" autocomplete="off"
-                                   autofocus required/>
-                        </div>
-                    </div>
-                    <div class="form-group" th:classappend="${#fields.hasErrors('password')}? 'has-warning' : ''">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
-                            </div>
-                            <input id="password" type="password" class="form-control" placeholder="New password"
-                                   th:field="*{password}" autocomplete="off" autofocus required/>
-                        </div>
-                    </div>
-                    <div class="form-group" th:classappend="${#fields.hasErrors('password1')}? 'has-warning' : ''">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
-                            </div>
-                            <input id="password1" type="password" class="form-control" placeholder="Confirm password"
-                                   th:field="*{password1}" autocomplete="off" required/>
-                        </div>
-                        <ul class="list-unstyled mt-2" th:each="error: ${#fields.errors('password1')}">
-                            <li th:each="message : ${error.split(',')}" th:text="${message}" style="color: red;">
-                                Text
-                            </li>
-                        </ul>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-        </div>
-
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/footer :: scripts"></div>
-</main>
+    <div class="row justify-content-center mb-3">
+        <div class="col-lg-10">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{~/profile}">Change Password</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/profile/my_sonnets}">Review My Sonnets</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/profile/classify}">Classify Records</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <p class="lead">
+                To change your password use the form below.
+            </p>
+            <form th:object="${PasswordChangeDto}" class="form" th:action="@{~/profile}" method="POST" role="form">
+                <div th:if="${param.error}" class="alert alert-danger">
+                    Invalid current password.
+                </div>
+                <div th:if="${param.success}" class="alert alert-success">
+                    Password changed.
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                        </div>
+                        <input id="currentPassword" type="password" class="form-control"
+                               placeholder="Current password" th:field="*{currentPassword}" autocomplete="off"
+                               autofocus required/>
+                    </div>
+                </div>
+                <div class="form-group" th:classappend="${#fields.hasErrors('password')}? 'has-warning' : ''">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                        </div>
+                        <input id="password" type="password" class="form-control" placeholder="New password"
+                               th:field="*{password}" autocomplete="off" autofocus required/>
+                    </div>
+                </div>
+                <div class="form-group" th:classappend="${#fields.hasErrors('password1')}? 'has-warning' : ''">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                        </div>
+                        <input id="password1" type="password" class="form-control" placeholder="Confirm password"
+                               th:field="*{password1}" autocomplete="off" required/>
+                    </div>
+                    <ul class="list-unstyled mt-2" th:each="error: ${#fields.errors('password1')}">
+                        <li th:each="message : ${error.split(',')}" th:text="${message}" style="color: red;">
+                            Text
+                        </li>
+                    </ul>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+<div th:replace="fragments/footer :: scripts"></div>
+<div th:replace="fragments/footer :: footer"></div>

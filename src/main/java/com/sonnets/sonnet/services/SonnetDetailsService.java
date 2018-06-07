@@ -77,6 +77,15 @@ public class SonnetDetailsService {
         return sonnet;
     }
 
+    /**
+     * For updating an actual sonnet object. HELPER METHOD, DO NOT DELETE.
+     *
+     * @param sonnet the sonnet to update.
+     */
+    public void updateSonnet(Sonnet sonnet) {
+        sonnetRepository.saveAndFlush(sonnet);
+    }
+
     public List<Sonnet> getAllSonnets() {
         return sonnetRepository.findAll();
     }

@@ -1,168 +1,25 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <title>Beyond Aporia - Edit</title>
-    <div th:replace="fragments/header :: head"></div>
-</head>
-<main>
-    <div th:replace="fragments/header :: nav-bar"></div>
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <h1 class="display-4 pb-3">Add new sonnet:</h1>
-                <hr class="m-4" style="border-color: black"/>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <form action="#" th:action="@{~/edit/} + ${id}" id="insertForm" th:object="${SonnetDto}"
-                      role="form" method="POST" class="mx-3"
-                      th:classappend="${#fields.hasErrors('global')}? 'was-validated' : ''">
-                    <div th:if="${param.error}" class="alert alert-error">
-                        An error occurred, please try again. If this issue persists please use the "Report a Bug" link
-                        in the top menu.
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-person"></span></span>
-                            </div>
-                            <input id="firstName" class="form-control" placeholder="Author's first name"
-                                   th:field="*{firstName}"
-                                   th:classappend="${#fields.hasErrors('firstName')}? 'is-invalid' : ''"
-                                   autocomplete="off" autofocus/>
-                            <div class="invalid-feedback" role="alert" th:if="${#fields.hasErrors('firstName')}"
-                                 th:errors="*{firstName}">
-                                error
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-person"></span></span>
-                            </div>
-                            <input id="lastName" class="form-control" placeholder="Author's last name"
-                                   th:field="*{lastName}"
-                                   th:classappend="${#fields.hasErrors('lastName')}? 'is-invalid' : ''"
-                                   autocomplete="off"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}"
-                                 th:errors="*{lastName}">
-                                error
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-pencil"></span></span>
-                            </div>
-                            <input id="title" class="form-control" placeholder="Sonnet's title" th:field="*{title}"
-                                   th:classappend="${#fields.hasErrors('title')}? 'is-invalid' : ''"
-                                   autocomplete="off"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
-                                error
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-calendar"></span></span>
-                            </div>
-                            <input id="publicationYear" type="number" class="form-control"
-                                   placeholder="1660" th:field="*{publicationYear}"
-                                   th:classappend="${#fields.hasErrors('publicationYear')}? 'is-invalid' : ''"
-                                   autocomplete="off"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('publicationYear')}"
-                                 th:errors="*{publicationYear}">
-                                error
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-copywriting"></span></span>
-                            </div>
-                            <select id="publicationStatement" class="custom-select custom-select-md"
-                                    title="Publication Statement" th:field="*{publicationStmt}"
-                                    th:classappend="${#fields.hasErrors('publicationStmt')}? 'is-invalid' : ''"
-                                    autocomplete="off">
-                                <option value="Not for distribution.">Not for distribution.</option>
-                                <option value="Public domain.">Public domain.</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-book"></span></span>
-                            </div>
-                            <input id="sourceDescription" class="form-control" placeholder="Source description"
-                                   th:field="*{sourceDesc}"
-                                   th:classappend="${#fields.hasErrors('sourceDesc')}? 'is-invalid' : ''"
-                                   autocomplete="off"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('sourceDesc')}"
-                                 th:errors="*{sourceDesc}">
-                                error
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="text" class="form-control"
-                                  placeholder="Copy sonnet text here. Please preserve formatting from original. Leading and trailing whitespace is automatically removed after submission."
-                                  th:field="*{text}"
-                                  th:classappend="${#fields.hasErrors('text')}? 'is-invalid' : ''"
-                                  rows="14"></textarea>
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('text')}" th:errors="*{text}">
-                            error
-                        </div>
-                    </div>
-
-                    <input type="hidden" name="addedBy" th:value="${username}"/>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
-                        submit
-                    </button>
-                    <a th:href="@{~/admin/sonnets/all/delete/} + ${id}">
-                        <button sec:authorize="hasAuthority('ADMIN')" type="button" class="btn btn-danger">
-                            Delete
-                        </button>
-                    </a>
-                    <!--Modal popup -->
-                    <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Confirm</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Are you sure? Please make sure the data is accurate.</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary" onclick="hideModal()">
-                                        Save changes
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+<!--suppress ALL -->
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="display-4 pb-3">Edit a sonnet:</h1>
+            <hr class="m-4" style="border-color: black"/>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/footer :: scripts"></div>
-    <script>
-        function hideModal() {
-            $('#confirmModal').modal('hide');
-        }
-    </script>
-</main>
-</html>
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <form action="#" th:action="@{~/edit/} + ${id}" id="insertForm" th:object="${SonnetDto}" role="form"
+                  method="POST" class="mx-3" th:classappend="${#fields.hasErrors('global')}? 'was-validated' : ''">
+                <div th:if="${param.success}" class="alert alert-success">
+                    Sonnet edited successfully.
+                </div>
+                <div th:replace="fragments/sonnet_edit :: sonnet_edit"></div>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: scripts"></div>
+<div th:replace="fragments/sonnet_edit:: insert_script"></div>
+<div th:replace="fragments/footer :: footer"></div>

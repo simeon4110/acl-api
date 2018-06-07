@@ -1,40 +1,35 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <title>Beyond Aporia - Browse</title>
-    <div th:replace="fragments/header :: head"></div>
-</head>
-<main>
-    <div th:replace="fragments/header :: nav-bar"></div>
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-lg-11">
-                <h1 class="display-4 pb-3">Browse:</h1>
-                <hr class="m-4" style="border-color: black"/>
+<!--suppress ALL -->
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <h1 class="display-4 pb-3">Browse:</h1>
+            <hr class="m-4" style="border-color: black"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-2 justify-content-center mb-2">
+            <div class="form">
+                <div class="form-group">
+                    <label for="pageSizeSelect" class="control-label">Items per page:</label>
+                    <select class="form-control pagination" id="pageSizeSelect">
+                        <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}"
+                                th:selected="${pageSize} == ${selectedPageSize}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sortSelect" class="control-label">Sort by:</label>
+                    <select class="form-control pagination" id="sortSelect">
+                        <option th:each="sort : ${sortBy}" th:text="${sort[1]}" th:value="${sort[0]}"
+                                th:selected="${sort[0]} == ${selectedSortBy}"></option>
+                    </select>
+                </div>
+                <button type="button" onclick="updatePageSettings()" class="btn btn-primary">Update</button>
             </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-2 justify-content-center mb-2">
-                <div class="form">
-                    <div class="form-group">
-                        <label for="pageSizeSelect" class="control-label">Items per page:</label>
-                        <select class="form-control pagination" id="pageSizeSelect">
-                            <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}"
-                                    th:selected="${pageSize} == ${selectedPageSize}"></option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="sortSelect" class="control-label">Sort by:</label>
-                        <select class="form-control pagination" id="sortSelect">
-                            <option th:each="sort : ${sortBy}" th:text="${sort[1]}" th:value="${sort[0]}"
-                                    th:selected="${sort[0]} == ${selectedSortBy}"></option>
-                        </select>
-                    </div>
-                    <button type="button" onclick="updatePageSettings()" class="btn btn-primary">Update</button>
-                </div>
-            </div>
-            <div class="col-lg-8">
-                <div class="card-deck">
+        <div class="col-lg-8">
+            <div class="card-deck">
                     <span th:each="Sonnet : ${page}">
                         <div class="card border-light mb-2">
                             <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
@@ -74,72 +69,70 @@
                             </ul>
                         </div>
                     </span>
-                </div>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <hr class="m-4" style="border-color: black"/>
-            </div>
-            <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
-                <ul class="pagination justify-content-center">
-                    <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
-                            &laquo;
-                        </a>
-                    </li>
-                    <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
-                            Previous
-                        </a>
-                    </li>
-                    <li th:class="${page.number == (number)} ? 'page-item active' : 'page-item'"
-                        th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
-                        <a class="page-link"
-                           th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
-                           th:text="${number}">
-                            Page
-                        </a>
-                    </li>
-                    <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
-                            Next
-                        </a>
-                    </li>
-                    <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
-                        <a class="page-link"
-                           th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages - 1})}">
-                            &raquo;
-                        </a>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
-    <div th:replace="fragments/footer :: footer"></div>
-    <div th:replace="fragments/footer :: scripts"></div>
-    <script th:inline="javascript">
-        <!--JS to handle page sort / size updates-->
-        var pageSize = /*[[${selectedPageSize}]]*/;
-        var sortBy = /*[[${selectedSortBy}]]*/;
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <hr class="m-4" style="border-color: black"/>
+        </div>
+        <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
+            <ul class="pagination justify-content-center">
+                <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
+                        &laquo;
+                    </a>
+                </li>
+                <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
+                        Previous
+                    </a>
+                </li>
+                <li th:class="${page.number == (number)} ? 'page-item active' : 'page-item'"
+                    th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                    <a class="page-link"
+                       th:href="@{~/browse/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
+                       th:text="${number}">
+                        Page
+                    </a>
+                </li>
+                <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
+                        Next
+                    </a>
+                </li>
+                <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
+                    <a class="page-link"
+                       th:href="@{~/browse/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages - 1})}">
+                        &raquo;
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/footer :: scripts"></div>
+<script th:inline="javascript">
+    <!--JS to handle page sort / size updates-->
+    var pageSize = /*[[${selectedPageSize}]]*/;
+    var sortBy = /*[[${selectedSortBy}]]*/;
 
-        function updatePageSettings() {
-            window.location = "/browse/?size=" + pageSize + "&sort=" + sortBy + ",asc";
-        }
+    function updatePageSettings() {
+        window.location = "/browse/?size=" + pageSize + "&sort=" + sortBy + ",asc";
+    }
 
-        $('#pageSizeSelect').on('change', function () {
-            pageSize = (this.value);
-            console.log(pageSize);
-        });
+    $('#pageSizeSelect').on('change', function () {
+        pageSize = (this.value);
+        console.log(pageSize);
+    });
 
-        $('#sortSelect').on('change', function () {
-            sortBy = (this.value);
-            console.log(sortBy);
-        });
+    $('#sortSelect').on('change', function () {
+        sortBy = (this.value);
+        console.log(sortBy);
+    });
 
-    </script>
-</main>
-</html>
+</script>
+<div th:replace="fragments/footer :: footer"></div>
