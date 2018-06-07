@@ -57,6 +57,8 @@
                                        class="card-link">JSON</a>
                                     <a th:href="@{~/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
                                        class="card-link">TEI</a>
+                                    <a th:href="@{~/lookup/txt/} + ${Sonnet.getId()}" target="_blank"
+                                       class="card-link">Text</a>
                                     <a sec:authorize="hasAuthority('USER')" target="_blank" class="card-link"
                                        th:href="@{~/edit/} + ${Sonnet.getId()}">
                                         Edit

@@ -5,7 +5,7 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.5.3-DEV</version>
+    <version>0.5.4-DEV</version>
     <packaging>jar</packaging>
 
     <name>Sonnet</name>
@@ -45,6 +45,12 @@
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
             <version>RELEASE</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.11.3</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
         <dependency>

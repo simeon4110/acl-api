@@ -136,7 +136,7 @@ public class LookupController {
      */
     @GetMapping(value = "/lookup/csv/get_csv/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
     public void getCSV(@PathVariable("ids") String[] ids, HttpServletResponse response) {
-        logger.debug(ids);
+        logger.debug("Parsing to csv: " + ids);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Parsing sonnet ids: " + Arrays.toString(ids));
@@ -151,6 +151,26 @@ public class LookupController {
             String sonnetCSV = SonnetConverter.sonnetsToCSV(sonnets);
 
             InputStream inputStream = new ByteArrayInputStream(sonnetCSV.getBytes(StandardCharsets.UTF_8));
+            IOUtils.copy(inputStream, response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
+
+    @GetMapping(value = "/lookup/txt/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public void getTXT(@PathVariable("ids") String[] ids, HttpServletResponse response) {
+        logger.debug("Parsing to txt: " + ids);
+
+        try {
+            List<Sonnet> sonnets = new ArrayList<>();
+            for (String s : ids) {
+                sonnets.add(sonnetDetailsService.getSonnetByID(s));
+            }
+
+            String sonnetTXT = SonnetConverter.sonnetsToText(sonnets);
+
+            InputStream inputStream = new ByteArrayInputStream(sonnetTXT.getBytes(StandardCharsets.UTF_8));
             IOUtils.copy(inputStream, response.getOutputStream());
             response.flushBuffer();
         } catch (IOException e) {
