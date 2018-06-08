@@ -43,19 +43,9 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text"><span class="oi oi-calendar"></span></span>
                 </div>
-                <select id="period" class="custom-select custom-select-md" title="Period" th:field="*{period}"
-                        th:classappend="${#fields.hasErrors('period')}? 'is-invalid' : ''"/>
-                <option value="1500-1550">1500-1550</option>
-                <option value="1550-1600">1550-1600</option>
-                <option value="1600-1650">1600-1650</option>
-                <option value="1650-1700">1650-1700</option>
-                <option value="1700-1750">1700-1750</option>
-                <option value="1750-1800">1750-1800</option>
-                <option value="1800-1850">1800-1850</option>
-                <option value="1850-1900">1850-1900</option>
-                <option value="1900-1950">1900-1950</option>
-                <option value="1950-2000">1950-2000</option>
-                <option value="2000-present">2000-present</option>
+                <select id="period" class="custom-select custom-select-md" title="Period of First Publication"
+                        th:field="*{period}" th:classappend="${#fields.hasErrors('period')}? 'is-invalid' : ''">
+                    <option th:each="period : ${periods}" th:value="${period}" th:text="${period}">period</option>
                 </select>
             </div>
         </div>
@@ -78,11 +68,12 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text"><span class="oi oi-copywriting"></span></span>
                 </div>
-                <select id="publicationStatement" class="custom-select custom-select-md" title="Publication Statement"
-                        th:field="*{publicationStmt}"
-                        th:classappend="${#fields.hasErrors('publicationStmt')}? 'is-invalid' : ''"/>
-                <option value="Not for distribution.">Not for distribution</option>
-                <option value="Public domain.">Copyrighted</option>
+                <select id="publicationStatement" class="custom-select custom-select-md"
+                        title="Can this sonnet be shared?" th:field="*{publicationStmt}"
+                        th:classappend="${#fields.hasErrors('publicationStmt')}? 'is-invalid' : ''">
+                    <option th:each="publication : ${publications}" th:value="${publication}" th:text="${publication}">
+                        pub stmt
+                    </option>
                 </select>
             </div>
         </div>
@@ -92,7 +83,8 @@
                     <span class="input-group-text"><span class="oi oi-book"></span></span>
                 </div>
                 <input id="sourceDescription" class="form-control" placeholder="Source description (Required)"
-                       th:field="*{sourceDesc}" th:classappend="${#fields.hasErrors('sourceDesc')}? 'is-invalid' : ''"/>
+                       th:field="*{sourceDesc}" th:classappend="${#fields.hasErrors('sourceDesc')}? 'is-invalid' : ''"
+                       title="The title and publication year of the book (digital or print) the sonnet is from."/>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('sourceDesc')}" th:errors="*{sourceDesc}">
                     error
                 </div>
@@ -147,9 +139,9 @@
         $('#confirmModal').modal('hide');
     }
 
-    $('#period').tooltip({'trigger': 'active', 'title': 'Period of initial publication.'});
-    $('#publicationYear').tooltip({'trigger': 'active', 'title': 'Exact date of first publication, if known.'});
-    $('#publicationStatement').tooltip({'trigger': 'active', 'title': 'Can this sonnet be shared?'});
+    $('#period').tooltip({'trigger': 'hover', 'title': 'Period of initial publication.'});
+    $('#publicationYear').tooltip({'trigger': 'hover', 'title': 'Exact date of first publication, if known.'});
+    $('#publicationStatement').tooltip({'trigger': 'hover', 'title': 'Can this sonnet be shared?'});
     $('#sourceDescription')
         .tooltip({
             'trigger': 'hover',

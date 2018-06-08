@@ -91,6 +91,19 @@
             win.focus();
 
         })
+
+        // Create the link to JSON parse.
+        $('#txtbutton').click(function () {
+            var ids = [];
+
+            $.each(table.rows('.selected').data(), function () {
+                ids.push(this["id"]);
+            });
+
+            var win = window.open("/sonnets/txt/by_id/" + ids, '_blank');
+            win.focus();
+
+        })
     });
 
 </script>

@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 public class EditController {
     private static final Logger logger = Logger.getLogger(EditController.class);
 
+    private static final String[] PERIODS = {"1500-1550", "1550-1600", "1600-1650", "1650-1700", "1700-1750",
+            "1850-1800", "1800-1850", "1850-1900", "1950-2000", "2000-present"};
+    private static final String[] PUB_STMT = {"public domain", "copyrighted"};
     private static final String PAGE_TITLE = "pageTitle";
     private static final String SONNET = "SonnetDto";
     private static final String EDIT = "edit";
@@ -50,6 +53,8 @@ public class EditController {
         model.addAttribute("id", sonnet.getId());
         model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
         model.addAttribute(PAGE_TITLE, "Modify " + sonnet.getId());
+        model.addAttribute("periods", PERIODS);
+        model.addAttribute("publications", PUB_STMT);
 
         return EDIT;
     }
@@ -68,8 +73,13 @@ public class EditController {
         Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
         sonnet = new SonnetDto(newSonnet);
         model.addAttribute(SONNET, sonnet);
+        model.addAttribute("id", sonnet.getId());
         model.addAttribute("username", request.getUserPrincipal().getName()); // Don't forget!
+        model.addAttribute(PAGE_TITLE, "Modify " + sonnet.getId());
+        model.addAttribute("periods", PERIODS);
+        model.addAttribute("publications", PUB_STMT);
+        model.addAttribute("status", "success");
 
-        return "redirect:" + id + "?success";
+        return EDIT;
     }
 }

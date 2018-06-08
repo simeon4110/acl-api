@@ -58,6 +58,11 @@
             <artifactId>spring-security-config</artifactId>
             <version>5.0.5.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>RELEASE</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
         <dependency>
             <groupId>org.springframework.security</groupId>

@@ -12,10 +12,10 @@
         <div class="col-lg-10">
             <form action="#" th:action="@{~/insert}" id="insertForm" th:object="${SonnetDto}" role="form"
                   method="POST" class="mx-3" th:classappend="${#fields.hasErrors('global')}? 'was-validated' : ''">
-                <div th:if="${param.exists}" class="alert alert-error">
+                <div th:if="${status} == 'exists'" class="alert alert-error">
                     A sonnet with that title / first line by that author already exists.
                 </div>
-                <div th:if="${param.success}" class="alert alert-success">
+                <div th:if="${status} == 'success'" class="alert alert-success">
                     Sonnet added successfully, to clear this form click clear, to copy another sonnet by the same
                     author simply swap out the data below for the next sonnet's details and click submit.
                 </div>
