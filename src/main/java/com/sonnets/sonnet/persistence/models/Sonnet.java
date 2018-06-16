@@ -82,7 +82,6 @@ public class Sonnet {
         this.firstName = sonnetDto.getFirstName().trim();
         this.lastName = sonnetDto.getLastName().trim();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
-        System.out.println(this.text);
         if (Objects.equals(sonnetDto.getTitle(), "") || sonnetDto.getTitle() == null) {
             this.title = this.text.get(0);
         } else {
