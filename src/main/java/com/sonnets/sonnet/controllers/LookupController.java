@@ -29,7 +29,7 @@ public class LookupController {
     private static final Logger logger = Logger.getLogger(LookupController.class);
 
     private static final String PAGE_TITLE = "pageTitle";
-    private static final String[] PERIODS = {"1500-1550", "1550-1600", "1600-1650", "1650-1700", "1700-1750",
+    private static final String[] PERIODS = {"", "1500-1550", "1550-1600", "1600-1650", "1650-1700", "1700-1750",
             "1750-1800", "1800-1850", "1850-1900", "1950-2000", "2000-present"};
     private static final String LOOKUP = "lookup";
     private static final String SONNET = "Sonnet";

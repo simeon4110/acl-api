@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +20,15 @@ import java.util.Optional;
  * @author Josh Harkema
  */
 @Service
-@Transactional(propagation = Propagation.REQUIRED)
 public class SonnetDetailsService {
     private final SonnetRepository sonnetRepository;
+    private final SearchService searchService;
     private static final Logger logger = Logger.getLogger(SonnetDetailsService.class);
 
     @Autowired
-    public SonnetDetailsService(SonnetRepository sonnetRepository) {
+    public SonnetDetailsService(SonnetRepository sonnetRepository, SearchService searchService) {
         this.sonnetRepository = sonnetRepository;
+        this.searchService = searchService;
     }
 
     /**
@@ -41,7 +40,7 @@ public class SonnetDetailsService {
     public Sonnet addNewSonnet(SonnetDto newSonnet) {
         logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
         try {
-            checkIfSonnetExists(newSonnet);
+            searchService.similarExists(newSonnet);
             Sonnet toAddSonnet = new Sonnet(newSonnet);
             sonnetRepository.saveAndFlush(toAddSonnet);
 
@@ -51,7 +50,6 @@ public class SonnetDetailsService {
 
             return null;
         }
-
     }
 
     /**
@@ -160,18 +158,6 @@ public class SonnetDetailsService {
 
     public Sonnet getSonnetByTitleAndLastName(String title, String lastName) {
         return sonnetRepository.findByTitleAndLastName(title, lastName);
-    }
-
-    /**
-     * Checks if a sonnet by that title and author exists and throws an exception if it does.
-     *
-     * @param sonnetDto the sonnet to check if it exists.
-     */
-    private void checkIfSonnetExists(SonnetDto sonnetDto) {
-        if (sonnetRepository.findByTitleAndLastName(sonnetDto.getTitle(), sonnetDto.getLastName()) != null) {
-            throw new SonnetAlreadyExistsException("Sonnet with title: " + sonnetDto.getTitle() + " by author " +
-                    sonnetDto.getLastName() + " already exists.");
-        }
     }
 
 }

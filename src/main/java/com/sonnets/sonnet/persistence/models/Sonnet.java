@@ -48,9 +48,10 @@ public class Sonnet {
     @Field(name = "line_length", index = Index.YES, analyze = Analyze.NO)
     @Column
     private Integer numOfLines;
-    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.NO)
+    @Field(name = "period", index = Index.YES, analyze = Analyze.NO)
     @Column
     private String period;
+    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.NO)
     @Column
     private Integer publicationYear;
     @Column
@@ -81,7 +82,6 @@ public class Sonnet {
         this.firstName = sonnetDto.getFirstName().trim();
         this.lastName = sonnetDto.getLastName().trim();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
-        System.out.println(this.text);
         if (Objects.equals(sonnetDto.getTitle(), "") || sonnetDto.getTitle() == null) {
             this.title = this.text.get(0);
         } else {
@@ -101,7 +101,7 @@ public class Sonnet {
      * @param text a string[] of the text.
      * @return an ArrayList of the string[].
      */
-    private static List<String> parseText(String[] text) {
+    public static List<String> parseText(String[] text) {
         List<String> strings = new ArrayList<>();
 
         for (String s : text) {

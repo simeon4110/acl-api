@@ -105,7 +105,7 @@
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
             submit
         </button>
-        <button class="btn btn-warning" type="reset">Clear</button>
+        <button id="clearForm" class="btn btn-warning" onclick="clearForm()">Clear</button>
     </div>
     <!--Modal popup -->
     <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog">
@@ -137,6 +137,10 @@
 <script th:fragment="insert_script">
     function hideModal() {
         $('#confirmModal').modal('hide');
+    }
+
+    function clearForm() {
+        $('#clearForm').reset();
     }
 
     $('#period').tooltip({'trigger': 'hover', 'title': 'Period of initial publication.'});

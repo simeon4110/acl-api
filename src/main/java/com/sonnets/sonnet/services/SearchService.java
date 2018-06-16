@@ -1,5 +1,7 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
+import com.sonnets.sonnet.persistence.exceptions.SonnetAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -8,7 +10,6 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -25,7 +26,6 @@ import static java.lang.Math.toIntExact;
  * @author Josh Harkema
  */
 @Repository
-@Transactional
 public class SearchService {
     private static final Logger logger = Logger.getLogger(SearchService.class);
     @PersistenceContext
@@ -62,6 +62,19 @@ public class SearchService {
                     .matching(sonnet.getTitle()).createQuery();
         }
 
+        // Period
+        if (sonnet.getPeriod() != null && !Objects.equals(sonnet.getPeriod(), "")) {
+            logger.debug(sonnet.getPeriod());
+            query = queryBuilder.keyword().onField("period").matching(sonnet.getPeriod()).createQuery();
+        }
+
+        // Publication Year
+        if (sonnet.getPublicationYear() != null) {
+            logger.debug(sonnet.getPublicationYear());
+            query = queryBuilder.range().onField("publicationYear").above(sonnet.getPublicationYear() + 10)
+                    .createQuery();
+        }
+
         // text
         if (sonnet.getText() != null && !sonnet.getText().isEmpty()) {
             logger.debug(sonnet.getText());
@@ -74,6 +87,35 @@ public class SearchService {
         }
 
         return query;
+    }
+
+    void similarExists(SonnetDto sonnet) {
+        logger.debug("Similar Search: " + sonnet.toString());
+        org.apache.lucene.search.Query query;
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
+
+        if (Objects.equals(sonnet.getTitle(), "")) {
+            sonnet.setTitle(Sonnet.parseText(sonnet.getText().split("\\r?\\n")).get(0));
+        }
+
+        query = queryBuilder.bool()
+                .must(queryBuilder.keyword().onField("title").matching(sonnet.getTitle()).createQuery())
+                .must(queryBuilder.keyword().onField("lastName").matching(sonnet.getLastName()).createQuery())
+                .createQuery();
+
+        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
+
+        List results = fullTextQuery.getResultList();
+
+        logger.debug("Found similar: " + results.toString());
+
+        if (!results.isEmpty()) {
+            throw new SonnetAlreadyExistsException("Sonnet by: " + sonnet.getLastName()
+                    + "With title: " + sonnet.getTitle()
+                    + " Already exists.");
+        }
+
     }
 
     /**
