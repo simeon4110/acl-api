@@ -2,4 +2,3 @@ job:
   script:
     - mvn clean -B
     - mvn test -B
-    - mvn package -B
