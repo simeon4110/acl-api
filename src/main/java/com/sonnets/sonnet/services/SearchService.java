@@ -10,7 +10,6 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -27,7 +26,6 @@ import static java.lang.Math.toIntExact;
  * @author Josh Harkema
  */
 @Repository
-@Transactional
 public class SearchService {
     private static final Logger logger = Logger.getLogger(SearchService.class);
     @PersistenceContext
@@ -91,7 +89,8 @@ public class SearchService {
         return query;
     }
 
-    public boolean similarExists(SonnetDto sonnet) {
+    void similarExists(SonnetDto sonnet) {
+        logger.debug("Similar Search: " + sonnet.toString());
         org.apache.lucene.search.Query query;
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
@@ -109,14 +108,12 @@ public class SearchService {
 
         List results = fullTextQuery.getResultList();
 
-        logger.debug(results.toString());
+        logger.debug("Found similar: " + results.toString());
 
         if (!results.isEmpty()) {
             throw new SonnetAlreadyExistsException("Sonnet by: " + sonnet.getLastName()
                     + "With title: " + sonnet.getTitle()
                     + " Already exists.");
-        } else {
-            return true;
         }
 
     }

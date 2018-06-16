@@ -1,13 +1,10 @@
 package com.sonnets.sonnet.tests;
 
-
 import com.sonnets.sonnet.config.TestJpaConfig;
 import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
-import com.sonnets.sonnet.persistence.models.Sonnet;
+import com.sonnets.sonnet.persistence.exceptions.SonnetAlreadyExistsException;
 import com.sonnets.sonnet.services.SonnetDetailsService;
-import com.sonnets.sonnet.tools.SonnetGenerator;
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +14,23 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author Josh Harkema
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestJpaConfig.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Transactional
-public class SonnetIntegrationTests {
-    private static final Logger logger = Logger.getLogger(SonnetIntegrationTests.class);
+public class SonnetAlreadyExistsTest {
+    private final static Logger logger = Logger.getLogger(SonnetAlreadyExistsTest.class);
     @Autowired
     private SonnetDetailsService sonnetDetailsService;
 
-    @Test
-    public void addTwoIdenticalSonnets() {
-        SonnetDto sonnetDto = SonnetGenerator.sonnetGenerator();
-        Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
-        Sonnet sonnet1 = sonnetDetailsService.addNewSonnet(sonnetDto);
-        Assert.assertNull(sonnet1);
-    }
 
+    @Test(expected = SonnetAlreadyExistsException.class)
+    public void testAlreadyExists() {
+        SonnetDto sonnetDto = new SonnetDto(sonnetDetailsService.getSonnetByID("875"));
+        logger.debug("Testing sonnet: " + sonnetDto);
+
+        sonnetDetailsService.addNewSonnet(sonnetDto);
+
+    }
 }

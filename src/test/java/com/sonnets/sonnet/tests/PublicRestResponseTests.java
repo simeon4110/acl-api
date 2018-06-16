@@ -37,6 +37,8 @@ public class PublicRestResponseTests {
     private static final String testIdStr = "9";
     private static final String lastName = "Shakespeare";
     private static final String firstName = "William";
+    private static final String addedBy = "amdin";
+
     @Autowired
     private WebApplicationContext ctx;
     private MockMvc mockMvc;
@@ -53,21 +55,65 @@ public class PublicRestResponseTests {
      */
     @Test
     public void testRestEndpoints() throws Exception {
+        // JSON by_id
         mockMvc.perform(get("/sonnets/by_id/{id}", testIdStr).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
 
+        // JSON all
         mockMvc.perform(get("/sonnets/all").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
 
+        // JSON lastName
         mockMvc.perform(get("/sonnets/by_author_last_name/{lastName}", lastName).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
 
+        // JSON firstName
         mockMvc.perform(get("/sonnets/by_author_first_name/{firstName}", firstName).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        // JSON addedBy
+        mockMvc.perform(get("/sonnets/by_added_by/{addedBy}", addedBy).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        // TXT all
+        mockMvc.perform(get("/sonnets/txt/all").accept(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain"));
+
+        // TXT id
+        mockMvc.perform(get("/sonnets/txt/by_id/{ids}", testIdStr).accept(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain"));
+
+        // TXT lastName
+        mockMvc.perform(get("/sonnets/txt/by_last_name/{lastName}", lastName).accept(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain"));
+
+        // TXT addedBy
+        mockMvc.perform(get("/sonnets/txt/by_user/{username}", addedBy).accept(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain"));
+
+        // XML id
+        mockMvc.perform(get("/sonnets/xml/by_id/{id}", testIdStr).accept(MediaType.APPLICATION_XML_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/xml"));
+
+        // TEI id
+        mockMvc.perform(get("/sonnets/tei/by_id/{id}", testIdStr).accept(MediaType.APPLICATION_XML_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/xml"));
+
+        // CSV id
+        mockMvc.perform(get("/sonnets/csv/by_ids/{ids}", testIdStr).accept(MediaType.TEXT_PLAIN_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain"));
 
     }
 

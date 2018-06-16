@@ -41,16 +41,15 @@ public class SonnetDetailsService {
         logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
         try {
             searchService.similarExists(newSonnet);
+            Sonnet toAddSonnet = new Sonnet(newSonnet);
+            sonnetRepository.saveAndFlush(toAddSonnet);
+
+            return toAddSonnet;
         } catch (SonnetAlreadyExistsException e) {
             logger.error(e);
 
             return null;
         }
-
-        Sonnet toAddSonnet = new Sonnet(newSonnet);
-        sonnetRepository.saveAndFlush(toAddSonnet);
-
-        return toAddSonnet;
     }
 
     /**
