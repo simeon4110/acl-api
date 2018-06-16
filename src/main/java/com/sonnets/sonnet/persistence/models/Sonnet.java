@@ -102,7 +102,7 @@ public class Sonnet {
      * @param text a string[] of the text.
      * @return an ArrayList of the string[].
      */
-    private static List<String> parseText(String[] text) {
+    public static List<String> parseText(String[] text) {
         List<String> strings = new ArrayList<>();
 
         for (String s : text) {

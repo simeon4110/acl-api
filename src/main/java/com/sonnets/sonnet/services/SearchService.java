@@ -96,6 +96,10 @@ public class SearchService {
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
 
+        if (Objects.equals(sonnet.getTitle(), "")) {
+            sonnet.setTitle(Sonnet.parseText(sonnet.getText().split("\\r?\\n")).get(0));
+        }
+
         query = queryBuilder.bool()
                 .must(queryBuilder.keyword().onField("title").matching(sonnet.getTitle()).createQuery())
                 .must(queryBuilder.keyword().onField("lastName").matching(sonnet.getLastName()).createQuery())

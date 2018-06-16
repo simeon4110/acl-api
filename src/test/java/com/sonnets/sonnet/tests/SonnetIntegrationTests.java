@@ -34,7 +34,6 @@ public class SonnetIntegrationTests {
     public void addTwoIdenticalSonnets() {
         SonnetDto sonnetDto = SonnetGenerator.sonnetGenerator();
         Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
-
         Sonnet sonnet1 = sonnetDetailsService.addNewSonnet(sonnetDto);
         Assert.assertNull(sonnet1);
     }
