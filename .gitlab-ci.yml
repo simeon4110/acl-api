@@ -1,9 +1,5 @@
 job:
   script:
-    - mv /media/share/prod/application.properties src/main/resources/
-    - mv /media/share/prod/pom.xml ./
     - mvn clean -B
+    - mvn test -B
     - mvn package -B
-    - rm -r /var/lib/tomcat8/webapps/*
-    - rm /home/josh/sonnet-deploy/indexes/com.sonnets.sonnet.persistence.models.Sonnet/write.lock
-    - cp target/ROOT.war /var/lib/tomcat8/webapps/ROOT.war
