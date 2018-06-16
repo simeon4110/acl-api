@@ -20,7 +20,7 @@
             <form th:class="form" name="f" class="form" th:action="@{~/login}" method="POST">
                 <div th:if="${param.error}" class="alert alert-danger">
                     Invalid username and/or password. Please try again. Self-serve password reset is not available.
-                    Please email <a href="mailto:joshua.harkema@ucalgary.ca">joshuah.harkema@ucalgary.ca</a> to
+                    Please email <a href="mailto:joshua.harkema@ucalgary.ca">joshua.harkema@ucalgary.ca</a> to
                     request a password change.
                 </div>
                 <div th:if="${param.logout}" class="alert alert-success">

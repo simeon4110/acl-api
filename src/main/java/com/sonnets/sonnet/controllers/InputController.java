@@ -85,17 +85,21 @@ public class InputController {
 
         // Catch duplicate sonnets.
         if (sonnet == null) {
+            model.addAttribute(SONNET_DTO, sonnetDto);
+            model.addAttribute(USERNAME, request.getUserPrincipal().getName()); // Don't forget!
+            model.addAttribute(PAGE_TITLE, PAGE_TITLE_TEXT);
+            model.addAttribute("periods", PERIODS);
+            model.addAttribute("publications", PUB_STMT);
             model.addAttribute("status", "exists");
 
             return INPUT;
-        } else {
-            model.addAttribute("publications", PUB_STMT);
         }
 
         model.addAttribute(SONNET_DTO, sonnetDto);
         model.addAttribute(USERNAME, request.getUserPrincipal().getName()); // Don't forget!
         model.addAttribute(PAGE_TITLE, PAGE_TITLE_TEXT);
         model.addAttribute("status", "success");
+        model.addAttribute("publications", PUB_STMT);
         model.addAttribute("periods", PERIODS);
 
         return INPUT;

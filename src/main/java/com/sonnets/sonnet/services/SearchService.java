@@ -1,5 +1,7 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
+import com.sonnets.sonnet.persistence.exceptions.SonnetAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -62,6 +64,19 @@ public class SearchService {
                     .matching(sonnet.getTitle()).createQuery();
         }
 
+        // Period
+        if (sonnet.getPeriod() != null && !Objects.equals(sonnet.getPeriod(), "")) {
+            logger.debug(sonnet.getPeriod());
+            query = queryBuilder.keyword().onField("period").matching(sonnet.getPeriod()).createQuery();
+        }
+
+        // Publication Year
+        if (sonnet.getPublicationYear() != null) {
+            logger.debug(sonnet.getPublicationYear());
+            query = queryBuilder.range().onField("publicationYear").above(sonnet.getPublicationYear() + 10)
+                    .createQuery();
+        }
+
         // text
         if (sonnet.getText() != null && !sonnet.getText().isEmpty()) {
             logger.debug(sonnet.getText());
@@ -74,6 +89,32 @@ public class SearchService {
         }
 
         return query;
+    }
+
+    public boolean similarExists(SonnetDto sonnet) {
+        org.apache.lucene.search.Query query;
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
+
+        query = queryBuilder.bool()
+                .must(queryBuilder.keyword().onField("title").matching(sonnet.getTitle()).createQuery())
+                .must(queryBuilder.keyword().onField("lastName").matching(sonnet.getLastName()).createQuery())
+                .createQuery();
+
+        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
+
+        List results = fullTextQuery.getResultList();
+
+        logger.debug(results.toString());
+
+        if (!results.isEmpty()) {
+            throw new SonnetAlreadyExistsException("Sonnet by: " + sonnet.getLastName()
+                    + "With title: " + sonnet.getTitle()
+                    + " Already exists.");
+        } else {
+            return true;
+        }
+
     }
 
     /**

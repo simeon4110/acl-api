@@ -48,9 +48,10 @@ public class Sonnet {
     @Field(name = "line_length", index = Index.YES, analyze = Analyze.NO)
     @Column
     private Integer numOfLines;
-    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.NO)
+    @Field(name = "period", index = Index.YES, analyze = Analyze.NO)
     @Column
     private String period;
+    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.NO)
     @Column
     private Integer publicationYear;
     @Column
