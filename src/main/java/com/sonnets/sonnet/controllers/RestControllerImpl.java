@@ -157,4 +157,54 @@ public class RestControllerImpl {
         return IOUtils.toByteArray(sonnetsOut);
     }
 
+    /**
+     * Return sonnet as XML.
+     *
+     * @param id the sonnet ID to return.
+     * @return a output stream of the text.
+     * @throws IOException
+     */
+    @GetMapping(value = "/sonnets/xml/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+    public @ResponseBody
+    byte[] getByIdXML(@PathVariable("id") String id) throws IOException {
+        Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
+
+        String sonnetXML = SonnetConverter.sonnetToXML(sonnet);
+        InputStream sonnetOut = new ByteArrayInputStream(sonnetXML.getBytes(StandardCharsets.UTF_8));
+
+        return IOUtils.toByteArray(sonnetOut);
+    }
+
+    /**
+     * Return sonnet as TEI.
+     *
+     * @param id the sonnet ID ot return.
+     * @return an output stream of the text.
+     * @throws IOException
+     */
+    @GetMapping(value = "/sonnets/tei/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+    public @ResponseBody
+    byte[] getByIdTEI(@PathVariable("id") String id) throws IOException {
+        Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
+
+        String sonnetTEI = SonnetConverter.sonnetToTEI(sonnet);
+        InputStream sonnetOut = new ByteArrayInputStream(sonnetTEI.getBytes(StandardCharsets.UTF_8));
+
+        return IOUtils.toByteArray(sonnetOut);
+    }
+
+    @GetMapping(value = "/sonnets/csv/by_ids/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public @ResponseBody
+    byte[] getByIdCSV(@PathVariable("ids") String[] ids) throws IOException {
+        List<Sonnet> sonnets = new ArrayList<>();
+        for (String s : ids) {
+            sonnets.add(sonnetDetailsService.getSonnetByID(s));
+        }
+
+        String sonnetCSV = SonnetConverter.sonnetsToCSV(sonnets);
+        InputStream sonnetOut = new ByteArrayInputStream(sonnetCSV.getBytes(StandardCharsets.UTF_8));
+
+        return IOUtils.toByteArray(sonnetOut);
+    }
+
 }

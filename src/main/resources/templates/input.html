@@ -15,6 +15,9 @@
                 <div th:if="${status} == 'exists'" class="alert alert-error">
                     A sonnet with that title / first line by that author already exists.
                 </div>
+                <div th:if="${status} == 'error'" class="alert alert-error">
+                    Please fix the errors in red below and try again.
+                </div>
                 <div th:if="${status} == 'success'" class="alert alert-success">
                     Sonnet added successfully, to clear this form click clear, to copy another sonnet by the same
                     author simply swap out the data below for the next sonnet's details and click submit.

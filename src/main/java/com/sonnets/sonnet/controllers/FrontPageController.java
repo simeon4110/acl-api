@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 public class FrontPageController {
+    private static final String pageTitle = "Home";
+
     @SuppressWarnings("SameReturnValue")
     @GetMapping("")
     public String showFrontPage(Model model) {
-        model.addAttribute("pageTitle", "Home");
+        model.addAttribute("pageTitle", pageTitle);
 
         return "index";
     }

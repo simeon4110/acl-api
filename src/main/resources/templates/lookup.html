@@ -13,76 +13,71 @@
             <div class="form">
                 <form action="" th:object="${Sonnet}" role="form" method="GET" class="form">
                     <div class="form-group">
-                        <label for="firstName" class="control-label">Author's first name:</label>
-                        <input id="firstName" class="form-control" th:field="*{firstName}" autofocus/>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-person"></span></span>
+                            </div>
+                            <input id="firstName" class="form-control" th:field="*{firstName}"
+                                   placeholder="Author's first name" autofocus/>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="lastName" class="control-label">Author's last name:</label>
-                        <input id="lastName" class="form-control" th:field="*{lastName}"/>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-person"></span></span>
+                            </div>
+                            <input id="lastName" class="form-control" th:field="*{lastName}"
+                                   placeholder="Author's last name"/>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="title" class="control-label">Sonnet title:</label>
-                        <input id="title" class="form-control" th:field="*{title}"/>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-pencil"></span></span>
+                            </div>
+                            <input id="title" class="form-control" th:field="*{title}" placeholder="Sonnet's title"/>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="publicationYear" class="control-label">Year of publication:</label>
-                        <input id="publicationYear" type="number" class="form-control"
-                               th:field="*{publicationYear}"/>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-calendar"></span></span>
+                            </div>
+                            <select id="period" class="custom-select custom-select-md"
+                                    title="Period of First Publication"
+                                    th:field="*{period}">
+                                <option th:each="period : ${periods}" th:value="${period}" th:text="${period}"></option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="contains" class="control-label">Sonnet contains:</label>
-                        <input id="contains" class="form-control" th:field="*{text}"/>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-calendar"></span></span>
+                            </div>
+                            <input id="publicationYear" type="number" class="form-control" placeholder="1660"
+                                   th:field="*{publicationYear}" title="Year of first publication."/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><span class="oi oi-pencil"></span></span>
+                            </div>
+                            <input id="contains" class="form-control" th:field="*{text}" placeholder="Sonnet text"/>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary mb-2">Search</button>
+                    <p class="text-muted">
+                        Notes: you can only search one field at a time right now.
+                    </p>
                 </form>
             </div>
         </div>
         <div class="col-lg-8">
             <div th:if="${not #lists.isEmpty(page)}">
-                <div class="card-deck">
-                        <span th:each="Sonnet : ${page}">
-                            <div class="card border-light mb-2">
-                                <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
-                                <div class="card-body">
-                                <h5 class="card-title"
-                                    th:text="${Sonnet.getFirstName()} + ' ' + ${Sonnet.getLastName()}">Author</h5>
-                                <ul class="list-unstyled">
-                                    <span th:each="line : ${Sonnet.getText()}">
-                                        <li th:text="${line}">Text</li>
-                                    </span>
-                                </ul>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                <li class="list-group-item"
-                                    th:utext="'<strong>Year of publication: </strong>'
-                                    + ${Sonnet.getPublicationYear()}">Year</li>
-                                <li class="list-group-item"
-                                    th:utext="'<strong>Source: </strong>' + ${Sonnet.getSourceDesc()}">Source</li>
-                                <li class="list-group-item"
-                                    th:utext="'<strong>Rights: </strong>' + ${Sonnet.getPublicationStmt()}">Rights</li>
-                                <li class="list-group-item">
-                                    <a th:href="@{~/lookup/xml/} + ${Sonnet.getId()}" target="_blank"
-                                       class="card-link">XML</a>
-                                    <a th:href="@{~/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank"
-                                       class="card-link">JSON</a>
-                                    <a th:href="@{~/lookup/tei/} + ${Sonnet.getId()}" target="_blank"
-                                       class="card-link">TEI</a>
-                                    <a th:href="@{~/lookup/txt/} + ${Sonnet.getId()}" target="_blank"
-                                       class="card-link">Text</a>
-                                    <a sec:authorize="hasAuthority('USER')" target="_blank" class="card-link"
-                                       th:href="@{~/edit/} + ${Sonnet.getId()}">
-                                        Edit
-                                    </a>
-                                    <a sec:authorize="hasAuthority('ADMIN')"
-                                       th:href="@{~/admin/sonnets/all/delete/} + ${Sonnet.getId()}" target="_blank"
-                                       class="card-link">
-                                        Delete
-                                    </a>
-                                </li>
-                            </ul>
-                            </div>
-                        </span>
-                </div>
+                <span th:replace="fragments/sonnet_cards :: cards">
+                </span>
             </div>
         </div>
     </div>

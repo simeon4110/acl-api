@@ -20,16 +20,19 @@ import java.util.Objects;
  */
 @Controller
 public class BrowseController {
-    private final SonnetDetailsService sonnetDetailsService;
     private static final Logger logger = Logger.getLogger(BrowseController.class);
 
-    // Constants.
-    private static final String PAGE_TITLE = "pageTitle";
+    private static final String PAGE_TITLE_CONST = "pageTitle";
+    private static final String PAGE_TITLE_VALUE = "Browse";
     private static final int[] PAGE_SIZES = {5, 10, 20, 50};
     private static final int BUTTONS_TO_SHOW = 5;
     private static final String DEFAULT_SORT = "lastName";
     private static final String[][] SORT_BY = {{"firstName", "First Name"}, {DEFAULT_SORT, "Last Name"},
             {"title", "Title"}, {"publicationYear", "Publication Year"}};
+
+
+    private final SonnetDetailsService sonnetDetailsService;
+
 
     @Autowired
     public BrowseController(SonnetDetailsService sonnetDetailsService) {
@@ -65,7 +68,7 @@ public class BrowseController {
         model.addAttribute("pager", pager);
         model.addAttribute("selectedSortBy", sortBy);
         model.addAttribute("sortBy", SORT_BY);
-        model.addAttribute(PAGE_TITLE, "Browse");
+        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
         return "browse";
     }
 

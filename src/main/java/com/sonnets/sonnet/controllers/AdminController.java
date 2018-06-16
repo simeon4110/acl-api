@@ -23,12 +23,14 @@ import javax.validation.Valid;
 @Controller
 public class AdminController {
     private static final Logger logger = Logger.getLogger(AdminController.class);
-    private final UserDetailsServiceImpl userDetailsService;
 
-    private static final String PAGE_TITLE = "pageTitle";
+    private static final String PAGE_TITLE_CONST = "pageTitle";
+    private static final String PAGE_TITLE_VALUE = "Administration";
     private static final String ADD = "admin_add";
     private static final String MODIFY = "admin_modify";
     private static final String ALL_SONNETS = "admin_all";
+
+    private final UserDetailsServiceImpl userDetailsService;
     private final SonnetDetailsService sonnetDetailsService;
 
     @Autowired
@@ -46,7 +48,7 @@ public class AdminController {
     @GetMapping("/admin")
     public String showAdminPage(Model model) {
         model.addAttribute("UserAddDto", new UserAddDto());
-        model.addAttribute(PAGE_TITLE, "Administration");
+        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
 
         return ADD;
     }
@@ -76,7 +78,7 @@ public class AdminController {
     public String showUserDeletePage(Model model) {
         model.addAttribute("UserModifyDto", new UserModifyDto());
         model.addAttribute("Users", userDetailsService.getAllUsers());
-        model.addAttribute(PAGE_TITLE, "Modify User");
+        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
 
         return MODIFY;
     }
@@ -106,7 +108,7 @@ public class AdminController {
     @GetMapping("/admin/sonnets/all")
     public String showAllSonnetsPage(Model model) {
         model.addAttribute("Sonnets", sonnetDetailsService.getAllSonnets());
-        model.addAttribute(PAGE_TITLE, "Review Records");
+        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
 
         return ALL_SONNETS;
     }
