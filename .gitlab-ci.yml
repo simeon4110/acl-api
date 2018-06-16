@@ -1,21 +1,18 @@
-image: maven:3-jdk-8
 stages:
   - build
-  - test
-
-before_script:
-  - apt-get update -y && apt-get upgrade -y
-
-cache:
-  paths:
-    - /root/.m2/repository/
+  - deploy
 
 compile:
   stage: build
   script:
-    - mvn compile -B
+    - mv /media/share/prod/application.properties ./src/main/resources/
+    - mv /media/share/prod/pom.xml ./
+    - mvn clean -B
+    - mvn package -B
 
-verify:
-  stage: test
+deploy:
+  stage: deploy
   script:
-    - mvn verify -B
+    - rm -r /var/lib/tomcat8/webapps/*
+    - rm /home/josh/sonnet-deploy/indexes/com.sonnets.sonnet.persistence.models.Sonnet/write.lock
+    - cp target/ROOT.war /var/lib/tomcat8/webapps/ROOT.war
