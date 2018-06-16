@@ -102,6 +102,7 @@ public class SearchService {
         query = queryBuilder.bool()
                 .must(queryBuilder.keyword().onField("title").matching(sonnet.getTitle()).createQuery())
                 .must(queryBuilder.keyword().onField("lastName").matching(sonnet.getLastName()).createQuery())
+                .must(queryBuilder.keyword().onField("source").matching(sonnet.getSourceDesc()).createQuery())
                 .createQuery();
 
         Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);

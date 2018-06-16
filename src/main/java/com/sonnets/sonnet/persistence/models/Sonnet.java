@@ -56,6 +56,7 @@ public class Sonnet {
     private Integer publicationYear;
     @Column
     private String publicationStmt;
+    @Field(name = "source", index = Index.YES, analyze = Analyze.NO)
     @Column
     private String sourceDesc;
     @Column
