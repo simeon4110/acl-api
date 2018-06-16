@@ -20,7 +20,7 @@
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                     Please fix the errors in red below and try again.
                 </div>
-                <div th:if="${status} == 'success'" class="alert alert-success alert-dismissible">
+                <div id="success" th:if="${status} == 'success'" class="alert alert-success alert-dismissible">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                     Sonnet added successfully, to clear this form click clear, to copy another sonnet by the same
                     author simply swap out the data below for the next sonnet's details and click submit.
@@ -32,4 +32,7 @@
 </div>
 <div th:replace="fragments/footer :: scripts"></div>
 <div th:replace="fragments/sonnet_edit:: insert_script"></div>
+<script>
+    $('#success').delay(1500).fadeOut("slow");
+</script>
 <div th:replace="fragments/footer :: footer"></div>

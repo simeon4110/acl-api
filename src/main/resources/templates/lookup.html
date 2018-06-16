@@ -43,9 +43,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><span class="oi oi-calendar"></span></span>
                             </div>
-                            <select id="period" class="custom-select custom-select-md"
-                                    title="Period of First Publication"
-                                    th:field="*{period}">
+                            <select id="period" class="custom-select custom-select-md" th:field="*{period}">
                                 <option th:each="period : ${periods}" th:value="${period}" th:text="${period}"></option>
                             </select>
                         </div>
@@ -56,7 +54,7 @@
                                 <span class="input-group-text"><span class="oi oi-calendar"></span></span>
                             </div>
                             <input id="publicationYear" type="number" class="form-control" placeholder="1660"
-                                   th:field="*{publicationYear}" title="Year of first publication."/>
+                                   th:field="*{publicationYear}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -124,4 +122,9 @@
     </div>
 </div>
 <div th:replace="fragments/footer :: scripts"></div>
+<script>
+    $('#publicationYear').tooltip({'trigger': 'hover', 'title': '+/- 10 years.'});
+    $('#period').tooltip({'trigger': 'hover', 'title': 'Period of initial publication.'})
+    $('#text').tooltip({'trigger': 'hover', 'title': 'Exact phrase.'})
+</script>
 <div th:replace="fragments/footer :: footer"></div>
