@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,13 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @Profile("test")
 public class TestJpaConfig {
+    @Value("${SQL_HOST_TEST}")
+    private String SQL_HOST;
+    @Value("${SQL_USER_TEST}")
+    private String SQL_USER;
+    @Value("${SQL_PASS_TEST}")
+    private String SQL_PASS;
+
     /**
      * The test specific data source bean.
      *
@@ -33,9 +41,9 @@ public class TestJpaConfig {
     @Profile("test")
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:mysql://192.168.0.11:3306/sonnet_test?useSSL=true");
-        dataSource.setUsername("josh");
-        dataSource.setPassword("ToyCar11");
+        dataSource.setUrl(SQL_HOST);
+        dataSource.setUsername(SQL_USER);
+        dataSource.setPassword(SQL_PASS);
 
         return dataSource;
     }

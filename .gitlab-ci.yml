@@ -1,4 +1,17 @@
-job:
-  script:
-    - mvn clean -B
-    - mvn test -B
+image: java:8
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script: ./mvnw package
+  artifacts:
+    paths:
+      - target/sonnet-0.5.7-DEV.jar
+
+production:
+  stage: deploy
+  script: docker build -t sonnet .
+  only: master
