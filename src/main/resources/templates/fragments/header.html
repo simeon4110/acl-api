@@ -3,12 +3,10 @@
 
 <!--Header snippet for css and meta-->
 <head th:fragment="head">
-    <title th:text="'Beyond Aporia - ' + ${pageTitle}"></title>
+    <title th:text="'ACL - ' + ${pageTitle}"></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossorigin="anonymous"/>
+    <link rel="stylesheet" th:href="@{~/css/bootstrap.min.css}"/>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css"
           integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous"/>
@@ -25,8 +23,8 @@
 </head>
 <body>
 <!--Navbar snippet-->
-<nav class="navbar bg-light fixed-top navbar-expand-md mb-4" th:fragment="nav-bar">
-    <a class="navbar-brand ml-3" href="/"><span class="oi oi-book"></span> Beyond Aporia</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" th:fragment="nav-bar">
+    <a class="navbar-brand ml-3" href="/"><span class="oi oi-book"></span> ACL Database</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="oi oi-menu"></span>
@@ -48,6 +46,12 @@
             <li class="nav-item">
                 <a class="nav-link" target="_blank" href="https://git.joshharkema.com/jharkema/sonnet-issue-tracking">
                     Report a Bug
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" target="_blank"
+                   href="https://git.joshharkema.com/sonnet-dev/sonnet/wikis/API-Documentation">
+                    API Documentation
                 </a>
             </li>
         </ul>
