@@ -45,3 +45,10 @@ body {
     padding: 0 15px;
     margin-top: auto;
 }
+
+/* Table customizations */
+
+table.dataTable tbody tr.selected {
+    color: white;
+    background-color: #1b597d;
+}

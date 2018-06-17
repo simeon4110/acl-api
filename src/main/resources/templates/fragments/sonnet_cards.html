@@ -1,7 +1,7 @@
 <!--suppress ALL -->
-<div class="card-deck" th:fragment="cards">
+<div class="card-columns" th:fragment="cards">
     <span th:each="Sonnet : ${page}">
-    <div class="card border-light mb-2">
+    <div class="card border-light">
         <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
         <div class="card-body">
         <h5 class="card-title"
@@ -15,6 +15,8 @@
             <ul class="list-group list-group-flush">
             <li class="list-group-item" th:utext="'<strong>Year of publication: </strong>'
                 + ${Sonnet.getPublicationYear()}">Year</li>
+            <li class="list-group-item" th:utext="'<strong>Period of publication: </strong>'
+                + ${Sonnet.getPeriod()}">Period</li>
             <li class="list-group-item" th:utext="'<strong>Source: </strong>' + ${Sonnet.getSourceDesc()}">
                 Source</li>
             <li class="list-group-item" th:utext="'<strong>Rights: </strong>' + ${Sonnet.getPublicationStmt()}">
