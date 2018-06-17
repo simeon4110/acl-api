@@ -14,4 +14,3 @@ build:
 production:
   stage: deploy
   script: docker build -t sonnet .
-  only: master
