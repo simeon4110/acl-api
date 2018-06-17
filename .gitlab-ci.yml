@@ -6,7 +6,7 @@ stages:
 
 build:
   stage: build
-  script: ./mvnw package
+  script: sudo ./mvnw package
   artifacts:
     paths:
       - target/sonnet-0.5.7-DEV.jar
