@@ -1,16 +1,27 @@
-image: java:8
+image: maven:latest
 
-stages:
-  - build
-  - deploy
+variables:
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository/
+    - target/
 
 build:
   stage: build
-  script: mvn package
-  artifacts:
-    paths:
-      - target/sonnet-0.5.7-DEV.jar
+  script:
+    - mvn $MAVEN_CLI_OPTS compile
 
-production:
+test:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+
+deploy:
   stage: deploy
-  script: docker build -t sonnet .
+  script:
+    - mvn $MAVEN_CLI_OPTS deploy
+  only:
+    - master
