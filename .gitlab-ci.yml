@@ -16,7 +16,11 @@ test:
 
 deploy:
   stage: deploy
+  artifacts:
+    paths:
+      - target/sonnet-0.5.7-DEV.jar
   script:
-    - mvn deploy -B
+    - mvn package -B
+    - mvn spring-boot:run
   only:
     - master
