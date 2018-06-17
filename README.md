@@ -6,6 +6,10 @@ The code is all Spring Boot (Security, Hibernate, JPA, MVC) based on the back en
 
 All of the project's code and dependencies are open source, but not all of the dependencies are licenced under the same agreement: please ensure you have read and understood any licencing requirements before you put this code into production. The code in this repository is all licensed under the GPL-3.0 license.
 
+### API Documentation
+
+All documentation for the ACL database can be found in the wiki [https://git.joshharkema.com/sonnet-dev/sonnet/wikis/API-Documentation](https://git.joshharkema.com/sonnet-dev/sonnet/wikis/API-Documentation). This readme only applies to those who wish to contribute to the back-end of the ACL database. If you're using the database, the wiki is where you need to go.
+
 ### Guidelines (More to Come)
 
 1. Use DTO's on *intake* and expose model objects directly on display.

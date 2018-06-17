@@ -24,6 +24,10 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @Profile("test")
 public class TestJpaConfig {
+    private String SQL_HOST = "jdbc:mysql://192.168.0.11:3306/sonnet_test?useSSL=true";
+    private String SQL_USER = "josh";
+    private String SQL_PASS = "ToyCar11";
+
     /**
      * The test specific data source bean.
      *
@@ -33,9 +37,9 @@ public class TestJpaConfig {
     @Profile("test")
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setUrl("jdbc:mysql://192.168.0.11:3306/sonnet_test?useSSL=true");
-        dataSource.setUsername("josh");
-        dataSource.setPassword("ToyCar11");
+        dataSource.setUrl(SQL_HOST);
+        dataSource.setUsername(SQL_USER);
+        dataSource.setPassword(SQL_PASS);
 
         return dataSource;
     }
