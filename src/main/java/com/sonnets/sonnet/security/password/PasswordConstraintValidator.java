@@ -14,13 +14,15 @@ import java.util.stream.Collectors;
  * @author Josh Harkema
  */
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
+    private static final int MIN_LENGTH = 8;
+    private static final int MAX_LENGTH = 30;
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
         PasswordValidator validator = new PasswordValidator(Arrays.asList(
 
                 // at least 8 characters
-                new LengthRule(8, 30),
+                new LengthRule(MIN_LENGTH, MAX_LENGTH),
 
                 // at least one upper-case character
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),

@@ -21,7 +21,7 @@ import javax.validation.Valid;
  */
 @Controller
 public class UserController {
-    private static final Logger logger = Logger.getLogger(UserController.class);
+    private static final Logger LOGGER = Logger.getLogger(UserController.class);
 
     private static final String PAGE_TITLE = "pageTitle";
     private static final String PASS_DTO = "PasswordChangeDto";
@@ -58,10 +58,10 @@ public class UserController {
     @PostMapping("/profile")
     public String postChangePassword(@ModelAttribute(PASS_DTO) @Valid PasswordChangeDto passwordChangeDto,
                                      BindingResult result, HttpServletRequest request, Model model) {
-        logger.debug("Changing password for: " + request.getUserPrincipal().getName());
+        LOGGER.debug("Changing password for: " + request.getUserPrincipal().getName());
 
         if (result.hasErrors()) { // Catch password validation errors.
-            logger.debug("Password validation error: " + result.getAllErrors().toString());
+            LOGGER.debug("Password validation error: " + result.getAllErrors().toString());
             model.addAttribute(PASS_DTO, passwordChangeDto);
 
             return "profile";
@@ -72,6 +72,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Page shows all sonnets added to the db by currently logged in user.
+     *
+     * @param model   where to attach stuff.
+     * @param request to get the user principal.
+     * @return the user_sonnets page.
+     */
     @GetMapping("/profile/my_sonnets")
     public String showUserSonnets(Model model, HttpServletRequest request) {
         model.addAttribute("username", request.getUserPrincipal().getName());
@@ -80,6 +87,12 @@ public class UserController {
         return "user_sonnets";
     }
 
+    /**
+     * NOT IMPLEMENTED. ONLY A PLACEHOLDER.
+     *
+     * @param model to attach stuff to.
+     * @return the user_classify page.
+     */
     @GetMapping("/profile/classify")
     public String showVerifyPage(Model model) {
         model.addAttribute(PAGE_TITLE, "Classify Items");

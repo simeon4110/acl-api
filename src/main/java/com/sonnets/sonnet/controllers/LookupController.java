@@ -26,7 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class LookupController {
     private final SonnetDetailsService sonnetDetailsService;
     private final SearchService searchService;
-    private static final Logger logger = Logger.getLogger(LookupController.class);
+    private static final Logger LOGGER = Logger.getLogger(LookupController.class);
 
     private static final String PAGE_TITLE = "pageTitle";
     private static final String[] PERIODS = {"", "1500-1550", "1550-1600", "1600-1650", "1650-1700", "1700-1750",
@@ -51,7 +51,7 @@ public class LookupController {
      * @param pageRequest the pageable request data.
      * @return a ModelAndView of the search form and search results.
      */
-    @GetMapping(value = "/lookup", name = LOOKUP)
+    @GetMapping(name = LOOKUP, value = "/lookup")
     public ModelAndView showSearchPage(@ModelAttribute Sonnet sonnet, @ModelAttribute ModelMap model,
                                        Pageable pageRequest) {
         Page<Sonnet> sonnets;
@@ -66,11 +66,11 @@ public class LookupController {
             model.addAttribute(PAGE, sonnets);
             model.addAttribute(PAGE_TITLE, "Search");
         } catch (NullPointerException e) {
-            logger.error(e);
+            LOGGER.error(e);
         }
 
         model.addAttribute(SONNET, sonnet);
-        logger.debug("Returning search page: " + model.toString());
+        LOGGER.debug("Returning search page: " + model.toString());
 
         return new ModelAndView(LOOKUP, model);
     }

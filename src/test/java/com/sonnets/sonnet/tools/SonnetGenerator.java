@@ -6,6 +6,8 @@ import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import java.util.UUID;
 
 /**
+ * Generates a sonnet with random data for testing.
+ *
  * @author Josh Harkema
  */
 public abstract class SonnetGenerator {

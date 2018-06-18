@@ -7,13 +7,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.Objects;
@@ -27,9 +27,16 @@ import static java.lang.Math.toIntExact;
  */
 @Repository
 public class SearchService {
-    private static final Logger logger = Logger.getLogger(SearchService.class);
-    @PersistenceContext
     private EntityManager entityManager;
+    private static final Logger LOGGER = Logger.getLogger(SearchService.class);
+    private static final int PREFIX_LENGTH = 2;
+    private static final int EDIT_DISTANCE = 2;
+    private static final int YEAR_RANGE = 10;
+
+    @Autowired
+    public SearchService(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     /**
      * Dynamically generates a query based on which field is selected.
@@ -39,45 +46,40 @@ public class SearchService {
      * @return a lucene query.
      */
     private static org.apache.lucene.search.Query evalFields(Sonnet sonnet, QueryBuilder queryBuilder) {
+        LOGGER.debug("Searching for sonnet: " + sonnet.toString());
         org.apache.lucene.search.Query query = null;
 
         // firstName
         if (sonnet.getFirstName() != null && !Objects.equals(sonnet.getFirstName(), "")) {
-            logger.debug(sonnet.getFirstName());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(2).withEditDistanceUpTo(2).onField("firstName")
-                    .matching(sonnet.getFirstName()).createQuery();
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(PREFIX_LENGTH).withEditDistanceUpTo(EDIT_DISTANCE)
+                    .onField("firstName").matching(sonnet.getFirstName()).createQuery();
         }
 
         // lastName
         if (sonnet.getLastName() != null && !Objects.equals(sonnet.getLastName(), "")) {
-            logger.debug(sonnet.getLastName());
-            query = queryBuilder.keyword().fuzzy().withPrefixLength(2).withEditDistanceUpTo(2).onField("lastName")
-                    .matching(sonnet.getLastName()).createQuery();
+            query = queryBuilder.keyword().fuzzy().withPrefixLength(PREFIX_LENGTH).withEditDistanceUpTo(EDIT_DISTANCE)
+                    .onField("lastName").matching(sonnet.getLastName()).createQuery();
         }
 
         // title
         if (sonnet.getTitle() != null && !Objects.equals(sonnet.getTitle(), "")) {
-            logger.debug(sonnet.getTitle());
             query = queryBuilder.keyword().fuzzy().withPrefixLength(0).withEditDistanceUpTo(1).onField("title")
                     .matching(sonnet.getTitle()).createQuery();
         }
 
         // Period
         if (sonnet.getPeriod() != null && !Objects.equals(sonnet.getPeriod(), "")) {
-            logger.debug(sonnet.getPeriod());
             query = queryBuilder.keyword().onField("period").matching(sonnet.getPeriod()).createQuery();
         }
 
         // Publication Year
         if (sonnet.getPublicationYear() != null) {
-            logger.debug(sonnet.getPublicationYear());
-            query = queryBuilder.range().onField("publicationYear").from(sonnet.getPublicationYear() - 10)
-                    .to(sonnet.getPublicationYear() + 10).createQuery();
+            query = queryBuilder.range().onField("publicationYear").from(sonnet.getPublicationYear() - YEAR_RANGE)
+                    .to(sonnet.getPublicationYear() + YEAR_RANGE).createQuery();
         }
 
         // text
         if (sonnet.getText() != null && !sonnet.getText().isEmpty()) {
-            logger.debug(sonnet.getText());
             query = queryBuilder.phrase().onField("text").sentence(sonnet.getText().toString()).createQuery();
         }
 
@@ -89,16 +91,23 @@ public class SearchService {
         return query;
     }
 
+    /**
+     * This checks to see if a sonnet with similar data already exists in the database.
+     *
+     * @param sonnet the sonnet to check for duplicates.
+     */
     void similarExists(SonnetDto sonnet) {
-        logger.debug("Similar Search: " + sonnet.toString());
+        LOGGER.debug("Similar Search: " + sonnet.toString());
         org.apache.lucene.search.Query query;
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
 
+        // Use first line as title if title is null.
         if (Objects.equals(sonnet.getTitle(), "")) {
             sonnet.setTitle(Sonnet.parseText(sonnet.getText().split("\\r?\\n")).get(0));
         }
 
+        // Boolean "must" query searches for the exact title, lastname and source of a sonnet.
         query = queryBuilder.bool()
                 .must(queryBuilder.phrase().onField("title").sentence(sonnet.getTitle()).createQuery())
                 .must(queryBuilder.keyword().onField("lastName").matching(sonnet.getLastName()).createQuery())
@@ -109,8 +118,9 @@ public class SearchService {
 
         List results = fullTextQuery.getResultList();
 
-        logger.debug("Found similar: " + results.toString());
+        LOGGER.debug("Found similar: " + results.toString());
 
+        // If the search turned up any results, throw a SonnetAlreadyExists exception.
         if (!results.isEmpty()) {
             throw new SonnetAlreadyExistsException("Sonnet by: " + sonnet.getLastName()
                     + "With title: " + sonnet.getTitle()
@@ -127,7 +137,7 @@ public class SearchService {
      * @return a paged list of search results.
      */
     public PageImpl<Sonnet> search(Sonnet sonnet, Pageable pageRequest) {
-        logger.debug("Searching for: " + sonnet.toString());
+        LOGGER.debug("Searching for: " + sonnet.toString());
 
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
@@ -142,9 +152,9 @@ public class SearchService {
         try {
             //noinspection unchecked
             results = fullTextQuery.getResultList();
-            logger.debug("Found matching sonnets: " + total);
+            LOGGER.debug("Found matching sonnets: " + total);
         } catch (NoResultException e) {
-            logger.error(e);
+            LOGGER.error(e);
             return null;
         }
 

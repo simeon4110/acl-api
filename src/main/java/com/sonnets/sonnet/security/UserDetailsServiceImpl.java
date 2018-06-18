@@ -23,24 +23,26 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Interfaces with spring security to extand the stock UserDetailsService.
+ * Interfaces with spring security to extend the stock UserDetailsService. Allows custom login page.
  *
  * @author Josh Harkema
  */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
-    private static final Logger logger = Logger.getLogger(UserDetailsServiceImpl.class);
     private final PrivilegeRepository privilegeRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger LOGGER = Logger.getLogger(UserDetailsServiceImpl.class);
+
     private static final String USER_PRIV = "USER";
     private static final String ADMIN_PRIV = "ADMIN";
+    private static final int ENCODER_STRENGTH = 11;
 
     @Autowired
     public UserDetailsServiceImpl(UserRepository userRepository, PrivilegeRepository privilegeRepository) {
         this.userRepository = userRepository;
         this.privilegeRepository = privilegeRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder(11);
+        this.passwordEncoder = new BCryptPasswordEncoder(ENCODER_STRENGTH);
     }
 
     @Override
@@ -65,9 +67,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     public String addUser(final UserAddDto userAddDto) {
         // Return error if username already exists.
-        logger.debug("Adding user with details: " + userAddDto.toString());
+        LOGGER.debug("Adding user with details: " + userAddDto.toString());
         if (userRepository.findByUsername(userAddDto.getUsername()) != null) {
-            logger.debug("User with username already exists: " + userAddDto.getUsername());
+            LOGGER.debug("User with username already exists: " + userAddDto.getUsername());
             return "redirect:/admin?exists";
         }
 
@@ -102,21 +104,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // Check if user exists.
         if (userRepository.findByUsername(userModifyDto.getUsername()) == null) {
-            logger.debug("User " + userModifyDto.getUsername() + " does not exist.");
+            LOGGER.debug("User " + userModifyDto.getUsername() + " does not exist.");
 
             return "redirect:/admin/user/modify?notFound";
         } else {
-            logger.debug("Modifying user: " + userModifyDto.getUsername());
+            LOGGER.debug("Modifying user: " + userModifyDto.getUsername());
             user = userRepository.findByUsername(userModifyDto.getUsername());
         }
 
         // Do reset password.
         if (userModifyDto.isResetPassword()) {
             if (Objects.equals(userModifyDto.getPasswordReset(), userModifyDto.getPasswordReset1())) {
-                logger.debug("    Changing password...");
+                LOGGER.debug("    Changing password...");
                 user.setPassword(passwordEncoder.encode(userModifyDto.getPasswordReset()));
             } else {
-                logger.debug("     Password change failed, no match.");
+                LOGGER.debug("     Password change failed, no match.");
 
                 return "redirect:/admin/user/modify?noMatch";
             }
@@ -124,13 +126,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // Add admin.
         if (userModifyDto.isAdmin() && !user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIV))) {
-            logger.debug("Granting admin to: " + user.getUsername());
+            LOGGER.debug("Granting admin to: " + user.getUsername());
             user.getPrivileges().add(privilege);
         }
 
         // Remove admin.
         if (!userModifyDto.isAdmin() && user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIV))) {
-            logger.debug("Removing admin rights from: " + user.getUsername());
+            LOGGER.debug("Removing admin rights from: " + user.getUsername());
             user.getPrivileges().remove(privilege);
         }
 
@@ -153,11 +155,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 Objects.equals(passwordChangeDto.getPassword(), passwordChangeDto.getPassword1())) {
             user.setPassword(passwordEncoder.encode(passwordChangeDto.getPassword()));
             userRepository.save(user);
-            logger.debug("Password change successful.");
+            LOGGER.debug("Password change successful.");
 
             return ("redirect:/profile?success");
         } else {
-            logger.debug("Password change failed.");
+            LOGGER.debug("Password change failed.");
 
             return ("redirect:/profile?error");
         }

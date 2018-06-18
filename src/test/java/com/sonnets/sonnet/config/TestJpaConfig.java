@@ -29,7 +29,7 @@ public class TestJpaConfig {
     private String SQL_PASS = "ToyCar11";
 
     /**
-     * The test specific data source bean.
+     * The test specific data source bean. Ensures all testing occurs on test database.
      *
      * @return a test specific DataSource.
      */

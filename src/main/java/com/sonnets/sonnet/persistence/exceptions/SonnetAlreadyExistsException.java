@@ -22,7 +22,8 @@ public class SonnetAlreadyExistsException extends RuntimeException {
         super(cause);
     }
 
-    protected SonnetAlreadyExistsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected SonnetAlreadyExistsException(String message, Throwable cause, boolean enableSuppression,
+                                           boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

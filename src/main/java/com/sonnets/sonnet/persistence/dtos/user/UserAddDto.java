@@ -3,7 +3,7 @@ package com.sonnets.sonnet.persistence.dtos.user;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * Simple POJO for passing data from view to controller.
+ * Simple POJO for passing data required to add a user from view to controller.
  *
  * @author Josh Harkema
  */

@@ -21,6 +21,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.util.UUID;
 
 /**
+ * Ensures password reset functions as expected on the backend.
+ *
  * @author Josh Harkema
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -28,7 +30,7 @@ import java.util.UUID;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class UserPasswordTest {
-    private static final Logger logger = Logger.getLogger(UserPasswordTest.class);
+    private static final Logger LOGGER = Logger.getLogger(UserPasswordTest.class);
     private static final String OLD_PASSWORD = "password1";
     private static final String NEW_PASSWORD = "password2";
     private static final PasswordEncoder encoder = new BCryptPasswordEncoder(11);
@@ -43,7 +45,7 @@ public class UserPasswordTest {
         UserAddDto userAddDto = TestUserDtoFactory.generateUserDto(username);
         userDetailsService.addUser(userAddDto);
 
-        logger.debug("Verifying password change for user: " + username);
+        LOGGER.debug("Verifying password change for user: " + username);
 
         PasswordChangeDto passwordChangeDto = new PasswordChangeDto();
         passwordChangeDto.setCurrentPassword(OLD_PASSWORD);
@@ -52,7 +54,7 @@ public class UserPasswordTest {
 
         userDetailsService.updatePassword(() -> username, passwordChangeDto);
         Assert.assertTrue(encoder.matches(NEW_PASSWORD, userRepository.findByUsername(username).getPassword()));
-        logger.debug("Assertion [] password change is valid.");
+        LOGGER.debug("Assertion [] password change is valid.");
     }
 
 }

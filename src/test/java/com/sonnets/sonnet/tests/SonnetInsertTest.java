@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 public class SonnetInsertTest {
-    private static final Logger logger = Logger.getLogger(SonnetInsertTest.class);
+    private static final Logger LOGGER = Logger.getLogger(SonnetInsertTest.class);
     @Autowired
     private WebApplicationContext ctx;
     @Autowired
@@ -53,8 +53,10 @@ public class SonnetInsertTest {
         String lastName = UUID.randomUUID().toString();
         String text = "First and only Line";
 
+        // Create a testing principal for authenticated input requests.
         Principal testPrincipal = () -> "test_user";
 
+        // Add a sonnet.
         mockMvc.perform(MockMvcRequestBuilders.post("/insert")
                 .param("firstName", "testFirstName").param("lastName", lastName)
                 .param("title", title).param("period", "1500-1550")
@@ -65,12 +67,13 @@ public class SonnetInsertTest {
 
         Sonnet sonnet = sonnetDetailsService.getSonnetByTitleAndLastName(title, lastName);
 
-        logger.debug("Sonnet Output: " + sonnet.toString());
+        // Verify addition with db query for added sonnet.
+        LOGGER.debug("Sonnet Output: " + sonnet.toString());
         Assert.assertEquals(title, sonnet.getTitle());
         Assert.assertEquals(lastName, sonnet.getLastName());
 
+        // Add another sonnet with a different last name.
         String nextLastName = UUID.randomUUID().toString();
-
         mockMvc.perform(MockMvcRequestBuilders.post("/insert")
                 .param("firstName", "testFirstName").param("lastName", nextLastName)
                 .param("title", "").param("period", "1500-1550")
@@ -81,10 +84,10 @@ public class SonnetInsertTest {
 
         Sonnet sonnet1 = sonnetDetailsService.getSonnetByTitleAndLastName(text, nextLastName);
 
-        logger.debug("No title sonnet output: " + sonnet1.toString());
+        // Verify next sonnet with db query for added sonnet.
+        LOGGER.debug("No title sonnet output: " + sonnet1.toString());
         Assert.assertEquals(text, sonnet1.getTitle());
         Assert.assertEquals(nextLastName, sonnet1.getLastName());
-
 
     }
 

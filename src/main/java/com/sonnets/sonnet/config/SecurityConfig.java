@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ComponentScan("com.sonnets.sonnet.security")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
+    private static final int ENCODER_STRENGTH = 11;
 
     @Autowired
     public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
@@ -74,7 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder(11);
+        return new BCryptPasswordEncoder(ENCODER_STRENGTH);
     }
 
 }
