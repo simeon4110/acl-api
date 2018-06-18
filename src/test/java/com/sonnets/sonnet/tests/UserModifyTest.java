@@ -28,12 +28,17 @@ import java.util.UUID;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 
+/**
+ * Tests the admin ability to modify a user via a MockMvc.
+ *
+ * @author Josh Harkema
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestJpaConfig.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class UserModifyTest {
-    private static final Logger logger = Logger.getLogger(UserModifyTest.class);
+    private static final Logger LOGGER = Logger.getLogger(UserModifyTest.class);
     @Autowired
     private WebApplicationContext ctx;
     @Autowired
@@ -57,7 +62,7 @@ public class UserModifyTest {
         adminAuthority.add(new SimpleGrantedAuthority("USER"));
 
         // Test changing from no admin to admin.
-        logger.debug("Authorities: " + userDetailsService.loadUserByUsername(username).getAuthorities());
+        LOGGER.debug("Authorities: " + userDetailsService.loadUserByUsername(username).getAuthorities());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/admin/user/modify")
                 .with(user("admin").password("ToyCar11!").roles("ADMIN", "USER"))

@@ -4,7 +4,7 @@ import com.sonnets.sonnet.persistence.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Stores user details.
+ * Repo interface for the User table.
  *
  * @author Josh Harkema
  */

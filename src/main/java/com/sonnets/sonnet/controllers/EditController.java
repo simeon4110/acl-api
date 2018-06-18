@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 public class EditController {
-    private static final Logger logger = Logger.getLogger(EditController.class);
+    private static final Logger LOGGER = Logger.getLogger(EditController.class);
 
     private static final String[] PERIODS = {"1500-1550", "1550-1600", "1600-1650", "1650-1700", "1700-1750",
             "1750-1800", "1800-1850", "1850-1900", "1950-2000", "2000-present"};
@@ -46,7 +46,7 @@ public class EditController {
     @GetMapping("/edit/{id}")
     public String editSonnet(@PathVariable("id") String id, Model model,
                              HttpServletRequest request) {
-        logger.debug("Editing sonnet: " + id);
+        LOGGER.debug("Editing sonnet: " + id);
         Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
         SonnetDto sonnetDto = new SonnetDto(sonnet);
         model.addAttribute(SONNET, sonnetDto);
@@ -69,7 +69,7 @@ public class EditController {
     @PostMapping(value = "/edit/{id}")
     public String postEditSonnet(@PathVariable("id") String id, @ModelAttribute SonnetDto sonnet, Model model,
                                  HttpServletRequest request) {
-        logger.debug("Posting new sonnet details for id: " + sonnet.getId());
+        LOGGER.debug("Posting new sonnet details for id: " + sonnet.getId());
         Sonnet newSonnet = sonnetDetailsService.updateSonnet(sonnet);
         sonnet = new SonnetDto(newSonnet);
         model.addAttribute(SONNET, sonnet);

@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * Verifies all requests (SELECT and INSERT) are non-blocking. Ensures everything is thread safe.
+ *
  * @author Josh Harkema
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,7 +25,7 @@ import java.util.List;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class ThreadSafeTests {
-    private static final Logger logger = Logger.getLogger(ThreadSafeTests.class);
+    private static final Logger LOGGER = Logger.getLogger(ThreadSafeTests.class);
     @Autowired
     private SonnetDetailsService sonnetDetailsService;
 
@@ -51,9 +53,9 @@ public class ThreadSafeTests {
     public void testMultithreadedGet() throws InterruptedException {
         runMultithreaded(() -> {
             try {
-                logger.debug(sonnetDetailsService.getAllSonnets().toString());
+                LOGGER.debug(sonnetDetailsService.getAllSonnets().toString());
             } catch (Exception e) {
-                logger.error(e);
+                LOGGER.error(e);
             }
         }, 10);
     }
@@ -62,10 +64,10 @@ public class ThreadSafeTests {
     public void testMultithreadedPut() throws InterruptedException {
         runMultithreaded(() -> {
             try {
-                logger.debug("Adding sonnet...");
+                LOGGER.debug("Adding sonnet...");
                 sonnetDetailsService.addNewSonnet(SonnetGenerator.sonnetGenerator());
             } catch (Exception e) {
-                logger.error(e);
+                LOGGER.error(e);
             }
         }, 25);
     }

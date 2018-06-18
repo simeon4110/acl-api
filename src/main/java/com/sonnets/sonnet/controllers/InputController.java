@@ -24,7 +24,7 @@ import javax.validation.Valid;
 @Controller
 public class InputController {
     private final SonnetDetailsService sonnetDetailsService;
-    private static final Logger logger = Logger.getLogger(InputController.class);
+    private static final Logger LOGGER = Logger.getLogger(InputController.class);
 
     private static final String[] PERIODS = {"1500-1550", "1550-1600", "1600-1650", "1650-1700", "1700-1750",
             "1750-1800", "1800-1850", "1850-1900", "1950-2000", "2000-present"};
@@ -83,7 +83,7 @@ public class InputController {
             return INPUT;
         }
 
-        logger.debug("Adding sonnet: " + sonnetDto.toString());
+        LOGGER.debug("Adding sonnet: " + sonnetDto.toString());
         Sonnet sonnet = sonnetDetailsService.addNewSonnet(sonnetDto);
 
         // Catch duplicate sonnets.

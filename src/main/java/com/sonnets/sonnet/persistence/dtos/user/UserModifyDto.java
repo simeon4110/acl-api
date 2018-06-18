@@ -3,6 +3,8 @@ package com.sonnets.sonnet.persistence.dtos.user;
 import javax.validation.constraints.NotEmpty;
 
 /**
+ * POJO for handling administrative user modifications.
+ *
  * @author Josh Harkema
  */
 public class UserModifyDto {

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -20,7 +21,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
     @Column
     private String password;
@@ -65,22 +66,17 @@ public class User implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         User user = (User) o;
-
-        if (id != null ? !id.equals(user.id) : user.id != null) return false;
-        if (username != null ? !username.equals(user.username) : user.username != null) return false;
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        return privileges != null ? privileges.equals(user.privileges) : user.privileges == null;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(privileges, user.privileges);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (privileges != null ? privileges.hashCode() : 0);
-        return result;
+
+        return Objects.hash(id, username, password, privileges);
     }
 
     @Override

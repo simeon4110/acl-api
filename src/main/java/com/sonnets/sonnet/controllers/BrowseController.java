@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 @Controller
 public class BrowseController {
-    private static final Logger logger = Logger.getLogger(BrowseController.class);
+    private static final Logger LOGGER = Logger.getLogger(BrowseController.class);
 
     private static final String PAGE_TITLE_CONST = "pageTitle";
     private static final String PAGE_TITLE_VALUE = "Browse";
@@ -59,8 +59,8 @@ public class BrowseController {
         // One is subtracted to fix strange offset issues.
         Pager pager = new Pager(sonnets.getTotalPages() - 1, pageRequest.getPageNumber(), BUTTONS_TO_SHOW);
 
-        logger.debug("Page size: " + pageSize);
-        logger.debug("Sort by: " + sortBy);
+        LOGGER.debug("Page size: " + pageSize);
+        LOGGER.debug("Sort by: " + sortBy);
 
         model.addAttribute("page", sonnets);
         model.addAttribute("pageSizes", PAGE_SIZES);

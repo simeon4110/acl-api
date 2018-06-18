@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Basic service to interface with SonnetRepository. More search and analytics will be added here.
+ * Basic service to interface with SonnetRepository. More search and analytics will be added here. All view / database
+ * interfacing must travel through this service.
  *
  * @author Josh Harkema
  */
@@ -23,7 +24,7 @@ import java.util.Optional;
 public class SonnetDetailsService {
     private final SonnetRepository sonnetRepository;
     private final SearchService searchService;
-    private static final Logger logger = Logger.getLogger(SonnetDetailsService.class);
+    private static final Logger LOGGER = Logger.getLogger(SonnetDetailsService.class);
 
     @Autowired
     public SonnetDetailsService(SonnetRepository sonnetRepository, SearchService searchService) {
@@ -38,7 +39,7 @@ public class SonnetDetailsService {
      * @return the Sonnet object created.
      */
     public Sonnet addNewSonnet(SonnetDto newSonnet) {
-        logger.debug("Adding sonnet: " + "'" + newSonnet + "'");
+        LOGGER.debug("Adding sonnet: " + "'" + newSonnet + "'");
         try {
             searchService.similarExists(newSonnet);
             Sonnet toAddSonnet = new Sonnet(newSonnet);
@@ -46,7 +47,7 @@ public class SonnetDetailsService {
 
             return toAddSonnet;
         } catch (SonnetAlreadyExistsException e) {
-            logger.error(e);
+            LOGGER.error(e);
 
             return null;
         }
@@ -55,33 +56,24 @@ public class SonnetDetailsService {
     /**
      * Updates an existing sonnet.
      *
-     * @param newSonnet the SonnetDto of the new data.
+     * @param updateSonnet the SonnetDto of the new data.
      * @return the sonnet with the updated data.
      */
-    public Sonnet updateSonnet(SonnetDto newSonnet) {
-        Optional<Sonnet> sonnetToEdit = sonnetRepository.findById(newSonnet.getId());
+    public Sonnet updateSonnet(SonnetDto updateSonnet) {
+        Optional<Sonnet> sonnetToEdit = sonnetRepository.findById(updateSonnet.getId());
         Sonnet sonnet;
         if (sonnetToEdit.isPresent()) {
             sonnet = sonnetToEdit.get();
         } else {
-            logger.error("Sonnet does not exist with id: " + newSonnet.getId());
+            LOGGER.error("Sonnet does not exist with id: " + updateSonnet.getId());
 
             return null;
         }
 
-        sonnet = sonnet.update(newSonnet);
+        sonnet = sonnet.update(updateSonnet);
         sonnetRepository.saveAndFlush(sonnet);
 
         return sonnet;
-    }
-
-    /**
-     * For updating an actual sonnet object. HELPER METHOD, DO NOT DELETE.
-     *
-     * @param sonnet the sonnet to update.
-     */
-    public void updateSonnet(Sonnet sonnet) {
-        sonnetRepository.saveAndFlush(sonnet);
     }
 
     public List<Sonnet> getAllSonnets() {
@@ -97,7 +89,7 @@ public class SonnetDetailsService {
         if (sonnet.isPresent()) {
             return sonnet.get();
         } else {
-            logger.error("Sonnet with id: " + "'" + id + "'" + "does not exist.");
+            LOGGER.error("Sonnet with id: " + "'" + id + "'" + "does not exist.");
             return null;
         }
     }
@@ -125,18 +117,12 @@ public class SonnetDetailsService {
         return sonnetRepository.findAllByAddedBy(addedBy);
     }
 
-    /**
-     * Delete a specific sonnet by its id.
-     *
-     * @param id the id as a String.
-     * @return success / error redirect.
-     */
     public String deleteSonnetById(String id) {
         Long idNum;
         try {
             idNum = Long.parseLong(id);
         } catch (NumberFormatException e) {
-            logger.error("Invalid number format: " + id);
+            LOGGER.error("Invalid number format: " + id);
 
             return "redirect:/admin/sonnets/all?invalidId";
         }
@@ -149,7 +135,7 @@ public class SonnetDetailsService {
 
             return "redirect:/admin/sonnets/all?success";
         } else {
-            logger.error("Sonnet does not exist with id: " + idNum);
+            LOGGER.error("Sonnet does not exist with id: " + idNum);
 
             return "redirect:/admin/sonnets/all?doesNotExist";
         }

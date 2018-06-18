@@ -5,7 +5,7 @@ import com.sonnets.sonnet.security.password.ValidPassword;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * Simple POJO for passing password data from View to Controller.
+ * Simple POJO for passing password change data from View to Controller.
  *
  * @author Josh Harkema
  */

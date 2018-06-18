@@ -49,7 +49,7 @@ public class PublicRestResponseTests {
     }
 
     /**
-     * Tests to ensure all rest endpoints return valid files.
+     * Tests to ensure all rest endpoints return valid file types.
      *
      * @throws Exception it's a test...
      */

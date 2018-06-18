@@ -5,6 +5,8 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 /**
+ * Decorator to easily implement password validation to a DTO field.
+ *
  * @author Josh Harkema
  */
 @Documented

@@ -271,7 +271,8 @@ public class Sonnet {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt, sourceDesc, updatedAt, addedBy, text);
+        return Objects.hash(id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt,
+                sourceDesc, updatedAt, addedBy, text);
     }
 
     @Override

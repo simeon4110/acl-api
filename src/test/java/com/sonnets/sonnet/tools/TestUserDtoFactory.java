@@ -4,6 +4,8 @@ package com.sonnets.sonnet.tools;
 import com.sonnets.sonnet.persistence.dtos.user.UserAddDto;
 
 /**
+ * Generates a random UserDto for testing.
+ *
  * @author Josh Harkema
  */
 public abstract class TestUserDtoFactory {

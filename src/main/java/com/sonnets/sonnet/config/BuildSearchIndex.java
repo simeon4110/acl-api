@@ -20,7 +20,7 @@ import javax.persistence.PersistenceContext;
 @Transactional
 @Component
 public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEvent> {
-    private static final Logger logger = Logger.getLogger(BuildSearchIndex.class);
+    private static final Logger LOGGER = Logger.getLogger(BuildSearchIndex.class);
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -30,7 +30,7 @@ public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEve
             FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
             manager.createIndexer(Sonnet.class).startAndWait();
         } catch (InterruptedException e) {
-            logger.error(e);
+            LOGGER.error(e);
             Thread.currentThread().interrupt();
         }
 

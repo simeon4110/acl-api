@@ -11,7 +11,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 public abstract class SonnetConverter {
-    private static final Logger logger = Logger.getLogger(SonnetConverter.class);
+    private static final Logger LOGGER = Logger.getLogger(SonnetConverter.class);
     private static final String SEPARATOR = ", ";
 
     private SonnetConverter() {
@@ -19,6 +19,7 @@ public abstract class SonnetConverter {
 
     /**
      * Converts a Sonnet object into an XML string.
+     *
      * @param sonnet a Sonnet object.
      * @return and XML string.
      */
@@ -44,13 +45,14 @@ public abstract class SonnetConverter {
         sb.append("\n\t</text>");
         sb.append("\n</sonnet>");
 
-        logger.debug("Raw XML:\n" + sb.toString());
+        LOGGER.debug("Raw XML:\n" + sb.toString());
 
         return sb.toString();
     }
 
     /**
      * Outputs a list of sonnets to a csv file.
+     *
      * @param sonnets a list of sonnets.
      * @return a string of csv separated sonnets (one sonnet per line).
      */
@@ -61,13 +63,14 @@ public abstract class SonnetConverter {
             sb.append(writeSonnetToLine(sonnet));
         }
 
-        logger.debug("Raw CSV:\n" + sb.toString());
+        LOGGER.debug("Raw CSV:\n" + sb.toString());
 
         return sb.toString();
     }
 
     /**
      * Writes a sonnet to a line in CSV format. Prints new line after each sonnet.
+     *
      * @param sonnet the sonnet to write.
      * @return a string of CSV separated sonnet values.
      */
@@ -87,6 +90,7 @@ public abstract class SonnetConverter {
 
     /**
      * Converts to TEI format. Validated by Josh Harkema on May 21, 2018.
+     *
      * @param sonnet the sonnet to convert.
      * @return a TEI formatted sonnet.
      */
@@ -122,7 +126,7 @@ public abstract class SonnetConverter {
         sb.append("\n</text>");
         sb.append("\n</TEI>");
 
-        logger.debug("Raw TEI:\n" + sb);
+        LOGGER.debug("Raw TEI:\n" + sb);
 
         return sb.toString();
     }

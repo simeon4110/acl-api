@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 public class SonnetEditTest {
-    private static final Logger logger = Logger.getLogger(SonnetEditTest.class);
+    private static final Logger LOGGER = Logger.getLogger(SonnetEditTest.class);
     private static final String SONNET_ID = "9"; // It this sonnet no longer exists, the test will fail.
     @Autowired
     private WebApplicationContext ctx;
@@ -66,7 +66,7 @@ public class SonnetEditTest {
 
         Sonnet editedSonnet = sonnetDetailsService.getSonnetByID(SONNET_ID);
 
-        logger.debug("Sonnet Output: " + editedSonnet.toString());
+        LOGGER.debug("Sonnet Output: " + editedSonnet.toString());
         Assert.assertEquals(newTitle, editedSonnet.getTitle());
     }
 

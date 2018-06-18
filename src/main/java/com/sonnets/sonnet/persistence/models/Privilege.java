@@ -2,6 +2,7 @@ package com.sonnets.sonnet.persistence.models;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Privilege object to generate user roles. Currently only "USER" and "ADMIN" exist.
@@ -16,7 +17,7 @@ public class Privilege implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
 
     public Privilege() {
@@ -48,18 +49,15 @@ public class Privilege implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Privilege privilege = (Privilege) o;
-
-        if (id != null ? !id.equals(privilege.id) : privilege.id != null) return false;
-        return name != null ? name.equals(privilege.name) : privilege.name == null;
+        return Objects.equals(id, privilege.id) &&
+                Objects.equals(name, privilege.name);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
+
+        return Objects.hash(id, name);
     }
 
     @Override

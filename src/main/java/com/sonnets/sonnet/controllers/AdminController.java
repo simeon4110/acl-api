@@ -22,7 +22,7 @@ import javax.validation.Valid;
  */
 @Controller
 public class AdminController {
-    private static final Logger logger = Logger.getLogger(AdminController.class);
+    private static final Logger LOGGER = Logger.getLogger(AdminController.class);
 
     private static final String PAGE_TITLE_CONST = "pageTitle";
     private static final String PAGE_TITLE_VALUE = "Administration";
@@ -62,7 +62,7 @@ public class AdminController {
      */
     @PostMapping("/admin/user/add")
     public String postAddUser(@ModelAttribute @Valid UserAddDto userAddDto, Model model) {
-        logger.debug("Adding new user with username: " + userAddDto.getUsername());
+        LOGGER.debug("Adding new user with username: " + userAddDto.getUsername());
         model.addAttribute("UserAddDto", new UserAddDto());
 
         return userDetailsService.addUser(userAddDto);
@@ -92,7 +92,7 @@ public class AdminController {
      */
     @PostMapping("/admin/user/modify")
     public String postUserModify(@ModelAttribute @Valid UserModifyDto userModifyDto, Model model) {
-        logger.debug("Modifying user with username: " + userModifyDto.getUsername());
+        LOGGER.debug("Modifying user with username: " + userModifyDto.getUsername());
         model.addAttribute("UserModifyDto", new UserModifyDto());
         model.addAttribute("Users", userDetailsService.getAllUsers());
 

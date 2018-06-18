@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Basic repo, custom searching queries should be defined here.
+ * Repo interface for the Sonnet table.
  *
  * @author Josh Harkema
  */

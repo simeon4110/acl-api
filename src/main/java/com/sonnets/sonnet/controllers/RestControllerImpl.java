@@ -28,7 +28,7 @@ import java.util.List;
  */
 @RestController
 public class RestControllerImpl {
-    private static final Logger logger = Logger.getLogger(RestControllerImpl.class);
+    private static final Logger LOGGER = Logger.getLogger(RestControllerImpl.class);
     private final SonnetDetailsService sonnetDetailsService;
 
     @Autowired
@@ -41,7 +41,7 @@ public class RestControllerImpl {
      */
     @GetMapping(value = "/sonnets/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getAllSonnets() {
-        logger.debug("Returning all sonnets.");
+        LOGGER.debug("Returning all sonnets.");
         return sonnetDetailsService.getAllSonnets();
     }
 
@@ -51,7 +51,7 @@ public class RestControllerImpl {
      */
     @GetMapping(value = "/sonnets/by_id/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getSonnetByIds(@PathVariable String[] ids) {
-        logger.debug("Returning sonnets with ids: " + Arrays.toString(ids));
+        LOGGER.debug("Returning sonnets with ids: " + Arrays.toString(ids));
         return sonnetDetailsService.getSonnetsByIds(ids);
     }
 
@@ -61,7 +61,7 @@ public class RestControllerImpl {
      */
     @GetMapping(value = "/sonnets/by_author_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getSonnetByAuthorLastName(@PathVariable String lastName) {
-        logger.debug("Returning sonnets with author's last name: " + lastName);
+        LOGGER.debug("Returning sonnets with author's last name: " + lastName);
         return sonnetDetailsService.getSonnetsByAuthorLastName(lastName);
     }
 
@@ -71,7 +71,7 @@ public class RestControllerImpl {
      */
     @GetMapping(value = "/sonnets/by_author_first_name/{firstName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getSonnetByAuthorFirstName(@PathVariable String firstName) {
-        logger.debug("Returning sonnets with author's first name: " + firstName);
+        LOGGER.debug("Returning sonnets with author's first name: " + firstName);
         return sonnetDetailsService.getSonnetsByAuthorFirstName(firstName);
     }
 
@@ -88,7 +88,7 @@ public class RestControllerImpl {
      * Get all lines of poetry as txt.
      *
      * @return an output stream of the text.
-     * @throws IOException
+     * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/all", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
@@ -105,7 +105,7 @@ public class RestControllerImpl {
      *
      * @param ids the sonnets to return.
      * @return an output stream of the text.
-     * @throws IOException
+     * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/by_id/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
@@ -126,7 +126,7 @@ public class RestControllerImpl {
      *
      * @param lastName the author's name to return.
      * @return an output stream of the text.
-     * @throws IOException
+     * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/by_last_name/{lastName}", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
@@ -144,7 +144,7 @@ public class RestControllerImpl {
      *
      * @param username the username of the submitter to return.
      * @return an output stream of the text.
-     * @throws IOException
+     * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/by_user/{username}", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
@@ -162,7 +162,7 @@ public class RestControllerImpl {
      *
      * @param id the sonnet ID to return.
      * @return a output stream of the text.
-     * @throws IOException
+     * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/xml/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public @ResponseBody
@@ -180,7 +180,7 @@ public class RestControllerImpl {
      *
      * @param id the sonnet ID ot return.
      * @return an output stream of the text.
-     * @throws IOException
+     * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/tei/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public @ResponseBody
@@ -193,6 +193,13 @@ public class RestControllerImpl {
         return IOUtils.toByteArray(sonnetOut);
     }
 
+    /**
+     * Return any number of sonnets as csv.
+     *
+     * @param ids a comma separated list of sonnet ids (i.e. "1,2,3,4")
+     * @return an output stream of the csv file.
+     * @throws IOException if InputStream is broken.
+     */
     @GetMapping(value = "/sonnets/csv/by_ids/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
     byte[] getByIdCSV(@PathVariable("ids") String[] ids) throws IOException {
