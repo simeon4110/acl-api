@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,11 +28,12 @@ import static java.lang.Math.toIntExact;
  */
 @Repository
 public class SearchService {
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
     private static final Logger LOGGER = Logger.getLogger(SearchService.class);
     private static final int PREFIX_LENGTH = 2;
     private static final int EDIT_DISTANCE = 2;
     private static final int YEAR_RANGE = 10;
+
 
     @Autowired
     public SearchService(EntityManager entityManager) {
@@ -41,8 +43,7 @@ public class SearchService {
     /**
      * Dynamically generates a query based on which field is selected.
      *
-     * @param sonnet       the sonnet object with the query params.
-     * @param queryBuilder the query builder to build the query for.
+     * @param sonnet the sonnet object with the query params.
      * @return a lucene query.
      */
     private static org.apache.lucene.search.Query evalFields(Sonnet sonnet, QueryBuilder queryBuilder) {
@@ -90,6 +91,7 @@ public class SearchService {
 
         return query;
     }
+
 
     /**
      * This checks to see if a sonnet with similar data already exists in the database.
@@ -159,6 +161,77 @@ public class SearchService {
         }
 
         return new PageImpl<>(results, pageRequest, total);
+
+    }
+
+    /**
+     * Search the Sonnet table's "text" column for an arbitrary string.
+     *
+     * @param text the string to search for.
+     * @return the list of results or null.
+     */
+    public List searchByText(String text) {
+        LOGGER.debug("Searching for sonnets with text: " + text);
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
+        org.apache.lucene.search.Query query = queryBuilder.phrase().onField("text").sentence(text).createQuery();
+
+        return executeQuery(query, manager);
+    }
+
+    /**
+     * Search the Sonnet table's "title" column for an arbitrary string (fuzzy)
+     *
+     * @param title the keywords to look for.
+     * @return a list of results or null.
+     */
+    public List searchByTitle(String title) {
+        LOGGER.debug("Searching for sonnets with title: " + title);
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
+        org.apache.lucene.search.Query query = queryBuilder.keyword().fuzzy().withEditDistanceUpTo(EDIT_DISTANCE)
+                .withPrefixLength(EDIT_DISTANCE).onField("title").matching(title).createQuery();
+
+        return executeQuery(query, manager);
+    }
+
+    /**
+     * Search the Sonnet table's "period" column for a period.
+     *
+     * @param period the period to search for.
+     * @return a list of results or null.
+     */
+    public List searchByPeriod(String period) {
+        LOGGER.debug("Searching for sonnets by period: " + period);
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
+        org.apache.lucene.search.Query query = queryBuilder.keyword().onField("period").matching(period)
+                .createQuery();
+
+        return executeQuery(query, manager);
+    }
+
+    /**
+     * Executor to run pre-parsed lucene queries.
+     *
+     * @param query the query to execute.
+     * @return the query results as a list of Sonnets.
+     */
+    private List executeQuery(org.apache.lucene.search.Query query, FullTextEntityManager manager) {
+        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
+        long total = fullTextQuery.getResultList().size();
+
+        List results;
+
+        try {
+            results = fullTextQuery.getResultList();
+            LOGGER.debug("Found matching sonnets: " + total);
+            return results;
+        } catch (NoResultException e) {
+            LOGGER.error(e);
+            return Collections.emptyList();
+        }
+
     }
 
 }

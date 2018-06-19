@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.tests;
 
 import com.sonnets.sonnet.controllers.RestControllerImpl;
+import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,9 @@ public class PublicRestResponseTests {
     private static final String lastName = "Shakespeare";
     private static final String firstName = "William";
     private static final String addedBy = "amdin";
+    private static final String text = "love";
+    private static final String title = "b2d06974";
+    private static final String period = "1550-1600";
 
     @Autowired
     private WebApplicationContext ctx;
@@ -115,6 +119,21 @@ public class PublicRestResponseTests {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/plain"));
 
+        // Search text
+        mockMvc.perform(get("/sonnets/search/text/{text}", text).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        // Search title
+        mockMvc.perform(get("/sonnets/search/title/{title}", title).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        // Search period
+        mockMvc.perform(get("/sonnets/search/period/{period}", period).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
     }
 
     @Configuration
@@ -124,10 +143,12 @@ public class PublicRestResponseTests {
     public static class TestConfiguration {
         @Autowired
         private SonnetDetailsService sonnetDetailsService;
+        @Autowired
+        private SearchService searchService;
 
         @Bean
         public RestControllerImpl restControllerImpl() {
-            return new RestControllerImpl(sonnetDetailsService);
+            return new RestControllerImpl(sonnetDetailsService, searchService);
         }
     }
 }

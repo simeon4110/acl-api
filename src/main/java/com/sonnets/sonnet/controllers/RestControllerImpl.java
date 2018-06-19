@@ -2,7 +2,9 @@ package com.sonnets.sonnet.controllers;
 
 
 import com.sonnets.sonnet.persistence.models.Sonnet;
+import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
+import com.sonnets.sonnet.tools.ParseParam;
 import com.sonnets.sonnet.tools.SonnetConverter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -30,10 +32,12 @@ import java.util.List;
 public class RestControllerImpl {
     private static final Logger LOGGER = Logger.getLogger(RestControllerImpl.class);
     private final SonnetDetailsService sonnetDetailsService;
+    private final SearchService searchService;
 
     @Autowired
-    public RestControllerImpl(SonnetDetailsService sonnetDetailsService) {
+    public RestControllerImpl(SonnetDetailsService sonnetDetailsService, SearchService searchService) {
         this.sonnetDetailsService = sonnetDetailsService;
+        this.searchService = searchService;
     }
 
     /**
@@ -61,6 +65,7 @@ public class RestControllerImpl {
      */
     @GetMapping(value = "/sonnets/by_author_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getSonnetByAuthorLastName(@PathVariable String lastName) {
+        lastName = ParseParam.parse(lastName);
         LOGGER.debug("Returning sonnets with author's last name: " + lastName);
         return sonnetDetailsService.getSonnetsByAuthorLastName(lastName);
     }
@@ -71,6 +76,7 @@ public class RestControllerImpl {
      */
     @GetMapping(value = "/sonnets/by_author_first_name/{firstName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getSonnetByAuthorFirstName(@PathVariable String firstName) {
+        firstName = ParseParam.parse(firstName);
         LOGGER.debug("Returning sonnets with author's first name: " + firstName);
         return sonnetDetailsService.getSonnetsByAuthorFirstName(firstName);
     }
@@ -82,6 +88,35 @@ public class RestControllerImpl {
     @GetMapping(value = "/sonnets/by_added_by/{addedBy}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getAllByAddedBy(@PathVariable String addedBy) {
         return sonnetDetailsService.getSonnetsByAddedBy(addedBy);
+    }
+
+    /**
+     * @param text the string of text to search for.
+     * @return a list of the search results or null.
+     */
+    @GetMapping(value = "/sonnets/search/text/{text}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getSearchByText(@PathVariable String text) {
+        text = ParseParam.parse(text);
+        return searchService.searchByText(text);
+    }
+
+    /**
+     * @param title the title keywords to search for.
+     * @return a list of the search results or null.
+     */
+    @GetMapping(value = "/sonnets/search/title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getSearchByTitle(@PathVariable String title) {
+        title = ParseParam.parse(title);
+        return searchService.searchByTitle(title);
+    }
+
+    /**
+     * @param period the period to search for.
+     * @return a list of the search results or null.
+     */
+    @GetMapping(value = "/sonnets/search/period/{period}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getSearchByPeriod(@PathVariable String period) {
+        return searchService.searchByPeriod(period);
     }
 
     /**
@@ -131,6 +166,7 @@ public class RestControllerImpl {
     @GetMapping(value = "/sonnets/txt/by_last_name/{lastName}", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
     byte[] getByLastNameText(@PathVariable("lastName") String lastName) throws IOException {
+        lastName = ParseParam.parse(lastName);
         List<Sonnet> sonnets = sonnetDetailsService.getSonnetsByAuthorLastName(lastName);
 
         String sonnetTXT = SonnetConverter.sonnetsToText(sonnets);
