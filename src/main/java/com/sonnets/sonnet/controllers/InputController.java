@@ -27,7 +27,7 @@ public class InputController {
     private static final Logger LOGGER = Logger.getLogger(InputController.class);
 
     private static final String[] PERIODS = {"1500-1550", "1550-1600", "1600-1650", "1650-1700", "1700-1750",
-            "1750-1800", "1800-1850", "1850-1900", "1950-2000", "2000-present"};
+            "1750-1800", "1800-1850", "1850-1900", "1900-1950", "1950-2000", "2000-present"};
     private static final String PERIOD_VAL = "periods";
     private static final String STATUS_VAL = "status";
     private static final String[] PUB_STMT = {"public domain", "copyrighted"};
