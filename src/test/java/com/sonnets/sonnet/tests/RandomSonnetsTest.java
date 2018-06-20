@@ -35,7 +35,7 @@ public class RandomSonnetsTest {
     public void getRandomSonnets() {
         List<Sonnet> sonnets = sonnetDetailsService.getTwoRandomSonnets();
 
-        Assert.assertEquals(3, sonnets.size());
+        Assert.assertEquals(2, sonnets.size());
 
         LOGGER.debug("Three random sonnets: " + sonnets.toString());
     }
