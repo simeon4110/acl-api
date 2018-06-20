@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * Basic service to interface with SonnetRepository. More search and analytics will be added here. All view / database
@@ -25,6 +26,7 @@ public class SonnetDetailsService {
     private final SonnetRepository sonnetRepository;
     private final SearchService searchService;
     private static final Logger LOGGER = Logger.getLogger(SonnetDetailsService.class);
+    private static final int NUMBER_OF_RANDOM_SONNETS = 3;
 
     @Autowired
     public SonnetDetailsService(SonnetRepository sonnetRepository, SearchService searchService) {
@@ -74,6 +76,22 @@ public class SonnetDetailsService {
         sonnetRepository.saveAndFlush(sonnet);
 
         return sonnet;
+    }
+
+    /**
+     * @return three randomly selected sonnets chosen from all sonnets in the db.
+     */
+    public List<Sonnet> getThreeRandomSonnets() {
+        Random random = new Random();
+        List<Sonnet> sonnets = getAllSonnets();
+        List<Sonnet> randomSonnets = new ArrayList<>();
+
+        while (randomSonnets.size() < NUMBER_OF_RANDOM_SONNETS) {
+            Sonnet randomElement = sonnets.get(random.nextInt(sonnets.size()));
+            randomSonnets.add(randomElement);
+        }
+
+        return randomSonnets;
     }
 
     public List<Sonnet> getAllSonnets() {
