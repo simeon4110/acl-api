@@ -23,7 +23,7 @@ public class FrontPageController {
     @GetMapping("")
     public String showFrontPage(Model model) {
         model.addAttribute("pageTitle", PAGE_TITLE);
-        model.addAttribute("page", sonnetDetailsService.getThreeRandomSonnets());
+        model.addAttribute("page", sonnetDetailsService.getTwoRandomSonnets());
 
         return "index";
     }

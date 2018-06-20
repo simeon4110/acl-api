@@ -6,6 +6,7 @@ import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.persistence.repositories.SonnetRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class SonnetDetailsService {
     private final SonnetRepository sonnetRepository;
     private final SearchService searchService;
     private static final Logger LOGGER = Logger.getLogger(SonnetDetailsService.class);
-    private static final int NUMBER_OF_RANDOM_SONNETS = 3;
+    private static final int NUMBER_OF_RANDOM_SONNETS = 2;
 
     @Autowired
     public SonnetDetailsService(SonnetRepository sonnetRepository, SearchService searchService) {
@@ -79,9 +80,9 @@ public class SonnetDetailsService {
     }
 
     /**
-     * @return three randomly selected sonnets chosen from all sonnets in the db.
+     * @return two randomly selected sonnets chosen from all sonnets in the db.
      */
-    public List<Sonnet> getThreeRandomSonnets() {
+    public List<Sonnet> getTwoRandomSonnets() {
         Random random = new Random();
         List<Sonnet> sonnets = getAllSonnets();
         List<Sonnet> randomSonnets = new ArrayList<>();
@@ -94,6 +95,7 @@ public class SonnetDetailsService {
         return randomSonnets;
     }
 
+    @Cacheable("sonnets")
     public List<Sonnet> getAllSonnets() {
         return sonnetRepository.findAll();
     }
