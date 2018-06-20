@@ -1,7 +1,7 @@
 <!--suppress ALL -->
-<div class="card-columns" th:fragment="cards">
+<div class="card-deck justify-content-center" th:fragment="cards">
     <span th:each="Sonnet : ${page}">
-    <div class="card border-light">
+    <div class="card border-light mb-2" style="max-width: 24rem">
         <h5 class="card-header" th:text="${Sonnet.getTitle()}">Title</h5>
         <div class="card-body">
         <h5 class="card-title"
