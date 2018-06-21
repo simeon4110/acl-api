@@ -40,12 +40,10 @@
     <orderEntry type="library" name="Maven: org.attoparser:attoparser:2.0.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.unbescape:unbescape:1.1.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.1.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-cache:2.0.2.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.0.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context-support:5.0.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:5.0.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.0.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-beans:5.0.6.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:5.0.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-core:5.0.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jcl:5.0.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.0.6.RELEASE" level="project" />
