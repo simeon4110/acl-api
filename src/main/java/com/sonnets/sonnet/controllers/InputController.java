@@ -98,6 +98,8 @@ public class InputController {
             return INPUT;
         }
 
+        sonnetDto.setTitle("");
+        sonnetDto.setText("");
         model.addAttribute(SONNET_DTO, sonnetDto);
         model.addAttribute(USERNAME, request.getUserPrincipal().getName()); // Don't forget!
         model.addAttribute(PAGE_TITLE, PAGE_TITLE_TEXT);
