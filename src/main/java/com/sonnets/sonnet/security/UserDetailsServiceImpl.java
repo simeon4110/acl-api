@@ -124,6 +124,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
         }
 
+        // Do delete user.
+        if (userModifyDto.isDelete()) {
+            userRepository.delete(userRepository.findByUsername(userModifyDto.getUsername()));
+
+            return "redirect:/admin/user/modify?deleted";
+        }
+
         // Add admin.
         if (userModifyDto.isAdmin() && !user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIV))) {
             LOGGER.debug("Granting admin to: " + user.getUsername());

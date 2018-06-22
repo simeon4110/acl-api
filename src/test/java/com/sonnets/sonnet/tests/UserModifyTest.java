@@ -87,4 +87,19 @@ public class UserModifyTest {
 
     }
 
+    @Test(expected = org.springframework.security.core.userdetails.UsernameNotFoundException.class)
+    public void testDeleteUser() throws Exception {
+        String username = UUID.randomUUID().toString();
+        UserAddDto userAddDto = TestUserDtoFactory.generateUserDto(username);
+        userDetailsService.addUser(userAddDto);
+
+        // Test delete passwords
+        mockMvc.perform(MockMvcRequestBuilders.post("/admin/user/modify")
+                .with(user("admin").password("ToyCar11!").roles("ADMIN", "USER"))
+                .param("username", username).param("delete", "true"))
+                .andExpect(redirectedUrl("/admin/user/modify?deleted"));
+
+        userDetailsService.loadUserByUsername(username);
+    }
+
 }
