@@ -34,6 +34,9 @@
             <div th:if="${param.success}" class="alert alert-success">
                 User modified successfully.
             </div>
+            <div th:if="${param.deleted}" class="alert alert-success">
+                User deleted successfully.
+            </div>
             <form th:object="${UserModifyDto}" class="form" th:action="@{~/admin/user/modify}" method="POST">
                 <div class="form-group">
                     <label for="username" class="control-label">Select user:</label>
