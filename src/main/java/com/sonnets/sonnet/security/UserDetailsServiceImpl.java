@@ -199,11 +199,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (!isAdmin && user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIVILEGE))) {
             user.getPrivileges().remove(privilegeRepository.findByName(ADMIN_PRIVILEGE));
+            user.setAdmin(false);
             userRepository.saveAndFlush(user);
         }
 
         if (isAdmin && !user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIVILEGE))) {
             user.getPrivileges().add(privilegeRepository.findByName(ADMIN_PRIVILEGE));
+            user.setAdmin(true);
             userRepository.saveAndFlush(user);
         }
 
