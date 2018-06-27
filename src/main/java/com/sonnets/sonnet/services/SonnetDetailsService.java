@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -135,14 +137,14 @@ public class SonnetDetailsService {
         return sonnetRepository.findAllByAddedBy(addedBy);
     }
 
-    public String deleteSonnetById(String id) {
+    public ResponseEntity<Void> deleteSonnetById(String id) {
         Long idNum;
         try {
             idNum = Long.parseLong(id);
         } catch (NumberFormatException e) {
             LOGGER.error("Invalid number format: " + id);
 
-            return "redirect:/admin/sonnets/all?invalidId";
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Optional<Sonnet> sonnetOp = sonnetRepository.findById(idNum);
@@ -151,11 +153,11 @@ public class SonnetDetailsService {
             sonnet = sonnetOp.get();
             sonnetRepository.delete(sonnet);
 
-            return "redirect:/admin/sonnets/all?success";
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
             LOGGER.error("Sonnet does not exist with id: " + idNum);
 
-            return "redirect:/admin/sonnets/all?doesNotExist";
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
     }
