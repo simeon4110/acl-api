@@ -46,6 +46,9 @@ public class SecureRestController {
         return userDetailsService.loadUserObjectByUsername(username);
     }
 
+    /**
+     * @return a json formatted list with all the user's and their associated data.
+     */
     @GetMapping(value = "/admin/user/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getAllUsers() {
         LOGGER.debug("Returning a list of all users.");
@@ -56,7 +59,7 @@ public class SecureRestController {
     /**
      * Handles PUT requests to reset a user's password.
      *
-     * @param resetDto a json request.
+     * @param resetDto a valid dto with the new password.
      * @return HttpStatus.ACCEPTED on success; HttpStatus.NOT_ACCEPTABLE on failure.
      */
     @PutMapping(value = "/admin/user/modify/password", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -70,7 +73,7 @@ public class SecureRestController {
     /**
      * Handles put requests to update a user's admin status.
      *
-     * @param modifyUserDto the dto with new info.
+     * @param modifyUserDto the dto vaid dto with the new user data.
      * @return HttpStatus.NOT_ACCEPTABLE if username does not exist; HttpStatus.ACCEPTED if successful.
      */
     @PutMapping(value = "/admin/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -84,10 +87,11 @@ public class SecureRestController {
     /**
      * Add a new user via a POST request.
      *
+     * @param userAddDto a valid user dto object parsed from the request body.
      * @return HttpStatus.CONFLICT if username already exists; HttpStatus.NOT_ACCEPTABLE if passwords don't match;
      * HttpStatus.ACCEPTED if successful.
      */
-    @PostMapping(value = "/admin/user/add")
+    @PostMapping(value = "/admin/user/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addUserRest(@RequestBody AdminUserAddDto userAddDto) {
         LOGGER.debug("Adding new user with username: " + userAddDto.getUsername());
 
@@ -101,8 +105,8 @@ public class SecureRestController {
      * @param id the sonnet's id.
      * @return BAD_REQUEST if number is invalid; ACCEPTED if success; NOT_ACCEPTABLE if sonnet does not exist.
      */
-    @DeleteMapping(value = "/admin/sonnet/delete")
-    public ResponseEntity<Void> deleteSonnet(@RequestParam("id") String id) {
+    @DeleteMapping(value = "/admin/sonnet/delete/{id}")
+    public ResponseEntity<Void> deleteSonnet(@PathVariable("id") String id) {
         LOGGER.debug("Deleting sonnet with ID: " + id);
 
         return sonnetDetailsService.deleteSonnetById(id);

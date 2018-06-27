@@ -3,6 +3,11 @@ package com.sonnets.sonnet.persistence.dtos.user;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * POJO handles JSON formatted user modification requests.
+ *
+ * @author Josh Harkema
+ */
 public class AdminModifyUserDto {
     @NotEmpty
     private String username;

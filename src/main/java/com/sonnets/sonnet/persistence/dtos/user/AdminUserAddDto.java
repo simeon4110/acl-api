@@ -6,6 +6,11 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+/**
+ * POJO handles inbound JSON formatted requests to add a user.
+ *
+ * @author Josh Harkema
+ */
 public class AdminUserAddDto {
     @NotEmpty
     private String username;

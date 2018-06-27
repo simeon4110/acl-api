@@ -1,3 +1,9 @@
+/*!
+ * Handles AJAX for adding a new user.
+ *
+ * Author: Josh Harkema
+ * Data: 27 June 2018
+ */
 function addUser() {
     var username = $("#username").val();
     var email = $("#email").val();

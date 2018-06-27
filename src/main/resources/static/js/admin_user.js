@@ -1,3 +1,10 @@
+/*!
+ * Handles all the administrative functions.
+ *
+ * Author: Josh Harkema
+ * Date: 27 June 2018
+ */
+
 // Display the users table.
 var table = $('#users').DataTable({
     'ajax': {

@@ -4,6 +4,11 @@ import com.sonnets.sonnet.security.password.ValidPassword;
 
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * POJO handles inbound admin password resets.
+ *
+ * @author Josh Harkema
+ */
 public class AdminPasswordResetDto {
     @NotEmpty
     private String username;

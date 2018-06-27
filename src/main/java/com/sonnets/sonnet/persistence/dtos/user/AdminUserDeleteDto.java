@@ -2,6 +2,11 @@ package com.sonnets.sonnet.persistence.dtos.user;
 
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * POJO handles inbound JSON formatted requests to delete a user.
+ *
+ * @author Josh Harkema
+ */
 public class AdminUserDeleteDto {
     @NotEmpty
     private String username;
