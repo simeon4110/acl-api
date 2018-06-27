@@ -1,8 +1,9 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.user.AdminDeleteDto;
 import com.sonnets.sonnet.persistence.dtos.user.AdminModifyUserDto;
 import com.sonnets.sonnet.persistence.dtos.user.AdminPasswordResetDto;
+import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
+import com.sonnets.sonnet.persistence.dtos.user.AdminUserDeleteDto;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.SonnetDetailsService;
@@ -83,21 +84,15 @@ public class SecureRestController {
     /**
      * Add a new user via a POST request.
      *
-     * @param username  the desired username.
-     * @param password  the desired password.
-     * @param password1 confirm password.
-     * @param isAdmin   true = has admin / false = not admin
      * @return HttpStatus.CONFLICT if username already exists; HttpStatus.NOT_ACCEPTABLE if passwords don't match;
      * HttpStatus.ACCEPTED if successful.
      */
     @PostMapping(value = "/admin/user/add")
-    public ResponseEntity<Void> addUserRest(@RequestParam("username") String username,
-                                            @RequestParam("password") String password,
-                                            @RequestParam("password1") String password1,
-                                            @RequestParam("isAdmin") boolean isAdmin) {
-        LOGGER.debug("Adding new user with username: " + username);
+    public ResponseEntity<Void> addUserRest(@RequestBody AdminUserAddDto userAddDto) {
+        LOGGER.debug("Adding new user with username: " + userAddDto.getUsername());
 
-        return userDetailsService.adminAddUser(username, password, password1, isAdmin);
+        return userDetailsService.adminAddUser(userAddDto.getUsername(), userAddDto.getEmail(),
+                userAddDto.getPassword(), userAddDto.getPassword1(), userAddDto.getAdmin());
     }
 
     /**
@@ -120,7 +115,7 @@ public class SecureRestController {
      * @return NOT_ACCEPTABLE if user does not exist; ACCEPTED if success.
      */
     @DeleteMapping(value = "/admin/user/delete", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteUser(@RequestBody AdminDeleteDto deleteDto) {
+    public ResponseEntity<Void> deleteUser(@RequestBody AdminUserDeleteDto deleteDto) {
         LOGGER.debug("Deleting user: " + deleteDto.getUsername());
 
         return userDetailsService.adminDeleteUser(deleteDto.getUsername());

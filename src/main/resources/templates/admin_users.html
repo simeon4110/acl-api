@@ -15,6 +15,9 @@
                     <a class="nav-link active" th:href="@{~/admin}">User Management</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin/add}">New User</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{~/admin/sonnets/all}">Sonnet Records</a>
                 </li>
             </ul>
@@ -49,17 +52,17 @@
                     <div class="modal-body">
                         <div class="input-group mb-2">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-person"></span></span>
+                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
                             </div>
                             <input id="password" class="form-control" autocomplete="off" placeholder="New Password"
                                    type="password" autofocus required/>
                         </div>
                         <div class="input-group mb-2">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-person"></span></span>
+                                <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
                             </div>
                             <input id="password1" class="form-control" autocomplete="off" placeholder="Confirm Password"
-                                   type="password" autofocus required/>
+                                   type="password" required/>
                         </div>
                     </div>
                     <div class="modal-footer">

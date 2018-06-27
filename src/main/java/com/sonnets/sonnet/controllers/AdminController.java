@@ -19,6 +19,7 @@ public class AdminController {
     private static final String PAGE_TITLE_CONST = "pageTitle";
     private static final String PAGE_TITLE_VALUE = "Administration";
     private static final String USERS = "admin_users";
+    private static final String USER_ADD = "admin_user_add";
     private static final String ALL_SONNETS = "admin_sonnets";
 
     private final SonnetDetailsService sonnetDetailsService;
@@ -40,6 +41,14 @@ public class AdminController {
         model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
 
         return USERS;
+    }
+
+    @GetMapping("/admin/add")
+    public String showUserAddPage(Model model) {
+        LOGGER.debug("Showing user add page.");
+        model.addAttribute(PAGE_TITLE_CONST, "New User");
+
+        return USER_ADD;
     }
 
     /**

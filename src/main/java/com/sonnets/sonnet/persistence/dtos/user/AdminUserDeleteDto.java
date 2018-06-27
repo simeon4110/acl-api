@@ -2,7 +2,7 @@ package com.sonnets.sonnet.persistence.dtos.user;
 
 import javax.validation.constraints.NotEmpty;
 
-public class AdminDeleteDto {
+public class AdminUserDeleteDto {
     @NotEmpty
     private String username;
 

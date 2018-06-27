@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -148,8 +149,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param isAdmin   True = admin privileges.
      * @return CONFLICT if username in use; NOT_ACCEPTABLE if passwords don't match; ACCEPTED if successful.
      */
-    public ResponseEntity<Void> adminAddUser(final String username, final String password, final String password1,
-                                             final boolean isAdmin) {
+    public ResponseEntity<Void> adminAddUser(final String username, final String email, final String password,
+                                             final String password1, final boolean isAdmin) {
         LOGGER.debug("Adding new Rest user with username: " + username);
 
         // Return conflict if username already exits.
@@ -165,11 +166,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // Create and save a new user, return status accepted.
         User user = new User();
         user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
+        user.setAddedAt(new Timestamp(System.currentTimeMillis()));
         Set<Privilege> privileges = new HashSet<>();
         privileges.add(privilegeRepository.findByName(USER_PRIVILEGE));
+        user.setAdmin(false);
         if (isAdmin) {
             privileges.add(privilegeRepository.findByName(ADMIN_PRIVILEGE));
+            user.setAdmin(true);
         }
         user.setPrivileges(privileges);
         userRepository.saveAndFlush(user);
