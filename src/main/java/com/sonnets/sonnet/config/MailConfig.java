@@ -20,15 +20,12 @@ public class MailConfig {
 
     @Bean
     public JavaMailSender getJavaMailSender() {
-        String user = environment.getProperty("spring.mail.username");
-        String pass = environment.getProperty("spring.mail.password");
-
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        mailSender.setUsername(user);
-        mailSender.setPassword(pass);
+        mailSender.setUsername("acriticismlab@gmail.com");
+        mailSender.setPassword("9mguEYJEz@TE54$c");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
