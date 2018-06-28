@@ -20,8 +20,8 @@ import java.io.File;
  */
 @Component
 public class EmailServiceImpl implements EmailService {
-    public static final Logger LOGGER = Logger.getLogger(EmailServiceImpl.class);
-    public final JavaMailSender mailSender;
+    private static final Logger LOGGER = Logger.getLogger(EmailServiceImpl.class);
+    private final JavaMailSender mailSender;
 
     @Autowired
     public EmailServiceImpl(JavaMailSender mailSender) {
@@ -65,7 +65,7 @@ public class EmailServiceImpl implements EmailService {
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
     }
 }
