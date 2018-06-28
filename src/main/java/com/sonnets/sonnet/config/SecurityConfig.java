@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/lookup/", "/lookup/**").permitAll()
             .antMatchers("/browse/", "/browse/**").permitAll()
             .antMatchers("/sonnets/", "/sonnets/**").permitAll()
+                .antMatchers("/about", "/about/**").permitAll()
             .antMatchers("/edit/", "/edit/**").hasAuthority("USER")
             .antMatchers("/insert/", "/insert/**").hasAuthority("USER")
                 .antMatchers("/admin", "/admin/add/", "/admin/**", "/admin/user/**").hasAuthority("ADMIN")
