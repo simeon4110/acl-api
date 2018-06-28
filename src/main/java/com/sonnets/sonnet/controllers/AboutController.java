@@ -1,6 +1,8 @@
 package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.ContactDto;
+import com.sonnets.sonnet.persistence.models.MailingList;
+import com.sonnets.sonnet.persistence.repositories.MailingListRepository;
 import com.sonnets.sonnet.services.EmailServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -23,12 +25,14 @@ public class AboutController {
     private static final String PAGE_TITLE_CONST = "pageTitle";
     private static final String PAGE_TITLE_VALUE = "About";
     private static final String ABOUT = "about";
-    private static final String EMAIL_TO = "ullyot@ucalgary.ca";
+    private static final String EMAIL_TO = "josh@joshharkema.com";
     private static final String EMAIL_SUBJECT = "Sonnet Database Query";
     private final EmailServiceImpl emailService;
+    private final MailingListRepository mailingListRepository;
 
-    public AboutController(EmailServiceImpl emailService) {
+    public AboutController(EmailServiceImpl emailService, MailingListRepository mailingListRepository) {
         this.emailService = emailService;
+        this.mailingListRepository = mailingListRepository;
     }
 
     @GetMapping("/about")
@@ -63,6 +67,11 @@ public class AboutController {
                 "\nEmail address: " + contactDto.getEmail() +
                 "\n\nAdd to mailing list: " + contactDto.isMailingList() +
                 "\n\nMessage:\n " + contactDto.getMessage();
+
+        // Add user to mailing list if required.
+        if (contactDto.isMailingList()) {
+            mailingListRepository.saveAndFlush(new MailingList(contactDto.getName(), contactDto.getEmail()));
+        }
 
         emailService.sendSimpleMessage(EMAIL_TO, EMAIL_SUBJECT, message);
         model.addAttribute("ContactDto", new ContactDto());
