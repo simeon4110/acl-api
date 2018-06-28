@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.models.Privilege;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
+import com.sonnets.sonnet.services.EmailServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
     private final PrivilegeRepository privilegeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailServiceImpl emailService;
     private static final Logger LOGGER = Logger.getLogger(UserDetailsServiceImpl.class);
 
     private static final String USER_PRIVILEGE = "USER";
@@ -40,10 +42,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private static final int ENCODER_STRENGTH = 11;
 
     @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository, PrivilegeRepository privilegeRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository, PrivilegeRepository privilegeRepository,
+                                  EmailServiceImpl emailService) {
         this.userRepository = userRepository;
         this.privilegeRepository = privilegeRepository;
         this.passwordEncoder = new BCryptPasswordEncoder(ENCODER_STRENGTH);
+        this.emailService = emailService;
     }
 
     @Override
@@ -179,6 +183,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         user.setPrivileges(privileges);
         userRepository.saveAndFlush(user);
 
+        // Send account details to new user.
+        sendEmailInvite(user.getEmail(), username, password);
+
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
@@ -217,4 +224,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
+    /**
+     * Sends an invite email to a new user.
+     *
+     * @param to       the email address of the new user.
+     * @param username the user's new username.
+     * @param password the user's password.
+     */
+    private void sendEmailInvite(String to, String username, String password) {
+        LOGGER.debug("Sending invite email to: " + to);
+        String message = "Your ACL database credentials are:" +
+                "\nusername: " + username +
+                "\npassword: " + password +
+                "\n\nYou should reset your password by selecting 'profile' when you log in for the first time.";
+
+        String subject = "ACL Database User Account";
+
+        emailService.sendSimpleMessage(to, subject, message);
+    }
 }

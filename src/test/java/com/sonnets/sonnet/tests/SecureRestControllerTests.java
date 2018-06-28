@@ -73,7 +73,7 @@ public class SecureRestControllerTests {
 
         AdminUserAddDto userAddDto = new AdminUserAddDto();
         userAddDto.setUsername(username);
-        userAddDto.setEmail("test@test.com");
+        userAddDto.setEmail("josh@joshharkema.com");
         userAddDto.setPassword("testPass234");
         userAddDto.setPassword1("testPass234");
         userAddDto.setAdmin(false);
