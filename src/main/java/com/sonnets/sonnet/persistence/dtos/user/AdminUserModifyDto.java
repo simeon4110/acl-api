@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
  *
  * @author Josh Harkema
  */
-public class AdminModifyUserDto {
+public class AdminUserModifyDto {
     @NotEmpty
     private String username;
     @Email

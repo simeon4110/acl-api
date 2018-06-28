@@ -1,9 +1,9 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.user.AdminModifyUserDto;
 import com.sonnets.sonnet.persistence.dtos.user.AdminPasswordResetDto;
 import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.AdminUserDeleteDto;
+import com.sonnets.sonnet.persistence.dtos.user.AdminUserModifyDto;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.SonnetDetailsService;
@@ -77,7 +77,7 @@ public class SecureRestController {
      * @return HttpStatus.NOT_ACCEPTABLE if username does not exist; HttpStatus.ACCEPTED if successful.
      */
     @PutMapping(value = "/admin/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modifyUserAdmin(@RequestBody AdminModifyUserDto modifyUserDto) {
+    public ResponseEntity<Void> modifyUserAdmin(@RequestBody AdminUserModifyDto modifyUserDto) {
         LOGGER.debug("Changing admin status for user: " + modifyUserDto.getUsername());
 
         return userDetailsService.adminModifyUser(modifyUserDto.getUsername(), modifyUserDto.getEmail(),
