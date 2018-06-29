@@ -68,14 +68,14 @@ public class SearchService {
         BooleanQuery.Builder booleanClauses = new BooleanQuery.Builder();
 
         // Add first name.
-        if (!Objects.equals(firstName, "")) {
+        if (!Objects.equals(firstName, "") && firstName != null) {
             LOGGER.debug(FIRST_NAME);
             TermQuery tq = new TermQuery(new Term(FIRST_NAME, firstName));
             booleanClauses.add(tq, BooleanClause.Occur.MUST);
         }
 
         // Add last name.
-        if (!Objects.equals(lastName, "")) {
+        if (!Objects.equals(lastName, "") && lastName != null) {
             LOGGER.debug(LAST_NAME);
             FuzzyQuery fq = new FuzzyQuery(
                     new Term(LAST_NAME, lastName),
@@ -84,7 +84,7 @@ public class SearchService {
         }
 
         // Add title.
-        if (!Objects.equals(title, "")) {
+        if (!Objects.equals(title, "") && title != null) {
             LOGGER.debug(TITLE);
             FuzzyQuery fq = new FuzzyQuery(
                     new Term(TITLE, title), EDIT_DISTANCE, PREFIX_LENGTH);
@@ -92,14 +92,14 @@ public class SearchService {
         }
 
         // Add period.
-        if (!Objects.equals(period, "")) {
+        if (!Objects.equals(period, "") && period != null) {
             LOGGER.debug(PERIOD);
             TermQuery tq = new TermQuery(new Term(PERIOD, period));
             booleanClauses.add(tq, BooleanClause.Occur.MUST);
         }
 
         // Add text search.
-        if (!Objects.equals(text, "")) {
+        if (!Objects.equals(text, "") && text != null) {
             LOGGER.debug(TEXT);
             PhraseQuery.Builder builder = new PhraseQuery.Builder();
             builder.setSlop(SLOP);
