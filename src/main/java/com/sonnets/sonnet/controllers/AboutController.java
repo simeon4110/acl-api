@@ -25,7 +25,7 @@ public class AboutController {
     private static final String PAGE_TITLE_CONST = "pageTitle";
     private static final String PAGE_TITLE_VALUE = "About";
     private static final String ABOUT = "about";
-    private static final String EMAIL_TO = "josh@joshharkema.com";
+    private static final String EMAIL_TO = "ullyot@ucalgary.ca";
     private static final String EMAIL_SUBJECT = "Sonnet Database Query";
     private final EmailServiceImpl emailService;
     private final MailingListRepository mailingListRepository;
