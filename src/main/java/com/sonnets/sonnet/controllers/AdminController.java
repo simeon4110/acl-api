@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,12 @@ public class AdminController {
     private static final String USER_REPORTS = "admin_user_reports";
 
     private final SonnetDetailsService sonnetDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    public AdminController(SonnetDetailsService sonnetDetailsService) {
+    public AdminController(SonnetDetailsService sonnetDetailsService, UserDetailsServiceImpl userDetailsService) {
         this.sonnetDetailsService = sonnetDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -43,6 +46,12 @@ public class AdminController {
         return USERS;
     }
 
+    /**
+     * Shows HTML for the Admin panel's "New User" tab.
+     *
+     * @param model to attach stuff to.
+     * @return the user_add page.
+     */
     @GetMapping("/admin/add")
     public String showUserAddPage(Model model) {
         LOGGER.debug("Showing user add page.");
@@ -51,10 +60,17 @@ public class AdminController {
         return USER_ADD;
     }
 
+    /**
+     * Shows HTML for the Admin panel's "User Reports" tab.
+     *
+     * @param model to attach stuff to.
+     * @return the user_reports page.
+     */
     @GetMapping("/admin/reports")
     public String showReportsPage(Model model) {
         LOGGER.debug("Showing admin reports page.");
         model.addAttribute(PAGE_TITLE_CONST, "Reports");
+        model.addAttribute("Users", userDetailsService.getAllUsers());
 
         return USER_REPORTS;
     }

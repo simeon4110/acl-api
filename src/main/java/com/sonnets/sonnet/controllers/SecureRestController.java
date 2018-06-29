@@ -1,9 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.user.AdminPasswordResetDto;
-import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
-import com.sonnets.sonnet.persistence.dtos.user.AdminUserDeleteDto;
-import com.sonnets.sonnet.persistence.dtos.user.AdminUserModifyDto;
+import com.sonnets.sonnet.persistence.dtos.user.*;
+import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.SonnetDetailsService;
@@ -97,6 +95,20 @@ public class SecureRestController {
 
         return userDetailsService.adminAddUser(userAddDto.getUsername(), userAddDto.getEmail(),
                 userAddDto.getPassword(), userAddDto.getPassword1(), userAddDto.getAdmin());
+    }
+
+    /**
+     * Handles AJAX post requests and returns the report data.
+     *
+     * @param reportDto a valid AdminReportDto parsed from the JSON request body.
+     * @return a JSON list of any results.
+     */
+    @PostMapping(value = "/admin/reports/create", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Sonnet> generateReport(@RequestBody AdminReportDto reportDto) {
+
+        return sonnetDetailsService.getSonnetsByAddedByAndDate(reportDto.getUsername(), reportDto.getAfter(),
+                reportDto.getBefore());
     }
 
     /**

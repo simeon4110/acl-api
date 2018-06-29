@@ -1,8 +1,7 @@
-/*!
- * Handles AJAX for adding a new user.
- *
- * Author: Josh Harkema
- * Data: 27 June 2018
+/**
+ * Handles AJAX calls to add a new user to the database.
+ * @author Josh Harkema
+ * @date 28 June 2018
  */
 function addUser() {
     var username = $("#username").val();

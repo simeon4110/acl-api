@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -134,8 +136,19 @@ public class SonnetDetailsService {
         return sonnetRepository.findAllByAddedBy(addedBy);
     }
 
-    public List<Sonnet> getSonnetsByAddedByAndDate(String addedBy, Date after, Date before) {
-        return sonnetRepository.findAllByAddedByAndUpdatedAtBetween(addedBy, after, before);
+    public List<Sonnet> getSonnetsByAddedByAndDate(String addedBy, String after, String before) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date parsedAfter = sdf.parse(after);
+            Date parsedBefore = sdf.parse(before);
+
+            return sonnetRepository.findAllByAddedByAndUpdatedAtBetween(addedBy, parsedAfter, parsedBefore);
+
+        } catch (ParseException e) {
+            LOGGER.error(e);
+            return Collections.emptyList();
+        }
+
     }
 
     public ResponseEntity<Void> deleteSonnetById(String id) {
