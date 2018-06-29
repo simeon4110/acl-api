@@ -9,6 +9,8 @@ import com.sonnets.sonnet.tools.SonnetConverter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +49,13 @@ public class RestControllerImpl {
     public List<Sonnet> getAllSonnets() {
         LOGGER.debug("Returning all sonnets.");
         return sonnetDetailsService.getAllSonnets();
+    }
+
+    @GetMapping(value = "/sonnets/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page<Sonnet> getAllSonnetsPaged(Pageable pageable) {
+        LOGGER.debug("Returning page request: " + pageable);
+
+        return sonnetDetailsService.getAllSonnetsPaged(pageable);
     }
 
     /**

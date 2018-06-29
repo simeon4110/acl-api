@@ -1,8 +1,8 @@
-/*!
- * Handles all the administrative functions.
- *
- * Author: Josh Harkema
- * Date: 27 June 2018
+/**
+ * Deals with all the admin functions.
+ * @type {jQuery}
+ * @author Josh Harkema
+ * @date 28 June 2018
  */
 
 // Display the users table.
