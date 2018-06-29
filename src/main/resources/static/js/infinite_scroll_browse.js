@@ -105,8 +105,8 @@ $(window).scroll(function () {
                     createCard(obj);
                 }
             });
-
-            sleep(250);
+            // Prevent rapid-fire reloading of next page.
+            sleep(100);
         } else {
             var div = document.getElementById('card-container');
             var text = "";
@@ -114,6 +114,21 @@ $(window).scroll(function () {
             div.innerHTML += text;
         }
     }
+});
+
+// Back to top button.
+$(document).ready(function () {
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 100) {
+            $('#scroll').fadeIn();
+        } else {
+            $('#scroll').fadeOut();
+        }
+    });
+    $('#scroll').click(function () {
+        $("html, body").animate({scrollTop: 0}, 600);
+        return false;
+    });
 });
 
 // Prevent rapid fire calls to the scroller.
