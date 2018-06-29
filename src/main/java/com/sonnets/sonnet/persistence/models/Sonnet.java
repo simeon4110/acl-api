@@ -5,7 +5,6 @@ import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Parameter;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -34,29 +33,27 @@ public class Sonnet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     private Long id;
-    @Field(name = "firstName", index = Index.YES, analyze = Analyze.YES)
-    @Analyzer(definition = "noStopWords")
+    @Field(name = "firstName", store = Store.YES)
     @Column
     private String firstName;
-    @Field(name = "lastName", index = Index.YES, analyze = Analyze.YES)
-    @Analyzer(definition = "noStopWords")
+    @Field(name = "lastName", store = Store.YES, termVector = TermVector.YES)
     @Column
     private String lastName;
-    @Field(name = "title", index = Index.YES, analyze = Analyze.YES)
+    @Field(name = "title", store = Store.YES)
     @Column
     private String title;
-    @Field(name = "line_length", index = Index.YES, analyze = Analyze.NO)
+    @Field(name = "line_length")
     @Column
     private Integer numOfLines;
-    @Field(name = "period", index = Index.YES, analyze = Analyze.NO)
+    @Field(name = "period", analyze = Analyze.NO)
     @Column
     private String period;
-    @Field(name = "publicationYear", index = Index.YES, analyze = Analyze.NO)
+    @Field(name = "publicationYear", store = Store.YES, analyze = Analyze.NO)
     @Column
     private Integer publicationYear;
     @Column
     private String publicationStmt;
-    @Field(name = "source", index = Index.YES, analyze = Analyze.NO)
+    @Field(name = "source", analyze = Analyze.NO)
     @Column
     private String sourceDesc;
     @Column
@@ -67,7 +64,7 @@ public class Sonnet {
     private String addedBy;
     @Column
     @IndexedEmbedded
-    @Field(name = "text", index = Index.YES, analyze = Analyze.YES)
+    @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
     @ElementCollection
     private List<String> text;
 

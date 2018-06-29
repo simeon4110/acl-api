@@ -1,10 +1,13 @@
 package com.sonnets.sonnet.persistence.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,8 +26,17 @@ public class User implements Serializable {
     private Long id;
     @Column(unique = true, nullable = false)
     private String username;
+    @JsonIgnore
     @Column
     private String password;
+    @Column
+    private String email;
+    @Column
+    private Boolean isAdmin;
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    private Date addedAt;
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_privileges", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
@@ -54,6 +66,30 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
+
+    public Date getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(Date addedAt) {
+        this.addedAt = addedAt;
+    }
+
     public Set<Privilege> getPrivileges() {
         return privileges;
     }
@@ -70,13 +106,16 @@ public class User implements Serializable {
         return Objects.equals(id, user.id) &&
                 Objects.equals(username, user.username) &&
                 Objects.equals(password, user.password) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(isAdmin, user.isAdmin) &&
+                Objects.equals(addedAt, user.addedAt) &&
                 Objects.equals(privileges, user.privileges);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, username, password, privileges);
+        return Objects.hash(id, username, password, email, isAdmin, addedAt, privileges);
     }
 
     @Override
@@ -85,6 +124,9 @@ public class User implements Serializable {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", isAdmin=" + isAdmin +
+                ", addedAt=" + addedAt +
                 ", privileges=" + privileges +
                 '}';
     }

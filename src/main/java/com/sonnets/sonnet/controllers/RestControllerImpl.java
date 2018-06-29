@@ -9,11 +9,10 @@ import com.sonnets.sonnet.tools.SonnetConverter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,6 +46,13 @@ public class RestControllerImpl {
     public List<Sonnet> getAllSonnets() {
         LOGGER.debug("Returning all sonnets.");
         return sonnetDetailsService.getAllSonnets();
+    }
+
+    @GetMapping(value = "/sonnets/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page getAllSonnetsPaged(Pageable pageable) {
+        LOGGER.debug("Returning page request: " + pageable);
+
+        return sonnetDetailsService.getAllSonnetsPaged(pageable);
     }
 
     /**
@@ -117,6 +123,30 @@ public class RestControllerImpl {
     @GetMapping(value = "/sonnets/search/period/{period}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getSearchByPeriod(@PathVariable String period) {
         return searchService.searchByPeriod(period);
+    }
+
+    /**
+     * Search handler for front end website.
+     *
+     * @param firstName author's first name.
+     * @param lastName  author's last name.
+     * @param title     sonnet's title.
+     * @param period    sonnet's period of publication.
+     * @param text      search sonnet's body for this string.
+     * @return a json formatted response of the results. An empty array is returned when nothing is found.
+     */
+    @GetMapping(value = "/sonnets/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getSearchFromDto(@RequestParam("firstName") String firstName,
+                                 @RequestParam("lastName") String lastName,
+                                 @RequestParam("title") String title,
+                                 @RequestParam("period") String period,
+                                 @RequestParam("text") String text) {
+
+        LOGGER.debug("\nREST search for: " + "\nfirst name: " + firstName + "\nlast name: " + lastName +
+                "\ntitle: " + title + "\nperiod: " + period + "\ntext: " + text);
+
+        return searchService.executeSearch(ParseParam.parse(firstName), ParseParam.parse(lastName),
+                ParseParam.parse(title), ParseParam.parse(period), ParseParam.parse(text));
     }
 
     /**

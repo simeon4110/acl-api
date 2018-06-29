@@ -68,7 +68,7 @@ public class UserController {
         } else {
             model.addAttribute(PASS_DTO, new PasswordChangeDto());
 
-            return userDetailsService.updatePassword(request.getUserPrincipal(), passwordChangeDto);
+            return userDetailsService.userUpdatePassword(request.getUserPrincipal(), passwordChangeDto);
         }
     }
 

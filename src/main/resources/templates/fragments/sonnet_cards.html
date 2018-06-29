@@ -21,7 +21,8 @@
                 Source</li>
             <li class="list-group-item" th:utext="'<strong>Rights: </strong>' + ${Sonnet.getPublicationStmt()}">
                 Rights</li>
-            <li class="list-group-item">
+
+                <li class="list-group-item">
                 <a th:href="@{~/sonnets/xml/by_id/} + ${Sonnet.getId()}" target="_blank" class="card-link">XML</a>
                 <a th:href="@{~/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank" class="card-link">JSON</a>
                 <a th:href="@{~/sonnets/tei/by_id/} + ${Sonnet.getId()}" target="_blank" class="card-link">TEI</a>

@@ -8,12 +8,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Basic service to interface with SonnetRepository. More search and analytics will be added here. All view / database
@@ -135,14 +136,29 @@ public class SonnetDetailsService {
         return sonnetRepository.findAllByAddedBy(addedBy);
     }
 
-    public String deleteSonnetById(String id) {
+    public List<Sonnet> getSonnetsByAddedByAndDate(String addedBy, String after, String before) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date parsedAfter = sdf.parse(after);
+            Date parsedBefore = sdf.parse(before);
+
+            return sonnetRepository.findAllByAddedByAndUpdatedAtBetween(addedBy, parsedAfter, parsedBefore);
+
+        } catch (ParseException e) {
+            LOGGER.error(e);
+            return Collections.emptyList();
+        }
+
+    }
+
+    public ResponseEntity<Void> deleteSonnetById(String id) {
         Long idNum;
         try {
             idNum = Long.parseLong(id);
         } catch (NumberFormatException e) {
             LOGGER.error("Invalid number format: " + id);
 
-            return "redirect:/admin/sonnets/all?invalidId";
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         Optional<Sonnet> sonnetOp = sonnetRepository.findById(idNum);
@@ -151,11 +167,11 @@ public class SonnetDetailsService {
             sonnet = sonnetOp.get();
             sonnetRepository.delete(sonnet);
 
-            return "redirect:/admin/sonnets/all?success";
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
             LOGGER.error("Sonnet does not exist with id: " + idNum);
 
-            return "redirect:/admin/sonnets/all?doesNotExist";
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
     }

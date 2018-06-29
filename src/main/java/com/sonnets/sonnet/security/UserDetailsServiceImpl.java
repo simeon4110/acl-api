@@ -1,14 +1,15 @@
 package com.sonnets.sonnet.security;
 
 import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
-import com.sonnets.sonnet.persistence.dtos.user.UserAddDto;
-import com.sonnets.sonnet.persistence.dtos.user.UserModifyDto;
 import com.sonnets.sonnet.persistence.models.Privilege;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
+import com.sonnets.sonnet.services.EmailServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -32,17 +34,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
     private final PrivilegeRepository privilegeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailServiceImpl emailService;
     private static final Logger LOGGER = Logger.getLogger(UserDetailsServiceImpl.class);
 
-    private static final String USER_PRIV = "USER";
-    private static final String ADMIN_PRIV = "ADMIN";
+    private static final String USER_PRIVILEGE = "USER";
+    private static final String ADMIN_PRIVILEGE = "ADMIN";
     private static final int ENCODER_STRENGTH = 11;
 
     @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository, PrivilegeRepository privilegeRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository, PrivilegeRepository privilegeRepository,
+                                  EmailServiceImpl emailService) {
         this.userRepository = userRepository;
         this.privilegeRepository = privilegeRepository;
         this.passwordEncoder = new BCryptPasswordEncoder(ENCODER_STRENGTH);
+        this.emailService = emailService;
     }
 
     @Override
@@ -55,97 +60,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserPrincipalImpl(user);
     }
 
+    public User loadUserObjectByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+
+        return user;
+    }
+
+    /**
+     * @return a list of all users in the database.
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
-    }
-
-    /**
-     * Add a new user to the database.
-     *
-     * @param userAddDto the UserAddDto with the form data.
-     * @return an error if the user exists, or a success message on success.
-     */
-    public String addUser(final UserAddDto userAddDto) {
-        // Return error if username already exists.
-        LOGGER.debug("Adding user with details: " + userAddDto.toString());
-        if (userRepository.findByUsername(userAddDto.getUsername()) != null) {
-            LOGGER.debug("User with username already exists: " + userAddDto.getUsername());
-            return "redirect:/admin?exists";
-        }
-
-        User user = new User();
-        user.setUsername(userAddDto.getUsername());
-
-        if (Objects.equals(userAddDto.getPassword(), userAddDto.getPassword1())) {
-            user.setPassword(passwordEncoder.encode(userAddDto.getPassword()));
-        }
-
-        Set<Privilege> privileges = new HashSet<>();
-        privileges.add(privilegeRepository.findByName(USER_PRIV));
-        if (userAddDto.isAdmin()) {
-            privileges.add(privilegeRepository.findByName(ADMIN_PRIV));
-        }
-        user.setPrivileges(privileges);
-
-        userRepository.saveAndFlush(user);
-
-        return "redirect:/admin?success";
-    }
-
-    /**
-     * Modify an existing user.
-     *
-     * @param userModifyDto valid UserModifyDto
-     * @return error / success redirect.
-     */
-    public String modifyUser(final UserModifyDto userModifyDto) {
-        User user;
-        Privilege privilege = privilegeRepository.findByName(ADMIN_PRIV);
-
-        // Check if user exists.
-        if (userRepository.findByUsername(userModifyDto.getUsername()) == null) {
-            LOGGER.debug("User " + userModifyDto.getUsername() + " does not exist.");
-
-            return "redirect:/admin/user/modify?notFound";
-        } else {
-            LOGGER.debug("Modifying user: " + userModifyDto.getUsername());
-            user = userRepository.findByUsername(userModifyDto.getUsername());
-        }
-
-        // Do reset password.
-        if (userModifyDto.isResetPassword()) {
-            if (Objects.equals(userModifyDto.getPasswordReset(), userModifyDto.getPasswordReset1())) {
-                LOGGER.debug("    Changing password...");
-                user.setPassword(passwordEncoder.encode(userModifyDto.getPasswordReset()));
-            } else {
-                LOGGER.debug("     Password change failed, no match.");
-
-                return "redirect:/admin/user/modify?noMatch";
-            }
-        }
-
-        // Do delete user.
-        if (userModifyDto.isDelete()) {
-            userRepository.delete(userRepository.findByUsername(userModifyDto.getUsername()));
-
-            return "redirect:/admin/user/modify?deleted";
-        }
-
-        // Add admin.
-        if (userModifyDto.isAdmin() && !user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIV))) {
-            LOGGER.debug("Granting admin to: " + user.getUsername());
-            user.getPrivileges().add(privilege);
-        }
-
-        // Remove admin.
-        if (!userModifyDto.isAdmin() && user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIV))) {
-            LOGGER.debug("Removing admin rights from: " + user.getUsername());
-            user.getPrivileges().remove(privilege);
-        }
-
-        userRepository.save(user);
-
-        return "redirect:/admin/user/modify?success";
     }
 
     /**
@@ -155,7 +83,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param passwordChangeDto the PasswordChangeDto with the form data.
      * @return a success message if successful, or a error message if not.
      */
-    public String updatePassword(final Principal principal, final PasswordChangeDto passwordChangeDto) {
+    public String userUpdatePassword(final Principal principal, final PasswordChangeDto passwordChangeDto) {
         User user = userRepository.findByUsername(principal.getName());
 
         if (passwordEncoder.matches(passwordChangeDto.getCurrentPassword(), user.getPassword()) &&
@@ -170,5 +98,148 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
             return ("redirect:/profile?error");
         }
+    }
+
+    /**
+     * Allows administrator to reset a user's password.
+     *
+     * @param username  the user to reset the password for.
+     * @param password  the new password.
+     * @param password1 new password confirm.
+     * @return NOT_ACCEPTABLE if passwords don't match; ACCEPTED if successful.
+     */
+    public ResponseEntity<Void> adminPasswordReset(final String username, final String password,
+                                                   final String password1) {
+        LOGGER.debug("Admin password reset for user: " + username);
+        User user = userRepository.findByUsername(username);
+
+        if (Objects.equals(password, password1)) {
+            user.setPassword(passwordEncoder.encode(password));
+            LOGGER.debug("Password change successful.");
+            userRepository.saveAndFlush(user);
+
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } else {
+
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    /**
+     * Allows admins to delete a user.
+     *
+     * @param username the user to delete.
+     * @return NOT_ACCEPTABLE if user is not found; ACCEPTED if successful.
+     */
+    public ResponseEntity<Void> adminDeleteUser(final String username) {
+        LOGGER.debug("Deleting user: " + username);
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            LOGGER.debug(username + " not found.");
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+        userRepository.delete(user);
+
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * Allows admins to add a new user.
+     *
+     * @param username  the new user's desired username.
+     * @param password  a new password.
+     * @param password1 validate new password.
+     * @param isAdmin   True = admin privileges.
+     * @return CONFLICT if username in use; NOT_ACCEPTABLE if passwords don't match; ACCEPTED if successful.
+     */
+    public ResponseEntity<Void> adminAddUser(final String username, final String email, final String password,
+                                             final String password1, final boolean isAdmin) {
+        LOGGER.debug("Adding new Rest user with username: " + username);
+
+        // Return conflict if username already exits.
+        if (userRepository.findByUsername(username) != null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        // Return not acceptable if passwords don't match.
+        if (!Objects.equals(password, password1)) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        // Create and save a new user, return status accepted.
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setAddedAt(new Timestamp(System.currentTimeMillis()));
+        Set<Privilege> privileges = new HashSet<>();
+        privileges.add(privilegeRepository.findByName(USER_PRIVILEGE));
+        user.setAdmin(false);
+        if (isAdmin) {
+            privileges.add(privilegeRepository.findByName(ADMIN_PRIVILEGE));
+            user.setAdmin(true);
+        }
+        user.setPrivileges(privileges);
+        userRepository.saveAndFlush(user);
+
+        // Send account details to new user.
+        sendEmailInvite(user.getEmail(), username, password);
+
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * Allows an admin to change a user's admin privileges.
+     *
+     * @param username the user to change.
+     * @param isAdmin  true = has admin rights.
+     * @return NOT_ACCEPTABLE if user name is not found; ACCEPTED if successful.
+     */
+    public ResponseEntity<Void> adminModifyUser(final String username, final String email, final boolean isAdmin) {
+        LOGGER.debug("Setting user " + username + " to admin = " + isAdmin + " with email " + email);
+
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        if (!isAdmin && user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIVILEGE))) {
+            user.getPrivileges().remove(privilegeRepository.findByName(ADMIN_PRIVILEGE));
+            user.setAdmin(false);
+            userRepository.saveAndFlush(user);
+        }
+
+        if (isAdmin && !user.getPrivileges().contains(privilegeRepository.findByName(ADMIN_PRIVILEGE))) {
+            user.getPrivileges().add(privilegeRepository.findByName(ADMIN_PRIVILEGE));
+            user.setAdmin(true);
+            userRepository.saveAndFlush(user);
+        }
+
+        if (!Objects.equals(user.getEmail(), email)) {
+            user.setEmail(email);
+            userRepository.saveAndFlush(user);
+        }
+
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * Sends an invite email to a new user.
+     *
+     * @param to       the email address of the new user.
+     * @param username the user's new username.
+     * @param password the user's password.
+     */
+    private void sendEmailInvite(String to, String username, String password) {
+        LOGGER.debug("Sending invite email to: " + to);
+        String message = "Your ACL database credentials are:" +
+                "\nusername: " + username +
+                "\npassword: " + password +
+                "\n\nYou should reset your password by selecting 'profile' when you log in for the first time.";
+
+        String subject = "ACL Database User Account";
+
+        emailService.sendSimpleMessage(to, subject, message);
     }
 }

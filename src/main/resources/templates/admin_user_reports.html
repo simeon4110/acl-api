@@ -1,0 +1,97 @@
+<!--suppress ALL -->
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center mb-3">
+        <div class="col-lg-10">
+            <h1 class="display-4 pb-3">Admin Reports:</h1>
+            <hr class="m-4" style="border-color: black"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-10 mb-3">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin}">User Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin/add}">New User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{~/admin/reports}">User Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin/sonnets}">All Sonnets</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row justify-content-center mx-3">
+        <div class="col-lg-5 m-3">
+            <h5>
+                Instructions:
+            </h5>
+            <p>
+                Use this form to generate reports for an individual user's contributions to the sonnet database.
+                Each report includes the author, title, and date each sonnet was added to the database.
+            </p>
+            <p style="color: red">
+                <strong>You must enable pop-ups for the reports to work.</strong>
+            </p>
+            <p>
+                <strong>To use the form:</strong>
+            </p>
+            <ul>
+                <li>Select the desired user's username in the first box.</li>
+                <li>Enter the start of your desired date range into the "Start" box.</li>
+                <li>Enter the end of your desired date range into the "Finish" box.</li>
+                <li>
+                    Click "Get Report" and a new window will pop-up. The window always appears to be loading, but as
+                    soon as the window pops up the report is finished. Ignore the apparent loading.
+                </li>
+            </ul>
+        </div>
+        <div class="col-lg-5 m-3">
+            <form class="form">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Username:</span>
+                        </div>
+                        <select id="username" class="custom-select custom-select-md">
+                            <option th:each="User : ${Users}" th:value="${User.getUsername()}"
+                                    th:text="${User.getUsername()}">Username
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Start:</span>
+                        </div>
+                        <input id="after" type="date" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Finish:</span>
+                        </div>
+                        <input id="before" type="date" class="form-control">
+                    </div>
+                </div>
+                <button type="button" id="reportButton" class="btn btn-primary">
+                    Get Report
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="toNewWindow">
+
+</div>
+<div th:replace="fragments/footer :: scripts"></div>
+<script src="/js/moment.min.js"></script>
+<script src="/js/admin_reports.min.js"></script>
+<div th:replace="fragments/footer :: footer"></div>

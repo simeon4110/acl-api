@@ -13,7 +13,7 @@ public abstract class ParseParam {
     }
 
     public static String parse(String toParse) {
-        return toParse.replace(SEPARATOR, " ");
+        return toParse.replace(SEPARATOR, " ").toLowerCase();
     }
 
 }

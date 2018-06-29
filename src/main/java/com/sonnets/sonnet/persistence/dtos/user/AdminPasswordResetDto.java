@@ -1,20 +1,21 @@
 package com.sonnets.sonnet.persistence.dtos.user;
 
+import com.sonnets.sonnet.security.password.ValidPassword;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
- * Simple POJO for passing data required to add a user from view to controller.
+ * POJO handles inbound admin password resets.
  *
  * @author Josh Harkema
  */
-public class UserAddDto {
+public class AdminPasswordResetDto {
     @NotEmpty
     private String username;
-    @NotEmpty
+    @ValidPassword
     private String password;
-    @NotEmpty
+    @ValidPassword
     private String password1;
-    private boolean admin;
 
     public String getUsername() {
         return username;
@@ -39,23 +40,4 @@ public class UserAddDto {
     public void setPassword1(String password1) {
         this.password1 = password1;
     }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
-    @Override
-    public String toString() {
-        return "UserAddDto{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", password1='" + password1 + '\'' +
-                ", admin=" + admin +
-                '}';
-    }
-
 }

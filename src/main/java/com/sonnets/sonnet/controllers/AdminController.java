@@ -1,7 +1,5 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.user.UserAddDto;
-import com.sonnets.sonnet.persistence.dtos.user.UserModifyDto;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
@@ -9,11 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import javax.validation.Valid;
 
 /**
  * View controller for admin pages.
@@ -25,18 +18,18 @@ public class AdminController {
     private static final Logger LOGGER = Logger.getLogger(AdminController.class);
 
     private static final String PAGE_TITLE_CONST = "pageTitle";
-    private static final String PAGE_TITLE_VALUE = "Administration";
-    private static final String ADD = "admin_add";
-    private static final String MODIFY = "admin_modify";
-    private static final String ALL_SONNETS = "admin_all";
+    private static final String USERS = "admin_users";
+    private static final String USER_ADD = "admin_user_add";
+    private static final String ALL_SONNETS = "admin_sonnets";
+    private static final String USER_REPORTS = "admin_user_reports";
 
-    private final UserDetailsServiceImpl userDetailsService;
     private final SonnetDetailsService sonnetDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    public AdminController(UserDetailsServiceImpl userDetailsService, SonnetDetailsService sonnetDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public AdminController(SonnetDetailsService sonnetDetailsService, UserDetailsServiceImpl userDetailsService) {
         this.sonnetDetailsService = sonnetDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -47,56 +40,39 @@ public class AdminController {
      */
     @GetMapping("/admin")
     public String showAdminPage(Model model) {
-        model.addAttribute("UserAddDto", new UserAddDto());
-        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
+        LOGGER.debug("Showing admin page.");
+        model.addAttribute(PAGE_TITLE_CONST, "User Management");
 
-        return ADD;
+        return USERS;
     }
 
     /**
-     * Deals with new user form POSTs. Passes everything to UserDetailsService which returns the proper redirect.
+     * Shows HTML for the Admin panel's "New User" tab.
      *
-     * @param userAddDto the filled out UserAddDto.
-     * @param model      to attach a fresh UserAddDto to.
-     * @return a redirect to admin?success or admin?error depending on result.
+     * @param model to attach stuff to.
+     * @return the user_add page.
      */
-    @PostMapping("/admin/user/add")
-    public String postAddUser(@ModelAttribute @Valid UserAddDto userAddDto, Model model) {
-        LOGGER.debug("Adding new user with username: " + userAddDto.getUsername());
-        model.addAttribute("UserAddDto", new UserAddDto());
+    @GetMapping("/admin/add")
+    public String showUserAddPage(Model model) {
+        LOGGER.debug("Showing user add page.");
+        model.addAttribute(PAGE_TITLE_CONST, "New User");
 
-        return userDetailsService.addUser(userAddDto);
+        return USER_ADD;
     }
 
     /**
-     * Show the modify user page.
+     * Shows HTML for the Admin panel's "User Reports" tab.
      *
-     * @param model the model to add the user data to.
-     * @return the user modify page.
+     * @param model to attach stuff to.
+     * @return the user_reports page.
      */
-    @GetMapping("/admin/user/modify")
-    public String showUserDeletePage(Model model) {
-        model.addAttribute("UserModifyDto", new UserModifyDto());
-        model.addAttribute("Users", userDetailsService.getAllUsers());
-        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
-
-        return MODIFY;
-    }
-
-    /**
-     * Handle inbound user modification POST requests.
-     *
-     * @param userModifyDto the form data.
-     * @param model         the model to re-add user details to.
-     * @return a success / error message from UserDetailsService.
-     */
-    @PostMapping("/admin/user/modify")
-    public String postUserModify(@ModelAttribute @Valid UserModifyDto userModifyDto, Model model) {
-        LOGGER.debug("Modifying user with username: " + userModifyDto.getUsername());
-        model.addAttribute("UserModifyDto", new UserModifyDto());
+    @GetMapping("/admin/reports")
+    public String showReportsPage(Model model) {
+        LOGGER.debug("Showing admin reports page.");
+        model.addAttribute(PAGE_TITLE_CONST, "Reports");
         model.addAttribute("Users", userDetailsService.getAllUsers());
 
-        return userDetailsService.modifyUser(userModifyDto);
+        return USER_REPORTS;
     }
 
     /**
@@ -105,26 +81,13 @@ public class AdminController {
      * @param model the model to attach all sonnets to.
      * @return the all review page.
      */
-    @GetMapping("/admin/sonnets/all")
+    @GetMapping("/admin/sonnets")
     public String showAllSonnetsPage(Model model) {
+        LOGGER.debug("Showing all sonnets page.");
         model.addAttribute("Sonnets", sonnetDetailsService.getAllSonnets());
-        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
+        model.addAttribute(PAGE_TITLE_CONST, "All Sonnets");
 
         return ALL_SONNETS;
-    }
-
-    /**
-     * Allows admins to delete sonnets.
-     *
-     * @param model the model to reattach all the sonnets to.
-     * @param id    the id of the sonnet ot delete.
-     * @return a success / error message from sonnet details service.
-     */
-    @GetMapping("/admin/sonnets/all/delete/{id}")
-    public String deleteSonnet(Model model, @PathVariable String id) {
-        model.addAttribute("Sonnets", sonnetDetailsService.getAllSonnets());
-
-        return sonnetDetailsService.deleteSonnetById(id);
     }
 
 }
