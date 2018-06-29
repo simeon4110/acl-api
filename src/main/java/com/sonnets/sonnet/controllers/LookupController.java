@@ -27,6 +27,7 @@ public class LookupController {
      */
     @GetMapping(name = LOOKUP, value = "/lookup")
     public String showSearchPage(Model model) {
+        LOGGER.debug("Showing lookup page.");
         model.addAttribute(PAGE_TITLE, "Search");
 
         return LOOKUP;
@@ -40,6 +41,7 @@ public class LookupController {
      */
     @GetMapping("/lookup/csv")
     public String showSelectionPage(Model model) {
+        LOGGER.debug("Showing manual selection page.");
         model.addAttribute(PAGE_TITLE, "Manual Selection");
         return "select";
     }

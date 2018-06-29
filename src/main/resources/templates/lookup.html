@@ -8,123 +8,70 @@
             <hr class="m-4" style="border-color: black"/>
         </div>
     </div>
-    <div class="row justify-content-center mt-3">
-        <div class="col-lg-2 justify-content-center mb-2">
-            <div class="form">
-                <form action="" th:object="${Sonnet}" role="form" method="GET" class="form">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-person"></span></span>
-                            </div>
-                            <input id="firstName" class="form-control" th:field="*{firstName}"
-                                   placeholder="Author's first name" autofocus/>
-                        </div>
+    <div class="row justify-content-center">
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><span class="oi oi-person"></span></span>
                     </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-person"></span></span>
-                            </div>
-                            <input id="lastName" class="form-control" th:field="*{lastName}"
-                                   placeholder="Author's last name"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-pencil"></span></span>
-                            </div>
-                            <input id="title" class="form-control" th:field="*{title}" placeholder="Sonnet's title"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-calendar"></span></span>
-                            </div>
-                            <select id="period" class="custom-select custom-select-md" th:field="*{period}">
-                                <option th:each="period : ${periods}" th:value="${period}" th:text="${period}"></option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-calendar"></span></span>
-                            </div>
-                            <input id="publicationYear" type="number" class="form-control" placeholder="1660"
-                                   th:field="*{publicationYear}"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="oi oi-pencil"></span></span>
-                            </div>
-                            <input id="contains" class="form-control" th:field="*{text}" placeholder="Sonnet text"/>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2">Search</button>
-                    <p class="text-muted">
-                        <strong>Note:</strong> you can only search one field at a time right now.
-                    </p>
-                </form>
+                    <input id="firstName" class="form-control" placeholder="Author's first name"/>
+                </div>
             </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><span class="oi oi-person"></span></span>
+                    </div>
+                    <input id="lastName" class="form-control" placeholder="Author's last name"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><span class="oi oi-pencil"></span></span>
+                    </div>
+                    <input id="title" class="form-control" placeholder="Sonnet's title"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><span class="oi oi-calendar"></span></span>
+                    </div>
+                    <select id="period" class="custom-select custom-select-md">
+                        <option value=""></option>
+                        <option value="1500-1550">1500-1550</option>
+                        <option value="1550-1600">1550-1600</option>
+                        <option value="1600-1650">1600-1650</option>
+                        <option value="1650-1700">1650-1700</option>
+                        <option value="1700-1750">1700-1750</option>
+                        <option value="1750-1800">1750-1800</option>
+                        <option value="1800-1850">1800-1850</option>
+                        <option value="1850-1900">1850-1900</option>
+                        <option value="1900-1950">1900-1950</option>
+                        <option value="1950-2000">1950-2000</option>
+                        <option value="2000-Present">2000-Present</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><span class="oi oi-pencil"></span></span>
+                    </div>
+                    <input id="text" class="form-control" placeholder="Sonnet text"/>
+                </div>
+            </div>
+            <button id="searchButton" type="button" class="btn btn-primary">Search</button>
         </div>
         <div class="col-lg-8">
-            <div th:if="${not #lists.isEmpty(page)}">
-                <span th:replace="fragments/sonnet_cards :: cards">
-                </span>
+            <div id="card-container" class="card-columns justify-content-center">
             </div>
         </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <hr class="m-4" style="border-color: black"/>
-        </div>
-        <div th:if="${page.totalPages != 1}" class="col-lg-10 pagination-centered">
-            <ul class="pagination justify-content-center">
-                <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
-                    <a class="page-link"
-                       th:href="@{~/lookup/(size=${selectedPageSize}, sort=${selectedSortBy}, page=0)}">
-                        &laquo;
-                    </a>
-                </li>
-                <li th:class="${page.number == 0}? 'page-item disabled' : 'page-item'">
-                    <a class="page-link"
-                       th:href="@{~/lookup/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number - 1})}">
-                        Previous
-                    </a>
-                </li>
-                <li th:class="${page.number == (number)} ? 'page-item active' : 'page-item'"
-                    th:each="number : ${#numbers.sequence(pager.startPage, pager.endPage)}">
-                    <a class="page-link"
-                       th:href="@{~/lookup/(size=${selectedPageSize}, sort=${selectedSortBy}, page=${number})}"
-                       th:text="${number}">
-                        Page
-                    </a>
-                </li>
-                <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
-                    <a class="page-link"
-                       th:href="@{~/lookup/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.number + 1})}">
-                        Next
-                    </a>
-                </li>
-                <li th:class="${page.number + 1 == page.totalPages}? 'page-item disabled' : 'page-item'">
-                    <a class="page-link"
-                       th:href="@{~/lookup/(pageSize=${selectedPageSize}, sort=${selectedSortBy}, page=${page.totalPages - 1})}">
-                        &raquo;
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <a href="#" id="scroll" style="display: none;"><span></span></a>
     </div>
 </div>
 <div th:replace="fragments/footer :: scripts"></div>
-<script>
-    $('#publicationYear').tooltip({'trigger': 'hover', 'title': '+/- 10 years.'});
-    $('#period').tooltip({'trigger': 'hover', 'title': 'Period of initial publication.'})
-    $('#text').tooltip({'trigger': 'hover', 'title': 'Exact phrase.'})
-</script>
+<script th:src="@{/js/infinite_scroll_search.js}"></script>
 <div th:replace="fragments/footer :: footer"></div>
