@@ -1,0 +1,29 @@
+<!--suppress ALL -->
+<div th:replace="fragments/header :: head"></div>
+<div th:replace="fragments/header :: nav-bar"></div>
+<div class="container-fluid">
+    <div class="row justify-content-center mb-3">
+        <div class="col-lg-10">
+            <h1 class="display-4 pb-3">Admin Reports:</h1>
+            <hr class="m-4" style="border-color: black"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-10 mb-3">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin}">User Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin/add}">New User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{~/admin/reports}">User Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin/sonnets}">All Sonnets</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

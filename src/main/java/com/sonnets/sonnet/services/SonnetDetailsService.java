@@ -12,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Basic service to interface with SonnetRepository. More search and analytics will be added here. All view / database
@@ -135,6 +132,10 @@ public class SonnetDetailsService {
 
     public List<Sonnet> getSonnetsByAddedBy(String addedBy) {
         return sonnetRepository.findAllByAddedBy(addedBy);
+    }
+
+    public List<Sonnet> getSonnetsByAddedByAndDate(String addedBy, Date after, Date before) {
+        return sonnetRepository.findAllByAddedByAndUpdatedAtBetween(addedBy, after, before);
     }
 
     public ResponseEntity<Void> deleteSonnetById(String id) {

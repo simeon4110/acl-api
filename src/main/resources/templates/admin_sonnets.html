@@ -8,20 +8,23 @@
             <hr class="m-4" style="border-color: black"/>
         </div>
     </div>
-</div>
-<div class="row justify-content-center mb-3">
-    <div class="col-lg-10">
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{~/admin}">Add User</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{~/admin/user/modify}">Modify User</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" th:href="@{~/admin/sonnets/all}">Review Records</a>
-            </li>
-        </ul>
+    <div class="row justify-content-center">
+        <div class="col-lg-10 mb-3">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin}">User Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin/add}">New User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{~/admin/reports}">User Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{~/admin/sonnets}">All Sonnets</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 <div class="container-fluid">

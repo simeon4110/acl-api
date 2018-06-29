@@ -17,10 +17,10 @@ public class AdminController {
     private static final Logger LOGGER = Logger.getLogger(AdminController.class);
 
     private static final String PAGE_TITLE_CONST = "pageTitle";
-    private static final String PAGE_TITLE_VALUE = "Administration";
     private static final String USERS = "admin_users";
     private static final String USER_ADD = "admin_user_add";
     private static final String ALL_SONNETS = "admin_sonnets";
+    private static final String USER_REPORTS = "admin_user_reports";
 
     private final SonnetDetailsService sonnetDetailsService;
 
@@ -38,7 +38,7 @@ public class AdminController {
     @GetMapping("/admin")
     public String showAdminPage(Model model) {
         LOGGER.debug("Showing admin page.");
-        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
+        model.addAttribute(PAGE_TITLE_CONST, "User Management");
 
         return USERS;
     }
@@ -51,17 +51,25 @@ public class AdminController {
         return USER_ADD;
     }
 
+    @GetMapping("/admin/reports")
+    public String showReportsPage(Model model) {
+        LOGGER.debug("Showing admin reports page.");
+        model.addAttribute(PAGE_TITLE_CONST, "Reports");
+
+        return USER_REPORTS;
+    }
+
     /**
      * Admin review of all sonnets in the db.
      *
      * @param model the model to attach all sonnets to.
      * @return the all review page.
      */
-    @GetMapping("/admin/sonnets/all")
+    @GetMapping("/admin/sonnets")
     public String showAllSonnetsPage(Model model) {
         LOGGER.debug("Showing all sonnets page.");
         model.addAttribute("Sonnets", sonnetDetailsService.getAllSonnets());
-        model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
+        model.addAttribute(PAGE_TITLE_CONST, "All Sonnets");
 
         return ALL_SONNETS;
     }
