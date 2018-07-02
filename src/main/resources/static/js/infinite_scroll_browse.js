@@ -41,7 +41,7 @@ function createCard(obj) {
     }
 
     var html =
-        '<div class="card border-light mb-2" style="max-width: 24rem; min-width: 24rem;">' +
+        '<div class="card border-light mb-2" style="max-width: 24rem; min-width: 20rem;">' +
         '\n<h5 class="card-header">' + obj['title'] + '</h5>' +
         '\n<div class="card-body">' +
         '\n <h5 class="card-title">' + obj['firstName'] + ' ' + obj['lastName'] + '</h5>' +
