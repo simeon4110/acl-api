@@ -23,7 +23,7 @@ public class BrowseController {
      */
     @GetMapping(value = "/browse")
     public String getPagedList(Pageable pageRequest, Model model) {
-        LOGGER.fatal("Showing browse page.");
+        LOGGER.debug("Showing browse page.");
         model.addAttribute(PAGE_TITLE_CONST, PAGE_TITLE_VALUE);
 
         return "browse";

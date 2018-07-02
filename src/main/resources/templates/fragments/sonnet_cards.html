@@ -27,10 +27,6 @@
                 <a th:href="@{~/sonnets/by_id/} + ${Sonnet.getId()}" target="_blank" class="card-link">JSON</a>
                 <a th:href="@{~/sonnets/tei/by_id/} + ${Sonnet.getId()}" target="_blank" class="card-link">TEI</a>
                 <a th:href="@{~/sonnets/txt/by_id/} + ${Sonnet.getId()}" target="_blank" class="card-link">Text</a>
-                <a sec:authorize="hasAuthority('USER')" target="_blank" class="card-link"
-                   th:href="@{~/edit/} + ${Sonnet.getId()}">Edit</a>
-                <a sec:authorize="hasAuthority('ADMIN')" target="_blank"
-                   th:href="@{~/admin/sonnets/all/delete/} + ${Sonnet.getId()}" class="card-link">Delete</a>
             </li>
         </ul>
     </div>
