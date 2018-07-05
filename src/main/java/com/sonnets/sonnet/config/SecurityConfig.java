@@ -1,14 +1,13 @@
 package com.sonnets.sonnet.config;
 
-import com.sonnets.sonnet.security.UserDetailsServiceImpl;
+import com.sonnets.sonnet.security.AuthenticationProviderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,56 +22,33 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @ComponentScan("com.sonnets.sonnet.security")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserDetailsServiceImpl userDetailsService;
+    private AuthenticationProviderImpl authenticationProvider;
     private static final int ENCODER_STRENGTH = 11;
 
-    @Autowired
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig() {
+        super();
     }
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(authenticationProvider());
+        auth.authenticationProvider(authenticationProvider);
     }
 
     @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/resources/**");
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         // @formatter:off
         http.authorizeRequests()
-            .antMatchers("/sonnets", "/sonnets/**").permitAll()
-            .antMatchers("/login", "/login/**").permitAll()
-            .antMatchers("/css/**").permitAll()
-                .antMatchers("/js/**").permitAll()
-            .antMatchers("/").permitAll()
-                .antMatchers("/favicon.ico").permitAll()
-            .antMatchers("/lookup/", "/lookup/**").permitAll()
-            .antMatchers("/browse/", "/browse/**").permitAll()
-            .antMatchers("/sonnets/", "/sonnets/**").permitAll()
-                .antMatchers("/about", "/about/**").permitAll()
-            .antMatchers("/edit/", "/edit/**").hasAuthority("USER")
-            .antMatchers("/insert/", "/insert/**").hasAuthority("USER")
-                .antMatchers("/admin", "/admin/add/", "/admin/**", "/admin/user/**").hasAuthority("ADMIN")
-                .antMatchers("/management/**").hasAuthority("ADMIN")
-            .antMatchers("/profile", "/profile/**").hasAuthority("USER")
-            .anyRequest().authenticated()
-            .and().formLogin().loginPage("/login").permitAll()
-            .and().logout().permitAll()
-                .and().csrf().disable();
-            // @formatter:on
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(encoder());
-        return authProvider;
+                .antMatchers("/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().permitAll();
+        // @formatter:on
     }
 
     @Bean
@@ -80,4 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder(ENCODER_STRENGTH);
     }
 
+    @Autowired
+    public void setAuthenticationProvider(AuthenticationProviderImpl authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
+    }
 }
