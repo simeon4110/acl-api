@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,6 +48,7 @@ public class SecureRestController {
     /**
      * @return a json formatted list with all the user's and their associated data.
      */
+    @PreAuthorize("#oauth2.hasScope('read')")
     @GetMapping(value = "/admin/user/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getAllUsers() {
         LOGGER.debug("Returning a list of all users.");
