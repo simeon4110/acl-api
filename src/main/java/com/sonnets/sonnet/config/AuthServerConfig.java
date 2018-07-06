@@ -54,13 +54,13 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.jdbc(dataSource)
-                .withClient("sampleClientId")
+                .withClient("databaseFrontEnd")
                 .authorizedGrantTypes("implicit")
                 .scopes("read")
                 .autoApprove(true)
                 .and()
-                .withClient("clientIdPassword")
-                .secret("secret")
+                .withClient("databaseAuthentication")
+                .secret("$2a$11$NyFhKopWDETGvEUGUPw2sOukKfxo/9DbR6JrPmiw9ZywcZGk0C/V.")
                 .authorizedGrantTypes("password", "authorization_code", "refresh_token")
                 .scopes("read");
     }
