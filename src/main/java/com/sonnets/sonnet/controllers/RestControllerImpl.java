@@ -33,6 +33,8 @@ public class RestControllerImpl {
     private final SonnetDetailsService sonnetDetailsService;
     private final SearchService searchService;
 
+    private static final String ALLOWED_ORIGIN = "http://127.0.0.1:4200";
+
     @Autowired
     public RestControllerImpl(SonnetDetailsService sonnetDetailsService, SearchService searchService) {
         this.sonnetDetailsService = sonnetDetailsService;
@@ -43,12 +45,21 @@ public class RestControllerImpl {
      * @return all sonnets as JSON.
      */
     @GetMapping(value = "/sonnets/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public List<Sonnet> getAllSonnets() {
         LOGGER.debug("Returning all sonnets.");
         return sonnetDetailsService.getAllSonnets();
     }
 
+    @GetMapping(value = "/sonnets/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    public List<Sonnet> getTwoRandomSonnets() {
+        LOGGER.debug("Returning two random sonnets.");
+        return sonnetDetailsService.getTwoRandomSonnets();
+    }
+
     @GetMapping(value = "/sonnets/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public Page getAllSonnetsPaged(Pageable pageable) {
         LOGGER.debug("Returning page request: " + pageable);
 
@@ -60,60 +71,10 @@ public class RestControllerImpl {
      * @return a list of sonnets by id.
      */
     @GetMapping(value = "/sonnets/by_id/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public List<Sonnet> getSonnetByIds(@PathVariable String[] ids) {
         LOGGER.debug("Returning sonnets with ids: " + Arrays.toString(ids));
         return sonnetDetailsService.getSonnetsByIds(ids);
-    }
-
-    /**
-     * @param lastName author's last name.
-     * @return a list of sonnets filtered by author's last name.
-     */
-    @GetMapping(value = "/sonnets/by_author_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Sonnet> getSonnetByAuthorLastName(@PathVariable String lastName) {
-        lastName = ParseParam.parse(lastName);
-        LOGGER.debug("Returning sonnets with author's last name: " + lastName);
-        return sonnetDetailsService.getSonnetsByAuthorLastName(lastName);
-    }
-
-    /**
-     * @param firstName author's first name.
-     * @return a list of sonnets filtered by author's first name.
-     */
-    @GetMapping(value = "/sonnets/by_author_first_name/{firstName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Sonnet> getSonnetByAuthorFirstName(@PathVariable String firstName) {
-        firstName = ParseParam.parse(firstName);
-        LOGGER.debug("Returning sonnets with author's first name: " + firstName);
-        return sonnetDetailsService.getSonnetsByAuthorFirstName(firstName);
-    }
-
-    /**
-     * @param addedBy the username of the sonnet's contributor.
-     * @return a list of all a user's sonnets.
-     */
-    @GetMapping(value = "/sonnets/by_added_by/{addedBy}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Sonnet> getAllByAddedBy(@PathVariable String addedBy) {
-        return sonnetDetailsService.getSonnetsByAddedBy(addedBy);
-    }
-
-    /**
-     * @param text the string of text to search for.
-     * @return a list of the search results or null.
-     */
-    @GetMapping(value = "/sonnets/search/text/{text}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getSearchByText(@PathVariable String text) {
-        text = ParseParam.parse(text);
-        return searchService.searchByText(text);
-    }
-
-    /**
-     * @param title the title keywords to search for.
-     * @return a list of the search results or null.
-     */
-    @GetMapping(value = "/sonnets/search/title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getSearchByTitle(@PathVariable String title) {
-        title = ParseParam.parse(title);
-        return searchService.searchByTitle(title);
     }
 
     /**
@@ -121,6 +82,7 @@ public class RestControllerImpl {
      * @return a list of the search results or null.
      */
     @GetMapping(value = "/sonnets/search/period/{period}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public List getSearchByPeriod(@PathVariable String period) {
         return searchService.searchByPeriod(period);
     }
@@ -136,6 +98,7 @@ public class RestControllerImpl {
      * @return a json formatted response of the results. An empty array is returned when nothing is found.
      */
     @GetMapping(value = "/sonnets/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public List getSearchFromDto(@RequestParam("firstName") String firstName,
                                  @RequestParam("lastName") String lastName,
                                  @RequestParam("title") String title,
@@ -156,6 +119,7 @@ public class RestControllerImpl {
      * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/all", produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public @ResponseBody
     byte[] getAllText() throws IOException {
         List<Sonnet> sonnets = sonnetDetailsService.getAllSonnets();
@@ -173,6 +137,7 @@ public class RestControllerImpl {
      * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/by_id/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public @ResponseBody
     byte[] getByIdText(@PathVariable("ids") String[] ids) throws IOException {
         List<Sonnet> sonnets = new ArrayList<>();
@@ -194,6 +159,7 @@ public class RestControllerImpl {
      * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/by_last_name/{lastName}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public @ResponseBody
     byte[] getByLastNameText(@PathVariable("lastName") String lastName) throws IOException {
         lastName = ParseParam.parse(lastName);
@@ -213,6 +179,7 @@ public class RestControllerImpl {
      * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/txt/by_user/{username}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public @ResponseBody
     byte[] getByUserText(@PathVariable("username") String username) throws IOException {
         List<Sonnet> sonnets = sonnetDetailsService.getSonnetsByAddedBy(username);
@@ -231,6 +198,7 @@ public class RestControllerImpl {
      * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/xml/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public @ResponseBody
     byte[] getByIdXML(@PathVariable("id") String id) throws IOException {
         Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
@@ -249,6 +217,7 @@ public class RestControllerImpl {
      * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/tei/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public @ResponseBody
     byte[] getByIdTEI(@PathVariable("id") String id) throws IOException {
         Sonnet sonnet = sonnetDetailsService.getSonnetByID(id);
@@ -267,6 +236,7 @@ public class RestControllerImpl {
      * @throws IOException if InputStream is broken.
      */
     @GetMapping(value = "/sonnets/csv/by_ids/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     public @ResponseBody
     byte[] getByIdCSV(@PathVariable("ids") String[] ids) throws IOException {
         List<Sonnet> sonnets = new ArrayList<>();
