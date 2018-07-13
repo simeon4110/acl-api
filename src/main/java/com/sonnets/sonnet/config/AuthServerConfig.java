@@ -40,17 +40,17 @@ import javax.sql.DataSource;
 public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
-    private DataSource dataSource;
+    private DataSource dataSourceApi;
     @Value("classpath:schema.sql")
     private Resource schemaScript;
     private PasswordEncoder encoder;
     private CorsConfigurationSource corsConfigurationSource;
 
     @Autowired
-    public AuthServerConfig(AuthenticationManager authenticationManager, DataSource dataSource, PasswordEncoder encoder,
+    public AuthServerConfig(AuthenticationManager authenticationManager, DataSource dataSourceApi, PasswordEncoder encoder,
                             CorsConfigurationSource corsConfigurationSource) {
         this.authenticationManager = authenticationManager;
-        this.dataSource = dataSource;
+        this.dataSourceApi = dataSourceApi;
         this.encoder = encoder;
         this.corsConfigurationSource = corsConfigurationSource;
     }
@@ -73,7 +73,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         String secret = encoder.encode("");
-        clients.jdbc(dataSource)
+        clients.jdbc(dataSourceApi)
                 .withClient("databaseFrontEnd")
                 .authorizedGrantTypes("implicit")
                 .secret(secret)
@@ -97,7 +97,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Bean
     public TokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource);
+        return new JdbcTokenStore(dataSourceApi);
     }
 
     @Bean
