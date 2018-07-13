@@ -99,11 +99,11 @@ public class PublicRestController {
      */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/sonnets/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getSearchFromDto(@RequestParam("firstName") String firstName,
-                                 @RequestParam("lastName") String lastName,
-                                 @RequestParam("title") String title,
-                                 @RequestParam("period") String period,
-                                 @RequestParam("text") String text, Pageable pageRequest) {
+    public Page<Sonnet> getSearchFromDto(@RequestParam("firstName") String firstName,
+                                         @RequestParam("lastName") String lastName,
+                                         @RequestParam("title") String title,
+                                         @RequestParam("period") String period,
+                                         @RequestParam("text") String text, Pageable pageRequest) {
 
         LOGGER.debug("\nREST search for: " + "\nfirst name: " + firstName + "\nlast name: " + lastName +
                 "\ntitle: " + title + "\nperiod: " + period + "\ntext: " + text);
