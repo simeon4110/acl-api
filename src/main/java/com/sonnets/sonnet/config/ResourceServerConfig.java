@@ -56,4 +56,5 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource);
     }
+
 }

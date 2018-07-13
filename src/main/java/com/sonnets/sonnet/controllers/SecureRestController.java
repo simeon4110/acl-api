@@ -28,11 +28,22 @@ public class SecureRestController {
     private final UserDetailsServiceImpl userDetailsService;
     private final SonnetDetailsService sonnetDetailsService;
 
+    private static final String ALLOWED_ORIGIN = "http://127.0.0.1:4200";
+
     @Autowired
     public SecureRestController(UserDetailsServiceImpl userDetailsService,
                                 SonnetDetailsService sonnetDetailsService) {
         this.userDetailsService = userDetailsService;
         this.sonnetDetailsService = sonnetDetailsService;
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(value = "/admin/user/get_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getUserById(@PathVariable String id) {
+        LOGGER.debug("Retrieving user with id: " + id);
+
+        return userDetailsService.loadUserById(id);
     }
 
     /**
@@ -41,8 +52,9 @@ public class SecureRestController {
      * @param username the user to return.
      * @return a user object.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping(value = "/admin/user/get/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/admin/user/get_by_username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUser(@PathVariable String username) {
         LOGGER.debug("Retrieving user with username: " + username);
 
@@ -52,6 +64,7 @@ public class SecureRestController {
     /**
      * @return a json formatted list with all the user's and their associated data.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/admin/user/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getAllUsers() {
@@ -66,6 +79,7 @@ public class SecureRestController {
      * @param resetDto a valid dto with the new password.
      * @return HttpStatus.ACCEPTED on success; HttpStatus.NOT_ACCEPTABLE on failure.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/admin/user/modify/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyUser(@RequestBody @Valid AdminPasswordResetDto resetDto) {
@@ -81,6 +95,7 @@ public class SecureRestController {
      * @param modifyUserDto the dto vaid dto with the new user data.
      * @return HttpStatus.NOT_ACCEPTABLE if username does not exist; HttpStatus.ACCEPTED if successful.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/admin/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyUserAdmin(@RequestBody @Valid AdminUserModifyDto modifyUserDto) {
@@ -97,9 +112,10 @@ public class SecureRestController {
      * @return HttpStatus.CONFLICT if username already exists; HttpStatus.NOT_ACCEPTABLE if passwords don't match;
      * HttpStatus.ACCEPTED if successful.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/admin/user/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addUserRest(@RequestBody @Valid AdminUserAddDto userAddDto) {
+    public ResponseEntity<Void> addUser(@RequestBody @Valid AdminUserAddDto userAddDto) {
         LOGGER.debug("Adding new user with username: " + userAddDto.getUsername());
 
         return userDetailsService.adminAddUser(userAddDto.getUsername(), userAddDto.getEmail(),
@@ -112,6 +128,7 @@ public class SecureRestController {
      * @param reportDto a valid AdminReportDto parsed from the JSON request body.
      * @return a JSON list of any results.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/admin/reports/create", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -127,6 +144,7 @@ public class SecureRestController {
      * @param id the sonnet's id.
      * @return BAD_REQUEST if number is invalid; ACCEPTED if success; NOT_ACCEPTABLE if sonnet does not exist.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/admin/sonnet/delete/{id}")
     public ResponseEntity<Void> deleteSonnet(@PathVariable("id") String id) {
@@ -138,20 +156,31 @@ public class SecureRestController {
     /**
      * Delete a user.
      *
-     * @param deleteDto the dto with the user to delete.
+     * @param username the name of the user to delete.
      * @return NOT_ACCEPTABLE if user does not exist; ACCEPTED if success.
      */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping(value = "/admin/user/delete", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteUser(@RequestBody @Valid AdminUserDeleteDto deleteDto) {
-        LOGGER.debug("Deleting user: " + deleteDto.getUsername());
+    @DeleteMapping(value = "/admin/user/delete/{username}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
+        LOGGER.debug("Deleting user: " + username);
 
-        return userDetailsService.adminDeleteUser(deleteDto.getUsername());
+        return userDetailsService.adminDeleteUser(username);
     }
 
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secured/sonnet/add")
+    @PostMapping(value = "/secure/sonnet/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addSonnet(@RequestBody @Valid SonnetDto sonnetDto) {
+        LOGGER.debug("Adding sonnet: " + sonnetDto.toString());
+
+        return sonnetDetailsService.addNewSonnet(sonnetDto);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @PutMapping(value = "/secure/user/password")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordChangeDto passwordChangeDto) {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

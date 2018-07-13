@@ -50,6 +50,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.emailService = emailService;
     }
 
+    public User loadUserById(String id) {
+        long parseLong = Long.parseLong(id);
+        if (userRepository.findById(parseLong).isPresent()) {
+            return userRepository.findById(parseLong).get();
+        } else {
+            return null;
+        }
+
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username);

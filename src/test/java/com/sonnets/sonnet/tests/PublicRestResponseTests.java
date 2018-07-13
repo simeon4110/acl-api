@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.tests;
 
-import com.sonnets.sonnet.controllers.RestControllerImpl;
+import com.sonnets.sonnet.controllers.PublicRestController;
 import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.junit.Before;
@@ -147,8 +147,8 @@ public class PublicRestResponseTests {
         private SearchService searchService;
 
         @Bean
-        public RestControllerImpl restControllerImpl() {
-            return new RestControllerImpl(sonnetDetailsService, searchService);
+        public PublicRestController restControllerImpl() {
+            return new PublicRestController(sonnetDetailsService, searchService);
         }
     }
 }
