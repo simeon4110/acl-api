@@ -23,11 +23,11 @@ import javax.sql.DataSource;
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
-    private final DataSource dataSource;
+    private final DataSource dataSourceApi;
 
     @Autowired
-    public ResourceServerConfig(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public ResourceServerConfig(DataSource dataSourceApi) {
+        this.dataSourceApi = dataSourceApi;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Bean
     public TokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource);
+        return new JdbcTokenStore(dataSourceApi);
     }
 
 }
