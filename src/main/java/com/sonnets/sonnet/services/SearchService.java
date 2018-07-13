@@ -10,6 +10,9 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -34,7 +37,6 @@ public class SearchService {
     private static final int EDIT_DISTANCE = 2; // Levenstein edit distance.
     private static final int MAX_EXPANSIONS = 2; // How many words must match.
     private static final int SLOP = 1; // Words are directly adjacent.
-    private static final int MAX_RESULTS = 50; // The max number of sonnets returned (for speed!)
 
     // Field name constants:
     private static final String FIRST_NAME = "firstName";
@@ -60,8 +62,8 @@ public class SearchService {
      * @param text      some text to search the sonnet's body for.
      * @return a list of results.
      */
-    public List executeSearch(final String firstName, final String lastName, final String title,
-                              final String period, final String text) {
+    public Page<Sonnet> executeSearch(final String firstName, final String lastName, final String title,
+                                      final String period, final String text, Pageable pageRequest) {
         LOGGER.debug("Parsing search: " + firstName + " " + lastName + " " + title + " " + period + " " + text);
 
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
@@ -117,13 +119,7 @@ public class SearchService {
         List results = fullTextQuery.getResultList();
 
         LOGGER.debug("Found total records: " + results.size());
-
-        // Limit to MAX_RESULTS
-        if (results.size() >= MAX_RESULTS) {
-            return results.subList(0, MAX_RESULTS);
-        } else {
-            return results;
-        }
+        return new PageImpl<Sonnet>(results, pageRequest, results.size());
     }
 
     /**

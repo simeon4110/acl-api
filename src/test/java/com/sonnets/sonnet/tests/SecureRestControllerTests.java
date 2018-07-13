@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.sonnets.sonnet.config.TestJpaConfig;
 import com.sonnets.sonnet.persistence.dtos.user.AdminPasswordResetDto;
 import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
-import com.sonnets.sonnet.persistence.dtos.user.AdminUserDeleteDto;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
@@ -124,25 +123,6 @@ public class SecureRestControllerTests {
 
         // Test modify privilege.
         Assert.assertTrue(!user.getPrivileges().contains(privilegeRepository.findByName("ADMIN")));
-
-        AdminUserDeleteDto deleteDto = new AdminUserDeleteDto();
-        deleteDto.setUsername(username);
-
-        String deleteUser = gson.toJson(deleteDto);
-
-        // Test delete user.
-        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/user/delete")
-                .contentType(MediaType.APPLICATION_JSON).content(deleteUser))
-                .andExpect(status().isAccepted());
-        Assert.assertNull(userRepository.findByUsername(username));
-
-        deleteDto.setUsername("9999999999999999");
-        String badDeleteUser = gson.toJson(deleteDto);
-
-        // Test delete bad user.
-        mockMvc.perform(MockMvcRequestBuilders.delete("/admin/user/delete")
-                .contentType(MediaType.APPLICATION_JSON).content(badDeleteUser))
-                .andExpect(status().isNotAcceptable());
 
         // Test all users list endpoint.
         mockMvc.perform(get("/admin/user/all").principal(testPrincipal))

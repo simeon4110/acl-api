@@ -144,6 +144,7 @@ public class Sonnet {
     public String getTextPretty() {
         StringBuilder sb = new StringBuilder();
         for (String s : text) {
+            s = s.trim();
             sb.append(s).append("\n");
         }
 

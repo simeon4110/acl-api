@@ -41,18 +41,18 @@ public class SonnetDetailsService {
      * @param newSonnet a valid SonnetDto object.
      * @return the Sonnet object created.
      */
-    public Sonnet addNewSonnet(SonnetDto newSonnet) {
+    public ResponseEntity<Void> addNewSonnet(SonnetDto newSonnet) {
         LOGGER.debug("Adding sonnet: " + "'" + newSonnet + "'");
         try {
             searchService.similarExists(newSonnet);
             Sonnet toAddSonnet = new Sonnet(newSonnet);
             sonnetRepository.saveAndFlush(toAddSonnet);
 
-            return toAddSonnet;
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } catch (SonnetAlreadyExistsException e) {
             LOGGER.error(e);
 
-            return null;
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
