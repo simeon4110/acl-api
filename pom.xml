@@ -11,7 +11,7 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.7.1-DEV</version>
+    <version>0.8.0</version>
     <packaging>jar</packaging>
     <name>Sonnet</name>
     <description>The Augmented Criticism Lab's digital sonnet database.</description>
@@ -25,10 +25,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
         <dependency>
             <groupId>org.springframework.security</groupId>
