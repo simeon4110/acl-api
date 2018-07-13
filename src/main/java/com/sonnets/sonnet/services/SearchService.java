@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class SearchService {
      * @return a list of results.
      */
     public Page<Sonnet> executeSearch(final String firstName, final String lastName, final String title,
-                                      final String period, final String text, Pageable pageRequest) {
+                                      final String period, final String text, final Pageable pageable) {
         LOGGER.debug("Parsing search: " + firstName + " " + lastName + " " + title + " " + period + " " + text);
 
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
@@ -115,11 +116,18 @@ public class SearchService {
 
         // Build and execute query.
         org.apache.lucene.search.Query query = booleanClauses.build();
-        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
-        List results = fullTextQuery.getResultList();
 
-        LOGGER.debug("Found total records: " + results.size());
-        return new PageImpl<Sonnet>(results, pageRequest, results.size());
+        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
+
+        // Manually set pageable offset. Getting this to work was a bloody nightmare.
+        fullTextQuery.setFirstResult((int) pageable.getOffset());
+        fullTextQuery.setMaxResults(pageable.getPageSize());
+
+        @SuppressWarnings("unchecked")
+        List<Sonnet> results = fullTextQuery.getResultList();
+
+        LOGGER.debug("Found total records: " + ((FullTextQuery) fullTextQuery).getResultSize());
+        return new PageImpl<>(results, pageable, ((FullTextQuery) fullTextQuery).getResultSize());
     }
 
     /**
