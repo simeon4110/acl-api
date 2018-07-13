@@ -104,9 +104,16 @@ public class PublicRestController {
                                          @RequestParam("title") String title,
                                          @RequestParam("period") String period,
                                          @RequestParam("text") String text, Pageable pageRequest) {
+        firstName = ParseParam.parse(firstName);
+        lastName = ParseParam.parse(lastName);
+        title = ParseParam.parse(title);
+        text = ParseParam.parse(text);
 
         LOGGER.debug("\nREST search for: " + "\nfirst name: " + firstName + "\nlast name: " + lastName +
-                "\ntitle: " + title + "\nperiod: " + period + "\ntext: " + text);
+                "\ntitle: " + title + "\nperiod: " + period + "\ntext: " + text +
+                "\npage: " + pageRequest.getPageNumber() + "\n limit: " + pageRequest.getPageSize());
+
+        LOGGER.debug(pageRequest.toString());
 
         return searchService.executeSearch(ParseParam.parse(firstName), ParseParam.parse(lastName),
                 ParseParam.parse(title), ParseParam.parse(period), ParseParam.parse(text), pageRequest);
