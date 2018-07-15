@@ -1,7 +1,9 @@
 package com.sonnets.sonnet.controllers;
 
 
+import com.sonnets.sonnet.persistence.dtos.ContactDto;
 import com.sonnets.sonnet.persistence.models.Sonnet;
+import com.sonnets.sonnet.services.EmailServiceImpl;
 import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import com.sonnets.sonnet.tools.ParseParam;
@@ -12,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,13 +36,18 @@ public class PublicRestController {
     private static final Logger LOGGER = Logger.getLogger(PublicRestController.class);
     private final SonnetDetailsService sonnetDetailsService;
     private final SearchService searchService;
+    private final EmailServiceImpl emailService;
+
 
     private static final String ALLOWED_ORIGIN = "http://127.0.0.1:4200";
 
+
     @Autowired
-    public PublicRestController(SonnetDetailsService sonnetDetailsService, SearchService searchService) {
+    public PublicRestController(SonnetDetailsService sonnetDetailsService, SearchService searchService,
+                                EmailServiceImpl emailService) {
         this.sonnetDetailsService = sonnetDetailsService;
         this.searchService = searchService;
+        this.emailService = emailService;
     }
 
     /**
@@ -51,6 +60,9 @@ public class PublicRestController {
         return sonnetDetailsService.getAllSonnets();
     }
 
+    /**
+     * @return two randomly selected sonnets.
+     */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/sonnets/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getTwoRandomSonnets() {
@@ -58,6 +70,10 @@ public class PublicRestController {
         return sonnetDetailsService.getTwoRandomSonnets();
     }
 
+    /**
+     * @param pageable a valid pageRequest.
+     * @return a list of paged sonnets.
+     */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/sonnets/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page getAllSonnetsPaged(Pageable pageable) {
@@ -129,6 +145,7 @@ public class PublicRestController {
     @GetMapping(value = "/sonnets/txt/all", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
     byte[] getAllText() throws IOException {
+        LOGGER.debug("Returning all sonnets as TXT.");
         List<Sonnet> sonnets = sonnetDetailsService.getAllSonnets();
         String sonnetTXT = SonnetConverter.sonnetsToText(sonnets);
         InputStream sonnetsOut = new ByteArrayInputStream(sonnetTXT.getBytes(StandardCharsets.UTF_8));
@@ -255,6 +272,19 @@ public class PublicRestController {
         InputStream sonnetOut = new ByteArrayInputStream(sonnetCSV.getBytes(StandardCharsets.UTF_8));
 
         return IOUtils.toByteArray(sonnetOut);
+    }
+
+    /**
+     * Handles inbound POST requests from the 'About' form.
+     *
+     * @param contactDto a valid contactDto with.
+     * @return success / failure response entity.
+     */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PostMapping(value = "/about/send_message", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> aboutEmailHandler(@RequestBody @Valid ContactDto contactDto) {
+
+        return emailService.sendAboutMessage(contactDto);
     }
 
 }

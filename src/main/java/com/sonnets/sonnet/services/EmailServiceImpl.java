@@ -1,8 +1,13 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.persistence.dtos.ContactDto;
+import com.sonnets.sonnet.persistence.models.MailingList;
+import com.sonnets.sonnet.persistence.repositories.MailingListRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,10 +27,14 @@ import java.io.File;
 public class EmailServiceImpl implements EmailService {
     private static final Logger LOGGER = Logger.getLogger(EmailServiceImpl.class);
     private final JavaMailSender mailSender;
+    private static final String EMAIL_TO = "josh@joshharkema.com";
+    private static final String EMAIL_SUBJECT = "Sonnet Database Query";
+    private final MailingListRepository mailingListRepository;
 
     @Autowired
-    public EmailServiceImpl(JavaMailSender mailSender) {
+    public EmailServiceImpl(JavaMailSender mailSender, MailingListRepository mailingListRepository) {
         this.mailSender = mailSender;
+        this.mailingListRepository = mailingListRepository;
     }
 
     @Override
@@ -66,6 +75,28 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
         } catch (MessagingException e) {
             LOGGER.error(e);
+        }
+    }
+
+    public ResponseEntity<Void> sendAboutMessage(ContactDto contactDto) {
+        try {
+            String message = "Message from: " + contactDto.getName() +
+                    "\nEmail address: " + contactDto.getEmail() +
+                    "\n\nAdd to mailing list: " + contactDto.isMailingList() +
+                    "\n\nMessage:\n " + contactDto.getMessage();
+
+            // Add user to mailing list if required.
+            if (contactDto.isMailingList()) {
+                mailingListRepository.saveAndFlush(new MailingList(contactDto.getName(), contactDto.getEmail()));
+            }
+
+            this.sendSimpleMessage(EMAIL_TO, EMAIL_SUBJECT, message);
+
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } catch (MailException e) {
+            LOGGER.error(e);
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
