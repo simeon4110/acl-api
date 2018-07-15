@@ -48,7 +48,7 @@ public class SonnetDetailsService {
             Sonnet toAddSonnet = new Sonnet(newSonnet);
             sonnetRepository.saveAndFlush(toAddSonnet);
 
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (SonnetAlreadyExistsException e) {
             LOGGER.error(e);
 
@@ -128,10 +128,6 @@ public class SonnetDetailsService {
         return sonnetRepository.findAllByLastName(author);
     }
 
-    public List<Sonnet> getSonnetsByAuthorFirstName(String author) {
-        return sonnetRepository.findAllByFirstName(author);
-    }
-
     public List<Sonnet> getSonnetsByAddedBy(String addedBy) {
         return sonnetRepository.findAllByAddedBy(addedBy);
     }
@@ -167,7 +163,7 @@ public class SonnetDetailsService {
             sonnet = sonnetOp.get();
             sonnetRepository.delete(sonnet);
 
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             LOGGER.error("Sonnet does not exist with id: " + idNum);
 
@@ -175,9 +171,4 @@ public class SonnetDetailsService {
         }
 
     }
-
-    public Sonnet getSonnetByTitleAndLastName(String title, String lastName) {
-        return sonnetRepository.findByTitleAndLastName(title, lastName);
-    }
-
 }

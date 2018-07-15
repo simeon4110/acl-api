@@ -1,13 +1,19 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.persistence.dtos.corpera.CorperaDto;
+import com.sonnets.sonnet.persistence.dtos.corpera.CorperaModifyDto;
+import com.sonnets.sonnet.persistence.dtos.corpera.CorperaModifySonnetsDto;
 import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.dtos.user.*;
 import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
+import com.sonnets.sonnet.services.CorperaService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,14 +33,16 @@ public class SecureRestController {
     private static final Logger LOGGER = Logger.getLogger(SecureRestController.class);
     private final UserDetailsServiceImpl userDetailsService;
     private final SonnetDetailsService sonnetDetailsService;
-
-    private static final String ALLOWED_ORIGIN = "http://127.0.0.1:4200";
+    private static final String ALLOWED_ORIGIN = "*";
+    private final CorperaService corperaService;
 
     @Autowired
     public SecureRestController(UserDetailsServiceImpl userDetailsService,
-                                SonnetDetailsService sonnetDetailsService) {
+                                SonnetDetailsService sonnetDetailsService,
+                                CorperaService corperaService) {
         this.userDetailsService = userDetailsService;
         this.sonnetDetailsService = sonnetDetailsService;
+        this.corperaService = corperaService;
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
@@ -183,4 +191,49 @@ public class SecureRestController {
     public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordChangeDto passwordChangeDto) {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
+
+    // CORPERA ENDPOINTS:
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @PostMapping(value = "/secure/corpera/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorperaDto corperaDto) {
+        return corperaService.createCorpera(corperaDto);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.PUT)
+    @PreAuthorize("hasAuthority('USER')")
+    @PutMapping(value = "/secure/corpera/add_sonnets", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addSonnetToCorpera(@RequestBody @Valid CorperaModifySonnetsDto modifySonnetsDto) {
+        return corperaService.addSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.PUT)
+    @PreAuthorize("hasAuthority('USER')")
+    @PutMapping(value = "/secure/corpera/remove_sonnets", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> removeSonnetFromCorpera(@RequestBody @Valid CorperaModifySonnetsDto modifySonnetsDto) {
+        return corperaService.removeSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.PUT)
+    @PreAuthorize("hasAuthority('USER')")
+    @PutMapping(value = "/secure/corpera/change_name", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> ModifyCorperaDetails(@RequestBody @Valid CorperaModifyDto modifyDto) {
+        return corperaService.modify(modifyDto.getCorperaId(), modifyDto.getName(), modifyDto.getDescription());
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping(value = "/secure/corpera/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Sonnet> getAllCorperaSonnets(@PathVariable("id") String id) {
+        return corperaService.getCorperaSonnets(id);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("haAuthority('USER')")
+    @GetMapping(value = "/secure/corpera/get_paged/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Page<Sonnet> getAllCorperaSonnetsPaged(@PathVariable("id") String id, Pageable pageable) {
+        return corperaService.getCorperaSonnetsPaged(id, pageable);
+    }
+
 }
