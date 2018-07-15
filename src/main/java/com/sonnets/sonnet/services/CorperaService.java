@@ -123,4 +123,16 @@ public class CorperaService {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
+
+    public ResponseEntity<Void> delete(String corperaId) {
+        LOGGER.debug("\nDeleting corpera: " + corperaId);
+        Optional<Corpera> corpera = corperaRepository.findById(Long.parseLong(corperaId));
+
+        if (corpera.isPresent()) {
+            corperaRepository.delete(corpera.get());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
 }
