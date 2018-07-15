@@ -230,10 +230,17 @@ public class SecureRestController {
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("haAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @GetMapping(value = "/secure/corpera/get_paged/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<Sonnet> getAllCorperaSonnetsPaged(@PathVariable("id") String id, Pageable pageable) {
         return corperaService.getCorperaSonnetsPaged(id, pageable);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.DELETE)
+    @PreAuthorize("hasAuthority('USER')")
+    @DeleteMapping(value = "/secure/corpera/delete/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteCorpus(@PathVariable("id") String id) {
+        return corperaService.delete(id);
     }
 
 }
