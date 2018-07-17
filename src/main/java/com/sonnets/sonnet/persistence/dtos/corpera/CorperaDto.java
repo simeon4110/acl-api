@@ -10,18 +10,10 @@ import javax.validation.constraints.NotNull;
  */
 public class CorperaDto {
     @NotNull
-    private Long userId;
     @NotEmpty
     private String name;
+
     private String description;
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     public String getName() {
         return name;
@@ -42,7 +34,6 @@ public class CorperaDto {
     @Override
     public String toString() {
         return "CorperaDto{" +
-                "userId=" + userId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 '}';

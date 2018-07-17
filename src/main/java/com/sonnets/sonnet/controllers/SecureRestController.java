@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.persistence.dtos.MessageDto;
 import com.sonnets.sonnet.persistence.dtos.corpera.CorperaDto;
 import com.sonnets.sonnet.persistence.dtos.corpera.CorperaModifyDto;
 import com.sonnets.sonnet.persistence.dtos.corpera.CorperaModifySonnetsDto;
@@ -9,18 +10,19 @@ import com.sonnets.sonnet.persistence.models.Sonnet;
 import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.CorperaService;
+import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -33,17 +35,21 @@ public class SecureRestController {
     private static final Logger LOGGER = Logger.getLogger(SecureRestController.class);
     private final UserDetailsServiceImpl userDetailsService;
     private final SonnetDetailsService sonnetDetailsService;
+    private final MessageService messageService;
     private static final String ALLOWED_ORIGIN = "*";
     private final CorperaService corperaService;
 
     @Autowired
     public SecureRestController(UserDetailsServiceImpl userDetailsService,
                                 SonnetDetailsService sonnetDetailsService,
-                                CorperaService corperaService) {
+                                CorperaService corperaService, MessageService messageService) {
         this.userDetailsService = userDetailsService;
         this.sonnetDetailsService = sonnetDetailsService;
         this.corperaService = corperaService;
+        this.messageService = messageService;
     }
+
+    // ADMIN ENDPOINTS:
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -176,6 +182,8 @@ public class SecureRestController {
         return userDetailsService.adminDeleteUser(username);
     }
 
+    // SONNET ENDPOINTS:
+
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/sonnet/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -185,11 +193,45 @@ public class SecureRestController {
         return sonnetDetailsService.addNewSonnet(sonnetDto);
     }
 
+    // USER ENDPOINTS:
+
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
-    @PutMapping(value = "/secure/user/password")
-    public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordChangeDto passwordChangeDto) {
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    @PutMapping(value = "/secure/user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordChangeDto passwordChangeDto,
+                                              Principal principal) {
+        return userDetailsService.userUpdatePassword(principal, passwordChangeDto);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @PutMapping(value = "/secure/user/email", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> changeEmail(@RequestBody @Valid EmailChangeDto emailChangeDto,
+                                            Principal principal) {
+        return userDetailsService.userUpdateEmail(principal, emailChangeDto);
+    }
+
+    // MESSAGE ENDPOINTS:
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping(value = "/secure/user/get_inbox", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getMessageInbox(Principal principal) {
+        return messageService.getMessagesTo(principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping(value = "/secure/user/get_outbox", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getMessageOutbox(Principal principal) {
+        return messageService.getMessagesFrom(principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @PostMapping(value = "/secure/user/send_message", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> sendMessage(@RequestBody @Valid MessageDto messageDto, Principal principal) {
+        return messageService.sendMessage(principal, messageDto);
     }
 
     // CORPERA ENDPOINTS:
@@ -197,8 +239,8 @@ public class SecureRestController {
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/secure/corpera/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorperaDto corperaDto) {
-        return corperaService.createCorpera(corperaDto);
+    public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorperaDto corperaDto, Principal principal) {
+        return corperaService.createCorpera(corperaDto, principal);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.PUT)
