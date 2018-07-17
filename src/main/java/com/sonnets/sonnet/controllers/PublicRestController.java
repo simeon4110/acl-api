@@ -39,7 +39,7 @@ public class PublicRestController {
     private final EmailServiceImpl emailService;
 
 
-    private static final String ALLOWED_ORIGIN = "http://127.0.0.1:4200";
+    private static final String ALLOWED_ORIGIN = "*";
 
 
     @Autowired

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,10 +36,10 @@ public class CorperaService {
         this.sonnetDetailsService = sonnetDetailsService;
     }
 
-    public ResponseEntity<Void> createCorpera(CorperaDto corperaDto) {
+    public ResponseEntity<Void> createCorpera(CorperaDto corperaDto, Principal principal) {
         LOGGER.debug("Creating corpera: " + corperaDto);
         Corpera newCorpera = new Corpera();
-        newCorpera.setUserId(corperaDto.getUserId());
+        newCorpera.setUsername(principal.getName());
         newCorpera.setName(corperaDto.getName());
         newCorpera.setDescription(corperaDto.getDescription());
 

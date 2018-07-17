@@ -16,12 +16,12 @@ public class Corpera {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private Long userId;
+    private String username;
     @Column
     private String name;
     @Column
     private String description;
-    @ElementCollection
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Sonnet> sonnets;
 
     public Corpera() {
@@ -35,12 +35,12 @@ public class Corpera {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {
@@ -81,7 +81,7 @@ public class Corpera {
         if (o == null || getClass() != o.getClass()) return false;
         Corpera corpera = (Corpera) o;
         return Objects.equals(id, corpera.id) &&
-                Objects.equals(userId, corpera.userId) &&
+                Objects.equals(username, corpera.username) &&
                 Objects.equals(name, corpera.name) &&
                 Objects.equals(description, corpera.description) &&
                 Objects.equals(sonnets, corpera.sonnets);
@@ -90,18 +90,17 @@ public class Corpera {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, userId, name, description, sonnets);
+        return Objects.hash(id, username, name, description, sonnets);
     }
 
     @Override
     public String toString() {
         return "Corpera{" +
                 "id=" + id +
-                ", userId=" + userId +
+                ", username='" + username + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", sonnets=" + sonnets +
                 '}';
     }
-
 }

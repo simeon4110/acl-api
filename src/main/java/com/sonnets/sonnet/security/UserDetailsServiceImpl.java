@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.security;
 
+import com.sonnets.sonnet.persistence.dtos.user.EmailChangeDto;
 import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
 import com.sonnets.sonnet.persistence.models.Privilege;
 import com.sonnets.sonnet.persistence.models.User;
@@ -91,9 +92,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      *
      * @param principal         the security principal with the user's auth details.
      * @param passwordChangeDto the PasswordChangeDto with the form data.
-     * @return a success message if successful, or a error message if not.
+     * @return OK if good; NOT_ACCEPTABLE if bad.
      */
-    public String userUpdatePassword(final Principal principal, final PasswordChangeDto passwordChangeDto) {
+    public ResponseEntity<Void> userUpdatePassword(final Principal principal, final PasswordChangeDto passwordChangeDto) {
+        LOGGER.debug("Changing password: " + passwordChangeDto.toString());
         User user = userRepository.findByUsername(principal.getName());
 
         if (passwordEncoder.matches(passwordChangeDto.getCurrentPassword(), user.getPassword()) &&
@@ -102,11 +104,27 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             userRepository.save(user);
             LOGGER.debug("Password change successful.");
 
-            return ("redirect:/profile?success");
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             LOGGER.debug("Password change failed.");
 
-            return ("redirect:/profile?error");
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    public ResponseEntity<Void> userUpdateEmail(final Principal principal, final EmailChangeDto emailChangeDto) {
+        LOGGER.debug("Changing email: " + emailService.toString());
+
+        try {
+            User user = userRepository.findByUsername(principal.getName());
+            user.setEmail(emailChangeDto.getEmail());
+            userRepository.saveAndFlush(user);
+            LOGGER.debug("Email change success!");
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error("Email change fail: " + e);
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -116,7 +134,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param username  the user to reset the password for.
      * @param password  the new password.
      * @param password1 new password confirm.
-     * @return NOT_ACCEPTABLE if passwords don't match; ACCEPTED if successful.
+     * @return NOT_ACCEPTABLE if passwords don't match; OK if successful.
      */
     public ResponseEntity<Void> adminPasswordReset(final String username, final String password,
                                                    final String password1) {
@@ -128,7 +146,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             LOGGER.debug("Password change successful.");
             userRepository.saveAndFlush(user);
 
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
 
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
@@ -139,7 +157,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * Allows admins to delete a user.
      *
      * @param username the user to delete.
-     * @return NOT_ACCEPTABLE if user is not found; ACCEPTED if successful.
+     * @return NOT_ACCEPTABLE if user is not found; OK if successful.
      */
     public ResponseEntity<Void> adminDeleteUser(final String username) {
         LOGGER.debug("Deleting user: " + username);
@@ -151,7 +169,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         userRepository.delete(user);
 
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -161,7 +179,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param password  a new password.
      * @param password1 validate new password.
      * @param isAdmin   True = admin privileges.
-     * @return CONFLICT if username in use; NOT_ACCEPTABLE if passwords don't match; ACCEPTED if successful.
+     * @return CONFLICT if username in use; NOT_ACCEPTABLE if passwords don't match; OK if successful.
      */
     public ResponseEntity<Void> adminAddUser(final String username, final String email, final String password,
                                              final String password1, final boolean isAdmin) {
@@ -177,7 +195,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
-        // Create and save a new user, return status accepted.
+        // Create and save a new user, return status OK.
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
@@ -196,7 +214,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // Send account details to new user.
         sendEmailInvite(user.getEmail(), username, password);
 
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -204,7 +222,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      *
      * @param username the user to change.
      * @param isAdmin  true = has admin rights.
-     * @return NOT_ACCEPTABLE if user name is not found; ACCEPTED if successful.
+     * @return NOT_ACCEPTABLE if user name is not found; OK if successful.
      */
     public ResponseEntity<Void> adminModifyUser(final String username, final String email, final boolean isAdmin) {
         LOGGER.debug("Setting user " + username + " to admin = " + isAdmin + " with email " + email);
@@ -231,7 +249,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             userRepository.saveAndFlush(user);
         }
 
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
