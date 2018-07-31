@@ -3,7 +3,8 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.MessageDto;
 import com.sonnets.sonnet.persistence.dtos.corpera.CorperaDto;
 import com.sonnets.sonnet.persistence.dtos.corpera.CorperaModifyDto;
-import com.sonnets.sonnet.persistence.dtos.corpera.CorperaModifySonnetsDto;
+import com.sonnets.sonnet.persistence.dtos.corpera.CorperaSonnetDto;
+import com.sonnets.sonnet.persistence.dtos.sonnet.ConfirmDto;
 import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.dtos.user.*;
 import com.sonnets.sonnet.persistence.models.Sonnet;
@@ -193,6 +194,14 @@ public class SecureRestController {
         return sonnetDetailsService.addNewSonnet(sonnetDto);
     }
 
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PutMapping(value = "/secure/sonnet/confirm", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> confirmSonnet(@RequestBody @Valid ConfirmDto confirmDto) {
+
+        return sonnetDetailsService.confirmSonnet(confirmDto);
+    }
+
     // USER ENDPOINTS:
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
@@ -209,6 +218,14 @@ public class SecureRestController {
     public ResponseEntity<Void> changeEmail(@RequestBody @Valid EmailChangeDto emailChangeDto,
                                             Principal principal) {
         return userDetailsService.userUpdateEmail(principal, emailChangeDto);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping(value = "/secure/user/details/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User userGetOwnDetails(@PathVariable String username, Principal principal) {
+
+        return userDetailsService.loadUserObjectByUsernameMatchUsername(username, principal);
     }
 
     // MESSAGE ENDPOINTS:
@@ -238,6 +255,13 @@ public class SecureRestController {
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
+    @GetMapping(value = "/secure/corpera/my_corpera", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getUserCorpera(Principal principal) {
+        return corperaService.getUserCorpera(principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/secure/corpera/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorperaDto corperaDto, Principal principal) {
         return corperaService.createCorpera(corperaDto, principal);
@@ -245,15 +269,16 @@ public class SecureRestController {
 
     @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.PUT)
     @PreAuthorize("hasAuthority('USER')")
-    @PutMapping(value = "/secure/corpera/add_sonnets", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addSonnetToCorpera(@RequestBody @Valid CorperaModifySonnetsDto modifySonnetsDto) {
+    @PutMapping(value = "/secure/corpera/add_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addSonnetToCorpera(@RequestBody @Valid CorperaSonnetDto modifySonnetsDto) {
+        LOGGER.debug(modifySonnetsDto.toString());
         return corperaService.addSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.PUT)
     @PreAuthorize("hasAuthority('USER')")
-    @PutMapping(value = "/secure/corpera/remove_sonnets", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> removeSonnetFromCorpera(@RequestBody @Valid CorperaModifySonnetsDto modifySonnetsDto) {
+    @PutMapping(value = "/secure/corpera/remove_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> removeSonnetFromCorpera(@RequestBody @Valid CorperaSonnetDto modifySonnetsDto) {
         return corperaService.removeSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
     }
 
@@ -280,7 +305,7 @@ public class SecureRestController {
 
     @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.DELETE)
     @PreAuthorize("hasAuthority('USER')")
-    @DeleteMapping(value = "/secure/corpera/delete/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/secure/corpera/delete/{id}")
     public ResponseEntity<Void> deleteCorpus(@PathVariable("id") String id) {
         return corperaService.delete(id);
     }

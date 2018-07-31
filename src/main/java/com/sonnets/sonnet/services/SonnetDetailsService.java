@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.persistence.dtos.sonnet.ConfirmDto;
 import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.exceptions.SonnetAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.Sonnet;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -170,5 +172,24 @@ public class SonnetDetailsService {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
+    }
+
+    public ResponseEntity<Void> confirmSonnet(ConfirmDto confirmDto) {
+        LOGGER.debug("Confirming sonnet: " + confirmDto.toString());
+        Optional<Sonnet> sonnet = sonnetRepository.findById(confirmDto.getId());
+        if (sonnet.isPresent()) {
+            Sonnet sonnet1 = sonnet.get();
+            sonnet1.setConfirmedBy(confirmDto.getUser());
+            sonnet1.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
+
+            sonnetRepository.saveAndFlush(sonnet1);
+
+            LOGGER.debug("Sonnet confirmed!");
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            LOGGER.debug("Sonnet not found.");
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

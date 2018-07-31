@@ -80,7 +80,7 @@ public class CorperaService {
             Corpera coperaPresent = corpera.get();
             for (String s : sonnetIds) {
                 Sonnet sonnet = sonnetDetailsService.getSonnetByID(s);
-                if (sonnet != null) {
+                if (sonnet != null && !coperaPresent.getSonnets().contains(sonnet)) {
                     coperaPresent.addSonnet(sonnet);
                 }
             }
@@ -135,5 +135,11 @@ public class CorperaService {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
+    }
+
+    public List getUserCorpera(Principal principal) {
+        LOGGER.debug("Returning corpera for user: " + principal.getName());
+
+        return corperaRepository.findAllByUsername(principal.getName());
     }
 }

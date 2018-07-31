@@ -63,6 +63,11 @@ public class Sonnet {
     @Column
     private String addedBy;
     @Column
+    private String confirmedBy;
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date confirmedAt;
+    @Column
     @IndexedEmbedded
     @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
     @ElementCollection
@@ -247,6 +252,22 @@ public class Sonnet {
         this.text = text;
     }
 
+    public String getConfirmedBy() {
+        return confirmedBy;
+    }
+
+    public void setConfirmedBy(String confirmedBy) {
+        this.confirmedBy = confirmedBy;
+    }
+
+    public Date getConfirmedAt() {
+        return confirmedAt;
+    }
+
+    public void setConfirmedAt(Date confirmedAt) {
+        this.confirmedAt = confirmedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -263,14 +284,14 @@ public class Sonnet {
                 Objects.equals(sourceDesc, sonnet.sourceDesc) &&
                 Objects.equals(updatedAt, sonnet.updatedAt) &&
                 Objects.equals(addedBy, sonnet.addedBy) &&
+                Objects.equals(confirmedBy, sonnet.confirmedBy) &&
+                Objects.equals(confirmedAt, sonnet.confirmedAt) &&
                 Objects.equals(text, sonnet.text);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt,
-                sourceDesc, updatedAt, addedBy, text);
+        return Objects.hash(id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt, sourceDesc, updatedAt, addedBy, confirmedBy, confirmedAt, text);
     }
 
     @Override
@@ -287,7 +308,10 @@ public class Sonnet {
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", updatedAt=" + updatedAt +
                 ", addedBy='" + addedBy + '\'' +
+                ", confirmedBy='" + confirmedBy + '\'' +
+                ", confirmedAt=" + confirmedAt +
                 ", text=" + text +
                 '}';
     }
+
 }

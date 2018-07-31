@@ -135,6 +135,21 @@ public class PublicRestController {
                 ParseParam.parse(title), ParseParam.parse(period), ParseParam.parse(text), pageRequest);
     }
 
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @GetMapping(value = "/sonnets/search/get_result_ids", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Long> getSearchResultIds(@RequestParam("firstName") String firstName,
+                                         @RequestParam("lastName") String lastName,
+                                         @RequestParam("title") String title,
+                                         @RequestParam("period") String period,
+                                         @RequestParam("text") String text) {
+        firstName = ParseParam.parse(firstName);
+        lastName = ParseParam.parse(lastName);
+        title = ParseParam.parse(title);
+        text = ParseParam.parse(text);
+
+        return searchService.getResultIds(firstName, lastName, title, period, text);
+    }
+
     /**
      * Get all lines of poetry as txt.
      *
