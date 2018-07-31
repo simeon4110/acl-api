@@ -8,7 +8,7 @@ import java.util.Arrays;
  *
  * @author Josh Harkema
  */
-public class CorperaModifySonnetsDto {
+public class CorperaSonnetDto {
     @NotEmpty
     private String corperaId;
     @NotEmpty
@@ -32,7 +32,7 @@ public class CorperaModifySonnetsDto {
 
     @Override
     public String toString() {
-        return "CorperaModifySonnetsDto{" +
+        return "CorperaSonnetDto{" +
                 "corperaId=" + corperaId +
                 ", sonnetId=" + Arrays.toString(sonnetId) +
                 '}';

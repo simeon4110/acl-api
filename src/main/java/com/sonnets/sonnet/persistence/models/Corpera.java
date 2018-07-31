@@ -21,7 +21,7 @@ public class Corpera {
     private String name;
     @Column
     private String description;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Sonnet> sonnets;
 
     public Corpera() {

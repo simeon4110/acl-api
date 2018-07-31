@@ -80,6 +80,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return user;
     }
 
+    public User loadUserObjectByUsernameMatchUsername(String username, Principal principal) {
+        LOGGER.debug("Returning user details for username: " + username);
+
+        if (Objects.equals(username, principal.getName())) {
+            return userRepository.findByUsername(username);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * @return a list of all users in the database.
      */

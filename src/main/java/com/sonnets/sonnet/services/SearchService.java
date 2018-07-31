@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +54,25 @@ public class SearchService {
         this.entityManager = entityManager;
     }
 
+    public List<Long> getResultIds(final String firstName, final String lastName, final String title,
+                                   final String period, final String text) {
+        List<Long> ids = new ArrayList<>();
+
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        // Build and execute query.
+        org.apache.lucene.search.Query query = buildQuery(firstName, lastName, title, period, text);
+        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
+
+        @SuppressWarnings("unchecked")
+        List<Sonnet> result = fullTextQuery.getResultList();
+
+        for (Sonnet sonnet : result) {
+            ids.add(sonnet.getId());
+        }
+
+        return ids;
+    }
+
     /**
      * Dynamic boolean search automatically parsed from the non-null searchDto fields.
      *
@@ -65,9 +85,36 @@ public class SearchService {
      */
     public Page<Sonnet> executeSearch(final String firstName, final String lastName, final String title,
                                       final String period, final String text, final Pageable pageable) {
-        LOGGER.debug("Parsing search: " + firstName + " " + lastName + " " + title + " " + period + " " + text);
-
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+
+        // Build and execute query.
+        org.apache.lucene.search.Query query = buildQuery(firstName, lastName, title, period, text);
+        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
+
+        // Manually set pageable offset. Getting this to work was a bloody nightmare.
+        fullTextQuery.setFirstResult((int) pageable.getOffset());
+        fullTextQuery.setMaxResults(pageable.getPageSize());
+
+        @SuppressWarnings("unchecked")
+        List<Sonnet> results = fullTextQuery.getResultList();
+
+        LOGGER.debug("Found total records: " + ((FullTextQuery) fullTextQuery).getResultSize());
+        return new PageImpl<>(results, pageable, ((FullTextQuery) fullTextQuery).getResultSize());
+    }
+
+    /**
+     * Builds out the lucene query as a series of Must boolean clauses.
+     *
+     * @param firstName author's first name.
+     * @param lastName  author's last name.
+     * @param title     title of the sonnet.
+     * @param period    period of publication.
+     * @param text      text contained in the sonnet.
+     * @return a built lucene query.
+     */
+    private org.apache.lucene.search.Query buildQuery(final String firstName, final String lastName, final String title,
+                                                      final String period, final String text) {
+        LOGGER.debug("Parsing search: " + firstName + " " + lastName + " " + title + " " + period + " " + text);
         BooleanQuery.Builder booleanClauses = new BooleanQuery.Builder();
 
         // Add first name.
@@ -114,21 +161,9 @@ public class SearchService {
             booleanClauses.add(builder.build(), BooleanClause.Occur.MUST);
         }
 
-        // Build and execute query.
-        org.apache.lucene.search.Query query = booleanClauses.build();
-
-        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
-
-        // Manually set pageable offset. Getting this to work was a bloody nightmare.
-        fullTextQuery.setFirstResult((int) pageable.getOffset());
-        fullTextQuery.setMaxResults(pageable.getPageSize());
-
-        @SuppressWarnings("unchecked")
-        List<Sonnet> results = fullTextQuery.getResultList();
-
-        LOGGER.debug("Found total records: " + ((FullTextQuery) fullTextQuery).getResultSize());
-        return new PageImpl<>(results, pageable, ((FullTextQuery) fullTextQuery).getResultSize());
+        return booleanClauses.build();
     }
+
 
     /**
      * This checks to see if a sonnet with similar data already exists in the database.
@@ -166,37 +201,6 @@ public class SearchService {
                     + " Already exists.");
         }
 
-    }
-
-    /**
-     * Search the Sonnet table's "text" column for an arbitrary string.
-     *
-     * @param text the string to search for.
-     * @return the list of results or null.
-     */
-    public List searchByText(String text) {
-        LOGGER.debug("Searching for sonnets with text: " + text);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
-        org.apache.lucene.search.Query query = queryBuilder.phrase().onField(TEXT).sentence(text).createQuery();
-
-        return executeQuery(query, manager);
-    }
-
-    /**
-     * Search the Sonnet table's "title" column for an arbitrary string (fuzzy)
-     *
-     * @param title the keywords to look for.
-     * @return a list of results or null.
-     */
-    public List searchByTitle(String title) {
-        LOGGER.debug("Searching for sonnets with title: " + title);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
-        org.apache.lucene.search.Query query = queryBuilder.keyword().fuzzy().withEditDistanceUpTo(EDIT_DISTANCE)
-                .withPrefixLength(EDIT_DISTANCE).onField(TITLE).matching(title).createQuery();
-
-        return executeQuery(query, manager);
     }
 
     /**
