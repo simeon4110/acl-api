@@ -1,7 +1,8 @@
 package com.sonnets.sonnet.persistence.repositories;
 
-import com.sonnets.sonnet.persistence.models.MessageImpl;
+import com.sonnets.sonnet.persistence.models.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -10,8 +11,11 @@ import java.util.List;
  *
  * @author Josh Harkema
  */
-public interface MessageRepository extends JpaRepository<MessageImpl, Long> {
-    List<MessageImpl> findAllByFromUser(final String from);
+@Repository
+public interface MessageRepository extends JpaRepository<Message, Long> {
+    List<Message> findAllByUserFrom(final String from);
 
-    List<MessageImpl> findAllByToUser(final String to);
+    List<Message> findAllByUserTo(final String to);
+
+    List<Message> findAllByUserToAndIsRead(final String to, final boolean isRead);
 }

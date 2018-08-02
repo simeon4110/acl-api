@@ -22,6 +22,9 @@ public class MailingList {
     @Column
     private String email;
 
+    public MailingList() {
+    }
+
     public MailingList(String name, String email) {
         this.name = name;
         this.email = email;

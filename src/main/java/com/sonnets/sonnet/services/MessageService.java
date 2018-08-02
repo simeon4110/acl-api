@@ -1,7 +1,8 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.MessageDto;
-import com.sonnets.sonnet.persistence.models.MessageImpl;
+import com.sonnets.sonnet.persistence.models.Message;
+import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.persistence.repositories.MessageRepository;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import org.apache.log4j.Logger;
@@ -11,8 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Handles CRUD for messages.
@@ -31,31 +33,72 @@ public class MessageService {
         this.userDetailsService = userDetailsService;
     }
 
-    public List getMessagesTo(Principal principal) {
-        LOGGER.debug("Getting all messages to: " + principal.getName());
-        try {
-            return messageRepository.findAllByToUser(principal.getName());
-        } catch (Exception e) {
-            LOGGER.error(e);
-            return Collections.emptyList();
+    public ResponseEntity<Void> sendMessage(MessageDto messageDto, Principal principal) {
+        LOGGER.debug("Sending message: " + messageDto.toString());
+        Message message = new Message();
+        User userFrom = userDetailsService.loadUserObjectByUsername(messageDto.getUserFrom());
+        User userTo = userDetailsService.loadUserObjectByUsername(messageDto.getUserTo());
+
+        if (userFrom != null && !Objects.equals(principal.getName(), userFrom.getUsername())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if (userTo != null) {
+            message.setUserFrom(userFrom.getUsername());
+            message.setUserTo(userTo.getUsername());
+            message.setSubject(messageDto.getSubject());
+            message.setContent(messageDto.getContent());
+            message.setRead(false);
+
+            messageRepository.saveAndFlush(message);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    public List getMessagesFrom(Principal principal) {
-        LOGGER.debug("Getting all messages from: " + principal.getName());
-        return messageRepository.findAllByFromUser(principal.getName());
+    public ResponseEntity<Void> readMessage(Principal principal, Long id) {
+        LOGGER.debug("Setting message read: " + id);
+        Optional<Message> message = messageRepository.findById(id);
+        if (message.isPresent() && Objects.equals(message.get().getUserTo(), principal.getName())) {
+            Message messageObj = message.get();
+            messageObj.setRead(true);
+            messageRepository.saveAndFlush(messageObj);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            LOGGER.error("Either message does not exists, or request came from bad user.");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
-    public ResponseEntity<Void> sendMessage(Principal principal, MessageDto messageDto) {
-        LOGGER.debug("Sending message from: " + principal.getName() + " to: " + messageDto.getTo());
+    public ResponseEntity<Void> deleteMessage(Principal principal, Long id) {
+        LOGGER.debug("Deleting message: " + id);
+        Optional<Message> message = messageRepository.findById(id);
+        if (message.isPresent() && Objects.equals(message.get().getUserTo(), principal.getName())) {
+            Message messageObj = message.get();
+            messageRepository.delete(messageObj);
 
-        MessageImpl message = new MessageImpl();
-        message.setFromUser(principal.getName());
-        message.setToUser(messageDto.getTo());
-        message.setIsRead(false);
-        message.setMessageContent(messageDto.getMessage());
-        messageRepository.saveAndFlush(message);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            LOGGER.error("Either message does not exists, or request came from bad user.");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+    public List<Message> getInbox(Principal principal) {
+        LOGGER.debug("Get inbox for user: " + principal.getName());
+        return messageRepository.findAllByUserTo(principal.getName());
+    }
+
+    public List<Message> getOutbox(Principal principal) {
+        LOGGER.debug("Get outbox for user: " + principal.getName());
+        return messageRepository.findAllByUserFrom(principal.getName());
+    }
+
+    public int getUnreadCount(Principal principal) {
+        LOGGER.debug("Getting unread messages for: " + principal.getName());
+        return messageRepository.findAllByUserToAndIsRead(principal.getName(), false).size();
     }
 }

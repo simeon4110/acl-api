@@ -234,21 +234,42 @@ public class SecureRestController {
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping(value = "/secure/user/get_inbox", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getMessageInbox(Principal principal) {
-        return messageService.getMessagesTo(principal);
+        return messageService.getInbox(principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping(value = "/secure/user/get_unread_count", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int getUnreadMessageCount(Principal principal) {
+        return messageService.getUnreadCount(principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @DeleteMapping(value = "/secure/user/delete_message/{id}")
+    public ResponseEntity<Void> deleteMessage(Principal principal, @PathVariable("id") String id) {
+        return messageService.deleteMessage(principal, Long.parseLong(id));
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping(value = "/secure/user/get_outbox", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getMessageOutbox(Principal principal) {
-        return messageService.getMessagesFrom(principal);
+        return messageService.getOutbox(principal);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/secure/user/send_message", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> sendMessage(@RequestBody @Valid MessageDto messageDto, Principal principal) {
-        return messageService.sendMessage(principal, messageDto);
+        return messageService.sendMessage(messageDto, principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping(value = "/secure/user/read_Message/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> readMessage(@PathVariable("id") String id, Principal principal) {
+        return messageService.readMessage(principal, Long.parseLong(id));
     }
 
     // CORPERA ENDPOINTS:
