@@ -9,31 +9,53 @@ import javax.validation.constraints.NotEmpty;
  */
 public class MessageDto {
     @NotEmpty
-    private String to;
+    private String userFrom;
     @NotEmpty
-    private String message;
+    private String userTo;
+    @NotEmpty
+    private String subject;
+    @NotEmpty
+    private String content;
 
-    public String getTo() {
-        return to;
+    public String getUserFrom() {
+        return userFrom;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setUserFrom(String userFrom) {
+        this.userFrom = userFrom;
     }
 
-    public String getMessage() {
-        return message;
+    public String getUserTo() {
+        return userTo;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setUserTo(String userTo) {
+        this.userTo = userTo;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override
     public String toString() {
         return "MessageDto{" +
-                ", to='" + to + '\'' +
-                ", message='" + message + '\'' +
+                "userFrom='" + userFrom + '\'' +
+                ", userTo='" + userTo + '\'' +
+                ", subject='" + subject + '\'' +
+                ", content='" + content + '\'' +
                 '}';
     }
 }
