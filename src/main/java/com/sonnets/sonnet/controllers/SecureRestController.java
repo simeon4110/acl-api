@@ -33,10 +33,11 @@ import java.util.List;
  */
 @RestController
 public class SecureRestController {
-    private static final Logger LOGGER = Logger.getLogger(SecureRestController.class);
     private final UserDetailsServiceImpl userDetailsService;
     private final SonnetDetailsService sonnetDetailsService;
     private final MessageService messageService;
+
+    private static final Logger LOGGER = Logger.getLogger(SecureRestController.class);
     private static final String ALLOWED_ORIGIN = "*";
     private final CorperaService corperaService;
 
@@ -154,21 +155,6 @@ public class SecureRestController {
     }
 
     /**
-     * Delete a sonnet.
-     *
-     * @param id the sonnet's id.
-     * @return BAD_REQUEST if number is invalid; ACCEPTED if success; NOT_ACCEPTABLE if sonnet does not exist.
-     */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping(value = "/admin/sonnet/delete/{id}")
-    public ResponseEntity<Void> deleteSonnet(@PathVariable("id") String id) {
-        LOGGER.debug("Deleting sonnet with ID: " + id);
-
-        return sonnetDetailsService.deleteSonnetById(id);
-    }
-
-    /**
      * Delete a user.
      *
      * @param username the name of the user to delete.
@@ -195,11 +181,34 @@ public class SecureRestController {
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping(value = "/secure/sonnet/delete/{id}")
+    public ResponseEntity<Void> deleteSonnet(@PathVariable("id") String id) {
+        LOGGER.debug("Deleting sonnet with ID: " + id);
+
+        return sonnetDetailsService.deleteSonnetById(id);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/sonnet/confirm", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> confirmSonnet(@RequestBody @Valid ConfirmDto confirmDto) {
+    public ResponseEntity<Void> confirmSonnet(@RequestBody @Valid ConfirmDto confirmDto, Principal principal) {
 
-        return sonnetDetailsService.confirmSonnet(confirmDto);
+        return sonnetDetailsService.confirmSonnet(confirmDto, principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/sonnet/get_user_sonnets", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getUserSonnets(Principal principal) {
+        return sonnetDetailsService.getAllUserSonnets(principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PutMapping(value = "/secure/sonnet/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> editSonnet(@RequestBody @Valid SonnetDto sonnetDto) {
+        return sonnetDetailsService.updateSonnet(sonnetDto);
     }
 
     // USER ENDPOINTS:
