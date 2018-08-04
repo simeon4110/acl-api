@@ -1,13 +1,16 @@
 package com.sonnets.sonnet.persistence.models;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
 
+/**
+ * User-to-user and system-to-user message object.
+ *
+ * @author Josh Harkema
+ */
 @Entity
 @Table
-public class Message {
+public class Message extends Auditable<User> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,12 +24,8 @@ public class Message {
     private String content;
     @Column
     private boolean isRead;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column
-    private Date createdAt;
 
     public Message() {
-        this.createdAt = new Timestamp(System.currentTimeMillis());
     }
 
     public Long getId() {
@@ -77,31 +76,23 @@ public class Message {
         isRead = read;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Message message = (Message) o;
         return isRead == message.isRead &&
                 Objects.equals(id, message.id) &&
                 Objects.equals(userFrom, message.userFrom) &&
                 Objects.equals(userTo, message.userTo) &&
                 Objects.equals(subject, message.subject) &&
-                Objects.equals(content, message.content) &&
-                Objects.equals(createdAt, message.createdAt);
+                Objects.equals(content, message.content);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userFrom, userTo, subject, content, isRead, createdAt);
+        return Objects.hash(super.hashCode(), id, userFrom, userTo, subject, content, isRead);
     }
 
     @Override
@@ -113,7 +104,10 @@ public class Message {
                 ", subject='" + subject + '\'' +
                 ", content='" + content + '\'' +
                 ", isRead=" + isRead +
-                ", createdAt=" + createdAt +
+                ", createdBy=" + createdBy +
+                ", creationDate=" + creationDate +
+                ", lastModifiedBy=" + lastModifiedBy +
+                ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }
 }

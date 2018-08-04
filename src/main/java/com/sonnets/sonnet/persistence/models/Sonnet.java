@@ -6,10 +6,8 @@ import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.annotations.Parameter;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +26,7 @@ import java.util.Objects;
                 @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
                         @Parameter(name = "language", value = "English")
                 })})
-public class Sonnet {
+public class Sonnet extends Auditable<User> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
@@ -57,15 +55,11 @@ public class Sonnet {
     @Column
     private String sourceDesc;
     @Column
+    private boolean confirmed;
+    @Column
+    private User confirmedBy;
     @Temporal(TemporalType.TIMESTAMP)
-    @LastModifiedDate
-    private Date updatedAt;
     @Column
-    private String addedBy;
-    @Column
-    private String confirmedBy;
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
     private Date confirmedAt;
     @Column
     @IndexedEmbedded
@@ -77,11 +71,9 @@ public class Sonnet {
      * Default constructor generates a timestamp.
      */
     public Sonnet() {
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
     public Sonnet(SonnetDto sonnetDto) {
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
         this.firstName = sonnetDto.getFirstName().trim();
         this.lastName = sonnetDto.getLastName().trim();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
@@ -94,7 +86,7 @@ public class Sonnet {
         this.period = sonnetDto.getPeriod();
         this.publicationStmt = sonnetDto.getPublicationStmt().trim();
         this.sourceDesc = sonnetDto.getSourceDesc().trim();
-        this.addedBy = sonnetDto.getAddedBy();
+        this.confirmed = false;
         this.numOfLines = this.text.size();
     }
 
@@ -114,7 +106,6 @@ public class Sonnet {
         return strings;
     }
 
-
     /**
      * Update an existing sonnet from a SonnetDto object.
      *
@@ -122,7 +113,6 @@ public class Sonnet {
      * @return the updated Sonnet object.
      */
     public Sonnet update(SonnetDto sonnetDto) {
-        this.updatedAt = new Timestamp(System.currentTimeMillis());
         this.firstName = sonnetDto.getFirstName();
         this.lastName = sonnetDto.getLastName();
         this.text = parseText(sonnetDto.getText().split("\\r?\\n"));
@@ -135,7 +125,6 @@ public class Sonnet {
         this.publicationYear = sonnetDto.getPublicationYear();
         this.publicationStmt = sonnetDto.getPublicationStmt();
         this.sourceDesc = sonnetDto.getSourceDesc();
-        this.addedBy = sonnetDto.getAddedBy();
         this.numOfLines = this.text.size();
 
         return this;
@@ -228,35 +217,19 @@ public class Sonnet {
         this.sourceDesc = sourceDesc;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public boolean isConfirmed() {
+        return confirmed;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
-    public String getAddedBy() {
-        return addedBy;
-    }
-
-    public void setAddedBy(String addedBy) {
-        this.addedBy = addedBy;
-    }
-
-    public List<String> getText() {
-        return text;
-    }
-
-    public void setText(List<String> text) {
-        this.text = text;
-    }
-
-    public String getConfirmedBy() {
+    public User getConfirmedBy() {
         return confirmedBy;
     }
 
-    public void setConfirmedBy(String confirmedBy) {
+    public void setConfirmedBy(User confirmedBy) {
         this.confirmedBy = confirmedBy;
     }
 
@@ -268,12 +241,22 @@ public class Sonnet {
         this.confirmedAt = confirmedAt;
     }
 
+    public List<String> getText() {
+        return text;
+    }
+
+    public void setText(List<String> text) {
+        this.text = text;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Sonnet sonnet = (Sonnet) o;
-        return Objects.equals(id, sonnet.id) &&
+        return confirmed == sonnet.confirmed &&
+                Objects.equals(id, sonnet.id) &&
                 Objects.equals(firstName, sonnet.firstName) &&
                 Objects.equals(lastName, sonnet.lastName) &&
                 Objects.equals(title, sonnet.title) &&
@@ -282,8 +265,6 @@ public class Sonnet {
                 Objects.equals(publicationYear, sonnet.publicationYear) &&
                 Objects.equals(publicationStmt, sonnet.publicationStmt) &&
                 Objects.equals(sourceDesc, sonnet.sourceDesc) &&
-                Objects.equals(updatedAt, sonnet.updatedAt) &&
-                Objects.equals(addedBy, sonnet.addedBy) &&
                 Objects.equals(confirmedBy, sonnet.confirmedBy) &&
                 Objects.equals(confirmedAt, sonnet.confirmedAt) &&
                 Objects.equals(text, sonnet.text);
@@ -291,7 +272,8 @@ public class Sonnet {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt, sourceDesc, updatedAt, addedBy, confirmedBy, confirmedAt, text);
+        return Objects.hash(super.hashCode(), id, firstName, lastName, title, numOfLines, period, publicationYear,
+                publicationStmt, sourceDesc, confirmed, confirmedBy, confirmedAt, text);
     }
 
     @Override
@@ -306,11 +288,14 @@ public class Sonnet {
                 ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
-                ", updatedAt=" + updatedAt +
-                ", addedBy='" + addedBy + '\'' +
-                ", confirmedBy='" + confirmedBy + '\'' +
+                ", confirmed=" + confirmed +
+                ", confirmedBy=" + confirmedBy +
                 ", confirmedAt=" + confirmedAt +
                 ", text=" + text +
+                ", createdBy=" + createdBy +
+                ", creationDate=" + creationDate +
+                ", lastModifiedBy=" + lastModifiedBy +
+                ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }
 
