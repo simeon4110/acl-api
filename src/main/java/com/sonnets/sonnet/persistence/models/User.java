@@ -1,13 +1,9 @@
 package com.sonnets.sonnet.persistence.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -18,9 +14,8 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "users")
-@Transactional(propagation = Propagation.REQUIRED)
-public class User implements Serializable {
-    private static final long serialVersionUID = 3953225636947318796L;
+public class User extends Auditable<String> implements Serializable {
+    private static final long serialVersionUID = 5508512949127227678L;
     @Id
     @GeneratedValue
     private Long id;
@@ -33,14 +28,18 @@ public class User implements Serializable {
     private String email;
     @Column
     private Boolean isAdmin;
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
-    private Date addedAt;
+    @Column
+    private int requiredSonnets;
+    @Column
+    private Boolean canConfirm;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_privileges", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private Set<Privilege> privileges;
+
+    public User() {
+    }
 
     public Long getId() {
         return id;
@@ -74,7 +73,7 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public Boolean isAdmin() {
+    public Boolean getAdmin() {
         return isAdmin;
     }
 
@@ -82,12 +81,20 @@ public class User implements Serializable {
         isAdmin = admin;
     }
 
-    public Date getAddedAt() {
-        return addedAt;
+    public int getRequiredSonnets() {
+        return requiredSonnets;
     }
 
-    public void setAddedAt(Date addedAt) {
-        this.addedAt = addedAt;
+    public void setRequiredSonnets(int requiredSonnets) {
+        this.requiredSonnets = requiredSonnets;
+    }
+
+    public Boolean getCanConfirm() {
+        return canConfirm;
+    }
+
+    public void setCanConfirm(Boolean canConfirm) {
+        this.canConfirm = canConfirm;
     }
 
     public Set<Privilege> getPrivileges() {
@@ -102,20 +109,22 @@ public class User implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) &&
+        return requiredSonnets == user.requiredSonnets &&
+                Objects.equals(id, user.id) &&
                 Objects.equals(username, user.username) &&
                 Objects.equals(password, user.password) &&
                 Objects.equals(email, user.email) &&
                 Objects.equals(isAdmin, user.isAdmin) &&
-                Objects.equals(addedAt, user.addedAt) &&
+                Objects.equals(canConfirm, user.canConfirm) &&
                 Objects.equals(privileges, user.privileges);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, username, password, email, isAdmin, addedAt, privileges);
+        return Objects.hash(super.hashCode(), id, username, password, email, isAdmin, requiredSonnets, canConfirm,
+                privileges);
     }
 
     @Override
@@ -126,8 +135,11 @@ public class User implements Serializable {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", isAdmin=" + isAdmin +
-                ", addedAt=" + addedAt +
+                ", requiredSonnets=" + requiredSonnets +
+                ", canConfirm=" + canConfirm +
                 ", privileges=" + privileges +
+                ", createdDate=" + super.getCreatedDate() +
+                ", createdBy=" + super.getCreatedBy() +
                 '}';
     }
 

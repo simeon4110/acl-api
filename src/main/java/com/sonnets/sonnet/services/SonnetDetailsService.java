@@ -1,9 +1,11 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.sonnet.ConfirmDto;
+import com.sonnets.sonnet.persistence.dtos.MessageDto;
+import com.sonnets.sonnet.persistence.dtos.sonnet.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.sonnet.SonnetDto;
 import com.sonnets.sonnet.persistence.exceptions.SonnetAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.User;
 import com.sonnets.sonnet.persistence.repositories.SonnetRepository;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import org.apache.log4j.Logger;
@@ -31,15 +33,17 @@ public class SonnetDetailsService {
     private final SonnetRepository sonnetRepository;
     private final SearchService searchService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final MessageService messageService;
     private static final Logger LOGGER = Logger.getLogger(SonnetDetailsService.class);
     private static final int NUMBER_OF_RANDOM_SONNETS = 2;
 
     @Autowired
     public SonnetDetailsService(SonnetRepository sonnetRepository, SearchService searchService,
-                                UserDetailsServiceImpl userDetailsService) {
+                                UserDetailsServiceImpl userDetailsService, MessageService messageService) {
         this.sonnetRepository = sonnetRepository;
         this.searchService = searchService;
         this.userDetailsService = userDetailsService;
+        this.messageService = messageService;
     }
 
     /**
@@ -48,12 +52,22 @@ public class SonnetDetailsService {
      * @param newSonnet a valid SonnetDto object.
      * @return the Sonnet object created.
      */
-    public ResponseEntity<Void> addNewSonnet(SonnetDto newSonnet) {
+    public ResponseEntity<Void> addNewSonnet(SonnetDto newSonnet, Principal principal) {
         LOGGER.debug("Adding sonnet: " + "'" + newSonnet + "'");
         try {
-            searchService.similarExists(newSonnet);
+            if (sonnetRepository.findAll().size() > 0) {
+                searchService.similarExists(newSonnet);
+            }
             Sonnet toAddSonnet = new Sonnet(newSonnet);
             sonnetRepository.saveAndFlush(toAddSonnet);
+
+            // Sets a user's ability to confirm sonnets if they've passed the required threshold.
+            User user = userDetailsService.loadUserObjectByUsername(principal.getName());
+            if (user.getRequiredSonnets() <= sonnetRepository.findAllByCreatedBy(principal.getName()).size() &&
+                    !user.getCanConfirm()) {
+                user.setCanConfirm(true);
+                userDetailsService.save(user);
+            }
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (SonnetAlreadyExistsException e) {
@@ -71,10 +85,9 @@ public class SonnetDetailsService {
      */
     public ResponseEntity<Void> updateSonnet(SonnetDto updateSonnet) {
         LOGGER.debug("Updating sonnet: " + updateSonnet.toString());
-        Optional<Sonnet> sonnetToEdit = sonnetRepository.findById(updateSonnet.getId());
+        Sonnet sonnet = getSonnetOrError(updateSonnet.getId().toString());
 
-        if (sonnetToEdit.isPresent()) {
-            Sonnet sonnet = sonnetToEdit.get();
+        if (sonnet != null) {
             sonnet.update(updateSonnet);
             sonnetRepository.saveAndFlush(sonnet);
 
@@ -90,6 +103,7 @@ public class SonnetDetailsService {
      * @return two randomly selected sonnets chosen from all sonnets in the db.
      */
     public List<Sonnet> getTwoRandomSonnets() {
+        LOGGER.debug("Returning two random sonnets.");
         Random random = new Random();
         List<Sonnet> sonnets = getAllSonnets();
         List<Sonnet> randomSonnets = new ArrayList<>();
@@ -112,13 +126,17 @@ public class SonnetDetailsService {
 
     public List<Sonnet> getAllUserSonnets(Principal principal) {
         LOGGER.debug("Returning all sonnets for user: " + principal.getName());
-        return sonnetRepository.findAllByAddedBy(principal.getName());
+        if (userDetailsService.loadUserByUsername(principal.getName()) != null) {
+            return sonnetRepository.findAllByCreatedBy(principal.getName());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public Sonnet getSonnetByID(String id) {
-        Optional<Sonnet> sonnet = sonnetRepository.findById(Long.parseLong(id));
-        if (sonnet.isPresent()) {
-            return sonnet.get();
+        Sonnet sonnet = getSonnetOrError(id);
+        if (sonnet != null) {
+            return sonnet;
         } else {
             LOGGER.error("Sonnet with id: " + "'" + id + "'" + "does not exist.");
             return null;
@@ -141,8 +159,8 @@ public class SonnetDetailsService {
         return sonnetRepository.findAllByLastName(author);
     }
 
-    public List<Sonnet> getSonnetsByAddedBy(String addedBy) {
-        return sonnetRepository.findAllByAddedBy(addedBy);
+    public List<Sonnet> getSonnetsByAddedBy(String createdBy) {
+        return sonnetRepository.findAllByCreatedBy(createdBy);
     }
 
     public List<Sonnet> getSonnetsByAddedByAndDate(String addedBy, String after, String before) {
@@ -151,7 +169,8 @@ public class SonnetDetailsService {
             Date parsedAfter = sdf.parse(after);
             Date parsedBefore = sdf.parse(before);
 
-            return sonnetRepository.findAllByAddedByAndUpdatedAtBetween(addedBy, parsedAfter, parsedBefore);
+            return sonnetRepository.findAllByCreatedByAndConfirmedAtBetween(
+                    addedBy, parsedAfter, parsedBefore);
 
         } catch (ParseException e) {
             LOGGER.error(e);
@@ -162,47 +181,90 @@ public class SonnetDetailsService {
 
     public ResponseEntity<Void> deleteSonnetById(String id) {
         LOGGER.debug("Deleting sonnet: " + id);
-        Long idNum;
-        try {
-            idNum = Long.parseLong(id);
-        } catch (NumberFormatException e) {
-            LOGGER.error("Invalid number format: " + id);
-
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        Optional<Sonnet> sonnetOp = sonnetRepository.findById(idNum);
-        Sonnet sonnet;
-        if (sonnetOp.isPresent()) {
-            sonnet = sonnetOp.get();
+        Sonnet sonnet = getSonnetOrError(id);
+        if (sonnet != null) {
             sonnetRepository.delete(sonnet);
 
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            LOGGER.error("Sonnet does not exist with id: " + idNum);
+            LOGGER.error("Sonnet does not exist with id: " + id);
 
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
 
     }
 
-    public ResponseEntity<Void> confirmSonnet(ConfirmDto confirmDto, Principal principal) {
-        LOGGER.debug("Confirming sonnet: " + confirmDto.toString());
-        Optional<Sonnet> sonnet = sonnetRepository.findById(confirmDto.getId());
-        if (sonnet.isPresent()) {
-            Sonnet sonnetActual = sonnet.get();
-            sonnetActual.setConfirmed(true);
-            sonnetActual.setConfirmedBy(userDetailsService.loadUserObjectByUsername(principal.getName()));
-            sonnetActual.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
+    public ResponseEntity<Void> deleteUserSonnetById(String id, Principal principal) {
+        LOGGER.debug("Deleting user sonnet: " + id);
+        Sonnet sonnet = getSonnetOrError(id);
+        if (sonnet != null && Objects.equals(sonnet.getCreatedBy(), principal.getName())) {
+            sonnetRepository.delete(sonnet);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            LOGGER.error("Either sonnet does not exist, or user is not authorized to delete it.");
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
 
-            sonnetRepository.saveAndFlush(sonnetActual);
+    public ResponseEntity<Void> confirmSonnet(String id, Principal principal) {
+        LOGGER.debug("Confirming sonnet: " + id);
+        Sonnet sonnet = getSonnetOrError(id);
 
+        if (sonnet != null) {
+            sonnet.setConfirmed(true);
+            sonnet.setConfirmedBy(principal.getName());
+            sonnet.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
+            sonnetRepository.saveAndFlush(sonnet);
             LOGGER.debug("Sonnet confirmed!");
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            LOGGER.debug("Sonnet not found.");
-
+            LOGGER.error("Sonnet not found.");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<Void> rejectSonnet(RejectDto rejectDto, Principal principal) {
+        LOGGER.debug("Rejecting sonnet: " + rejectDto.getId());
+        Sonnet sonnet = getSonnetOrError(rejectDto.getId());
+
+        if (sonnet != null) {
+            sonnet.setConfirmed(false);
+            sonnet.setPendingRevision(true);
+            sonnetRepository.saveAndFlush(sonnet);
+
+            // Send message rejection message to user who created sonnet.
+            MessageDto messageDto = new MessageDto();
+            messageDto.setUserFrom("Administrator");
+            messageDto.setUserTo(sonnet.getCreatedBy());
+            messageDto.setSubject("One of your sonnets has been rejected.");
+            messageDto.setContent(rejectDto.getRejectMessage());
+            messageService.sendAdminMessage(messageDto);
+
+            LOGGER.debug("Sonnet rejected!");
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            LOGGER.error("Sonnet not found.");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public Sonnet getSonnetToConfirm() {
+        LOGGER.debug("Returning first unconfirmed sonnet in pile.");
+        return sonnetRepository.findFirstByConfirmedAndPendingRevision(false, false);
+    }
+
+    private Sonnet getSonnetOrError(String id) {
+        LOGGER.debug("Attempting to retrieve sonnet with id: " + id);
+
+        Long parseId;
+        Optional<Sonnet> sonnet;
+        try {
+            parseId = Long.parseLong(id);
+            sonnet = sonnetRepository.findById(parseId);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e);
+            return null;
+        }
+        return sonnet.orElse(null);
     }
 }

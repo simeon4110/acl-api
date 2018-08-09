@@ -1,7 +1,5 @@
 package com.sonnets.sonnet.persistence.dtos.sonnet;
 
-import com.sonnets.sonnet.persistence.models.Sonnet;
-
 import javax.validation.constraints.NotEmpty;
 
 
@@ -27,21 +25,6 @@ public class SonnetDto {
     private String sourceDesc;
     @NotEmpty
     private String text;
-
-    public SonnetDto() {
-    }
-
-    public SonnetDto(Sonnet sonnet) {
-        this.id = sonnet.getId();
-        this.firstName = sonnet.getFirstName();
-        this.lastName = sonnet.getLastName();
-        this.title = sonnet.getTitle();
-        this.period = sonnet.getPeriod();
-        this.publicationYear = sonnet.getPublicationYear();
-        this.publicationStmt = sonnet.getPublicationStmt();
-        this.sourceDesc = sonnet.getSourceDesc();
-        this.text = sonnet.getTextPretty();
-    }
 
     public Long getId() {
         return id;

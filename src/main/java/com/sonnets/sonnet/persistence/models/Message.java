@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 @Entity
 @Table
-public class Message extends Auditable<User> {
+public class Message extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -104,10 +104,6 @@ public class Message extends Auditable<User> {
                 ", subject='" + subject + '\'' +
                 ", content='" + content + '\'' +
                 ", isRead=" + isRead +
-                ", createdBy=" + createdBy +
-                ", creationDate=" + creationDate +
-                ", lastModifiedBy=" + lastModifiedBy +
-                ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }
 }

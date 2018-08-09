@@ -1,7 +1,5 @@
 package com.sonnets.sonnet.persistence.dtos.user;
 
-import com.sonnets.sonnet.security.password.ValidPassword;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -16,10 +14,8 @@ public class AdminUserAddDto {
     private String username;
     @Email
     private String email;
-    @ValidPassword
-    private String password;
-    @ValidPassword
-    private String password1;
+    @NotNull
+    private int requiredSonnets;
     @NotNull
     private boolean isAdmin;
 
@@ -39,27 +35,29 @@ public class AdminUserAddDto {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public int getRequiredSonnets() {
+        return requiredSonnets;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setRequiredSonnets(int requiredSonnets) {
+        this.requiredSonnets = requiredSonnets;
     }
 
-    public String getPassword1() {
-        return password1;
-    }
-
-    public void setPassword1(String password1) {
-        this.password1 = password1;
-    }
-
-    public boolean getAdmin() {
+    public boolean isAdmin() {
         return isAdmin;
     }
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    @Override
+    public String toString() {
+        return "AdminUserAddDto{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", requiredSonnets=" + requiredSonnets +
+                ", isAdmin=" + isAdmin +
+                '}';
     }
 }
