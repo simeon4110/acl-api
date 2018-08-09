@@ -204,22 +204,6 @@ public class SearchService {
     }
 
     /**
-     * Search the Sonnet table's "period" column for a period.
-     *
-     * @param period the period to search for.
-     * @return a list of results or null.
-     */
-    public List searchByPeriod(String period) {
-        LOGGER.debug("Searching for sonnets by period: " + period);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Sonnet.class).get();
-        org.apache.lucene.search.Query query = queryBuilder.keyword().onField(PERIOD).matching(period)
-                .createQuery();
-
-        return executeQuery(query, manager);
-    }
-
-    /**
      * Executor to run pre-parsed lucene queries.
      *
      * @param query the query to execute.

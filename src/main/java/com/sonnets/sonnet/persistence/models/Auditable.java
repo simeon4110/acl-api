@@ -6,56 +6,52 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Objects;
 
-/**
- * Abstract, general use class for auditing data stored via JPA.
- *
- * @param <User> a user object.
- */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class Auditable<User> {
+public class Auditable<U> {
     @CreatedBy
-    protected User createdBy;
+    @Column(name = "created_by")
+    private U createdBy;
 
     @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    protected Date creationDate;
+    @Column(name = "created_date")
+    private Date createdDate;
 
     @LastModifiedBy
-    protected User lastModifiedBy;
+    @Column(name = "last_modified_by")
+    private U lastModifiedBy;
 
     @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    protected Date lastModifiedDate;
+    @Column(name = "last_modified_date")
+    private Date lastModifiedDate;
 
-    public User getCreatedBy() {
+    public U getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(U createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public User getLastModifiedBy() {
+    public U getLastModifiedBy() {
         return lastModifiedBy;
     }
 
-    public void setLastModifiedBy(User lastModifiedBy) {
+    public void setLastModifiedBy(U lastModifiedBy) {
         this.lastModifiedBy = lastModifiedBy;
     }
 
@@ -73,24 +69,23 @@ public abstract class Auditable<User> {
         if (o == null || getClass() != o.getClass()) return false;
         Auditable<?> auditable = (Auditable<?>) o;
         return Objects.equals(createdBy, auditable.createdBy) &&
-                Objects.equals(creationDate, auditable.creationDate) &&
+                Objects.equals(createdDate, auditable.createdDate) &&
                 Objects.equals(lastModifiedBy, auditable.lastModifiedBy) &&
                 Objects.equals(lastModifiedDate, auditable.lastModifiedDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(createdBy, creationDate, lastModifiedBy, lastModifiedDate);
+        return Objects.hash(createdBy, createdDate, lastModifiedBy, lastModifiedDate);
     }
 
     @Override
     public String toString() {
         return "Auditable{" +
                 "createdBy=" + createdBy +
-                ", creationDate=" + creationDate +
+                ", createdDate=" + createdDate +
                 ", lastModifiedBy=" + lastModifiedBy +
                 ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }
-
 }

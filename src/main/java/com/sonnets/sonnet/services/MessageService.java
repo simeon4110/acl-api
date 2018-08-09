@@ -33,6 +33,19 @@ public class MessageService {
         this.userDetailsService = userDetailsService;
     }
 
+    public void sendAdminMessage(MessageDto messageDto) {
+        LOGGER.debug("Sending admin message: " + messageDto.toString());
+        Message message = new Message();
+
+        message.setUserFrom(messageDto.getUserFrom());
+        message.setUserTo(messageDto.getUserTo());
+        message.setSubject(messageDto.getSubject());
+        message.setContent(messageDto.getContent());
+        message.setRead(false);
+
+        messageRepository.saveAndFlush(message);
+    }
+
     public ResponseEntity<Void> sendMessage(MessageDto messageDto, Principal principal) {
         LOGGER.debug("Sending message: " + messageDto.toString());
         Message message = new Message();
@@ -92,13 +105,4 @@ public class MessageService {
         return messageRepository.findAllByUserTo(principal.getName());
     }
 
-    public List<Message> getOutbox(Principal principal) {
-        LOGGER.debug("Get outbox for user: " + principal.getName());
-        return messageRepository.findAllByUserFrom(principal.getName());
-    }
-
-    public int getUnreadCount(Principal principal) {
-        LOGGER.debug("Getting unread messages for: " + principal.getName());
-        return messageRepository.findAllByUserToAndIsRead(principal.getName(), false).size();
-    }
 }

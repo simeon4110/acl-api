@@ -80,7 +80,7 @@ public class EmailServiceImpl implements EmailService {
 
     public ResponseEntity<Void> sendAboutMessage(ContactDto contactDto) {
         try {
-            String message = "Message from: " + contactDto.getName() +
+            String message = "\nMessage from: " + contactDto.getName() +
                     "\nEmail address: " + contactDto.getEmail() +
                     "\n\nAdd to mailing list: " + contactDto.isMailingList() +
                     "\n\nMessage:\n " + contactDto.getMessage();

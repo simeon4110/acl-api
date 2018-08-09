@@ -26,7 +26,7 @@ import java.util.Objects;
                 @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
                         @Parameter(name = "language", value = "English")
                 })})
-public class Sonnet extends Auditable<User> {
+public class Sonnet extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
@@ -57,10 +57,12 @@ public class Sonnet extends Auditable<User> {
     @Column
     private boolean confirmed;
     @Column
-    private User confirmedBy;
+    private String confirmedBy;
     @Temporal(TemporalType.TIMESTAMP)
     @Column
     private Date confirmedAt;
+    @Column
+    private boolean pendingRevision;
     @Column
     @IndexedEmbedded
     @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
@@ -87,6 +89,7 @@ public class Sonnet extends Auditable<User> {
         this.publicationStmt = sonnetDto.getPublicationStmt().trim();
         this.sourceDesc = sonnetDto.getSourceDesc().trim();
         this.confirmed = false;
+        this.pendingRevision = false;
         this.numOfLines = this.text.size();
     }
 
@@ -125,6 +128,8 @@ public class Sonnet extends Auditable<User> {
         this.publicationYear = sonnetDto.getPublicationYear();
         this.publicationStmt = sonnetDto.getPublicationStmt();
         this.sourceDesc = sonnetDto.getSourceDesc();
+        this.confirmed = false;
+        this.pendingRevision = false;
         this.numOfLines = this.text.size();
 
         return this;
@@ -225,11 +230,11 @@ public class Sonnet extends Auditable<User> {
         this.confirmed = confirmed;
     }
 
-    public User getConfirmedBy() {
+    public String getConfirmedBy() {
         return confirmedBy;
     }
 
-    public void setConfirmedBy(User confirmedBy) {
+    public void setConfirmedBy(String confirmedBy) {
         this.confirmedBy = confirmedBy;
     }
 
@@ -239,6 +244,14 @@ public class Sonnet extends Auditable<User> {
 
     public void setConfirmedAt(Date confirmedAt) {
         this.confirmedAt = confirmedAt;
+    }
+
+    public boolean isPendingRevision() {
+        return pendingRevision;
+    }
+
+    public void setPendingRevision(boolean pendingRevision) {
+        this.pendingRevision = pendingRevision;
     }
 
     public List<String> getText() {
@@ -256,6 +269,7 @@ public class Sonnet extends Auditable<User> {
         if (!super.equals(o)) return false;
         Sonnet sonnet = (Sonnet) o;
         return confirmed == sonnet.confirmed &&
+                pendingRevision == sonnet.pendingRevision &&
                 Objects.equals(id, sonnet.id) &&
                 Objects.equals(firstName, sonnet.firstName) &&
                 Objects.equals(lastName, sonnet.lastName) &&
@@ -272,8 +286,7 @@ public class Sonnet extends Auditable<User> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, firstName, lastName, title, numOfLines, period, publicationYear,
-                publicationStmt, sourceDesc, confirmed, confirmedBy, confirmedAt, text);
+        return Objects.hash(super.hashCode(), id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt, sourceDesc, confirmed, pendingRevision, confirmedBy, confirmedAt, text);
     }
 
     @Override
@@ -289,14 +302,10 @@ public class Sonnet extends Auditable<User> {
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", confirmed=" + confirmed +
-                ", confirmedBy=" + confirmedBy +
+                ", pendingRevision=" + pendingRevision +
+                ", confirmedBy='" + confirmedBy + '\'' +
                 ", confirmedAt=" + confirmedAt +
                 ", text=" + text +
-                ", createdBy=" + createdBy +
-                ", creationDate=" + creationDate +
-                ", lastModifiedBy=" + lastModifiedBy +
-                ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }
-
 }

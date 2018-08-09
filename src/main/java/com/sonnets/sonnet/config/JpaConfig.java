@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.config;
 
-import com.sonnets.sonnet.persistence.models.User;
+import com.sonnets.sonnet.security.AuditorAwareImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +19,8 @@ import javax.persistence.EntityManager;
  * @author Josh Harkema
  */
 @Configuration
-@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableJpaRepositories("com.sonnets.sonnet.persistence.repositories")
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableTransactionManagement
 public class JpaConfig {
     private final EntityManager entityManager;
@@ -31,7 +31,7 @@ public class JpaConfig {
     }
 
     @Bean
-    public AuditorAware<User> auditorAware() {
+    public AuditorAware<String> auditorAware() {
         return new AuditorAwareImpl();
     }
 

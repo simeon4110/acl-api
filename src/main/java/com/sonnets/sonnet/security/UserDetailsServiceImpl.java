@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.security;
 
+import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.EmailChangeDto;
 import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
 import com.sonnets.sonnet.persistence.models.Privilege;
@@ -19,11 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.security.SecureRandom;
+import java.util.*;
 
 /**
  * Interfaces with spring security to extend the stock UserDetailsService. Allows custom login page.
@@ -41,6 +39,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private static final String USER_PRIVILEGE = "USER";
     private static final String ADMIN_PRIVILEGE = "ADMIN";
     private static final int ENCODER_STRENGTH = 11;
+    private static final Random RANDOM = new SecureRandom();
+    private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final int PASSWORD_LENGTH = 12;
 
     @Autowired
     public UserDetailsServiceImpl(UserRepository userRepository, PrivilegeRepository privilegeRepository,
@@ -51,14 +52,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.emailService = emailService;
     }
 
-    public User loadUserById(String id) {
-        long parseLong = Long.parseLong(id);
-        if (userRepository.findById(parseLong).isPresent()) {
-            return userRepository.findById(parseLong).get();
-        } else {
-            return null;
+    private static String generatePassword() {
+        StringBuilder sb = new StringBuilder(PASSWORD_LENGTH);
+        for (int i = 0; i < PASSWORD_LENGTH; i++) {
+            sb.append(ALPHABET.charAt(RANDOM.nextInt(ALPHABET.length())));
         }
 
+        return sb.toString();
     }
 
     @Override
@@ -182,49 +182,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * Allows admins to add a new user.
-     *
-     * @param username  the new user's desired username.
-     * @param password  a new password.
-     * @param password1 validate new password.
-     * @param isAdmin   True = admin privileges.
-     * @return CONFLICT if username in use; NOT_ACCEPTABLE if passwords don't match; OK if successful.
-     */
-    public ResponseEntity<Void> adminAddUser(final String username, final String email, final String password,
-                                             final String password1, final boolean isAdmin) {
-        LOGGER.debug("Adding new Rest user with username: " + username);
-
-        // Return conflict if username already exits.
-        if (userRepository.findByUsername(username) != null) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-        // Return not acceptable if passwords don't match.
-        if (!Objects.equals(password, password1)) {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        // Create and save a new user, return status OK.
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setAddedAt(new Timestamp(System.currentTimeMillis()));
-        Set<Privilege> privileges = new HashSet<>();
-        privileges.add(privilegeRepository.findByName(USER_PRIVILEGE));
-        user.setAdmin(false);
-        if (isAdmin) {
-            privileges.add(privilegeRepository.findByName(ADMIN_PRIVILEGE));
-            user.setAdmin(true);
-        }
-        user.setPrivileges(privileges);
+    public void save(User user) {
         userRepository.saveAndFlush(user);
-
-        // Send account details to new user.
-        sendEmailInvite(user.getEmail(), username, password);
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -279,5 +238,48 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String subject = "ACL Database User Account";
 
         emailService.sendSimpleMessage(to, subject, message);
+    }
+
+    /**
+     * Allows admins to add a new user.
+     *
+     * @param adminUserAddDto a valid userAddDto object.
+     * @return CONFLICT if username in use; NOT_ACCEPTABLE if passwords don't match; OK if successful.
+     */
+    public ResponseEntity<Void> adminAddUser(AdminUserAddDto adminUserAddDto) {
+        LOGGER.debug("Adding new Rest user with username: " + adminUserAddDto.getUsername());
+        LOGGER.debug("UserAddDto: " + adminUserAddDto.toString());
+
+        // Return conflict if username already exits.
+        if (userRepository.findByUsername(adminUserAddDto.getUsername()) != null) {
+            LOGGER.error("User with username '" + adminUserAddDto.getUsername() + "' already exists.");
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        String password = generatePassword(); // gen a random password for the user.
+
+        // Create and save a new user, return status OK.
+        User user = new User();
+        user.setUsername(adminUserAddDto.getUsername());
+        user.setEmail(adminUserAddDto.getEmail());
+        user.setPassword(passwordEncoder.encode(password));
+        Set<Privilege> privileges = new HashSet<>();
+        privileges.add(privilegeRepository.findByName(USER_PRIVILEGE));
+        user.setAdmin(false);
+        if (adminUserAddDto.isAdmin()) {
+            privileges.add(privilegeRepository.findByName(ADMIN_PRIVILEGE));
+            user.setAdmin(true);
+        }
+        user.setPrivileges(privileges);
+        user.setRequiredSonnets(adminUserAddDto.getRequiredSonnets());
+        if (adminUserAddDto.getRequiredSonnets() > 0) {
+            user.setCanConfirm(false);
+        }
+        userRepository.saveAndFlush(user);
+
+        // Send account details to new user.
+        sendEmailInvite(user.getEmail(), adminUserAddDto.getUsername(), password);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

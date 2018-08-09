@@ -16,8 +16,9 @@ import java.util.List;
 public interface SonnetRepository extends JpaRepository<Sonnet, Long> {
     List<Sonnet> findAllByLastName(final String lastName);
 
-    List<Sonnet> findAllByAddedBy(final String addedBy);
+    Sonnet findFirstByConfirmedAndPendingRevision(final boolean confirmed, final boolean pendingRevision);
 
-    List<Sonnet> findAllByAddedByAndUpdatedAtBetween(final String addedBy, final Date after, final Date before);
+    List<Sonnet> findAllByCreatedBy(final String createdBy);
 
+    List<Sonnet> findAllByCreatedByAndConfirmedAtBetween(final String createdBy, final Date before, final Date after);
 }
