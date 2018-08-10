@@ -25,42 +25,42 @@ public class CorporaController {
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @GetMapping(value = "/secure/corpera/my_corpera", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getUserCorpera(Principal principal) {
         return corperaService.getUserCorpera(principal);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PostMapping(value = "/secure/corpera/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorperaDto corperaDto, Principal principal) {
         return corperaService.createCorpera(corperaDto, principal);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpera/add_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addSonnetToCorpera(@RequestBody @Valid CorperaSonnetDto modifySonnetsDto) {
         return corperaService.addSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpera/remove_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> removeSonnetFromCorpera(@RequestBody @Valid CorperaSonnetDto modifySonnetsDto) {
         return corperaService.removeSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpera/change_name", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> ModifyCorperaDetails(@RequestBody @Valid CorperaModifyDto modifyDto) {
         return corperaService.modify(modifyDto.getCorperaId(), modifyDto.getName(), modifyDto.getDescription());
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.DELETE)
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @DeleteMapping(value = "/secure/corpera/delete/{id}")
     public ResponseEntity<Void> deleteCorpus(@PathVariable("id") String id) {
         return corperaService.delete(id);

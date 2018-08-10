@@ -248,9 +248,16 @@ public class SonnetDetailsService {
         }
     }
 
-    public Sonnet getSonnetToConfirm() {
-        LOGGER.debug("Returning first unconfirmed sonnet in pile.");
-        return sonnetRepository.findFirstByConfirmedAndPendingRevision(false, false);
+    public Sonnet getSonnetToConfirm(Principal principal) {
+        LOGGER.debug("Returning first unconfirmed sonnet in pile not submitted by: " + principal.getName());
+        List<Sonnet> sonnets =
+                sonnetRepository.findAllByConfirmedAndPendingRevision(false, false);
+        for (Sonnet s : sonnets) {
+            if (!Objects.equals(s.getCreatedBy(), principal.getName())) {
+                return s;
+            }
+        }
+        return null;
     }
 
     private Sonnet getSonnetOrError(String id) {

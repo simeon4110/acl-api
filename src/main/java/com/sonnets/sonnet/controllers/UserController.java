@@ -113,6 +113,12 @@ public class UserController {
         return userDetailsService.adminAddUser(userAddDto);
     }
 
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PostMapping(value = "/secure/user/guest_registration", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addGuest(@RequestBody @Valid GuestUserAddDto guestUserAddDto) {
+        return userDetailsService.guestUserAdd(guestUserAddDto);
+    }
+
     /**
      * Returns a specific user's details.
      *
@@ -121,7 +127,7 @@ public class UserController {
      * @return the user object.
      */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @GetMapping(value = "/secure/user/details/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public User userGetOwnDetails(@PathVariable String username, Principal principal) {
         return userDetailsService.loadUserObjectByUsernameMatchUsername(username, principal);
@@ -135,7 +141,7 @@ public class UserController {
      * @return http.ok if the request is good.
      */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PutMapping(value = "/secure/user/password", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordChangeDto passwordChangeDto,
                                               Principal principal) {
@@ -150,7 +156,7 @@ public class UserController {
      * @return http.ok if the request is good.
      */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PutMapping(value = "/secure/user/email", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> changeEmail(@RequestBody @Valid EmailChangeDto emailChangeDto,
                                             Principal principal) {
