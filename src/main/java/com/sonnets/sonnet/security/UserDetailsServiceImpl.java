@@ -2,6 +2,7 @@ package com.sonnets.sonnet.security;
 
 import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.EmailChangeDto;
+import com.sonnets.sonnet.persistence.dtos.user.GuestUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
 import com.sonnets.sonnet.persistence.models.Privilege;
 import com.sonnets.sonnet.persistence.models.User;
@@ -38,6 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private static final String USER_PRIVILEGE = "USER";
     private static final String ADMIN_PRIVILEGE = "ADMIN";
+    private static final String GUEST_PRIVILEGE = "GUEST";
     private static final int ENCODER_STRENGTH = 11;
     private static final Random RANDOM = new SecureRandom();
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -281,5 +283,34 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         sendEmailInvite(user.getEmail(), adminUserAddDto.getUsername(), password);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public ResponseEntity<Void> guestUserAdd(GuestUserAddDto guestUserAddDto) {
+        LOGGER.debug("Adding new guest user with username: " + guestUserAddDto.getUsername());
+        LOGGER.debug("GuestUserAddDto: " + guestUserAddDto.toString());
+
+        // Return conflict if username in use.
+        if (userRepository.findByUsername(guestUserAddDto.getUsername()) != null) {
+            LOGGER.error("User with username '" + guestUserAddDto.getUsername() + "' already exists");
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        if (Objects.equals(guestUserAddDto.getPassword(), guestUserAddDto.getPassword1())) {
+            User user = new User();
+            user.setUsername(guestUserAddDto.getUsername());
+            user.setEmail(guestUserAddDto.getEmail());
+            user.setPassword(passwordEncoder.encode(guestUserAddDto.getPassword()));
+            Set<Privilege> privileges = new HashSet<>();
+            privileges.add(privilegeRepository.findByName(GUEST_PRIVILEGE));
+            user.setPrivileges(privileges);
+            user.setAdmin(false);
+            user.setRequiredSonnets(0);
+            user.setCanConfirm(false);
+
+            userRepository.saveAndFlush(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

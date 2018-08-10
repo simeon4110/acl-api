@@ -18,6 +18,8 @@ public interface SonnetRepository extends JpaRepository<Sonnet, Long> {
 
     Sonnet findFirstByConfirmedAndPendingRevision(final boolean confirmed, final boolean pendingRevision);
 
+    List<Sonnet> findAllByConfirmedAndPendingRevision(final boolean confirmed, final boolean pendingRevision);
+
     List<Sonnet> findAllByCreatedBy(final String createdBy);
 
     List<Sonnet> findAllByCreatedByAndConfirmedAtBetween(final String createdBy, final Date before, final Date after);

@@ -209,14 +209,14 @@ public class SonnetController {
     //####################### These are all corpora related endpoints. #########################//
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @GetMapping(value = "/secure/corpera/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Sonnet> getAllCorperaSonnets(@PathVariable("id") String id) {
         return corperaService.getCorperaSonnets(id);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @GetMapping(value = "/secure/corpera/get_paged/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<Sonnet> getAllCorperaSonnetsPaged(@PathVariable("id") String id, Pageable pageable) {
         return corperaService.getCorperaSonnetsPaged(id, pageable);
@@ -241,8 +241,8 @@ public class SonnetController {
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/sonnet/confirm_get", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Sonnet getSonnetToConfirm() {
-        return sonnetDetailsService.getSonnetToConfirm();
+    public Sonnet getSonnetToConfirm(Principal principal) {
+        return sonnetDetailsService.getSonnetToConfirm(principal);
     }
 
     //####################### These are all file return endpoints. #############################//
