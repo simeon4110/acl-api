@@ -47,6 +47,18 @@ public class SonnetController {
     }
 
     /**
+     * Returns a specific sonnet.
+     *
+     * @param id the id to get.
+     * @return a sonnet as JSON.
+     */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @GetMapping(value = "/sonnets/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Sonnet getSonnetById(@PathVariable("id") String id) {
+        return sonnetDetailsService.getSonnetByID(id);
+    }
+
+    /**
      * PUBLIC.
      *
      * @return all sonnets as JSON.
