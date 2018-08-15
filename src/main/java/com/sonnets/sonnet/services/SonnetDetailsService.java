@@ -134,6 +134,7 @@ public class SonnetDetailsService {
     }
 
     public Sonnet getSonnetByID(String id) {
+        LOGGER.debug("Getting sonnet id: " + id);
         Sonnet sonnet = getSonnetOrError(id);
         if (sonnet != null) {
             return sonnet;

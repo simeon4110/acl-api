@@ -29,8 +29,11 @@ public class TokenEnhancerImpl implements TokenEnhancer {
         if (user.getPrivileges().contains(privilegeRepository.findByName("ADMIN"))) {
             String[] strings = new String[]{"ADMIN", "USER"};
             privileges.addAll(Arrays.asList(strings));
-        } else {
+        } else if (user.getPrivileges().contains(privilegeRepository.findByName("USER"))) {
             String[] strings = new String[]{"USER"};
+            privileges.addAll(Arrays.asList(strings));
+        } else {
+            String[] strings = new String[]{"GUEST"};
             privileges.addAll(Arrays.asList(strings));
         }
 
