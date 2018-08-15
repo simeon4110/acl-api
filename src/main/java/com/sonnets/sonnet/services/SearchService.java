@@ -17,10 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -89,7 +87,7 @@ public class SearchService {
 
         // Build and execute query.
         org.apache.lucene.search.Query query = buildQuery(firstName, lastName, title, period, text);
-        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
 
         // Manually set pageable offset. Getting this to work was a bloody nightmare.
         fullTextQuery.setFirstResult((int) pageable.getOffset());
@@ -98,8 +96,8 @@ public class SearchService {
         @SuppressWarnings("unchecked")
         List<Sonnet> results = fullTextQuery.getResultList();
 
-        LOGGER.debug("Found total records: " + ((FullTextQuery) fullTextQuery).getResultSize());
-        return new PageImpl<>(results, pageable, ((FullTextQuery) fullTextQuery).getResultSize());
+        LOGGER.debug("Found total records: " + fullTextQuery.getResultSize());
+        return new PageImpl<>(results, pageable, fullTextQuery.getResultSize());
     }
 
     /**
@@ -164,7 +162,6 @@ public class SearchService {
         return booleanClauses.build();
     }
 
-
     /**
      * This checks to see if a sonnet with similar data already exists in the database.
      *
@@ -200,30 +197,5 @@ public class SearchService {
                     + "With title: " + sonnet.getTitle()
                     + " Already exists.");
         }
-
     }
-
-    /**
-     * Executor to run pre-parsed lucene queries.
-     *
-     * @param query the query to execute.
-     * @return the query results as a list of Sonnets.
-     */
-    private List executeQuery(org.apache.lucene.search.Query query, FullTextEntityManager manager) {
-        Query fullTextQuery = manager.createFullTextQuery(query, Sonnet.class);
-        long total = fullTextQuery.getResultList().size();
-
-        List results;
-
-        try {
-            results = fullTextQuery.getResultList();
-            LOGGER.debug("Found matching sonnets: " + total);
-            return results;
-        } catch (NoResultException e) {
-            LOGGER.error(e);
-            return Collections.emptyList();
-        }
-
-    }
-
 }

@@ -55,7 +55,7 @@ public class SonnetDetailsService {
     public ResponseEntity<Void> addNewSonnet(SonnetDto newSonnet, Principal principal) {
         LOGGER.debug("Adding sonnet: " + "'" + newSonnet + "'");
         try {
-            if (sonnetRepository.findAll().size() > 0) {
+            if (!sonnetRepository.findAll().isEmpty()) {
                 searchService.similarExists(newSonnet);
             }
             Sonnet toAddSonnet = new Sonnet(newSonnet);
@@ -224,7 +224,7 @@ public class SonnetDetailsService {
         }
     }
 
-    public ResponseEntity<Void> rejectSonnet(RejectDto rejectDto, Principal principal) {
+    public ResponseEntity<Void> rejectSonnet(RejectDto rejectDto) {
         LOGGER.debug("Rejecting sonnet: " + rejectDto.getId());
         Sonnet sonnet = getSonnetOrError(rejectDto.getId());
 

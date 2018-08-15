@@ -33,7 +33,7 @@ public class MessageService {
         this.userDetailsService = userDetailsService;
     }
 
-    public void sendAdminMessage(MessageDto messageDto) {
+    void sendAdminMessage(MessageDto messageDto) {
         LOGGER.debug("Sending admin message: " + messageDto.toString());
         Message message = new Message();
 
@@ -52,23 +52,27 @@ public class MessageService {
         User userFrom = userDetailsService.loadUserObjectByUsername(messageDto.getUserFrom());
         User userTo = userDetailsService.loadUserObjectByUsername(messageDto.getUserTo());
 
-        if (userFrom != null && !Objects.equals(principal.getName(), userFrom.getUsername())) {
+        if (userFrom == null) {
+            throw new NullPointerException("User: '" + messageDto.getUserFrom() + "' does not exist.");
+        }
+
+        if (userTo == null) {
+            throw new NullPointerException("User: '" + messageDto.getUserTo() + "' does not exist.");
+        }
+
+        if (!Objects.equals(principal.getName(), userFrom.getUsername())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        if (userTo != null) {
-            message.setUserFrom(userFrom.getUsername());
-            message.setUserTo(userTo.getUsername());
-            message.setSubject(messageDto.getSubject());
-            message.setContent(messageDto.getContent());
-            message.setRead(false);
+        message.setUserFrom(userFrom.getUsername());
+        message.setUserTo(userTo.getUsername());
+        message.setSubject(messageDto.getSubject());
+        message.setContent(messageDto.getContent());
+        message.setRead(false);
 
-            messageRepository.saveAndFlush(message);
+        messageRepository.saveAndFlush(message);
 
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public ResponseEntity<Void> readMessage(Principal principal, Long id) {

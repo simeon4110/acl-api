@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.WordTools;
+package com.sonnets.sonnet.wordtools;
 
 import java.util.*;
 
@@ -7,18 +7,15 @@ import java.util.*;
  *
  * @author Josh Harkema
  */
-public abstract class KWIC {
-    public KWIC() {
-    }
-
+public interface KWIC {
     /**
      * @param text   the text to search.
      * @param word   the word to search for.
      * @param length the context length (each side)
      * @return a Map of the matches and context. The word is replaced with an '=' sign.
      */
-    public static List<Map.Entry<String, String>> searchByWord(final String text, final String word,
-                                                               final int length) {
+    static List<Map.Entry<String, String>> searchByWord(final String text, final String word,
+                                                        final int length) {
         ArrayList<String> tokens = new ArrayList<>(Arrays.asList(text.replace("\n", " ")
                 .split(" ")));
 
@@ -31,7 +28,7 @@ public abstract class KWIC {
             final int lastIndex = tokens.size();
 
             for (int i = 0; i < lastIndex - 1; i++) {
-                if (word.toLowerCase().equals(tokens.get(i).toLowerCase())) {
+                if (word.equalsIgnoreCase(tokens.get(i).toLowerCase())) {
                     for (int j = i + 1; j < lastIndex && j - i <= length; j++) {
                         rightContext.append(tokens.get(j));
                         rightContext.append(' ');
@@ -48,11 +45,8 @@ public abstract class KWIC {
                     pair.clear();
                 }
             }
-
             return contexts;
         }
-
         return Collections.emptyList();
     }
-
 }

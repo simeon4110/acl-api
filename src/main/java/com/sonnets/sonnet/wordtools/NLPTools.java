@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.WordTools;
+package com.sonnets.sonnet.wordtools;
 
 import com.sonnets.sonnet.persistence.dtos.TextDto;
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -42,18 +42,18 @@ public class NLPTools {
             "other", "aren", "where", "this", "it's", "'s", "--", "'", "``", "''", "one", "would", "could", "may",
             "every", "make", "upon", "thy", "have", "doth", "ah", "thou"
     );
-    private static StanfordCoreNLP pipeline; // For complex analysis.
+    private static StanfordCoreNLP pipeline = new StanfordCoreNLP(setProperties()); // For complex analysis.
     private static NLPTools ourInstance = new NLPTools();
-
-    private NLPTools() {
-        Properties properties = new Properties();
-        properties.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
-        properties.setProperty("coref.algorithm", "neural");
-        pipeline = new StanfordCoreNLP(properties);
-    }
 
     public static NLPTools getInstance() {
         return ourInstance;
+    }
+
+    private static Properties setProperties() {
+        Properties localProperties = new Properties();
+        localProperties.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
+        localProperties.setProperty("coref.algorithm", "neural");
+        return localProperties;
     }
 
     /**
@@ -97,11 +97,14 @@ public class NLPTools {
             for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
                 if (annotationType.equals(AnnotationType.PART_OF_SPEECH)) {
                     sentArr.add(token.get(CoreAnnotations.PartOfSpeechAnnotation.class));
-                } else if (annotationType.equals(AnnotationType.LEMMA)) {
+                }
+                if (annotationType.equals(AnnotationType.LEMMA)) {
                     sentArr.add(token.get(CoreAnnotations.LemmaAnnotation.class));
-                } else if (annotationType.equals(AnnotationType.NAMED_ENTITY)) {
+                }
+                if (annotationType.equals(AnnotationType.NAMED_ENTITY)) {
                     sentArr.add(token.get(CoreAnnotations.NamedEntityTagAnnotation.class));
-                } else if (annotationType.equals(AnnotationType.SENTIMENT)) {
+                }
+                if (annotationType.equals(AnnotationType.SENTIMENT)) {
                     sentArr.add(token.get(SentimentCoreAnnotations.SentimentClass.class));
                 }
             }

@@ -21,10 +21,11 @@ public class Corpera {
     private String name;
     @Column
     private String description;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<Sonnet> sonnets;
 
     public Corpera() {
+        // Default constructor for spring data.
     }
 
     public Long getId() {

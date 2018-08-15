@@ -26,6 +26,7 @@ public class Message extends Auditable<String> {
     private boolean isRead;
 
     public Message() {
+        // Default constructor for spring data.
     }
 
     public Long getId() {

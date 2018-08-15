@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.WordTools;
+package com.sonnets.sonnet.wordtools;
 
 import java.util.*;
 

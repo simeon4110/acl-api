@@ -5,7 +5,7 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>0.8.0-TEST</version>
+    <version>1.0.0-TEST</version>
     <packaging>war</packaging>
     <name>Sonnet</name>
     <description>The Augmented Criticism Lab's digital sonnet database.</description>

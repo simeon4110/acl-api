@@ -106,7 +106,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param passwordChangeDto the PasswordChangeDto with the form data.
      * @return OK if good; NOT_ACCEPTABLE if bad.
      */
-    public ResponseEntity<Void> userUpdatePassword(final Principal principal, final PasswordChangeDto passwordChangeDto) {
+    public ResponseEntity<Void> userUpdatePassword(final Principal principal,
+                                                   final PasswordChangeDto passwordChangeDto) {
         LOGGER.debug("Changing password: " + passwordChangeDto.toString());
         User user = userRepository.findByUsername(principal.getName());
 

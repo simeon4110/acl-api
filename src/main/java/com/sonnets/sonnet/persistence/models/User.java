@@ -39,6 +39,7 @@ public class User extends Auditable<String> implements Serializable {
     private Set<Privilege> privileges;
 
     public User() {
+        // Default constructor for spring data.
     }
 
     public Long getId() {

@@ -1,9 +1,9 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.WordTools.FrequencyDistribution;
-import com.sonnets.sonnet.WordTools.KWIC;
-import com.sonnets.sonnet.WordTools.NLPTools;
 import com.sonnets.sonnet.persistence.dtos.TextDto;
+import com.sonnets.sonnet.wordtools.FrequencyDistribution;
+import com.sonnets.sonnet.wordtools.KWIC;
+import com.sonnets.sonnet.wordtools.NLPTools;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

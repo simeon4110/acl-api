@@ -286,7 +286,8 @@ public class Sonnet extends Auditable<String> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, firstName, lastName, title, numOfLines, period, publicationYear, publicationStmt, sourceDesc, confirmed, pendingRevision, confirmedBy, confirmedAt, text);
+        return Objects.hash(super.hashCode(), id, firstName, lastName, title, numOfLines, period, publicationYear,
+                publicationStmt, sourceDesc, confirmed, pendingRevision, confirmedBy, confirmedAt, text);
     }
 
     @Override

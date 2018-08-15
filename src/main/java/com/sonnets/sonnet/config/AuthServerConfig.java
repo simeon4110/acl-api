@@ -45,10 +45,11 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     private Resource schemaScript;
     private PasswordEncoder encoder;
     private CorsConfigurationSource corsConfigurationSource;
+    private static final int VALIDITY_SECONDS = 1209600; // Two weeks
 
     @Autowired
-    public AuthServerConfig(AuthenticationManager authenticationManager, DataSource dataSourceApi, PasswordEncoder encoder,
-                            CorsConfigurationSource corsConfigurationSource) {
+    public AuthServerConfig(AuthenticationManager authenticationManager, DataSource dataSourceApi,
+                            PasswordEncoder encoder, CorsConfigurationSource corsConfigurationSource) {
         this.authenticationManager = authenticationManager;
         this.dataSourceApi = dataSourceApi;
         this.encoder = encoder;
@@ -84,9 +85,10 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .secret(secret)
                 .authorizedGrantTypes("password", "authorization_code", "refresh_token")
                 .scopes("read")
-                .accessTokenValiditySeconds(1209600); // Set expiry to two weeks.
+                .accessTokenValiditySeconds(VALIDITY_SECONDS); // Set expiry to two weeks.
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
