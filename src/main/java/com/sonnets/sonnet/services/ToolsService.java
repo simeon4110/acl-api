@@ -1,6 +1,10 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.TextDto;
+import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
 import com.sonnets.sonnet.wordtools.KWIC;
 import com.sonnets.sonnet.wordtools.NLPTools;
@@ -20,31 +24,31 @@ import java.util.Map;
 public class ToolsService {
     private static final Logger LOGGER = Logger.getLogger(ToolsService.class);
     private static final NLPTools pipeline = NLPTools.getInstance();
-    private final SonnetDetailsService sonnetDetailsService;
+    private final ItemService itemService;
 
     @Autowired
-    public ToolsService(SonnetDetailsService sonnetDetailsService) {
-        this.sonnetDetailsService = sonnetDetailsService;
+    public ToolsService(ItemService itemService) {
+        this.itemService = itemService;
     }
 
     /**
-     * @param ids    the sonnets to run kwic on.
+     * @param ids    the items to run kwic on.
      * @param word   the word to look for.
      * @param length the number of words on either side to return.
      * @return a kwic map.
      */
-    public List<Map.Entry<String, String>> kwicSonnets(String[] ids, String word, int length) {
-        LOGGER.debug("Running sonnet KWIC.");
-        return KWIC.searchByWord(sonnetStripper(ids), word, length);
+    public List<Map.Entry<String, String>> kwic(String[] ids, String word, int length) {
+        LOGGER.debug("Running KWIC.");
+        return KWIC.searchByWord(itemStripper(ids), word, length);
     }
 
     /**
-     * @param ids the sonnets to lemmatize.
+     * @param ids the items to lemmatize.
      * @return a list of lemmatized words.
      */
-    public List<String> lemmatizeSonnets(String[] ids) {
-        LOGGER.debug("Running sonnet lemmatizer.");
-        String text = sonnetStripper(ids);
+    public List<String> lemmatizeItems(String[] ids) {
+        LOGGER.debug("Running item lemmatizer.");
+        String text = itemStripper(ids);
         TextDto textDto = new TextDto();
         textDto.setText(text);
         return pipeline.getListOfLemmatizedWords(textDto);
@@ -74,23 +78,35 @@ public class ToolsService {
      */
     public Map<String, Integer> frequencyDistribution(String[] ids) {
         TextDto textDto = new TextDto();
-        textDto.setText(sonnetStripper(ids));
+        textDto.setText(itemStripper(ids));
         List<String> strings = pipeline.getListOfLemmatizedWords(textDto);
         return FrequencyDistribution.getFrequency(strings);
     }
 
     /**
-     * @param ids the ids of the sonnets to strip down to text.
-     * @return the sonnets stripped down to their text.
+     * @param ids the ids of the items to strip down to text.
+     * @return the items stripped down to their text.
      */
-    private String sonnetStripper(String[] ids) {
-        StringBuilder sonnetText = new StringBuilder();
+    private String itemStripper(String[] ids) {
+        StringBuilder text = new StringBuilder();
         for (String id : ids) {
-            for (String text : sonnetDetailsService.getSonnetByID(id).getText()) {
-                sonnetText.append(text);
-                sonnetText.append(' ');
+            Item item = itemService.getItemById(id);
+            switch (item.getCategory()) {
+                case POETRY:
+                    Poem poem = (Poem) item;
+                    for (String s : poem.getText()) {
+                        text.append(s);
+                        text.append(' ');
+                    }
+                    break;
+                case PROSE:
+                    Book book = (Book) item;
+                    for (Section section : book.getSections()) {
+                        text.append(section.getText());
+                    }
+                    break;
             }
         }
-        return sonnetText.toString();
+        return text.toString();
     }
 }

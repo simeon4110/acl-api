@@ -1,6 +1,5 @@
 package com.sonnets.sonnet;
 
-import com.sonnets.sonnet.persistence.models.Sonnet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -11,7 +10,9 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  * @author Josh Harkema
  */
 @SpringBootApplication
-@EntityScan(basePackageClasses = Sonnet.class)
+@EntityScan(basePackages = {"com.sonnets.sonnet.persistence.models",
+        "com.sonnets.sonnet.persistence.models.base", "com.sonnets.sonnet.persistence.models.poetry",
+        "com.sonnets.sonnet.persistence.models.prose", "com.sonnets.sonnet.persistence.models.web"})
 public class SonnetApplication extends SpringBootServletInitializer {
 
     @Override

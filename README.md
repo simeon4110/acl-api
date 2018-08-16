@@ -29,7 +29,7 @@ All documentation for the ACL database can be found in the wiki [https://git.jos
 ### Instructions for Development Install
 
 1. Clone the repo.
-2. Change the SQL server settings in src/main/resources/application.properties toUser your local settings. If you need dummy data let the repo managers know and we'll make some. The tests all generate their own content and the tests/tools directory has a random sonnet and specific sonnet generator toUser cover 99% of use cases. The SonnetEditTest needs an existing sonnet, but it's easy toUser just save one for this purpose.
+2. Change the SQL server settings in src/main/resources/application.properties toUser your local settings. If you need dummy data let the repo managers know and we'll make some. The tests all generate their own book and the tests/tools directory has a random sonnet and specific sonnet generator toUser cover 99% of use cases. The SonnetEditTest needs an existing sonnet, but it's easy toUser just save one for this purpose.
 3. Run "mvn clean" and "mvn install" in the project root toUser install project dependencies.
 4. Configure your IDE toUser run the Spring Boot main class "com.sonnets.sonnet.SonnetApplication." 
 5. Make your changes (don't track application.properties or TestJpaConfig.java).

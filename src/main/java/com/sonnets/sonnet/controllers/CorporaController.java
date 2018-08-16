@@ -1,9 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.corpera.CorperaDto;
-import com.sonnets.sonnet.persistence.dtos.corpera.CorperaModifyDto;
-import com.sonnets.sonnet.persistence.dtos.corpera.CorperaSonnetDto;
-import com.sonnets.sonnet.services.CorperaService;
+import com.sonnets.sonnet.persistence.dtos.CorporaDto;
+import com.sonnets.sonnet.services.CorporaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,52 +15,52 @@ import java.util.List;
 @RestController
 public class CorporaController {
     private static final String ALLOWED_ORIGIN = "*";
-    private final CorperaService corperaService;
+    private final CorporaService corporaService;
 
     @Autowired
-    public CorporaController(CorperaService corperaService) {
-        this.corperaService = corperaService;
+    public CorporaController(CorporaService corporaService) {
+        this.corporaService = corporaService;
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @GetMapping(value = "/secure/corpera/my_corpera", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getUserCorpera(Principal principal) {
-        return corperaService.getUserCorpera(principal);
+        return corporaService.getUserCorpera(principal);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PostMapping(value = "/secure/corpera/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorperaDto corperaDto, Principal principal) {
-        return corperaService.createCorpera(corperaDto, principal);
+    public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorporaDto corporaDto, Principal principal) {
+        return corporaService.createCorpera(corporaDto);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpera/add_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addSonnetToCorpera(@RequestBody @Valid CorperaSonnetDto modifySonnetsDto) {
-        return corperaService.addSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
+    public ResponseEntity<Void> addItemsToCorpera(@RequestBody @Valid CorporaDto dto) {
+        return corporaService.addItems(dto.getId(), dto.getSonnetIds());
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpera/remove_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> removeSonnetFromCorpera(@RequestBody @Valid CorperaSonnetDto modifySonnetsDto) {
-        return corperaService.removeSonnets(modifySonnetsDto.getCorperaId(), modifySonnetsDto.getSonnetId());
+    public ResponseEntity<Void> removeItemsFromCorpera(@RequestBody @Valid CorporaDto dto) {
+        return corporaService.removeItems(dto.getId(), dto.getSonnetIds());
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpera/change_name", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modifyCorperaDetails(@RequestBody @Valid CorperaModifyDto modifyDto) {
-        return corperaService.modify(modifyDto.getCorperaId(), modifyDto.getName(), modifyDto.getDescription());
+    public ResponseEntity<Void> modifyCorperaDetails(@RequestBody @Valid CorporaDto dto) {
+        return corporaService.modify(dto.getId(), dto.getName(), dto.getDescription());
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @DeleteMapping(value = "/secure/corpera/delete/{id}")
     public ResponseEntity<Void> deleteCorpus(@PathVariable("id") String id) {
-        return corperaService.delete(id);
+        return corporaService.delete(id);
     }
 }

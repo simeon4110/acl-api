@@ -1,41 +1,41 @@
 package com.sonnets.sonnet.tools;
 
-import com.sonnets.sonnet.persistence.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 
 /**
- * Here are the sonnet file type tools. Tool class, cannot instantiate.
+ * Here are the poem file type tools. Tool class, cannot instantiate.
  *
  * @author Josh Harkema
  */
-public abstract class SonnetConverter {
-    private static final Logger LOGGER = Logger.getLogger(SonnetConverter.class);
+public abstract class PoemConverter {
+    private static final Logger LOGGER = Logger.getLogger(PoemConverter.class);
     private static final String SEPARATOR = ", ";
 
-    private SonnetConverter() {
+    private PoemConverter() {
     }
 
     /**
-     * Converts a Sonnet object into an XML string.
+     * Converts a Poem object into an XML string.
      *
-     * @param sonnet a Sonnet object.
+     * @param poem a Poem object.
      * @return and XML string.
      */
-    public static String sonnetToXML(Sonnet sonnet) {
+    public static String poemToXML(Poem poem) {
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        sb.append("\n<sonnet>");
-        sb.append("\n\t<title>").append(sonnet.getTitle()).append("</title>");
+        sb.append("\n<poem>");
+        sb.append("\n\t<title>").append(poem.getTitle()).append("</title>");
         sb.append("\n\t<author>");
-        sb.append("\n\t\t<firstName>").append(sonnet.getFirstName()).append("</firstName>");
-        sb.append("\n\t\t<lastName>").append(sonnet.getLastName()).append("</lastName>");
+        sb.append("\n\t\t<firstName>").append(poem.getAuthor().getFirstName()).append("</firstName>");
+        sb.append("\n\t\t<lastName>").append(poem.getAuthor().getLastName()).append("</lastName>");
         sb.append("\n\t</author>");
         sb.append("\n\t<text>");
         int lineNumber = 1;
 
-        for (String s : sonnet.getText()) {
+        for (String s : poem.getText()) {
             sb.append("\n\t\t<line").append(lineNumber)
                     .append(">").append(s.trim()).append("</line")
                     .append(lineNumber).append(">");
@@ -43,7 +43,7 @@ public abstract class SonnetConverter {
         }
 
         sb.append("\n\t</text>");
-        sb.append("\n</sonnet>");
+        sb.append("\n</poem>");
 
         LOGGER.debug("Raw XML:\n" + sb.toString());
 
@@ -51,16 +51,16 @@ public abstract class SonnetConverter {
     }
 
     /**
-     * Outputs a list of sonnets to a csv file.
+     * Outputs a list of poems to a csv file.
      *
-     * @param sonnets a list of sonnets.
-     * @return a string of csv separated sonnets (one sonnet per line).
+     * @param poems a list of poems.
+     * @return a string of csv separated poems (one poem per line).
      */
-    public static String sonnetsToCSV(List<Sonnet> sonnets) {
+    public static String poemsToCSV(List<Poem> poems) {
         StringBuilder sb = new StringBuilder();
 
-        for (Sonnet sonnet : sonnets) {
-            sb.append(writeSonnetToLine(sonnet));
+        for (Poem p : poems) {
+            sb.append(writePoemToLine(p));
         }
 
         LOGGER.debug("Raw CSV:\n" + sb.toString());
@@ -69,17 +69,18 @@ public abstract class SonnetConverter {
     }
 
     /**
-     * Writes a sonnet to a line in CSV format. Prints new line after each sonnet.
+     * Writes a poem to a line in CSV format. Prints new line after each poem.
      *
-     * @param sonnet the sonnet to write.
-     * @return a string of CSV separated sonnet values.
+     * @param poem the poem to write.
+     * @return a string of CSV separated poem values.
      */
-    private static String writeSonnetToLine(Sonnet sonnet) {
+    private static String writePoemToLine(Poem poem) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(sonnet.getLastName()).append(SEPARATOR).append(sonnet.getFirstName())
-                .append(SEPARATOR).append(sonnet.getTitle()).append(SEPARATOR);
-        for (String s : sonnet.getText()) {
+        sb.append(poem.getAuthor().getLastName()).append(SEPARATOR)
+                .append(poem.getAuthor().getFirstName())
+                .append(SEPARATOR).append(poem.getTitle()).append(SEPARATOR);
+        for (String s : poem.getText()) {
             sb.append("\"").append(s.trim()).append("\"").append(SEPARATOR);
         }
 
@@ -91,10 +92,10 @@ public abstract class SonnetConverter {
     /**
      * Converts to TEI format. Validated by Josh Harkema on May 21, 2018.
      *
-     * @param sonnet the sonnet to convert.
-     * @return a TEI formatted sonnet.
+     * @param poem the poem to convert.
+     * @return a TEI formatted poem.
      */
-    public static String sonnetToTEI(Sonnet sonnet) {
+    public static String poemToTEI(Poem poem) {
         StringBuilder sb = new StringBuilder();
 
         // TEI header data.
@@ -103,15 +104,16 @@ public abstract class SonnetConverter {
         sb.append("\n<teiHeader>");
         sb.append("\n\t<fileDesc>");
         sb.append("\n\t\t<titleStmt>");
-        sb.append("\n\t\t\t<title>").append(sonnet.getTitle()).append("</title>");
-        sb.append("\n\t\t\t<author>").append(sonnet.getFirstName()).append(" ").append(sonnet.getLastName())
+        sb.append("\n\t\t\t<title>").append(poem.getTitle()).append("</title>");
+        sb.append("\n\t\t\t<author>").append(poem.getAuthor().getFirstName())
+                .append(" ").append(poem.getAuthor().getLastName())
                 .append("</author>");
         sb.append("\n\t\t</titleStmt>");
         sb.append("\n\t\t<publicationStmt>");
-        sb.append("\n\t\t\t<p>").append(sonnet.getPublicationStmt()).append("</p>");
+        sb.append("\n\t\t\t<p>").append(poem.getPublicationStmt()).append("</p>");
         sb.append("\n\t\t</publicationStmt>");
         sb.append("\n\t\t<sourceDesc>");
-        sb.append("\n\t\t\t<p>").append(sonnet.getSourceDesc()).append("</p>");
+        sb.append("\n\t\t\t<p>").append(poem.getSourceDesc()).append("</p>");
         sb.append("\n\t\t</sourceDesc>");
         sb.append("\n\t</fileDesc>");
         sb.append("\n</teiHeader>");
@@ -119,7 +121,7 @@ public abstract class SonnetConverter {
         // TEI text data.
         sb.append("\n<text>");
         sb.append("\n\t<body>");
-        for (String s : sonnet.getText()) {
+        for (String s : poem.getText()) {
             sb.append("\n\t\t<p>").append(s.trim()).append("</p>");
         }
         sb.append("\n\t</body>");
@@ -134,13 +136,13 @@ public abstract class SonnetConverter {
     /**
      * Converts a list of Sonnets into plain text version of only the lines of poetry. No metadata.
      *
-     * @param sonnets the sonnets to convert.
-     * @return a string with all the sonnets.
+     * @param poems the poems to convert.
+     * @return a string with all the poems.
      */
-    public static String sonnetsToText(List<Sonnet> sonnets) {
+    public static String poemsToText(List<Poem> poems) {
         StringBuilder sb = new StringBuilder();
-        for (Sonnet sonnet : sonnets) {
-            for (String s : sonnet.getText()) {
+        for (Poem p : poems) {
+            for (String s : p.getText()) {
                 sb.append(s.trim()).append("\n");
             }
         }

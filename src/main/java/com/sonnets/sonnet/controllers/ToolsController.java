@@ -33,10 +33,10 @@ public class ToolsController {
      */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/tools/sonnet/kwic/{ids}/{word}/{length}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map.Entry<String, String>> getKwicSonnet(@PathVariable("ids") String[] ids,
-                                                         @PathVariable("word") String word,
-                                                         @PathVariable("length") int length) {
-        return toolsService.kwicSonnets(ids, word, length);
+    public List<Map.Entry<String, String>> getKwic(@PathVariable("ids") String[] ids,
+                                                   @PathVariable("word") String word,
+                                                   @PathVariable("length") int length) {
+        return toolsService.kwic(ids, word, length);
     }
 
     /**
@@ -48,7 +48,7 @@ public class ToolsController {
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/tools/sonnet/lemmatize/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> lemmatizeSonnets(@PathVariable("ids") String[] ids) {
-        return toolsService.lemmatizeSonnets(ids);
+        return toolsService.lemmatizeItems(ids);
     }
 
     /**

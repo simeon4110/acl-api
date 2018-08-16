@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.security;
 
-import com.sonnets.sonnet.persistence.models.User;
+import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;

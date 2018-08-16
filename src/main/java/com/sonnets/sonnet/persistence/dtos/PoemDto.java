@@ -1,28 +1,23 @@
-package com.sonnets.sonnet.persistence.dtos.sonnet;
+package com.sonnets.sonnet.persistence.dtos;
+
+import com.sonnets.sonnet.persistence.models.poetry.Poem;
 
 import javax.validation.constraints.NotEmpty;
 
-
-/**
- * DTO POJO handles input from controller. Only very basic input validation is done here. Bootstrap has front end,
- * implementation, but much more is needed.
- *
- * @author Josh Harkema
- */
-public class SonnetDto {
+public class PoemDto {
     private Long id;
     @NotEmpty
-    private String firstName;
-    @NotEmpty
-    private String lastName;
+    private String authorId;
     private String title;
-    @NotEmpty
-    private String period;
-    private int publicationYear;
+    private Integer publicationYear;
     @NotEmpty
     private String publicationStmt;
     @NotEmpty
     private String sourceDesc;
+    @NotEmpty
+    private String period;
+    @NotEmpty
+    private Poem.Form form;
     @NotEmpty
     private String text;
 
@@ -34,44 +29,28 @@ public class SonnetDto {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getAuthorId() {
+        return authorId;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getPeriod() {
-        return period;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setPeriod(String period) {
-        this.period = period;
-    }
-
-    public int getPublicationYear() {
+    public Integer getPublicationYear() {
         return publicationYear;
     }
 
-    public void setPublicationYear(int publicationYear) {
+    public void setPublicationYear(Integer publicationYear) {
         this.publicationYear = publicationYear;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getPublicationStmt() {
@@ -90,6 +69,22 @@ public class SonnetDto {
         this.sourceDesc = sourceDesc;
     }
 
+    public String getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(String period) {
+        this.period = period;
+    }
+
+    public Poem.Form getForm() {
+        return form;
+    }
+
+    public void setForm(Poem.Form form) {
+        this.form = form;
+    }
+
     public String getText() {
         return text;
     }
@@ -100,14 +95,15 @@ public class SonnetDto {
 
     @Override
     public String toString() {
-        return "SonnetDto{" +
+        return "PoemDto{" +
                 "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                ", authorId=" + authorId +
                 ", title='" + title + '\'' +
-                ", publicationYear='" + publicationYear + '\'' +
+                ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
+                ", period='" + period + '\'' +
+                ", form=" + form +
                 ", text='" + text + '\'' +
                 '}';
     }

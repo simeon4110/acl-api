@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories;
 
-import com.sonnets.sonnet.persistence.models.Privilege;
+import com.sonnets.sonnet.persistence.models.web.Privilege;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

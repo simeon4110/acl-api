@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.ContactDto;
-import com.sonnets.sonnet.persistence.models.MailingList;
+import com.sonnets.sonnet.persistence.models.web.MailingList;
 import com.sonnets.sonnet.persistence.repositories.MailingListRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

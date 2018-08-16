@@ -1,4 +1,6 @@
-package com.sonnets.sonnet.persistence.models;
+package com.sonnets.sonnet.persistence.models.web;
+
+import com.sonnets.sonnet.persistence.models.base.Auditable;
 
 import javax.persistence.*;
 import java.util.Objects;

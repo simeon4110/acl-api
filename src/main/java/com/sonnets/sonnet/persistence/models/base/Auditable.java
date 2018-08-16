@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.models;
+package com.sonnets.sonnet.persistence.models.base;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;

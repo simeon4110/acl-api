@@ -1,10 +1,8 @@
 package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.user.*;
-import com.sonnets.sonnet.persistence.models.Sonnet;
-import com.sonnets.sonnet.persistence.models.User;
+import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
-import com.sonnets.sonnet.services.SonnetDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +22,10 @@ import java.util.List;
 public class UserController {
     private static final String ALLOWED_ORIGIN = "*";
     private final UserDetailsServiceImpl userDetailsService;
-    private final SonnetDetailsService sonnetDetailsService;
 
     @Autowired
-    public UserController(UserDetailsServiceImpl userDetailsService,
-                          SonnetDetailsService sonnetDetailsService) {
+    public UserController(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.sonnetDetailsService = sonnetDetailsService;
     }
 
     /**
@@ -69,21 +64,6 @@ public class UserController {
     public ResponseEntity<Void> modifyAdmin(@RequestBody @Valid AdminUserModifyDto modifyUserDto) {
         return userDetailsService.adminModifyUser(modifyUserDto.getUsername(), modifyUserDto.getEmail(),
                 modifyUserDto.isAdmin());
-    }
-
-    /**
-     * Handles AJAX post requests and returns the report data.
-     *
-     * @param reportDto a valid AdminReportDto parsed from the JSON request body.
-     * @return a JSON list of any results.
-     */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping(value = "/secure/reports/create", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Sonnet> generateReportAdmin(@RequestBody @Valid AdminReportDto reportDto) {
-        return sonnetDetailsService.getSonnetsByAddedByAndDate(reportDto.getUsername(), reportDto.getAfter(),
-                reportDto.getBefore());
     }
 
     /**

@@ -1,6 +1,7 @@
-package com.sonnets.sonnet.persistence.models;
+package com.sonnets.sonnet.persistence.models.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sonnets.sonnet.persistence.models.base.Auditable;
 
 import javax.persistence.*;
 import java.io.Serializable;
