@@ -38,8 +38,6 @@ public class AuthorService {
         author.setFirstName(authorDto.getFirstName());
         author.setMiddleName(authorDto.getMiddleName());
         author.setLastName(authorDto.getLastName());
-        author.setBirthDate(authorDto.getBirthDate());
-        author.setDeathDate(authorDto.getDeathDate());
 
         return author;
     }

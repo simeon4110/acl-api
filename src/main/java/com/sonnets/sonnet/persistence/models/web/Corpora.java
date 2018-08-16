@@ -22,18 +22,14 @@ import java.util.Objects;
 @Table(name = "corpora")
 @DiscriminatorValue("CORP")
 public class Corpora extends Item {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private static final long serialVersionUID = -3561569564692824043L;
     @Column
     private String name;
-    @Column
-    private String description;
     @ManyToAny(
             metaColumn = @Column(name = "item_type", length = 4)
     )
     @AnyMetaDef(
-            idType = "long", metaType = "string",
+            metaType = "string", idType = "long",
             metaValues = {
                     @MetaValue(targetEntity = Book.class, value = "BOOK"),
                     @MetaValue(targetEntity = Poem.class, value = "POEM"),
@@ -52,29 +48,12 @@ public class Corpora extends Item {
         // Default constructor for spring data.
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public List<Item> getItems() {
@@ -91,23 +70,19 @@ public class Corpora extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Corpora corpora = (Corpora) o;
-        return Objects.equals(id, corpora.id) &&
-                Objects.equals(name, corpora.name) &&
-                Objects.equals(description, corpora.description) &&
+        return Objects.equals(name, corpora.name) &&
                 Objects.equals(items, corpora.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, description, items);
+        return Objects.hash(super.hashCode(), name, items);
     }
 
     @Override
     public String toString() {
         return "Corpora{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                "name='" + name + '\'' +
                 ", items=" + items +
                 "} " + super.toString();
     }

@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
-import com.sonnets.sonnet.persistence.bridges.AnnotationBridge;
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -29,19 +28,19 @@ public class Section extends Book {
     @FieldBridge(impl = AuthorBridge.class)
     @ManyToOne
     private Author author;
-    @Field(name = "section_annotations", store = Store.YES, termVector = TermVector.YES)
-    @FieldBridge(impl = AnnotationBridge.class)
     @OneToMany
     private List<Annotation> annotations;
 
     public Section() {
-        // Default constructor for spring data.
+        super();
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
@@ -62,10 +61,12 @@ public class Section extends Book {
         this.text = text;
     }
 
+    @Override
     public Author getAuthor() {
         return author;
     }
 
+    @Override
     public void setAuthor(Author author) {
         this.author = author;
     }

@@ -92,18 +92,20 @@ public class ToolsService {
         for (String id : ids) {
             Item item = itemService.getItemById(id);
             switch (item.getCategory()) {
-                case POETRY:
+                case "POETRY":
                     Poem poem = (Poem) item;
                     for (String s : poem.getText()) {
                         text.append(s);
                         text.append(' ');
                     }
                     break;
-                case PROSE:
+                case "PROSE":
                     Book book = (Book) item;
                     for (Section section : book.getSections()) {
                         text.append(section.getText());
                     }
+                    break;
+                default:
                     break;
             }
         }

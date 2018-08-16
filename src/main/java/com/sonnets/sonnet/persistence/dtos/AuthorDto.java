@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.persistence.dtos;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Date;
 
 public class AuthorDto {
     private Long id;
@@ -9,9 +8,6 @@ public class AuthorDto {
     private String middleName;
     @NotEmpty
     private String lastName;
-
-    private Date birthDate;
-    private Date deathDate;
 
     public Long getId() {
         return id;
@@ -45,22 +41,6 @@ public class AuthorDto {
         this.lastName = lastName;
     }
 
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public Date getDeathDate() {
-        return deathDate;
-    }
-
-    public void setDeathDate(Date deathDate) {
-        this.deathDate = deathDate;
-    }
-
     @Override
     public String toString() {
         return "AuthorDto{" +
@@ -68,8 +48,6 @@ public class AuthorDto {
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", birthDate=" + birthDate +
-                ", deathDate=" + deathDate +
                 '}';
     }
 }

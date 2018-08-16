@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Indexed
 @MappedSuperclass
 public abstract class Item extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -5596854181341354264L;
@@ -15,26 +14,32 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     private Long id;
+    @IndexedEmbedded
     @Field(name = "category", store = Store.YES, analyze = Analyze.NO)
     @Column
-    private Category category;
-    @Field(name = "author", store = Store.YES, termVector = TermVector.YES)
+    private String category;
+    @IndexedEmbedded
+    @Field(name = "author")
     @FieldBridge(impl = AuthorBridge.class)
     @ManyToOne
     private Author author;
+    @IndexedEmbedded
     @Field(name = "title", store = Store.YES)
     @Column
     private String title;
     @Column
     private String description;
+    @IndexedEmbedded
     @Field(name = "publicationYear", store = Store.YES, analyze = Analyze.NO)
     @Column
     private Integer publicationYear;
     @Column
     private String publicationStmt;
+    @IndexedEmbedded
     @Field(name = "source", analyze = Analyze.NO)
     @Column
     private String sourceDesc;
+    @IndexedEmbedded
     @Field(name = "period", analyze = Analyze.NO)
     @Column
     private String period;
@@ -50,11 +55,11 @@ public abstract class Item extends Auditable<String> implements Serializable {
         this.id = id;
     }
 
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -150,11 +155,5 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
                 '}';
-    }
-
-    public enum Category {
-        POETRY,
-        PROSE,
-        OTHER
     }
 }

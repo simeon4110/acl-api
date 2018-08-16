@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.models.poetry;
 
-import com.sonnets.sonnet.persistence.bridges.AnnotationBridge;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.base.Item;
@@ -19,7 +18,7 @@ public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
     @Field(name = "form", store = Store.YES)
     @Column
-    private Form form;
+    private String form;
     @Column
     private Confirmation confirmation;
     @Column
@@ -27,8 +26,6 @@ public class Poem extends Item implements Serializable {
     @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
     @ElementCollection
     private List<String> text;
-    @Field(name = "poem_annotations", store = Store.YES, termVector = TermVector.YES)
-    @FieldBridge(impl = AnnotationBridge.class)
     @OneToMany
     private List<Annotation> annotations;
 
@@ -51,11 +48,11 @@ public class Poem extends Item implements Serializable {
         return sb.toString();
     }
 
-    public Form getForm() {
+    public String getForm() {
         return form;
     }
 
-    public void setForm(Form form) {
+    public void setForm(String form) {
         this.form = form;
     }
 
@@ -108,12 +105,5 @@ public class Poem extends Item implements Serializable {
                 ", text=" + text +
                 ", annotations=" + annotations +
                 "} " + super.toString();
-    }
-
-    public enum Form {
-        SONNET,
-        FREE_VERSE,
-        ODE,
-        OTHER
     }
 }

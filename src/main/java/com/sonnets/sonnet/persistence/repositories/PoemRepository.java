@@ -10,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface PoemRepository extends JpaRepository<Poem, Long> {
-    List<Poem> findAllByForm(final Poem.Form form);
+    List<Poem> findAllByForm(final String form);
 
-    Page<Poem> findAllByForm(final Poem.Form form, final Pageable pageable);
+    Page<Poem> findAllByForm(final String form, final Pageable pageable);
 
     List<Poem> findAllByCreatedBy(final String createdBy);
 

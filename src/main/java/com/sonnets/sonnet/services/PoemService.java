@@ -65,8 +65,8 @@ public class PoemService {
 
         Author author = authorService.get(dto.getAuthorId());
         if (author != null) {
-            Poem poem = new Poem();
-            poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
+            Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
+            poemRepository.saveAndFlush(poem);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -183,7 +183,7 @@ public class PoemService {
     public List<Poem> getTwoRandomSonnets() {
         LOGGER.debug("Returning two random sonnets.");
         Random random = new Random();
-        List<Poem> sonnets = getAllByForm(Poem.Form.SONNET);
+        List<Poem> sonnets = getAllByForm("SONNET");
         List<Poem> randomSonnets = new ArrayList<>();
 
         while (randomSonnets.size() < NUMBER_OF_RANDOM_SONNETS) {
@@ -203,13 +203,13 @@ public class PoemService {
         return poemRepository.findAll(pageable);
     }
 
-    public List<Poem> getAllByForm(final Poem.Form form) {
-        LOGGER.debug("Returning all sonnets with form: " + form.toString());
+    public List<Poem> getAllByForm(final String form) {
+        LOGGER.debug("Returning all sonnets with form: " + form);
         return poemRepository.findAllByForm(form);
     }
 
-    public Page<Poem> getAllByFormPaged(final Poem.Form form, Pageable pageable) {
-        LOGGER.debug("Returning all sonnets in category paged: " + form.toString());
+    public Page<Poem> getAllByFormPaged(final String form, Pageable pageable) {
+        LOGGER.debug("Returning all sonnets in category paged: " + form);
         return poemRepository.findAllByForm(form, pageable);
     }
 
@@ -220,6 +220,7 @@ public class PoemService {
 
     private Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
         poem.setAuthor(author);
+        poem.setCategory("POETRY");
         poem.setTitle(dto.getTitle());
         poem.setPublicationYear(dto.getPublicationYear());
         poem.setPublicationStmt(dto.getPublicationStmt());

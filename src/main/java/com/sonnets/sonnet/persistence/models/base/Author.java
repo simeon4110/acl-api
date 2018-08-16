@@ -1,10 +1,12 @@
 package com.sonnets.sonnet.persistence.models.base;
 
-import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TermVector;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Objects;
 
 @Indexed
@@ -15,25 +17,18 @@ public class Author extends Auditable<String> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Field(name = "firstName", store = Store.YES)
+    @Field(name = "firstName", store = Store.YES, termVector = TermVector.NO)
     @Column
     private String firstName;
-    @Field(name = "middleName", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "middleName", store = Store.YES, termVector = TermVector.NO)
     @Column
     private String middleName;
-    @Field(name = "lastName", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "lastName", store = Store.YES, termVector = TermVector.NO)
     @Column
     private String lastName;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Field(name = "birthDate", store = Store.YES, analyze = Analyze.NO)
-    @Column
-    private Date birthDate;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Field(name = "deathDate", store = Store.YES, analyze = Analyze.NO)
-    @Column
-    private Date deathDate;
 
     public Author() {
+        // Default constructor for spring data.
     }
 
     public Long getId() {
@@ -68,21 +63,6 @@ public class Author extends Auditable<String> implements Serializable {
         this.lastName = lastName;
     }
 
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public Date getDeathDate() {
-        return deathDate;
-    }
-
-    public void setDeathDate(Date deathDate) {
-        this.deathDate = deathDate;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -92,14 +72,12 @@ public class Author extends Auditable<String> implements Serializable {
         return Objects.equals(id, author.id) &&
                 Objects.equals(firstName, author.firstName) &&
                 Objects.equals(middleName, author.middleName) &&
-                Objects.equals(lastName, author.lastName) &&
-                Objects.equals(birthDate, author.birthDate) &&
-                Objects.equals(deathDate, author.deathDate);
+                Objects.equals(lastName, author.lastName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, middleName, lastName, birthDate, deathDate);
+        return Objects.hash(id, firstName, middleName, lastName);
     }
 
     @Override
@@ -109,8 +87,6 @@ public class Author extends Auditable<String> implements Serializable {
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", birthDate=" + birthDate +
-                ", deathDate=" + deathDate +
                 '}';
     }
 }

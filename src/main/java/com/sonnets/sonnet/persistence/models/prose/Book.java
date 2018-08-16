@@ -19,7 +19,7 @@ public class Book extends Item implements Serializable {
     private Type type;
     @Field(name = "book_section", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Section> sections;
 
     public Book() {

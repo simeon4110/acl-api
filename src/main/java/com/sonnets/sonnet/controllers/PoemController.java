@@ -74,13 +74,13 @@ public class PoemController {
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/by_form/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getAllByForm(@PathVariable("form") String form) {
-        return poemService.getAllByForm(Poem.Form.valueOf(form));
+        return poemService.getAllByForm(form);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/by_form_paged/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page getAllByFormPaged(@PathVariable("form") String form, Pageable pageable) {
-        return poemService.getAllByFormPaged(Poem.Form.valueOf(form), pageable);
+        return poemService.getAllByFormPaged(form, pageable);
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
@@ -182,7 +182,7 @@ public class PoemController {
         text = ParseParam.parse(text);
 
         return searchService.searchPoems(firstName, lastName, title, publicationYear, period, text,
-                Poem.Form.valueOf(form), pageRequest);
+                form, pageRequest);
     }
 
     /**
@@ -205,7 +205,7 @@ public class PoemController {
         text = ParseParam.parse(text);
 
         return searchService.getResultIdsPoem(firstName, lastName, title, publicationYear, period, text,
-                Poem.Form.valueOf(form));
+                form);
     }
 
 

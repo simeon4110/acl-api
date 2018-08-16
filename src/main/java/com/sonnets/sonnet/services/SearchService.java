@@ -31,6 +31,7 @@ import java.util.Objects;
 @Service
 public class SearchService {
     private final EntityManager entityManager;
+    public static final int INT_DISTANCE = 20;
     private static final int PRECISION_STEP = 2;
     private static final Logger LOGGER = Logger.getLogger(SearchService.class);
 
@@ -39,17 +40,16 @@ public class SearchService {
     private static final int EDIT_DISTANCE = 2; // Levenstein edit distance.
     private static final int MAX_EXPANSIONS = 2; // How many words must match.
     private static final int SLOP = 1; // Words are directly adjacent.
-    private static final String YEAR = "publicationYear";
-
     // Field name constants:
-    private static final String FIRST_NAME = "firstName";
-    private static final String LAST_NAME = "lastName";
+    private static final String FIRST_NAME = "author.firstName";
+    private static final String LAST_NAME = "author.lastName";
+    private static final String YEAR = "publicationYear";
     private static final String TITLE = "title";
     private static final String FORM = "form";
     private static final String PERIOD = "period";
     private static final String TEXT = "text";
-    private final AuthorService authorService;
     private static final String SOURCE = "source";
+    private final AuthorService authorService;
 
 
     @Autowired
@@ -60,7 +60,7 @@ public class SearchService {
 
     public List<Long> getResultIdsPoem(final String firstName, final String lastName, final String title,
                                        final int publicationYear, final String period, final String text,
-                                       final Poem.Form form) {
+                                       final String form) {
         List<Long> ids = new ArrayList<>();
 
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
@@ -82,7 +82,7 @@ public class SearchService {
 
     public Page<Poem> searchPoems(final String firstName, final String lastName, final String title,
                                   final int publicationYear, final String period, final String text,
-                                  final Poem.Form form, final Pageable pageable) {
+                                  final String form, final Pageable pageable) {
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         // Build and execute query.
         org.apache.lucene.search.Query query = buildQueryProse(
@@ -110,7 +110,7 @@ public class SearchService {
     private org.apache.lucene.search.Query buildQueryProse(final String firstName, final String lastName,
                                                            final String title, final int publicationYear,
                                                            final String period, final String text,
-                                                           final Poem.Form form) {
+                                                           final String form) {
         LOGGER.debug("Parsing search: " + firstName + " " + lastName + " " + title + " " + period + " " + text);
         BooleanQuery.Builder booleanClauses = new BooleanQuery.Builder();
 
@@ -142,8 +142,8 @@ public class SearchService {
         if (publicationYear > 0) {
             LOGGER.debug(YEAR);
             NumericRangeQuery rangeQuery = NumericRangeQuery.newIntRange(
-                    YEAR, PRECISION_STEP, publicationYear + 20, publicationYear - 20, true,
-                    true);
+                    YEAR, PRECISION_STEP, publicationYear + INT_DISTANCE, publicationYear - INT_DISTANCE,
+                    true, true);
             booleanClauses.add(rangeQuery, BooleanClause.Occur.MUST);
         }
 
@@ -170,7 +170,7 @@ public class SearchService {
         // Add form search.
         if (form != null) {
             LOGGER.debug(FORM);
-            TermQuery tq = new TermQuery(new Term(FORM, form.toString()));
+            TermQuery tq = new TermQuery(new Term(FORM, form));
             booleanClauses.add(tq, BooleanClause.Occur.MUST);
         }
 
@@ -198,7 +198,7 @@ public class SearchService {
                 .must(queryBuilder.keyword().onField(LAST_NAME).matching(
                         author.getLastName()).createQuery()
                 )
-                .must(queryBuilder.keyword().onField(FORM).matching(poemDto.getForm().toString()).createQuery())
+                .must(queryBuilder.keyword().onField(FORM).matching(poemDto.getForm()).createQuery())
                 .must(queryBuilder.phrase().onField(SOURCE).sentence(poemDto.getSourceDesc()).createQuery())
                 .createQuery();
 

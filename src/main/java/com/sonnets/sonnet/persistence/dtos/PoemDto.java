@@ -1,7 +1,5 @@
 package com.sonnets.sonnet.persistence.dtos;
 
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-
 import javax.validation.constraints.NotEmpty;
 
 public class PoemDto {
@@ -16,8 +14,7 @@ public class PoemDto {
     private String sourceDesc;
     @NotEmpty
     private String period;
-    @NotEmpty
-    private Poem.Form form;
+    private String form;
     @NotEmpty
     private String text;
 
@@ -77,11 +74,11 @@ public class PoemDto {
         this.period = period;
     }
 
-    public Poem.Form getForm() {
+    public String getForm() {
         return form;
     }
 
-    public void setForm(Poem.Form form) {
+    public void setForm(String form) {
         this.form = form;
     }
 
