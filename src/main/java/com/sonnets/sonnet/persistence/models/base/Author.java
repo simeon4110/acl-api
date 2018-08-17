@@ -9,6 +9,11 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Model for author objects. Authors are standalone, but are automatically embedded in all Item objects.
+ *
+ * @author Josh Harkema
+ */
 @Indexed
 @Entity
 @Table
@@ -28,7 +33,7 @@ public class Author extends Auditable<String> implements Serializable {
     private String lastName;
 
     public Author() {
-        // Default constructor for spring data.
+        super();
     }
 
     public Long getId() {

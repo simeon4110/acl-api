@@ -13,6 +13,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
+/**
+ * Handles all REST endpoints related to user's custom stop words lists.
+ *
+ * @author Josh Harkema
+ */
 @RestController
 public class CustomStopWordsController {
     private static final String ALLOWED_ORIGIN = "*";
@@ -23,6 +28,7 @@ public class CustomStopWordsController {
         this.customStopWordsService = customStopWordsService;
     }
 
+    // Create a custom stop words list.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PostMapping(value = "/secure/stop_words/create", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -30,6 +36,7 @@ public class CustomStopWordsController {
         return customStopWordsService.create(customStopWordsDto);
     }
 
+    // Modify a list.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PutMapping(value = "/secure/stop_words/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -37,6 +44,7 @@ public class CustomStopWordsController {
         return customStopWordsService.modify(dto);
     }
 
+    // Get a list of stop words by id.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/stop_words/get_words/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,6 +52,7 @@ public class CustomStopWordsController {
         return customStopWordsService.getWords(id);
     }
 
+    // Get all of user's stop words lists.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/stop_words/get_user_lists", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -37,7 +37,7 @@ public class CorporaService {
         this.itemRepository = itemRepository;
     }
 
-    public ResponseEntity<Void> createCorpera(CorporaDto corporaDto) {
+    public ResponseEntity<Void> createCorpora(CorporaDto corporaDto) {
         LOGGER.debug("Creating corpera: " + corporaDto);
         Corpora newCorpora = new Corpora();
         newCorpora.setName(corporaDto.getName());
@@ -130,7 +130,7 @@ public class CorporaService {
         }
     }
 
-    public List getUserCorpera(Principal principal) {
+    public List getUserCorpora(Principal principal) {
         LOGGER.debug("Returning corpera for user: " + principal.getName());
 
         return corporaRepository.findAllByCreatedBy(principal.getName());

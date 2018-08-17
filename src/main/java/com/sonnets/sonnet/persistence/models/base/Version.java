@@ -6,15 +6,20 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Model for storing annotations. Annotations are not standalone, poems and sections use them.
+ * This class is for storing different versions of the same text. It is not standalone and should only be embedded
+ * in other objects (i.e. Poem or Section).
  *
  * @author Josh Harkema
  */
 @Entity
-public class Annotation extends Item implements Serializable {
-    private static final long serialVersionUID = -7131872492811694640L;
+public class Version extends Item implements Serializable {
+    private static final long serialVersionUID = 5008563910579946114L;
     @Column(columnDefinition = "LONGTEXT")
     private String text;
+
+    public Version() {
+        super();
+    }
 
     public String getText() {
         return text;
@@ -24,17 +29,13 @@ public class Annotation extends Item implements Serializable {
         this.text = text;
     }
 
-    public Annotation() {
-        super();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        Annotation that = (Annotation) o;
-        return Objects.equals(text, that.text);
+        Version version = (Version) o;
+        return Objects.equals(text, version.text);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class Annotation extends Item implements Serializable {
 
     @Override
     public String toString() {
-        return "Annotation{" +
+        return "Version{" +
                 "text='" + text + '\'' +
                 "} " + super.toString();
     }

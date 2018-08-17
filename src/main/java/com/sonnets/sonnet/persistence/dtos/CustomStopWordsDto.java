@@ -3,6 +3,9 @@ package com.sonnets.sonnet.persistence.dtos;
 import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;
 
+/**
+ * @author Josh Harkema
+ */
 public class CustomStopWordsDto {
     private Long id;
     @NotEmpty

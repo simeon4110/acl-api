@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+/**
+ * Handles all email message sending REST endpoints.
+ *
+ * @author Josh Harkema
+ */
 @RestController
 public class EmailController {
     private static final String ALLOWED_ORIGIN = "*";

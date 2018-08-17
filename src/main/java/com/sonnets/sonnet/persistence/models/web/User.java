@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.models.base.Auditable;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -38,9 +39,11 @@ public class User extends Auditable<String> implements Serializable {
     @JoinTable(name = "users_privileges", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private Set<Privilege> privileges;
+    @OneToMany
+    private List<UserPrivateText> privateTexts;
 
     public User() {
-        // Default constructor for spring data.
+        super();
     }
 
     public Long getId() {
@@ -107,6 +110,14 @@ public class User extends Auditable<String> implements Serializable {
         this.privileges = privileges;
     }
 
+    public List<UserPrivateText> getPrivateTexts() {
+        return privateTexts;
+    }
+
+    public void setPrivateTexts(List<UserPrivateText> privateTexts) {
+        this.privateTexts = privateTexts;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -120,13 +131,14 @@ public class User extends Auditable<String> implements Serializable {
                 Objects.equals(email, user.email) &&
                 Objects.equals(isAdmin, user.isAdmin) &&
                 Objects.equals(canConfirm, user.canConfirm) &&
-                Objects.equals(privileges, user.privileges);
+                Objects.equals(privileges, user.privileges) &&
+                Objects.equals(privateTexts, user.privateTexts);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, username, password, email, isAdmin, requiredSonnets, canConfirm,
-                privileges);
+                privileges, privateTexts);
     }
 
     @Override
@@ -140,9 +152,7 @@ public class User extends Auditable<String> implements Serializable {
                 ", requiredSonnets=" + requiredSonnets +
                 ", canConfirm=" + canConfirm +
                 ", privileges=" + privileges +
-                ", createdDate=" + super.getCreatedDate() +
-                ", createdBy=" + super.getCreatedBy() +
-                '}';
+                ", privateTexts=" + privateTexts +
+                "} " + super.toString();
     }
-
 }

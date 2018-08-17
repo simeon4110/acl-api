@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.dtos.PoemDto;
 import com.sonnets.sonnet.persistence.dtos.sonnet.RejectDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
+import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.PoemRepository;
 import org.apache.log4j.Logger;
@@ -19,6 +20,11 @@ import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.*;
 
+/**
+ * Handles all CRUD for the poem repository.
+ *
+ * @author Josh Harkema
+ */
 @Service
 public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
@@ -43,7 +49,7 @@ public class PoemService {
      * @param text a string[] of the text.
      * @return an ArrayList of the string[].
      */
-    public static List<String> parseText(String text) {
+    static List<String> parseText(String text) {
         List<String> strings = new ArrayList<>();
         String[] textArr = text.split("\\r?\\n");
 
@@ -72,6 +78,22 @@ public class PoemService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
+        poem.setAuthor(author);
+        poem.setCategory("POETRY");
+        poem.setTitle(dto.getTitle());
+        poem.setConfirmation(new Confirmation());
+        poem.setPublicationYear(dto.getPublicationYear());
+        poem.setPublicationStmt(dto.getPublicationStmt());
+        poem.setSourceDesc(dto.getSourceDesc());
+        poem.setPeriod(dto.getPeriod());
+        poem.setForm(dto.getForm());
+        poem.setText(parseText(dto.getText()));
+
+        return poem;
+    }
+
+    // Admin - modify poem.
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
         Optional<Poem> optionalPoem = poemRepository.findById(dto.getId());
@@ -85,6 +107,7 @@ public class PoemService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    // User - modify poem.
     public ResponseEntity<Void> modify(PoemDto dto, Principal principal) {
         LOGGER.debug("Modifying poem (USER): " + dto.toString());
         Poem poem = getPoemOrNull(dto.getId().toString());
@@ -97,6 +120,7 @@ public class PoemService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    // Admin - delete poem.
     public ResponseEntity<Void> deleteById(String id) {
         LOGGER.debug("Deleting poem with id (ADMIN): " + id);
         Poem poem = getPoemOrNull(id);
@@ -105,16 +129,6 @@ public class PoemService {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    public ResponseEntity<Void> deleteById(String id, Principal principal) {
-        LOGGER.debug("Deleting poem with id (USER): " + id);
-        Poem poem = getPoemOrNull(id);
-        if (poem != null && poem.getCreatedBy().equals(principal.getName())) {
-            poemRepository.delete(poem);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<Void> confirm(String id, Principal principal) {
@@ -218,18 +232,15 @@ public class PoemService {
         return poemRepository.findAllByCreatedBy(principal.getName());
     }
 
-    private Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
-        poem.setAuthor(author);
-        poem.setCategory("POETRY");
-        poem.setTitle(dto.getTitle());
-        poem.setPublicationYear(dto.getPublicationYear());
-        poem.setPublicationStmt(dto.getPublicationStmt());
-        poem.setSourceDesc(dto.getSourceDesc());
-        poem.setPeriod(dto.getPeriod());
-        poem.setForm(dto.getForm());
-        poem.setText(parseText(dto.getText()));
-
-        return poem;
+    // User - delete poem.
+    public ResponseEntity<Void> deleteById(String id, Principal principal) {
+        LOGGER.debug("Deleting poem with id (USER): " + id);
+        Poem poem = getPoemOrNull(id);
+        if (poem != null && poem.getCreatedBy().equals(principal.getName())) {
+            poemRepository.delete(poem);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     private Poem getPoemOrNull(String id) {

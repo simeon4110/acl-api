@@ -3,6 +3,7 @@ package com.sonnets.sonnet.persistence.models.poetry;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.models.base.Version;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -10,6 +11,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * General purpose object for handling poetry type lit.
+ *
+ * @author Josh Harkema
+ */
 @Indexed
 @Entity
 @Table
@@ -18,7 +24,7 @@ public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
     @Field(name = "form", store = Store.YES)
     @Column
-    private String form;
+    private String form; // The form of genre of the poem.
     @Column
     private Confirmation confirmation;
     @Column
@@ -28,6 +34,8 @@ public class Poem extends Item implements Serializable {
     private List<String> text;
     @OneToMany
     private List<Annotation> annotations;
+    @OneToMany
+    private List<Version> versions;
 
     public Poem() {
         super();
@@ -80,30 +88,40 @@ public class Poem extends Item implements Serializable {
         this.annotations = annotations;
     }
 
+    public List<Version> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(List<Version> versions) {
+        this.versions = versions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Poem poem = (Poem) o;
-        return form == poem.form &&
+        return Objects.equals(form, poem.form) &&
                 Objects.equals(confirmation, poem.confirmation) &&
                 Objects.equals(text, poem.text) &&
-                Objects.equals(annotations, poem.annotations);
+                Objects.equals(annotations, poem.annotations) &&
+                Objects.equals(versions, poem.versions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), form, confirmation, text, annotations);
+        return Objects.hash(super.hashCode(), form, confirmation, text, annotations, versions);
     }
 
     @Override
     public String toString() {
         return "Poem{" +
-                "form=" + form +
+                "form='" + form + '\'' +
                 ", confirmation=" + confirmation +
                 ", text=" + text +
                 ", annotations=" + annotations +
+                ", versions=" + versions +
                 "} " + super.toString();
     }
 }

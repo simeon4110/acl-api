@@ -2,6 +2,9 @@ package com.sonnets.sonnet.persistence.dtos;
 
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * @author Josh Harkema
+ */
 public class PoemDto {
     private Long id;
     @NotEmpty

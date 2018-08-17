@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+/**
+ * Handles all author related REST endpoints.
+ *
+ * @author Josh Harkema
+ */
 @RestController
 public class AuthorController {
     private static final String ALLOWED_ORIGIN = "*";
@@ -21,6 +26,7 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
+    // Add an author.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/author/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -28,6 +34,7 @@ public class AuthorController {
         return authorService.add(authorDto);
     }
 
+    // Modify an author.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/author/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -35,12 +42,14 @@ public class AuthorController {
         return authorService.modify(authorDto);
     }
 
+    // Get an author by id.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/author/get_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Author getById(@PathVariable("id") String id) {
         return authorService.get(id);
     }
 
+    // Get an author by last name.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/author/get_by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Author getByLastName(@PathVariable("lastName") String lastName) {

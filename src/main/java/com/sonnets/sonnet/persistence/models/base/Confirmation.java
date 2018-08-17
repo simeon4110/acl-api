@@ -8,6 +8,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * Stores details of an Item's confirmation. Confirmations are not standalone.
+ *
+ * @author Josh Harkema
+ */
 @Embeddable
 public class Confirmation implements Serializable {
     private static final long serialVersionUID = -4125120151483205315L;
@@ -20,6 +25,11 @@ public class Confirmation implements Serializable {
     private Date confirmedAt;
     @Column
     private boolean pendingRevision;
+
+    public Confirmation() {
+        this.confirmed = false;
+        this.pendingRevision = false;
+    }
 
     public boolean isConfirmed() {
         return confirmed;

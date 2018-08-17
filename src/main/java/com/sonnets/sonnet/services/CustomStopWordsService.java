@@ -15,6 +15,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service handles CRUD for user's custom stop words.
+ *
+ * @author Josh Harkema
+ */
 @Service
 public class CustomStopWordsService {
     private static final Logger LOGGER = Logger.getLogger(CustomStopWordsService.class);

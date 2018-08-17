@@ -7,6 +7,11 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * This is the master class, it holds all fields required for all works of literature in the database.
+ *
+ * @author Josh Harkema
+ */
 @MappedSuperclass
 public abstract class Item extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -5596854181341354264L;
@@ -45,6 +50,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     private String period;
 
     protected Item() {
+        // Empty for spring data.
     }
 
     public Long getId() {

@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Josh Harkema
+ */
 @Entity
 @Table
 public class CustomStopWords extends Auditable<String> implements Serializable {
@@ -21,7 +24,7 @@ public class CustomStopWords extends Auditable<String> implements Serializable {
     private List<String> words;
 
     public CustomStopWords() {
-        // Default constructor for spring data.
+        super();
     }
 
     public Long getId() {

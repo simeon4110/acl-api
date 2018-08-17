@@ -5,6 +5,12 @@ import com.sonnets.sonnet.persistence.repositories.ItemRepository;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+/**
+ * Read-Only!!! This is used to get items from the db by id. It should not be used to add anything to the db.
+ * :TODO: create read-only repo interface.
+ *
+ * @author Josh Harkema
+ */
 @Service
 public class ItemService {
     private static final Logger LOGGER = Logger.getLogger(ItemService.class);

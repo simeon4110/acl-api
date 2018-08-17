@@ -26,6 +26,11 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for all poetry related endpoints.
+ *
+ * @author Josh Harkema
+ */
 @RestController
 public class PoemController {
     private static final String ALLOWED_ORIGIN = "*";
@@ -41,48 +46,56 @@ public class PoemController {
         this.corporaService = corporaService;
     }
 
+    // Get a poem by id.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Poem getPoemById(@PathVariable("id") String id) {
         return poemService.getById(id);
     }
 
+    // Get list of poems by list of ids.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/by_id/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getPoemsByIds(@PathVariable String[] ids) {
         return poemService.getByIds(ids);
     }
 
+    // Get two random sonnets.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getTwoRandomSonnets() {
         return poemService.getTwoRandomSonnets();
     }
 
+    // Get all poems.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getAllPoems() {
         return poemService.getAll();
     }
 
+    // Get all poems paged.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page getAllPoemsPaged(Pageable pageable) {
         return poemService.getAllPaged(pageable);
     }
 
+    // Get all poems of specific form.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/by_form/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getAllByForm(@PathVariable("form") String form) {
         return poemService.getAllByForm(form);
     }
 
+    // Get all poems of specific form paged.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poems/by_form_paged/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page getAllByFormPaged(@PathVariable("form") String form, Pageable pageable) {
         return poemService.getAllByFormPaged(form, pageable);
     }
 
+    // Get all poems created by a user.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/get_user_poems", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -90,6 +103,7 @@ public class PoemController {
         return poemService.getAllByUser(principal);
     }
 
+    // Add a poem.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/poem/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -97,6 +111,7 @@ public class PoemController {
         return poemService.add(dto);
     }
 
+    // Admin - edit any poem.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping(value = "/secure/poem/edit_admin", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -104,6 +119,7 @@ public class PoemController {
         return poemService.modify(dto);
     }
 
+    // User - edit poem created by user.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/poem/edit_user", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -111,6 +127,7 @@ public class PoemController {
         return poemService.modify(dto, principal);
     }
 
+    // Admin - delete any poem.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/poem/delete_admin/{id}")
@@ -118,6 +135,7 @@ public class PoemController {
         return poemService.deleteById(id);
     }
 
+    // User - edit poem created by user.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping(value = "/secure/poem/delete_user/{id}")
@@ -127,6 +145,7 @@ public class PoemController {
 
     //####################### These are endpoints for the confirmation module. #################//
 
+    // Confirm a poem.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/confirm/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -134,6 +153,7 @@ public class PoemController {
         return poemService.confirm(id, principal);
     }
 
+    // Reject a poem.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/poem/reject", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -141,6 +161,7 @@ public class PoemController {
         return poemService.reject(rejectDto);
     }
 
+    // Get an unconfirmed poem to confirm.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/confirm_get", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -150,16 +171,18 @@ public class PoemController {
 
     //####################### These are all corpora related endpoints. #########################//
 
+    // Get all poems in a corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @GetMapping(value = "/secure/corpera/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/secure/corpora/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getAllCorperaItems(@PathVariable("id") String id) {
         return corporaService.getCorporaItems(id);
     }
 
+    // Get all poems in a corpus paged.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @GetMapping(value = "/secure/corpera/get_paged/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/secure/corpora/get_paged/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page getAllCorperaItemsPaged(@PathVariable("id") String id, Pageable pageable) {
         return corporaService.getCorporaItemsPaged(id, pageable);
     }
@@ -167,6 +190,7 @@ public class PoemController {
 
     //####################### These are all search endpoints. ##################################//
 
+    // Search all poems in the database.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poem/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<Poem> search(@RequestParam("firstName") String firstName,
@@ -185,11 +209,7 @@ public class PoemController {
                 form, pageRequest);
     }
 
-    /**
-     * PUBLIC - This method simply counts the number of results from a search and returns their ids.
-     *
-     * @return a list of poem ids.
-     */
+    // Count total results from db search. Used for correct pagination and adding search results to a corpus.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/poem/search/get_result_ids", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Long> getSearchResultIds(@RequestParam("firstName") String firstName,

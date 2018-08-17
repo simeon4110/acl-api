@@ -1,4 +1,7 @@
-package com.sonnets.sonnet.persistence.models.base;
+package com.sonnets.sonnet.persistence.models.web;
+
+
+import com.sonnets.sonnet.persistence.models.base.Item;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,15 +9,19 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Model for storing annotations. Annotations are not standalone, poems and sections use them.
+ * Model allows users to add and store texts not available to other users.
  *
  * @author Josh Harkema
  */
 @Entity
-public class Annotation extends Item implements Serializable {
-    private static final long serialVersionUID = -7131872492811694640L;
+public class UserPrivateText extends Item implements Serializable {
+    private static final long serialVersionUID = -5398920714584686611L;
     @Column(columnDefinition = "LONGTEXT")
     private String text;
+
+    public UserPrivateText() {
+        super();
+    }
 
     public String getText() {
         return text;
@@ -24,16 +31,12 @@ public class Annotation extends Item implements Serializable {
         this.text = text;
     }
 
-    public Annotation() {
-        super();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        Annotation that = (Annotation) o;
+        UserPrivateText that = (UserPrivateText) o;
         return Objects.equals(text, that.text);
     }
 
@@ -44,7 +47,7 @@ public class Annotation extends Item implements Serializable {
 
     @Override
     public String toString() {
-        return "Annotation{" +
+        return "UserPrivateText{" +
                 "text='" + text + '\'' +
                 "} " + super.toString();
     }

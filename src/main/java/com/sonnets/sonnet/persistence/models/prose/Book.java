@@ -9,6 +9,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * General purpose object for storing Books. A book is a collection of sections. The book itself stores nothing more
+ * than a reference to sections.
+ *
+ * @author Josh Harkema
+ */
 @Indexed
 @Entity
 @Table

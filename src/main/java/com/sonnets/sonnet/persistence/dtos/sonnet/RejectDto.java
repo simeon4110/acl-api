@@ -2,6 +2,9 @@ package com.sonnets.sonnet.persistence.dtos.sonnet;
 
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * @author Josh Harkema
+ */
 public class RejectDto {
     private String id;
     @NotEmpty

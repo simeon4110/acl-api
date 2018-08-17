@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author Josh Harkema
+ */
 @Component
 public class TokenEnhancerImpl implements TokenEnhancer {
     @Autowired

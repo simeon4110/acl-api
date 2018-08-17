@@ -74,6 +74,7 @@ public class AuthorService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    // Get an author by id.
     public Author get(String id) {
         LOGGER.debug("Looking for author with id: " + id);
 
@@ -89,6 +90,7 @@ public class AuthorService {
         return author.orElse(null);
     }
 
+    // Get an author by last name.
     public Author getByLastName(String lastName) {
         LOGGER.debug("Looking for author with last name: " + lastName);
         Optional<Author> author = authorRepository.findByLastName(lastName);

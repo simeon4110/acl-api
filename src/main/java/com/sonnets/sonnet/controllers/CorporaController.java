@@ -12,6 +12,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
+/**
+ * Handles all corpora related REST endpoints.
+ *
+ * @author Josh Harkema
+ */
 @RestController
 public class CorporaController {
     private static final String ALLOWED_ORIGIN = "*";
@@ -22,44 +27,50 @@ public class CorporaController {
         this.corporaService = corporaService;
     }
 
+    // Get user corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @GetMapping(value = "/secure/corpera/my_corpera", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getUserCorpera(Principal principal) {
-        return corporaService.getUserCorpera(principal);
+    @GetMapping(value = "/secure/corpora/my_corpora", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List getUserCorpora(Principal principal) {
+        return corporaService.getUserCorpora(principal);
     }
 
+    // Create a corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @PostMapping(value = "/secure/corpera/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createCorpera(@RequestBody @Valid CorporaDto corporaDto, Principal principal) {
-        return corporaService.createCorpera(corporaDto);
+    @PostMapping(value = "/secure/corpora/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> createCorpora(@RequestBody @Valid CorporaDto corporaDto, Principal principal) {
+        return corporaService.createCorpora(corporaDto);
     }
 
+    // Add item to corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @PutMapping(value = "/secure/corpera/add_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addItemsToCorpera(@RequestBody @Valid CorporaDto dto) {
+    @PutMapping(value = "/secure/corpora/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addItemsToCorpora(@RequestBody @Valid CorporaDto dto) {
         return corporaService.addItems(dto.getId(), dto.getSonnetIds());
     }
 
+    // Remove item from corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @PutMapping(value = "/secure/corpera/remove_sonnet", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> removeItemsFromCorpera(@RequestBody @Valid CorporaDto dto) {
+    @PutMapping(value = "/secure/corpora/remove", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> removeItemsFromCorpora(@RequestBody @Valid CorporaDto dto) {
         return corporaService.removeItems(dto.getId(), dto.getSonnetIds());
     }
 
+    // Modify corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @PutMapping(value = "/secure/corpera/change_name", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modifyCorperaDetails(@RequestBody @Valid CorporaDto dto) {
+    @PutMapping(value = "/secure/corpora/change_name", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> modifyCorporaDetails(@RequestBody @Valid CorporaDto dto) {
         return corporaService.modify(dto.getId(), dto.getName(), dto.getDescription());
     }
 
+    // Delete corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN, methods = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @DeleteMapping(value = "/secure/corpera/delete/{id}")
+    @DeleteMapping(value = "/secure/corpora/delete/{id}")
     public ResponseEntity<Void> deleteCorpus(@PathVariable("id") String id) {
         return corporaService.delete(id);
     }

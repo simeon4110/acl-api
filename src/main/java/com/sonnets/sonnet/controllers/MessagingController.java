@@ -27,6 +27,7 @@ public class MessagingController {
         this.messageService = messageService;
     }
 
+    // Get a user's inbox.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping(value = "/secure/message/get_inbox", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,6 +35,7 @@ public class MessagingController {
         return messageService.getInbox(principal);
     }
 
+    // Delete a message by id.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping(value = "/secure/message/delete_message/{id}")
@@ -41,6 +43,7 @@ public class MessagingController {
         return messageService.deleteMessage(principal, Long.parseLong(id));
     }
 
+    // Send a new message.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
     @PostMapping(value = "/secure/message/send_message", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -48,6 +51,7 @@ public class MessagingController {
         return messageService.sendMessage(messageDto, principal);
     }
 
+    // Set a message to read = true and get message content.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping(value = "/secure/message/read_message/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,11 +1,13 @@
 package com.sonnets.sonnet.persistence.models.web;
 
+import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.search.annotations.DocumentId;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -21,10 +23,16 @@ import java.util.Objects;
 @Entity
 @Table(name = "corpora")
 @DiscriminatorValue("CORP")
-public class Corpora extends Item {
+public class Corpora extends Auditable<String> {
     private static final long serialVersionUID = -3561569564692824043L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @DocumentId
+    private Long id;
     @Column
     private String name;
+    @Column
+    private String description;
     @ManyToAny(
             metaColumn = @Column(name = "item_type", length = 4)
     )
@@ -45,7 +53,15 @@ public class Corpora extends Item {
     private List<Item> items;
 
     public Corpora() {
-        // Default constructor for spring data.
+        super();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -54,6 +70,14 @@ public class Corpora extends Item {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public List<Item> getItems() {
@@ -70,19 +94,23 @@ public class Corpora extends Item {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Corpora corpora = (Corpora) o;
-        return Objects.equals(name, corpora.name) &&
+        return Objects.equals(id, corpora.id) &&
+                Objects.equals(name, corpora.name) &&
+                Objects.equals(description, corpora.description) &&
                 Objects.equals(items, corpora.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, items);
+        return Objects.hash(super.hashCode(), id, name, description, items);
     }
 
     @Override
     public String toString() {
         return "Corpora{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
                 ", items=" + items +
                 "} " + super.toString();
     }

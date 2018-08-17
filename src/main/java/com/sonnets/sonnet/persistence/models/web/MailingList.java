@@ -23,6 +23,7 @@ public class MailingList {
     private String email;
 
     public MailingList() {
+        // Default constructor for spring data.
     }
 
     public MailingList(String name, String email) {
