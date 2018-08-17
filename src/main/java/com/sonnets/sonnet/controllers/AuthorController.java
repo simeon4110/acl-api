@@ -42,6 +42,14 @@ public class AuthorController {
         return authorService.modify(authorDto);
     }
 
+    // Delete an author.
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping(value = "/secure/author/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+        return authorService.delete(id);
+    }
+
     // Get an author by id.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @GetMapping(value = "/author/get_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

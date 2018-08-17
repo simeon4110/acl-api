@@ -27,8 +27,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Josh Harkema
  */
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
 @SpringBootTest(classes = SonnetApplication.class)
@@ -84,6 +84,21 @@ public class AuthorIntegrationTest {
         Assert.assertNotNull(author);
         Assert.assertEquals(TEST_FIRST_NAME, author.getFirstName());
         Assert.assertEquals(TEST_LAST_NAME, author.getLastName());
+
+        addAuthorWithSameName(author);
+    }
+
+    public void addAuthorWithSameName(Author author) throws Exception {
+        LOGGER.debug("Attempting to add duplicate author.");
+
+        AuthorDto dto = new AuthorDto();
+        dto.setFirstName(TEST_FIRST_NAME);
+        dto.setLastName(TEST_LAST_NAME);
+        String authorString = gson.toJson(dto);
+
+        mockMvc.perform(post("/secure/author/add").header("Authorization", "Bearer " + token)
+                .contentType(CONTENT_TYPE).content(authorString).accept(CONTENT_TYPE))
+                .andExpect(status().isExpectationFailed());
 
         modifyAuthor(author);
     }
@@ -134,6 +149,20 @@ public class AuthorIntegrationTest {
         String lastName = jsonParser.parseMap(resultString).get("lastName").toString();
         Assert.assertEquals(author.getFirstName(), firstName);
         Assert.assertEquals(author.getLastName(), lastName);
+
+        deleteAuthor(author);
+    }
+
+    public void deleteAuthor(Author author) throws Exception {
+        LOGGER.debug("Deleteing author with ID: " + author.getId());
+
+        mockMvc.perform(delete("/secure/author/delete/" + author.getId())
+                .header("Authorization", "Bearer " + token).accept(CONTENT_TYPE))
+                .andExpect(status().isOk());
+
+        Assert.assertNull(authorService.get(author.getId().toString()));
+
+        LOGGER.debug("Yahoo! Test sequence complete!");
     }
 
     private String obtainAccessToken() throws Exception {

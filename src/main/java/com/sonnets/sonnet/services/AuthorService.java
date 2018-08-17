@@ -42,12 +42,6 @@ public class AuthorService {
         return author;
     }
 
-    /**
-     * Add a new Author to the db.
-     *
-     * @param authorDto an valid AuthorDto object.
-     * @return throws exception if exists, returns HttpStatus.OK if good.
-     */
     public ResponseEntity<Void> add(AuthorDto authorDto) {
         LOGGER.debug("Creating new author: " + authorDto.toString());
 
@@ -64,9 +58,8 @@ public class AuthorService {
     public ResponseEntity<Void> modify(AuthorDto authorDto) {
         LOGGER.debug("Modifying author: " + authorDto.toString());
 
-        Optional<Author> optionalAuthor = authorRepository.findById(authorDto.getId());
-        if (optionalAuthor.isPresent()) {
-            Author author = optionalAuthor.get();
+        Author author = getAuthorOrNull(authorDto.getId().toString());
+        if (author != null) {
             authorRepository.saveAndFlush(createOrCopyAuthor(author, authorDto));
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -74,20 +67,20 @@ public class AuthorService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    public ResponseEntity<Void> delete(String id) {
+        LOGGER.debug("Deleting author with id: " + id);
+        Author author = getAuthorOrNull(id);
+        if (author != null) {
+            authorRepository.delete(author);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     // Get an author by id.
     public Author get(String id) {
         LOGGER.debug("Looking for author with id: " + id);
-
-        Long parsedId;
-        try {
-            parsedId = Long.parseLong(id);
-        } catch (NumberFormatException e) {
-            LOGGER.error(e);
-            throw new NumberFormatException(e.getMessage());
-        }
-
-        Optional<Author> author = authorRepository.findById(parsedId);
-        return author.orElse(null);
+        return getAuthorOrNull(id);
     }
 
     // Get an author by last name.
@@ -95,5 +88,18 @@ public class AuthorService {
         LOGGER.debug("Looking for author with last name: " + lastName);
         Optional<Author> author = authorRepository.findByLastName(lastName);
         return author.orElse(null);
+    }
+
+    // Helper method to parse id's to longs and convert optional returns from repo.
+    private Author getAuthorOrNull(String id) {
+        Long parsedId;
+        try {
+            parsedId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e);
+            return null;
+        }
+        Optional<Author> optionalAuthor = authorRepository.findById(parsedId);
+        return optionalAuthor.orElse(null);
     }
 }
