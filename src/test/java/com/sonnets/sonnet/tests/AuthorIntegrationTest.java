@@ -2,7 +2,7 @@ package com.sonnets.sonnet.tests;
 
 import com.google.gson.Gson;
 import com.sonnets.sonnet.SonnetApplication;
-import com.sonnets.sonnet.persistence.dtos.AuthorDto;
+import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.services.AuthorService;
 import org.apache.log4j.Logger;
@@ -96,8 +96,10 @@ public class AuthorIntegrationTest {
         dto.setLastName(TEST_LAST_NAME);
         String authorString = gson.toJson(dto);
 
-        mockMvc.perform(post("/secure/author/add").header("Authorization", "Bearer " + token)
-                .contentType(CONTENT_TYPE).content(authorString).accept(CONTENT_TYPE))
+        mockMvc.perform(post("/secure/author/add")
+                .header("Authorization", "Bearer " + token)
+                .contentType(CONTENT_TYPE).content(authorString)
+                .accept(CONTENT_TYPE))
                 .andExpect(status().isExpectationFailed());
 
         modifyAuthor(author);
@@ -111,8 +113,10 @@ public class AuthorIntegrationTest {
         String modifyAuthorString = gson.toJson(modifyDto);
 
         LOGGER.debug("modifyAuthor() modifying test author.");
-        mockMvc.perform(post("/secure/author/modify").header("Authorization", "Bearer " + token)
-                .contentType(CONTENT_TYPE).content(modifyAuthorString).accept(CONTENT_TYPE)).andExpect(status().isOk());
+        mockMvc.perform(post("/secure/author/modify")
+                .header("Authorization", "Bearer " + token)
+                .contentType(CONTENT_TYPE).content(modifyAuthorString)
+                .accept(CONTENT_TYPE)).andExpect(status().isOk());
 
         Author modifyAuthor = authorService.getByLastName(modifyDto.getLastName());
         Assert.assertNotNull(modifyAuthor);
@@ -125,7 +129,8 @@ public class AuthorIntegrationTest {
     public void getAuthorById(Author author) throws Exception {
         LOGGER.debug("Getting author with ID: " + author.getId());
         ResultActions result = mockMvc.perform(get("/author/get_by_id/" + author.getId())
-                .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE));
 
         String resultString = result.andReturn().getResponse().getContentAsString();
@@ -157,7 +162,8 @@ public class AuthorIntegrationTest {
         LOGGER.debug("Deleteing author with ID: " + author.getId());
 
         mockMvc.perform(delete("/secure/author/delete/" + author.getId())
-                .header("Authorization", "Bearer " + token).accept(CONTENT_TYPE))
+                .header("Authorization", "Bearer " + token)
+                .accept(CONTENT_TYPE))
                 .andExpect(status().isOk());
 
         Assert.assertNull(authorService.get(author.getId().toString()));
@@ -172,8 +178,6 @@ public class AuthorIntegrationTest {
         params.add("username", USERNAME);
         params.add("password", PASSWORD);
 
-        // @formatter:off
-
         ResultActions result = mockMvc.perform(post("/oauth/token")
                 .params(params)
                 .with(httpBasic(CLIENT_ID, CLIENT_SECRET))
@@ -181,10 +185,7 @@ public class AuthorIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE));
 
-        // @formatter:on
-
         String resultString = result.andReturn().getResponse().getContentAsString();
         return jsonParser.parseMap(resultString).get("access_token").toString();
     }
-
 }

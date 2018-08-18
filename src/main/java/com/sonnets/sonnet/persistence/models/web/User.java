@@ -41,6 +41,8 @@ public class User extends Auditable<String> implements Serializable {
     private Set<Privilege> privileges;
     @OneToMany
     private List<UserPrivateText> privateTexts;
+    @OneToMany
+    private List<CustomStopWords> customStopWords;
 
     public User() {
         super();
@@ -118,6 +120,14 @@ public class User extends Auditable<String> implements Serializable {
         this.privateTexts = privateTexts;
     }
 
+    public List<CustomStopWords> getCustomStopWords() {
+        return customStopWords;
+    }
+
+    public void setCustomStopWords(List<CustomStopWords> customStopWords) {
+        this.customStopWords = customStopWords;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -132,13 +142,14 @@ public class User extends Auditable<String> implements Serializable {
                 Objects.equals(isAdmin, user.isAdmin) &&
                 Objects.equals(canConfirm, user.canConfirm) &&
                 Objects.equals(privileges, user.privileges) &&
-                Objects.equals(privateTexts, user.privateTexts);
+                Objects.equals(privateTexts, user.privateTexts) &&
+                Objects.equals(customStopWords, user.customStopWords);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, username, password, email, isAdmin, requiredSonnets, canConfirm,
-                privileges, privateTexts);
+                privileges, privateTexts, customStopWords);
     }
 
     @Override
@@ -153,6 +164,7 @@ public class User extends Auditable<String> implements Serializable {
                 ", canConfirm=" + canConfirm +
                 ", privileges=" + privileges +
                 ", privateTexts=" + privateTexts +
+                ", customStopWords=" + customStopWords +
                 "} " + super.toString();
     }
 }

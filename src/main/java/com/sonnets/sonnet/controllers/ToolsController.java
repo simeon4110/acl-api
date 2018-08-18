@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.TextDto;
+import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.services.ToolsService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

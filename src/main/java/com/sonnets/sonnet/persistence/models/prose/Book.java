@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
+import com.sonnets.sonnet.persistence.bridges.CharacterBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import org.hibernate.search.annotations.*;
@@ -22,21 +23,29 @@ import java.util.Objects;
 public class Book extends Item implements Serializable {
     private static final long serialVersionUID = -5579725087589223758L;
     @Column
-    private Type type;
+    private String type;
     @Field(name = "book_section", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Section> sections;
+    @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
+    @FieldBridge(impl = CharacterBridge.class)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "book_characters", joinColumns = {
+            @JoinColumn(name = "book_id", referencedColumnName = "id"),
+            @JoinColumn(name = "character_id", referencedColumnName = "id")
+    })
+    private List<BookCharacter> bookCharacters;
 
     public Book() {
         super();
     }
 
-    public Type getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -48,35 +57,36 @@ public class Book extends Item implements Serializable {
         this.sections = sections;
     }
 
+    public List<BookCharacter> getBookCharacters() {
+        return bookCharacters;
+    }
+
+    public void setBookCharacters(List<BookCharacter> bookCharacters) {
+        this.bookCharacters = bookCharacters;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Book book = (Book) o;
-        return type == book.type &&
-                Objects.equals(sections, book.sections);
+        return Objects.equals(type, book.type) &&
+                Objects.equals(sections, book.sections) &&
+                Objects.equals(bookCharacters, book.bookCharacters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), type, sections);
+        return Objects.hash(super.hashCode(), type, sections, bookCharacters);
     }
 
     @Override
     public String toString() {
         return "Book{" +
-                "type=" + type +
+                "type='" + type + '\'' +
                 ", sections=" + sections +
+                ", bookCharacters=" + bookCharacters +
                 "} " + super.toString();
-    }
-
-    enum Type {
-        NONFICTION,
-        FICTION,
-        ESSAY,
-        JOURNAL,
-        NEWS,
-        OTHER
     }
 }

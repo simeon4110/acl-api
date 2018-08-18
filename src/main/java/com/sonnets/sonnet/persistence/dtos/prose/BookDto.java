@@ -1,14 +1,16 @@
-package com.sonnets.sonnet.persistence.dtos;
+package com.sonnets.sonnet.persistence.dtos.prose;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Josh Harkema
  */
-public class PoemDto {
+public class BookDto {
     private Long id;
+    @NotNull
+    private Long authorId;
     @NotEmpty
-    private String authorId;
     private String title;
     private Integer publicationYear;
     @NotEmpty
@@ -17,9 +19,10 @@ public class PoemDto {
     private String sourceDesc;
     @NotEmpty
     private String period;
-    private String form;
     @NotEmpty
-    private String text;
+    private String category;
+    @NotEmpty
+    private String type;
 
     public Long getId() {
         return id;
@@ -29,11 +32,11 @@ public class PoemDto {
         this.id = id;
     }
 
-    public String getAuthorId() {
+    public @NotEmpty Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(String authorId) {
+    public void setAuthorId(@NotEmpty Long authorId) {
         this.authorId = authorId;
     }
 
@@ -77,34 +80,34 @@ public class PoemDto {
         this.period = period;
     }
 
-    public String getForm() {
-        return form;
+    public String getCategory() {
+        return category;
     }
 
-    public void setForm(String form) {
-        this.form = form;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public String getText() {
-        return text;
+    public String getType() {
+        return type;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
-        return "PoemDto{" +
+        return "BookDto{" +
                 "id=" + id +
-                ", authorId=" + authorId +
+                ", authorId='" + authorId + '\'' +
                 ", title='" + title + '\'' +
                 ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
-                ", form=" + form +
-                ", text='" + text + '\'' +
+                ", category='" + category + '\'' +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

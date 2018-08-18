@@ -15,6 +15,8 @@ public class Annotation extends Item implements Serializable {
     private static final long serialVersionUID = -7131872492811694640L;
     @Column(columnDefinition = "LONGTEXT")
     private String text;
+    @Column
+    private Confirmation confirmation;
 
     public String getText() {
         return text;

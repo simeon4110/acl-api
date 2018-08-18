@@ -32,16 +32,25 @@ public class CustomStopWordsController {
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PostMapping(value = "/secure/stop_words/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createList(@RequestBody @Valid CustomStopWordsDto customStopWordsDto) {
-        return customStopWordsService.create(customStopWordsDto);
+    public ResponseEntity<Void> createList(@RequestBody @Valid CustomStopWordsDto customStopWordsDto,
+                                           Principal principal) {
+        return customStopWordsService.create(customStopWordsDto, principal);
     }
 
-    // Modify a list.
+    // Modify a list (only a list's creator can delete a list).
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PutMapping(value = "/secure/stop_words/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modifyList(@RequestBody @Valid CustomStopWordsDto dto) {
-        return customStopWordsService.modify(dto);
+    public ResponseEntity<Void> modifyList(@RequestBody @Valid CustomStopWordsDto dto, Principal principal) {
+        return customStopWordsService.modify(dto, principal);
+    }
+
+    // Delete a list (only a list's creator can delete a list).
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
+    @DeleteMapping(value = "/secure/stop_words/delete/{id}")
+    public ResponseEntity<Void> deleteList(@PathVariable("id") String id, Principal principal) {
+        return customStopWordsService.delete(id, principal);
     }
 
     // Get a list of stop words by id.

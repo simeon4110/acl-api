@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.PoemDto;
-import com.sonnets.sonnet.persistence.dtos.sonnet.RejectDto;
+import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
+import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.CorporaService;
 import com.sonnets.sonnet.services.PoemService;

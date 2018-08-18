@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.dtos.sonnet;
+package com.sonnets.sonnet.persistence.dtos.base;
 
 import javax.validation.constraints.NotEmpty;
 

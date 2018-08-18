@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.AuthorDto;
+import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
@@ -92,7 +92,7 @@ public class AuthorService {
 
     // Helper method to parse id's to longs and convert optional returns from repo.
     private Author getAuthorOrNull(String id) {
-        Long parsedId;
+        long parsedId;
         try {
             parsedId = Long.parseLong(id);
         } catch (NumberFormatException e) {

@@ -3,6 +3,7 @@ package com.sonnets.sonnet.persistence.models.web;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -12,7 +13,8 @@ import java.util.Objects;
  */
 @Entity
 @Table
-public class Message extends Auditable<String> {
+public class Message extends Auditable<String> implements Serializable {
+    private static final long serialVersionUID = 6396102554586759186L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
