@@ -30,7 +30,7 @@ public class Book extends Item implements Serializable {
     private List<Section> sections;
     @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterBridge.class)
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "book_characters", joinColumns = {
             @JoinColumn(name = "book_id", referencedColumnName = "id"),
             @JoinColumn(name = "character_id", referencedColumnName = "id")

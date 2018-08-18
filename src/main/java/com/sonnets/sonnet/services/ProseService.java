@@ -90,13 +90,12 @@ public class ProseService {
 
     public ResponseEntity<Void> createBook(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
-        if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()) == null) {
-            if (authorService.get(dto.getAuthorId().toString()) != null) {
-                Book book = new Book();
-                Author author = authorService.get(dto.getAuthorId().toString());
-                bookRepository.saveAndFlush(createOrCopyBook(book, author, dto));
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
+        Book book = new Book();
+        Author author = authorService.get(dto.getAuthorId().toString());
+        if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()) == null
+                && author != null) {
+            bookRepository.saveAndFlush(createOrCopyBook(book, author, dto));
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -178,7 +177,7 @@ public class ProseService {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    //########## CHARACTER STUFF ##########
+    //########## CHARACTER STUFF ##########//
 
     public ResponseEntity<Void> addCharacter(CharacterDto dto) {
         LOGGER.debug("Adding character: " + dto.toString());
@@ -201,6 +200,7 @@ public class ProseService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    //########## HELPER STUFF ##########//
 
     private Book getBookOrNull(String id) {
         long parsedId;
