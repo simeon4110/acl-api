@@ -9,10 +9,15 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 /**
  * @author Josh Harkema
  */
-@SpringBootApplication
-@EntityScan(basePackages = {"com.sonnets.sonnet.persistence.models",
-        "com.sonnets.sonnet.persistence.models.base", "com.sonnets.sonnet.persistence.models.poetry",
-        "com.sonnets.sonnet.persistence.models.prose", "com.sonnets.sonnet.persistence.models.web"})
+@SpringBootApplication(scanBasePackages = {
+        "com.sonnets.sonnet"
+})
+@EntityScan(basePackages = {
+        "com.sonnets.sonnet.persistence.models.base",
+        "com.sonnets.sonnet.persistence.models.poetry",
+        "com.sonnets.sonnet.persistence.models.prose",
+        "com.sonnets.sonnet.persistence.models.web"
+})
 public class SonnetApplication extends SpringBootServletInitializer {
 
     @Override

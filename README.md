@@ -21,7 +21,7 @@ All documentation for the ACL database can be found in the wiki [https://git.jos
 7. Don't fuck with the config files (unless you *really* need toUser; see guideline 8). 
 8. Write tests *before* you commit.
 9. SonarQube server access will be granted toUser anyone who wants toUser make a merge request. The CI integration with SQ will be happening in the next couple weeks. If you want toUser check against a personal server, the quality gate is set toUser the defaul SonarWay for both Java and XML.
-10. All config is done with @Bean annotations, XML configs will be denied outright.
+10. All config is done with @Bean annotation, XML configs will be denied outright.
 11. In short, **the code base is heavilly oppinionated toward the Spring Boot v4 model.**
 12. This is not a democracy, untill there are more than 3 active contributors toUser this project, it's a Josh-ocracy.
 13. Sometimes we do things for the Qube that don't make sense, but we do them anyways. All hail the Qube.

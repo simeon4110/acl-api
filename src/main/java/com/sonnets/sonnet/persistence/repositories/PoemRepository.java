@@ -21,4 +21,6 @@ public interface PoemRepository extends JpaRepository<Poem, Long> {
 
     List<Poem> findAllByConfirmation_ConfirmedAndConfirmation_PendingRevision(final boolean confirmed,
                                                                               final boolean pendingRevision);
+
+    Poem findByProcessed(final boolean processed);
 }

@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
+import com.sonnets.sonnet.tools.ParseParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,7 @@ public class AuthorService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    // Only admins can delete.
     public ResponseEntity<Void> delete(String id) {
         LOGGER.debug("Deleting author with id: " + id);
         Author author = getAuthorOrNull(id);
@@ -86,6 +88,7 @@ public class AuthorService {
     // Get an author by last name.
     public Author getByLastName(String lastName) {
         LOGGER.debug("Looking for author with last name: " + lastName);
+        lastName = ParseParam.parse(lastName);
         Optional<Author> author = authorRepository.findByLastName(lastName);
         return author.orElse(null);
     }

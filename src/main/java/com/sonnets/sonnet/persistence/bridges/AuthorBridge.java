@@ -16,7 +16,6 @@ public class AuthorBridge implements FieldBridge {
         Author author = (Author) o;
 
         luceneOptions.addFieldToDocument(s + ".firstName", author.getFirstName(), document);
-        luceneOptions.addFieldToDocument(s + ".middleName", author.getMiddleName(), document);
         luceneOptions.addFieldToDocument(s + ".lastName", author.getLastName(), document);
     }
 }

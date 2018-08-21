@@ -2,14 +2,11 @@ package com.sonnets.sonnet.persistence.dtos.prose;
 
 import javax.validation.constraints.NotEmpty;
 
-/**
- * @author Josh Harkema
- */
-public class BookDto {
+public class OtherDto {
     private Long id;
     @NotEmpty
     private String authorId;
-    @NotEmpty
+    private String category;
     private String title;
     private Integer publicationYear;
     @NotEmpty
@@ -19,9 +16,7 @@ public class BookDto {
     @NotEmpty
     private String period;
     @NotEmpty
-    private String category;
-    @NotEmpty
-    private String type;
+    private String text;
 
     public Long getId() {
         return id;
@@ -37,6 +32,14 @@ public class BookDto {
 
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getTitle() {
@@ -79,34 +82,26 @@ public class BookDto {
         this.period = period;
     }
 
-    public String getCategory() {
-        return category;
+    public String getText() {
+        return text;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setText(String text) {
+        this.text = text;
     }
 
     @Override
     public String toString() {
-        return "BookDto{" +
+        return "OtherDto{" +
                 "id=" + id +
                 ", authorId='" + authorId + '\'' +
+                ", category='" + category + '\'' +
                 ", title='" + title + '\'' +
                 ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
-                ", category='" + category + '\'' +
-                ", type='" + type + '\'' +
+                ", text='" + text + '\'' +
                 '}';
     }
 }

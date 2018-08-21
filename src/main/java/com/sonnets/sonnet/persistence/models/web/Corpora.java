@@ -1,9 +1,12 @@
 package com.sonnets.sonnet.persistence.models.web;
 
+import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.models.base.Version;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
@@ -12,6 +15,7 @@ import org.hibernate.search.annotations.DocumentId;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +27,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "corpora")
 @DiscriminatorValue("CORP")
-public class Corpora extends Auditable<String> {
+public class Corpora extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -3561569564692824043L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +45,10 @@ public class Corpora extends Auditable<String> {
             metaValues = {
                     @MetaValue(targetEntity = Book.class, value = "BOOK"),
                     @MetaValue(targetEntity = Poem.class, value = "POEM"),
-                    @MetaValue(targetEntity = Section.class, value = "SECT")
+                    @MetaValue(targetEntity = Section.class, value = "SECT"),
+                    @MetaValue(targetEntity = Other.class, value = "OTHR"),
+                    @MetaValue(targetEntity = Version.class, value = "VERS"),
+                    @MetaValue(targetEntity = Annotation.class, value = "ANNO")
             }
     )
     @Cascade({CascadeType.ALL})

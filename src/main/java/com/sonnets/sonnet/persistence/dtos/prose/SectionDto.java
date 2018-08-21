@@ -11,6 +11,7 @@ public class SectionDto {
     private String title;
     @NotEmpty
     private String text;
+    private String description;
     @NotNull
     private Long bookId;
     @NotNull
@@ -40,6 +41,14 @@ public class SectionDto {
         this.text = text;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Long getBookId() {
         return bookId;
     }
@@ -62,6 +71,7 @@ public class SectionDto {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
+                ", description='" + description + '\'' +
                 ", bookId=" + bookId +
                 ", authorId=" + authorId +
                 '}';

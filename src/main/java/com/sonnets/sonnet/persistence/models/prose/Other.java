@@ -9,59 +9,48 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.search.annotations.TermVector;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Sections are general purpose text objects stored in books. A section is *technically* standalone.
+ * A general use model for everthing that isnt' a book/poem/book section.
  *
  * @author Josh Harkema
  */
 @Indexed
 @Entity
-@DiscriminatorValue("SECT")
-public class Section extends Item implements Serializable {
-    private static final long serialVersionUID = -7556341244036061332L;
-    @Field(name = "section_title", store = Store.YES)
+@Table
+@DiscriminatorValue("OTHR")
+public class Other extends Item implements Serializable {
+    private static final long serialVersionUID = -1512828565413718191L;
+    @Field(name = "other_sub_type", store = Store.YES)
     @Column
-    private String title;
+    private String subType;
     @Column
     private Confirmation confirmation;
-    @Field(name = "section_text", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "other_text", store = Store.YES, termVector = TermVector.YES)
     @Column(columnDefinition = "MEDIUMTEXT")
     private String text;
     @Column
     private Annotation annotation;
     @OneToMany
     private List<Version> versions;
-    @Column
-    private boolean processed;
-    @Column
-    private Long parentId;
 
-    public Section() {
+    public Other() {
         super();
         this.confirmation = new Confirmation();
-        this.confirmation.setConfirmed(false);
-        this.confirmation.setPendingRevision(false);
-        this.versions = new ArrayList<>();
-        this.processed = false;
+        confirmation.setConfirmed(false);
+        confirmation.setPendingRevision(false);
     }
 
-    @Override
-    public String getTitle() {
-        return title;
+    public String getSubType() {
+        return subType;
     }
 
-    @Override
-    public void setTitle(String title) {
-        this.title = title;
+    public void setSubType(String subType) {
+        this.subType = subType;
     }
 
     public Confirmation getConfirmation() {
@@ -96,52 +85,32 @@ public class Section extends Item implements Serializable {
         this.versions = versions;
     }
 
-    public boolean isProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(boolean processed) {
-        this.processed = processed;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        Section section = (Section) o;
-        return processed == section.processed &&
-                Objects.equals(title, section.title) &&
-                Objects.equals(confirmation, section.confirmation) &&
-                Objects.equals(text, section.text) &&
-                Objects.equals(annotation, section.annotation) &&
-                Objects.equals(versions, section.versions) &&
-                Objects.equals(parentId, section.parentId);
+        Other other = (Other) o;
+        return Objects.equals(subType, other.subType) &&
+                Objects.equals(confirmation, other.confirmation) &&
+                Objects.equals(text, other.text) &&
+                Objects.equals(annotation, other.annotation) &&
+                Objects.equals(versions, other.versions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), title, confirmation, text, annotation, versions, processed, parentId);
+        return Objects.hash(super.hashCode(), subType, confirmation, text, annotation, versions);
     }
 
     @Override
     public String toString() {
-        return "Section{" +
-                "title='" + title + '\'' +
+        return "Other{" +
+                "subType='" + subType + '\'' +
                 ", confirmation=" + confirmation +
                 ", text='" + text + '\'' +
                 ", annotation=" + annotation +
                 ", versions=" + versions +
-                ", processed=" + processed +
-                ", parentId='" + parentId + '\'' +
                 "} " + super.toString();
     }
 }

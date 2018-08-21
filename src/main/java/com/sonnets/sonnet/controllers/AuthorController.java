@@ -37,7 +37,7 @@ public class AuthorController {
     // Modify an author.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secure/author/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/secure/author/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modify(@RequestBody @Valid AuthorDto authorDto) {
         return authorService.modify(authorDto);
     }

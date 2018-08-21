@@ -1,6 +1,12 @@
 package com.sonnets.sonnet.persistence.models.base;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TermVector;
+
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.io.Serializable;
 import java.util.Objects;
@@ -11,10 +17,13 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
+@Indexed
 @Entity
+@DiscriminatorValue("VERS")
 public class Version extends Item implements Serializable {
     private static final long serialVersionUID = 5008563910579946114L;
-    @Column(columnDefinition = "LONGTEXT")
+    @Field(name = "version_text", store = Store.YES, termVector = TermVector.YES)
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String text;
 
     public Version() {

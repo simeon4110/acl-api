@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -23,7 +22,6 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableResourceServer
-@Profile("mvc")
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private final DataSource dataSourceApi;
 

@@ -32,13 +32,19 @@ public class Poem extends Item implements Serializable {
     @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
     @ElementCollection
     private List<String> text;
-    @OneToMany
-    private List<Annotation> annotations;
+    @Column
+    private Annotation annotation;
     @OneToMany
     private List<Version> versions;
+    @Column
+    private boolean processed;
 
     public Poem() {
         super();
+        this.confirmation = new Confirmation();
+        this.confirmation.setConfirmed(false);
+        this.confirmation.setPendingRevision(false);
+        this.processed = false;
     }
 
     /**
@@ -80,12 +86,12 @@ public class Poem extends Item implements Serializable {
         this.text = text;
     }
 
-    public List<Annotation> getAnnotations() {
-        return annotations;
+    public Annotation getAnnotation() {
+        return annotation;
     }
 
-    public void setAnnotations(List<Annotation> annotations) {
-        this.annotations = annotations;
+    public void setAnnotation(Annotation annotation) {
+        this.annotation = annotation;
     }
 
     public List<Version> getVersions() {
@@ -96,22 +102,31 @@ public class Poem extends Item implements Serializable {
         this.versions = versions;
     }
 
+    public boolean isProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Poem poem = (Poem) o;
-        return Objects.equals(form, poem.form) &&
+        return processed == poem.processed &&
+                Objects.equals(form, poem.form) &&
                 Objects.equals(confirmation, poem.confirmation) &&
                 Objects.equals(text, poem.text) &&
-                Objects.equals(annotations, poem.annotations) &&
+                Objects.equals(annotation, poem.annotation) &&
                 Objects.equals(versions, poem.versions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), form, confirmation, text, annotations, versions);
+        return Objects.hash(super.hashCode(), form, confirmation, text, annotation, versions, processed);
     }
 
     @Override
@@ -120,8 +135,9 @@ public class Poem extends Item implements Serializable {
                 "form='" + form + '\'' +
                 ", confirmation=" + confirmation +
                 ", text=" + text +
-                ", annotations=" + annotations +
+                ", annotation=" + annotation +
                 ", versions=" + versions +
+                ", processed=" + processed +
                 "} " + super.toString();
     }
 }

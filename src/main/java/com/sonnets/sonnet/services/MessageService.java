@@ -33,7 +33,7 @@ public class MessageService {
         this.userDetailsService = userDetailsService;
     }
 
-    void sendAdminMessage(MessageDto messageDto) {
+    public void sendAdminMessage(MessageDto messageDto) {
         LOGGER.debug("Sending admin message: " + messageDto.toString());
         Message message = new Message();
 

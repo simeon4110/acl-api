@@ -59,6 +59,21 @@ public class PoemService {
         return strings;
     }
 
+    private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
+        poem.setAuthor(author);
+        poem.setCategory("POETRY");
+        poem.setTitle(dto.getTitle());
+        poem.setConfirmation(new Confirmation());
+        poem.setPublicationYear(dto.getPublicationYear());
+        poem.setPublicationStmt(dto.getPublicationStmt());
+        poem.setSourceDesc(dto.getSourceDesc());
+        poem.setPeriod(dto.getPeriod());
+        poem.setForm(dto.getForm());
+        poem.setText(parseText(dto.getText()));
+
+        return poem;
+    }
+
     public ResponseEntity<Void> add(PoemDto dto) {
         LOGGER.debug("Adding poem: " + dto.toString());
         // Check if poem already exists.
@@ -76,21 +91,6 @@ public class PoemService {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
-        poem.setAuthor(author);
-        poem.setCategory("POETRY");
-        poem.setTitle(dto.getTitle());
-        poem.setConfirmation(new Confirmation());
-        poem.setPublicationYear(dto.getPublicationYear());
-        poem.setPublicationStmt(dto.getPublicationStmt());
-        poem.setSourceDesc(dto.getSourceDesc());
-        poem.setPeriod(dto.getPeriod());
-        poem.setForm(dto.getForm());
-        poem.setText(parseText(dto.getText()));
-
-        return poem;
     }
 
     // Admin - modify poem.
@@ -241,6 +241,16 @@ public class PoemService {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    public Poem getUnprocessed() {
+        LOGGER.debug("Returning an unprocessed poem");
+        return poemRepository.findByProcessed(false);
+    }
+
+    public void save(Poem poem) {
+        LOGGER.debug("Saving poem: " + poem.toString());
+        poemRepository.saveAndFlush(poem);
     }
 
     private Poem getPoemOrNull(String id) {

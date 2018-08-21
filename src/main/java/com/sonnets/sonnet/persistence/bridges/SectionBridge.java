@@ -5,6 +5,8 @@ import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
 
+import java.util.Collection;
+
 /**
  * Bridge for indexing (lucene) embedded section objects.
  *
@@ -13,9 +15,11 @@ import org.hibernate.search.bridge.LuceneOptions;
 public class SectionBridge implements FieldBridge {
     @Override
     public void set(String s, Object o, Document document, LuceneOptions luceneOptions) {
-        Section section = (Section) o;
+        Collection<Section> sections = (Collection<Section>) o;
 
-        luceneOptions.addFieldToDocument(s + ".title", section.getTitle(), document);
-        luceneOptions.addFieldToDocument(s + ".text", section.getText(), document);
+        for (Section section : sections) {
+            luceneOptions.addFieldToDocument(section + ".title", section.getTitle(), document);
+            luceneOptions.addFieldToDocument(section + ".text", section.getText(), document);
+        }
     }
 }

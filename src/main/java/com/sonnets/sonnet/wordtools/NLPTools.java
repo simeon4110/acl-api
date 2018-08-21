@@ -62,7 +62,7 @@ public class NLPTools {
      * @param text the string to load and strip.
      * @return the loaded and stripped CoreDocument.
      */
-    private static CoreDocument loadDocument(String text) {
+    public static CoreDocument loadDocument(String text) {
         text = text.replace(",", "");
         text = text.replace(";", "");
         text = text.replace(":", "");
