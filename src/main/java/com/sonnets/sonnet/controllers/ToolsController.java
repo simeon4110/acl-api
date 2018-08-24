@@ -2,10 +2,12 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.services.ToolsService;
+import com.sonnets.sonnet.wordtools.MalletTools;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +20,11 @@ import java.util.Map;
 public class ToolsController {
     private static final String ALLOWED_ORIGIN = "*";
     private final ToolsService toolsService;
+    private final MalletTools malletTools;
 
     public ToolsController(ToolsService toolsService) {
         this.toolsService = toolsService;
+        this.malletTools = new MalletTools();
     }
 
     /**
@@ -87,5 +91,16 @@ public class ToolsController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Integer> getFrequencyDistribution(@RequestBody @Valid TextDto textDto) {
         return toolsService.frequencyDistribution(textDto);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PostMapping(value = "/tools/text/topic_model", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<Integer, Map<Double, String>> runTopicModel(@RequestBody @Valid TextDto textDto) {
+        try {
+            return malletTools.topicModel(textDto.getText(), textDto.getNumberOfTopics());
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

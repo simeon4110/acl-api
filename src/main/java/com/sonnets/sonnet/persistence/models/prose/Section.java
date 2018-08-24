@@ -1,9 +1,6 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
-import com.sonnets.sonnet.persistence.models.base.Annotation;
-import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.base.Item;
-import com.sonnets.sonnet.persistence.models.base.Version;
+import com.sonnets.sonnet.persistence.models.base.*;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Store;
@@ -44,6 +41,8 @@ public class Section extends Item implements Serializable {
     private boolean processed;
     @Column
     private Long parentId;
+    @Column
+    private TopicModel topicModel;
 
     public Section() {
         super();
@@ -112,6 +111,14 @@ public class Section extends Item implements Serializable {
         this.parentId = parentId;
     }
 
+    public TopicModel getTopicModel() {
+        return topicModel;
+    }
+
+    public void setTopicModel(TopicModel topicModel) {
+        this.topicModel = topicModel;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -124,12 +131,14 @@ public class Section extends Item implements Serializable {
                 Objects.equals(text, section.text) &&
                 Objects.equals(annotation, section.annotation) &&
                 Objects.equals(versions, section.versions) &&
-                Objects.equals(parentId, section.parentId);
+                Objects.equals(parentId, section.parentId) &&
+                Objects.equals(topicModel, section.topicModel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), title, confirmation, text, annotation, versions, processed, parentId);
+        return Objects.hash(super.hashCode(), title, confirmation, text, annotation, versions, processed, parentId,
+                topicModel);
     }
 
     @Override
@@ -141,7 +150,8 @@ public class Section extends Item implements Serializable {
                 ", annotation=" + annotation +
                 ", versions=" + versions +
                 ", processed=" + processed +
-                ", parentId='" + parentId + '\'' +
+                ", parentId=" + parentId +
+                ", topicModel=" + topicModel +
                 "} " + super.toString();
     }
 }

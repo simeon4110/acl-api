@@ -111,23 +111,22 @@ public class SearchService {
                                                            final String title, final int publicationYear,
                                                            final String period, final String text,
                                                            final String form) {
-        LOGGER.debug("Parsing search: " + firstName + " " + lastName + " " + title + " " + period + " " + text);
+        LOGGER.debug("Parsing search: " + firstName + " " + lastName + " " + title + " " + period + " " + text +
+                " " + form);
         BooleanQuery.Builder booleanClauses = new BooleanQuery.Builder();
 
         // Add first name.
         if (!Objects.equals(firstName, "") && firstName != null) {
-            LOGGER.debug(FIRST_NAME);
+            LOGGER.debug(FIRST_NAME + ", " + firstName);
             TermQuery tq = new TermQuery(new Term(FIRST_NAME, firstName));
             booleanClauses.add(tq, BooleanClause.Occur.MUST);
         }
 
         // Add last name.
         if (!Objects.equals(lastName, "") && lastName != null) {
-            LOGGER.debug(LAST_NAME);
-            FuzzyQuery fq = new FuzzyQuery(
-                    new Term(LAST_NAME, lastName),
-                    EDIT_DISTANCE, PREFIX_LENGTH, MAX_EXPANSIONS, true);
-            booleanClauses.add(fq, BooleanClause.Occur.MUST);
+            LOGGER.debug(LAST_NAME + ", " + lastName);
+            TermQuery tq = new TermQuery(new Term(LAST_NAME, lastName));
+            booleanClauses.add(tq, BooleanClause.Occur.MUST);
         }
 
         // Add title.
@@ -168,8 +167,8 @@ public class SearchService {
         }
 
         // Add form search.
-        if (form != null) {
-            LOGGER.debug(FORM);
+        if (!Objects.equals(form, "") && form != null) {
+            LOGGER.debug(FORM + ", " + form);
             TermQuery tq = new TermQuery(new Term(FORM, form));
             booleanClauses.add(tq, BooleanClause.Occur.MUST);
         }

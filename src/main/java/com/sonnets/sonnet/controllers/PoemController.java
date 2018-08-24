@@ -55,7 +55,7 @@ public class PoemController {
 
     // Get list of poems by list of ids.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @GetMapping(value = "/poems/by_id/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/poems/by_ids/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getPoemsByIds(@PathVariable String[] ids) {
         return poemService.getByIds(ids);
     }

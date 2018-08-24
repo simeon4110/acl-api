@@ -146,6 +146,27 @@ public class NLPTools {
         return result;
     }
 
+    public String getLemmatizedWords(String textToLemmatize) {
+        textToLemmatize = textToLemmatize.replace("-", " ");
+        textToLemmatize = textToLemmatize.replaceAll("\\p{Punct}", "");
+        textToLemmatize = textToLemmatize.replaceAll("[0-9]", "");
+        textToLemmatize = textToLemmatize.replace("\n", " ");
+
+        Document document = new Document(textToLemmatize);
+        StringBuilder result = new StringBuilder();
+
+        for (Sentence sentence : document.sentences()) {
+            for (int i = 0; i < sentence.length() - 1; i++) {
+                if (!STOP_WORDS.contains(sentence.word(i).toLowerCase()) && sentence.nerTag(i).equals("O")) {
+                    System.out.println(sentence.word(i));
+                    result.append(sentence.word(i));
+                    result.append(" ");
+                }
+            }
+        }
+        return result.toString();
+    }
+
     /**
      * Automatic NER (Named Entity Recognition) tagging.
      *

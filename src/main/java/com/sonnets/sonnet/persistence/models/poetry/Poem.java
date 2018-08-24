@@ -22,7 +22,7 @@ import java.util.Objects;
 @DiscriminatorValue("POEM")
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
-    @Field(name = "form", store = Store.YES)
+    @Field(name = "form", store = Store.YES, termVector = TermVector.NO)
     @Column
     private String form; // The form of genre of the poem.
     @Column
