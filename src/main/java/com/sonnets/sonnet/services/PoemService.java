@@ -195,7 +195,7 @@ public class PoemService {
         Random random = new Random();
         List<Poem> twoRandom = new ArrayList<>();
         long count = poemRepository.countByForm("SONNET");
-        while (twoRandom.size() <= 2) {
+        while (twoRandom.size() <= NUMBER_OF_RANDOM_SONNETS) {
             Poem poem = getPoemOrNull(String.valueOf(random.nextInt((int) count)));
             if (poem != null) {
                 twoRandom.add(poem);
@@ -242,7 +242,7 @@ public class PoemService {
 
     public Poem getUnprocessed() {
         LOGGER.debug("Returning an unprocessed poem");
-        return poemRepository.findByProcessed(false);
+        return poemRepository.findFirstByProcessed(false);
     }
 
     public void save(Poem poem) {

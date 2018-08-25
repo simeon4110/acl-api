@@ -10,9 +10,12 @@ import java.util.List;
  *
  * @author Josh Harkema
  */
-public interface PoemConverter {
-    Logger LOGGER = Logger.getLogger(PoemConverter.class);
-    String SEPARATOR = ", ";
+public abstract class PoemConverter {
+    private static final Logger LOGGER = Logger.getLogger(PoemConverter.class);
+    private static final String SEPARATOR = ", ";
+
+    private PoemConverter() {
+    }
 
     /**
      * Converts a Poem object into an XML string.
@@ -20,7 +23,7 @@ public interface PoemConverter {
      * @param poem a Poem object.
      * @return and XML string.
      */
-    static String poemToXML(Poem poem) {
+    public static String poemToXML(Poem poem) {
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append("\n<poem>");
@@ -52,7 +55,7 @@ public interface PoemConverter {
      * @param poems a list of poems.
      * @return a string of csv separated poems (one poem per line).
      */
-    static String poemsToCSV(List<Poem> poems) {
+    public static String poemsToCSV(List<Poem> poems) {
         StringBuilder sb = new StringBuilder();
 
         for (Poem p : poems) {
@@ -89,7 +92,7 @@ public interface PoemConverter {
      * @param poem the poem to convert.
      * @return a TEI formatted poem.
      */
-    static String poemToTEI(Poem poem) {
+    public static String poemToTEI(Poem poem) {
         StringBuilder sb = new StringBuilder();
 
         // TEI header data.
@@ -133,7 +136,7 @@ public interface PoemConverter {
      * @param poems the poems to convert.
      * @return a string with all the poems.
      */
-    static String poemsToText(List<Poem> poems) {
+    public static String poemsToText(List<Poem> poems) {
         StringBuilder sb = new StringBuilder();
         for (Poem p : poems) {
             for (String s : p.getText()) {

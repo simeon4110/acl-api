@@ -1,15 +1,10 @@
 package com.sonnets.sonnet.wordtools;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
-import edu.stanford.nlp.util.CoreMap;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -74,46 +69,6 @@ public class NLPTools {
     }
 
     /**
-     * THIS IS REALLY SLOW!! DON'T USE IT.
-     *
-     * @param text           the text to analyze.
-     * @param annotationType the type of annotation wanted.
-     * @return the annotations.
-     */
-    public List<List<String>> getAnnotations(String text, AnnotationType annotationType) {
-        text = text.replace(",", "");
-        text = text.replace(";", "");
-        text = text.replace(":", "");
-        text = text.replace("'s", "");
-        text = text.replace("\n", " ");
-        Annotation document = new Annotation(text);
-        pipeline.annotate(document);
-
-        List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
-        List<List<String>> annotations = new ArrayList<>();
-
-        for (CoreMap sentence : sentences) {
-            List<String> sentArr = new ArrayList<>();
-            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
-                if (annotationType.equals(AnnotationType.PART_OF_SPEECH)) {
-                    sentArr.add(token.get(CoreAnnotations.PartOfSpeechAnnotation.class));
-                }
-                if (annotationType.equals(AnnotationType.LEMMA)) {
-                    sentArr.add(token.get(CoreAnnotations.LemmaAnnotation.class));
-                }
-                if (annotationType.equals(AnnotationType.NAMED_ENTITY)) {
-                    sentArr.add(token.get(CoreAnnotations.NamedEntityTagAnnotation.class));
-                }
-                if (annotationType.equals(AnnotationType.SENTIMENT)) {
-                    sentArr.add(token.get(SentimentCoreAnnotations.SentimentClass.class));
-                }
-            }
-            annotations.add(sentArr);
-        }
-        return annotations;
-    }
-
-    /**
      * This method is a fast way to lemmatize a large volume of text.
      *
      * @param textDto the text and optional list of custom stop words.
@@ -146,7 +101,7 @@ public class NLPTools {
         return result;
     }
 
-    public String getLemmatizedWords(String textToLemmatize) {
+    String getLemmatizedWords(String textToLemmatize) {
         textToLemmatize = textToLemmatize.replace("-", " ");
         textToLemmatize = textToLemmatize.replaceAll("\\p{Punct}", "");
         textToLemmatize = textToLemmatize.replaceAll("[0-9]", "");
@@ -158,34 +113,11 @@ public class NLPTools {
         for (Sentence sentence : document.sentences()) {
             for (int i = 0; i < sentence.length() - 1; i++) {
                 if (!STOP_WORDS.contains(sentence.word(i).toLowerCase()) && sentence.nerTag(i).equals("O")) {
-                    System.out.println(sentence.word(i));
                     result.append(sentence.word(i));
                     result.append(" ");
                 }
             }
         }
         return result.toString();
-    }
-
-    /**
-     * Automatic NER (Named Entity Recognition) tagging.
-     *
-     * @param text the String to tag.
-     * @return a list of results.
-     */
-    public List<List<String>> nerTag(String text) {
-        CoreDocument document = loadDocument(text);
-        List<List<String>> results = new ArrayList<>();
-        for (int i = 0; i < document.sentences().size() - 1; i++) {
-            results.add(document.sentences().get(i).nerTags());
-        }
-        return results;
-    }
-
-    public enum AnnotationType {
-        PART_OF_SPEECH,
-        LEMMA,
-        NAMED_ENTITY,
-        SENTIMENT
     }
 }

@@ -8,8 +8,6 @@ import cc.mallet.pipe.iterator.StringArrayIterator;
 import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.topics.TopicInferencer;
 import cc.mallet.types.*;
-import org.apache.log4j.Logger;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,13 +19,20 @@ import java.util.regex.Pattern;
  * @author Josh Harkema
  */
 public class MalletTools {
-    private static final Logger LOGGER = Logger.getLogger(MalletTools.class);
     private static final double ALPHA_SUM = 1.0D;
     private static final double BETA = 0.01D;
     private static final int NUM_THREADS = 2;
     private static final int NUM_ITERATIONS = 1500; // 1500 - 2000 is best.
     private static final int TOP_WORDS = 5;
+    private static final int FINAL_ITERATIONS = 10;
+    private static final int FINAL_THINNING = 1;
+    private static final int FINAL_BURN_IN = 5;
 
+    private static MalletTools ourInstance = new MalletTools();
+
+    public static MalletTools getInstance() {
+        return ourInstance;
+    }
     /**
      * Execute a very simple LDA topic model.
      *
@@ -36,7 +41,6 @@ public class MalletTools {
      * @return an array of topics where item 0 is the most likely.
      * @throws IOException if the stop words list cannot be found.
      */
-    @Async
     public Map<Integer, Map<Double, String>> topicModel(final String text, final int numberOfTopics)
             throws IOException {
         // Run the words through the lemmatizer and stop word filter.
@@ -71,7 +75,6 @@ public class MalletTools {
         for (int position = 0; position < tokens.getLength(); position++) {
             out.format("%s-%d ", alphabet.lookupObject(tokens.getIndexAtPosition(position)),
                     topics.getIndexAtPosition(position));
-            LOGGER.debug(out);
         }
 
         double[] topicDistribution = model.getTopicProbabilities(0);
@@ -84,11 +87,11 @@ public class MalletTools {
         Formatter outItem;
         // Log the sequence and probabilities after each 10 generations.
         for (int i = 0; i < numberOfTopics; i++) {
-            iterator = ((TreeSet) topicSortedWords.get(i)).iterator();
+            iterator = topicSortedWords.get(i).iterator();
             out = new Formatter(new StringBuilder(), Locale.US);
             outItem = new Formatter(new StringBuilder(), Locale.US);
             out.format("%.3f\t -- ", topicDistribution[i]);
-            for (rank = 0; iterator.hasNext() && rank < 5; ++rank) {
+            for (rank = 0; iterator.hasNext() && rank < TOP_WORDS; ++rank) {
                 idCountPair = (IDSorter) iterator.next();
                 out.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
                 outItem.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
@@ -100,7 +103,7 @@ public class MalletTools {
 
         // Create a new instance with high probability of topic 0
         StringBuilder topicZeroText = new StringBuilder();
-        iterator = ((TreeSet) topicSortedWords.get(0)).iterator();
+        iterator = topicSortedWords.get(0).iterator();
 
         for (rank = 0; iterator.hasNext() && rank < TOP_WORDS; ++rank) {
             idCountPair = (IDSorter) iterator.next();
@@ -113,7 +116,7 @@ public class MalletTools {
 
         TopicInferencer inferencer = model.getInferencer();
         double[] testProbabilities = inferencer.getSampledDistribution(
-                testing.get(0), 10, 1, 5
+                testing.get(0), FINAL_ITERATIONS, FINAL_THINNING, FINAL_BURN_IN
         );
 
         // Place the total prob of item 0 in the hash map at key -1 and print the results for debug.

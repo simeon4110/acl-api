@@ -26,7 +26,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @FieldBridge(impl = AuthorBridge.class)
     @ManyToOne(fetch = FetchType.EAGER)
     private Author author;
-    @Field(name = "title", store = Store.YES)
+    @Field(name = "title", store = Store.YES, analyze = Analyze.YES)
     @Column
     private String title;
     @Column
@@ -36,10 +36,10 @@ public abstract class Item extends Auditable<String> implements Serializable {
     private Integer publicationYear;
     @Column
     private String publicationStmt;
-    @Field(name = "source", analyze = Analyze.NO)
+    @Field(name = "source", store = Store.YES, analyze = Analyze.NO)
     @Column
     private String sourceDesc;
-    @Field(name = "period", analyze = Analyze.NO)
+    @Field(name = "period", store = Store.YES, analyze = Analyze.NO)
     @Column
     private String period;
 
@@ -126,7 +126,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
         if (!super.equals(o)) return false;
         Item item = (Item) o;
         return Objects.equals(id, item.id) &&
-                category == item.category &&
+                category.equals(item.category) &&
                 Objects.equals(author, item.author) &&
                 Objects.equals(title, item.title) &&
                 Objects.equals(description, item.description) &&

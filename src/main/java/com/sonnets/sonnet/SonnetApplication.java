@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author Josh Harkema
@@ -18,6 +19,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
         "com.sonnets.sonnet.persistence.models.prose",
         "com.sonnets.sonnet.persistence.models.web"
 })
+@EnableScheduling
 public class SonnetApplication extends SpringBootServletInitializer {
 
     @Override

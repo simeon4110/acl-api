@@ -3,6 +3,8 @@ package com.sonnets.sonnet.persistence.models.poetry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -36,7 +38,8 @@ public class Poem extends Item implements Serializable {
     @Column
     private Annotation annotation;
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Version> versions;
     @JsonIgnore
     @Column

@@ -37,6 +37,7 @@ public class SearchService {
     private static final Logger LOGGER = Logger.getLogger(SearchService.class);
     // Numeric range query settings.
     private static final int INT_DISTANCE = 20;
+
     // General field names.
     private static final String CATEGORY = "category";
     private static final int PRECISION_STEP = 2;
@@ -108,7 +109,7 @@ public class SearchService {
 
         // Add publication year as a numeric range query.
         if (dto.getPublicationYear() != 0) {
-            LOGGER.debug("Year: " + String.valueOf(dto.getPublicationYear()));
+            LOGGER.debug("Year: " + dto.getPublicationYear());
             query.add(NumericRangeQuery.newIntRange(
                     YEAR, PRECISION_STEP, dto.getPublicationYear() - INT_DISTANCE,
                     dto.getPublicationYear() + INT_DISTANCE, true, true
@@ -185,7 +186,7 @@ public class SearchService {
     }
 
     // Public entry method.
-    public Page<?> search(SearchDto dto, Pageable pageable) {
+    public Page search(SearchDto dto, Pageable pageable) {
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         Query query = parseQuery(dto);
         FullTextQuery fullTextQuery = manager.createFullTextQuery(query,

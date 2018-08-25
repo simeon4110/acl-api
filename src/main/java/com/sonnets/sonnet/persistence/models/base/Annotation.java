@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author Josh Harkema
  */
 @Entity
-public class Annotation extends Auditable<String> implements Serializable {
+public class Annotation implements Serializable {
     private static final long serialVersionUID = -7131872492811694640L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +22,6 @@ public class Annotation extends Auditable<String> implements Serializable {
     @Lob
     @Column(columnDefinition = "BLOB")
     private byte[] annotationBlob;
-    @Column
-    private String description;
 
     public Annotation() {
         super();
@@ -45,28 +43,18 @@ public class Annotation extends Auditable<String> implements Serializable {
         this.annotationBlob = annotationBlob;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         Annotation that = (Annotation) o;
         return Objects.equals(id, that.id) &&
-                Arrays.equals(annotationBlob, that.annotationBlob) &&
-                Objects.equals(description, that.description);
+                Arrays.equals(annotationBlob, that.annotationBlob);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(super.hashCode(), id, description);
+        int result = Objects.hash(id);
         result = 31 * result + Arrays.hashCode(annotationBlob);
         return result;
     }
@@ -76,7 +64,6 @@ public class Annotation extends Auditable<String> implements Serializable {
         return "Annotation{" +
                 "id=" + id +
                 ", annotationBlob=" + Arrays.toString(annotationBlob) +
-                ", description='" + description + '\'' +
-                "} " + super.toString();
+                '}';
     }
 }

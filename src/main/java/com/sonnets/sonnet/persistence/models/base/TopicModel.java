@@ -9,22 +9,28 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Stores pre-loaded topic models.
+ *
+ * @author Josh Harkema
+ */
 @Indexed
 @Embeddable
 public class TopicModel implements Serializable {
     private static final long serialVersionUID = -8369936995631566616L;
     @Field(name = "topic_model", store = Store.YES, analyze = Analyze.NO)
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<Integer, String> model;
+    @ElementCollection(targetClass = HashMap.class, fetch = FetchType.EAGER)
+    private Map<Integer, Map<Double, String>> model;
 
-    public Map<Integer, String> getModel() {
+    public Map<Integer, Map<Double, String>> getModel() {
         return model;
     }
 
-    public void setModel(Map<Integer, String> model) {
+    public void setModel(Map<Integer, Map<Double, String>> model) {
         this.model = model;
     }
 

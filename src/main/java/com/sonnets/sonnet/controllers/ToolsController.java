@@ -93,6 +93,7 @@ public class ToolsController {
         return toolsService.frequencyDistribution(textDto);
     }
 
+    // :TODO: Move this logic into the tools service.
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PostMapping(value = "/tools/text/topic_model", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

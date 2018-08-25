@@ -6,9 +6,7 @@ package com.sonnets.sonnet.tools;
  * @author Josh Harkema
  */
 public interface ParseParam {
-    String SEPARATOR = "_";
-
     static String parse(String toParse) {
-        return toParse.replace(SEPARATOR, " ").toLowerCase();
+        return toParse.replace("_", " ").toLowerCase();
     }
 }

@@ -25,7 +25,7 @@ public interface PoemRepository extends JpaRepository<Poem, Long> {
             final String createdBy
     );
 
-    Poem findByProcessed(final boolean processed);
+    Poem findFirstByProcessed(final boolean processed);
 
     Long countByForm(final String form);
 }

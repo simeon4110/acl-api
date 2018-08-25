@@ -171,4 +171,9 @@ public class SectionService {
         LOGGER.debug("Returning an unprocessed section.");
         return sectionRepository.findByProcessed(false).orElse(null);
     }
+
+    public void save(Section section) {
+        LOGGER.debug("Saving section: " + section.getId());
+        sectionRepository.saveAndFlush(section);
+    }
 }

@@ -35,7 +35,6 @@ public class AnnotationService {
     }
 
     private static Annotation copyParentDetails(Annotation annotation, AnnotationDto dto) {
-        annotation.setDescription(dto.getDescription());
         annotation.setAnnotationBlob(null);
         return annotation;
     }
