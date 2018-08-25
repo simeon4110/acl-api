@@ -1,15 +1,13 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
 import com.sonnets.sonnet.persistence.models.base.*;
+import com.sonnets.sonnet.persistence.models.base.Version;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.search.annotations.TermVector;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +23,17 @@ import java.util.Objects;
 @DiscriminatorValue("SECT")
 public class Section extends Item implements Serializable {
     private static final long serialVersionUID = -7556341244036061332L;
-    @Field(name = "section_title", store = Store.YES)
+    @Field(name = "section_title", store = Store.YES, termVector = TermVector.YES)
     @Column
     private String title;
     @Column
     private Confirmation confirmation;
-    @Field(name = "section_text", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
     @Column(columnDefinition = "MEDIUMTEXT")
     private String text;
     @Column
     private Annotation annotation;
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Version> versions;
     @Column
     private boolean processed;

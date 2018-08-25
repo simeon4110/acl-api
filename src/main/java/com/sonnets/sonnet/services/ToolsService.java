@@ -21,7 +21,7 @@ import java.util.Map;
  * @author Josh Harkema
  */
 @Service
-public class ToolsService {
+public class ToolsService implements FrequencyDistribution, KWIC {
     private static final Logger LOGGER = Logger.getLogger(ToolsService.class);
     private static final NLPTools pipeline = NLPTools.getInstance();
     private final ItemService itemService;

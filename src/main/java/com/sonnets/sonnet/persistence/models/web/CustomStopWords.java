@@ -20,7 +20,7 @@ public class CustomStopWords extends Auditable<String> implements Serializable {
     @Column
     private String name;
     @Column
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> words;
 
     public CustomStopWords() {

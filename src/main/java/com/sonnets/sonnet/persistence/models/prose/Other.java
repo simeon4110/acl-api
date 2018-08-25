@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.base.Item;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A general use model for everthing that isnt' a book/poem/book section.
+ * A general use model for everything that isn't a book/poem/book section.
  *
  * @author Josh Harkema
  */
@@ -35,7 +36,8 @@ public class Other extends Item implements Serializable {
     private String text;
     @Column
     private Annotation annotation;
-    @OneToMany
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Version> versions;
 
     public Other() {

@@ -10,12 +10,9 @@ import java.util.List;
  *
  * @author Josh Harkema
  */
-public abstract class PoemConverter {
-    private static final Logger LOGGER = Logger.getLogger(PoemConverter.class);
-    private static final String SEPARATOR = ", ";
-
-    private PoemConverter() {
-    }
+public interface PoemConverter {
+    Logger LOGGER = Logger.getLogger(PoemConverter.class);
+    String SEPARATOR = ", ";
 
     /**
      * Converts a Poem object into an XML string.
@@ -23,7 +20,7 @@ public abstract class PoemConverter {
      * @param poem a Poem object.
      * @return and XML string.
      */
-    public static String poemToXML(Poem poem) {
+    static String poemToXML(Poem poem) {
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append("\n<poem>");
@@ -46,7 +43,6 @@ public abstract class PoemConverter {
         sb.append("\n</poem>");
 
         LOGGER.debug("Raw XML:\n" + sb.toString());
-
         return sb.toString();
     }
 
@@ -56,7 +52,7 @@ public abstract class PoemConverter {
      * @param poems a list of poems.
      * @return a string of csv separated poems (one poem per line).
      */
-    public static String poemsToCSV(List<Poem> poems) {
+    static String poemsToCSV(List<Poem> poems) {
         StringBuilder sb = new StringBuilder();
 
         for (Poem p : poems) {
@@ -64,7 +60,6 @@ public abstract class PoemConverter {
         }
 
         LOGGER.debug("Raw CSV:\n" + sb.toString());
-
         return sb.toString();
     }
 
@@ -85,7 +80,6 @@ public abstract class PoemConverter {
         }
 
         sb.append("\n");
-
         return sb.toString();
     }
 
@@ -95,7 +89,7 @@ public abstract class PoemConverter {
      * @param poem the poem to convert.
      * @return a TEI formatted poem.
      */
-    public static String poemToTEI(Poem poem) {
+    static String poemToTEI(Poem poem) {
         StringBuilder sb = new StringBuilder();
 
         // TEI header data.
@@ -139,14 +133,13 @@ public abstract class PoemConverter {
      * @param poems the poems to convert.
      * @return a string with all the poems.
      */
-    public static String poemsToText(List<Poem> poems) {
+    static String poemsToText(List<Poem> poems) {
         StringBuilder sb = new StringBuilder();
         for (Poem p : poems) {
             for (String s : p.getText()) {
                 sb.append(s.trim()).append("\n");
             }
         }
-
         return sb.toString();
     }
 }

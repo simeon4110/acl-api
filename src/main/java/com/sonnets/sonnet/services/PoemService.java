@@ -167,14 +167,10 @@ public class PoemService {
 
     public Poem getPoemToConfirm(Principal principal) {
         LOGGER.debug("Returning first unconfirmed poem not submitted by: " + principal.getName());
-        List<Poem> poems = poemRepository
-                .findAllByConfirmation_ConfirmedAndConfirmation_PendingRevision(false, false);
-        for (Poem p : poems) {
-            if (!p.getCreatedBy().equals(principal.getName())) {
-                return p;
-            }
-        }
-        return null;
+        return poemRepository
+                .findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNot(
+                        false, false, principal.getName()
+                );
     }
 
     public Poem getById(String id) {
@@ -197,14 +193,15 @@ public class PoemService {
     public List<Poem> getTwoRandomSonnets() {
         LOGGER.debug("Returning two random sonnets.");
         Random random = new Random();
-        List<Poem> sonnets = getAllByForm("SONNET");
-        List<Poem> randomSonnets = new ArrayList<>();
-
-        while (randomSonnets.size() < NUMBER_OF_RANDOM_SONNETS) {
-            Poem randomElement = sonnets.get(random.nextInt(sonnets.size()));
-            randomSonnets.add(randomElement);
+        List<Poem> twoRandom = new ArrayList<>();
+        long count = poemRepository.countByForm("SONNET");
+        while (twoRandom.size() <= 2) {
+            Poem poem = getPoemOrNull(String.valueOf(random.nextInt((int) count)));
+            if (poem != null) {
+                twoRandom.add(poem);
+            }
         }
-        return randomSonnets;
+        return twoRandom;
     }
 
     public List<Poem> getAll() {

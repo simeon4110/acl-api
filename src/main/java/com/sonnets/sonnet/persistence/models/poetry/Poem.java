@@ -1,8 +1,7 @@
 package com.sonnets.sonnet.persistence.models.poetry;
 
-import com.sonnets.sonnet.persistence.models.base.Annotation;
-import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.base.Item;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import org.hibernate.search.annotations.*;
 
@@ -22,22 +21,28 @@ import java.util.Objects;
 @DiscriminatorValue("POEM")
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
-    @Field(name = "form", store = Store.YES, termVector = TermVector.NO)
+    @Field(name = "poem_form", store = Store.YES, termVector = TermVector.NO)
     @Column
     private String form; // The form of genre of the poem.
+    @JsonIgnore
     @Column
     private Confirmation confirmation;
     @Column
     @IndexedEmbedded
     @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> text;
+    @JsonIgnore
     @Column
     private Annotation annotation;
-    @OneToMany
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Version> versions;
+    @JsonIgnore
     @Column
     private boolean processed;
+    @Column
+    private TopicModel topicModel;
 
     public Poem() {
         super();
@@ -110,6 +115,14 @@ public class Poem extends Item implements Serializable {
         this.processed = processed;
     }
 
+    public TopicModel getTopicModel() {
+        return topicModel;
+    }
+
+    public void setTopicModel(TopicModel topicModel) {
+        this.topicModel = topicModel;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -121,12 +134,13 @@ public class Poem extends Item implements Serializable {
                 Objects.equals(confirmation, poem.confirmation) &&
                 Objects.equals(text, poem.text) &&
                 Objects.equals(annotation, poem.annotation) &&
-                Objects.equals(versions, poem.versions);
+                Objects.equals(versions, poem.versions) &&
+                Objects.equals(topicModel, poem.topicModel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), form, confirmation, text, annotation, versions, processed);
+        return Objects.hash(super.hashCode(), form, confirmation, text, annotation, versions, processed, topicModel);
     }
 
     @Override
@@ -138,6 +152,7 @@ public class Poem extends Item implements Serializable {
                 ", annotation=" + annotation +
                 ", versions=" + versions +
                 ", processed=" + processed +
+                ", topicModel=" + topicModel +
                 "} " + super.toString();
     }
 }

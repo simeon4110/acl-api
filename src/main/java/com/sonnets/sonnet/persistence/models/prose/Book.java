@@ -22,6 +22,7 @@ import java.util.Objects;
 @DiscriminatorValue("BOOK")
 public class Book extends Item implements Serializable {
     private static final long serialVersionUID = -5579725087589223758L;
+    @Field(name = "book_type", store = Store.YES, termVector = TermVector.NO)
     @Column
     private String type;
     @Field(name = "book_section", store = Store.YES, termVector = TermVector.YES)

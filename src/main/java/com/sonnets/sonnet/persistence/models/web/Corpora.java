@@ -38,7 +38,8 @@ public class Corpora extends Auditable<String> implements Serializable {
     @Column
     private String description;
     @ManyToAny(
-            metaColumn = @Column(name = "item_type", length = 4)
+            metaColumn = @Column(name = "item_type", length = 4),
+            fetch = FetchType.EAGER
     )
     @AnyMetaDef(
             metaType = "string", idType = "long",

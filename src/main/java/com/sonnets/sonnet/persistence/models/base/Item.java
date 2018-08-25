@@ -19,32 +19,26 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     private Long id;
-    @IndexedEmbedded
     @Field(name = "category", store = Store.YES, analyze = Analyze.NO)
     @Column
     private String category;
-    @IndexedEmbedded
     @Field(name = "author")
     @FieldBridge(impl = AuthorBridge.class)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Author author;
-    @IndexedEmbedded
     @Field(name = "title", store = Store.YES)
     @Column
     private String title;
     @Column
     private String description;
-    @IndexedEmbedded
     @Field(name = "publicationYear", store = Store.YES, analyze = Analyze.NO)
     @Column
     private Integer publicationYear;
     @Column
     private String publicationStmt;
-    @IndexedEmbedded
     @Field(name = "source", analyze = Analyze.NO)
     @Column
     private String sourceDesc;
-    @IndexedEmbedded
     @Field(name = "period", analyze = Analyze.NO)
     @Column
     private String period;

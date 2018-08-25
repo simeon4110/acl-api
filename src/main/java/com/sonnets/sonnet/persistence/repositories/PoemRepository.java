@@ -19,8 +19,13 @@ public interface PoemRepository extends JpaRepository<Poem, Long> {
 
     List<Poem> findAllByCreatedBy(final String createdBy);
 
-    List<Poem> findAllByConfirmation_ConfirmedAndConfirmation_PendingRevision(final boolean confirmed,
-                                                                              final boolean pendingRevision);
+    Poem findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNot(
+            final boolean confirmed,
+            final boolean pendingRevision,
+            final String createdBy
+    );
 
     Poem findByProcessed(final boolean processed);
+
+    Long countByForm(final String form);
 }

@@ -5,8 +5,6 @@ import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.CorporaService;
 import com.sonnets.sonnet.services.PoemService;
-import com.sonnets.sonnet.services.SearchService;
-import com.sonnets.sonnet.tools.ParseParam;
 import com.sonnets.sonnet.tools.PoemConverter;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +33,11 @@ import java.util.List;
 public class PoemController {
     private static final String ALLOWED_ORIGIN = "*";
     private final PoemService poemService;
-    private final SearchService searchService;
     private final CorporaService corporaService;
 
     @Autowired
-    public PoemController(PoemService poemService, SearchService searchService,
-                          CorporaService corporaService) {
+    public PoemController(PoemService poemService, CorporaService corporaService) {
         this.poemService = poemService;
-        this.searchService = searchService;
         this.corporaService = corporaService;
     }
 
@@ -186,48 +181,6 @@ public class PoemController {
     public Page getAllCorperaItemsPaged(@PathVariable("id") String id, Pageable pageable) {
         return corporaService.getCorporaItemsPaged(id, pageable);
     }
-
-
-    //####################### These are all search endpoints. ##################################//
-
-    // Search all poems in the database.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @GetMapping(value = "/poem/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<Poem> search(@RequestParam("firstName") String firstName,
-                             @RequestParam("lastName") String lastName,
-                             @RequestParam("title") String title,
-                             @RequestParam("publicationYear") int publicationYear,
-                             @RequestParam("period") String period,
-                             @RequestParam("text") String text,
-                             @RequestParam("form") String form, Pageable pageRequest) {
-        firstName = ParseParam.parse(firstName);
-        lastName = ParseParam.parse(lastName);
-        title = ParseParam.parse(title);
-        text = ParseParam.parse(text);
-
-        return searchService.searchPoems(firstName, lastName, title, publicationYear, period, text,
-                form, pageRequest);
-    }
-
-    // Count total results from db search. Used for correct pagination and adding search results to a corpus.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @GetMapping(value = "/poem/search/get_result_ids", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Long> getSearchResultIds(@RequestParam("firstName") String firstName,
-                                         @RequestParam("lastName") String lastName,
-                                         @RequestParam("title") String title,
-                                         @RequestParam("publicationYear") int publicationYear,
-                                         @RequestParam("period") String period,
-                                         @RequestParam("text") String text,
-                                         @RequestParam("form") String form) {
-        firstName = ParseParam.parse(firstName);
-        lastName = ParseParam.parse(lastName);
-        title = ParseParam.parse(title);
-        text = ParseParam.parse(text);
-
-        return searchService.getResultIdsPoem(firstName, lastName, title, publicationYear, period, text,
-                form);
-    }
-
 
     //####################### These are all file return endpoints. #############################//
     // I've included all the logic in the controller because it is a simple search and attach.

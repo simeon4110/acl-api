@@ -7,18 +7,15 @@ import java.util.*;
  *
  * @author Josh Harkema
  */
-public abstract class FrequencyDistribution {
-    private static final int MAX_RETURN = 20; // the total number of results to return
-    private static Map<String, Integer> frequency = new HashMap<>();
-
-    private FrequencyDistribution() {
-    }
+public interface FrequencyDistribution {
+    int MAX_RETURN = 20; // the total number of results to return
+    Map<String, Integer> frequency = new HashMap<>();
 
     /**
      * @param toScan the raw text to run a freqdist on.
      * @return a map where key = the word and value = the count.
      */
-    public static Map<String, Integer> getFrequency(List<String> toScan) {
+    static Map<String, Integer> getFrequency(List<String> toScan) {
         for (String s : toScan) {
             s = s.toLowerCase();
             int wordFrequency = frequencyOf(s, toScan);
@@ -36,7 +33,7 @@ public abstract class FrequencyDistribution {
      * @param strings the complete list of string to look in.
      * @return the count or -1 if the word already exists in the frequency map.
      */
-    private static int frequencyOf(String key, List<String> strings) {
+    static int frequencyOf(String key, List<String> strings) {
         int count = 0;
         if (!frequency.containsKey(key)) {
             for (String s : strings) {
