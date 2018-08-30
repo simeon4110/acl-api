@@ -2,6 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.prose.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,10 +22,12 @@ import java.util.List;
 public class BookController {
     private static final String ALLOWED_ORIGIN = "*";
     private final BookService bookService;
+    private final SearchService searchService;
 
     @Autowired
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, SearchService searchService) {
         this.bookService = bookService;
+        this.searchService = searchService;
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
@@ -34,7 +37,7 @@ public class BookController {
     }
 
     @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @GetMapping(value = "/book/get_all/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/book/get_all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Book> getAll() {
         return bookService.getAll();
     }
@@ -58,5 +61,12 @@ public class BookController {
     @DeleteMapping(value = "/secure/book/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         return bookService.delete(id);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PostMapping(value = "/book/search", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List search(@RequestBody BookDto bookDto) {
+        return searchService.searchBooks(bookDto);
     }
 }

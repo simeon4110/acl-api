@@ -2,6 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
+import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.CorporaService;
 import com.sonnets.sonnet.services.PoemService;
@@ -23,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Controller for all poetry related endpoints.
@@ -170,7 +172,7 @@ public class PoemController {
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getAllCorperaItems(@PathVariable("id") String id) {
+    public Set<Item> getAllCorperaItems(@PathVariable("id") String id) {
         return corporaService.getCorporaItems(id);
     }
 

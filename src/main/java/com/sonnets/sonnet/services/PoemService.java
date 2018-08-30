@@ -195,7 +195,7 @@ public class PoemService {
         Random random = new Random();
         List<Poem> twoRandom = new ArrayList<>();
         long count = poemRepository.countByForm("SONNET");
-        while (twoRandom.size() <= NUMBER_OF_RANDOM_SONNETS) {
+        while (twoRandom.size() < NUMBER_OF_RANDOM_SONNETS) {
             Poem poem = getPoemOrNull(String.valueOf(random.nextInt((int) count)));
             if (poem != null) {
                 twoRandom.add(poem);

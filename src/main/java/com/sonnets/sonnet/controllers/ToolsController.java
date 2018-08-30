@@ -2,12 +2,13 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.services.ToolsService;
-import com.sonnets.sonnet.wordtools.MalletTools;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,39 +21,9 @@ import java.util.Map;
 public class ToolsController {
     private static final String ALLOWED_ORIGIN = "*";
     private final ToolsService toolsService;
-    private final MalletTools malletTools;
 
     public ToolsController(ToolsService toolsService) {
         this.toolsService = toolsService;
-        this.malletTools = new MalletTools();
-    }
-
-    /**
-     * Runs a kwic search on sonnets in the db.
-     *
-     * @param ids    the ids of the sonnets.
-     * @param word   the word to look for.
-     * @param length the size of the context on each side.
-     * @return a List of Map<String, String> entries.
-     */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @GetMapping(value = "/tools/sonnet/kwic/{ids}/{word}/{length}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map.Entry<String, String>> getKwic(@PathVariable("ids") String[] ids,
-                                                   @PathVariable("word") String word,
-                                                   @PathVariable("length") int length) {
-        return toolsService.kwic(ids, word, length);
-    }
-
-    /**
-     * Lemmatize sonnets in the db.
-     *
-     * @param ids the sonnets to lemmatize.
-     * @return a list of lemmatized words.
-     */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @GetMapping(value = "/tools/sonnet/lemmatize/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> lemmatizeSonnets(@PathVariable("ids") String[] ids) {
-        return toolsService.lemmatizeItems(ids);
     }
 
     /**
@@ -69,18 +40,6 @@ public class ToolsController {
     }
 
     /**
-     * A freqdist of sonnets in teh db.
-     *
-     * @param ids the sonnets to get a freqdist of.
-     * @return a Map of where key = word and value = frequency of key.
-     */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @GetMapping(value = "/tools/sonnet/freqdist/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Integer> getFrequencyDistributionSonnets(@PathVariable("ids") String[] ids) {
-        return toolsService.frequencyDistribution(ids);
-    }
-
-    /**
      * Run a freqdist on arbitrary text.
      *
      * @param textDto a textDto with the text and optional custom stop words.
@@ -93,15 +52,17 @@ public class ToolsController {
         return toolsService.frequencyDistribution(textDto);
     }
 
-    // :TODO: Move this logic into the tools service.
+    /**
+     * Run a topic model on arbitrary text.
+     *
+     * @param textDto a textDto with the text to model.
+     * @return a Map where the key is an integer (0 = most likely, -1 = trimmed) and the key is a Map where the key
+     * is the exact probability of the model and the value is the model.
+     */
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PostMapping(value = "/tools/text/topic_model", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<Integer, Map<Double, String>> runTopicModel(@RequestBody @Valid TextDto textDto) {
-        try {
-            return malletTools.topicModel(textDto.getText(), textDto.getNumberOfTopics());
-        } catch (IOException e) {
-            return null;
-        }
+        return toolsService.runMalletTopicModel(textDto);
     }
 }

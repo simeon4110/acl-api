@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Interface for MalletTools. Adapted from: http://mallet.cs.umass.edu/topics-devel.php
+ * Singleton for MalletTools. Adapted from: http://mallet.cs.umass.edu/topics-devel.php
  *
  * @author Josh Harkema
  */
@@ -33,6 +33,10 @@ public class MalletTools {
     public static MalletTools getInstance() {
         return ourInstance;
     }
+
+    private MalletTools() {
+    }
+
     /**
      * Execute a very simple LDA topic model.
      *

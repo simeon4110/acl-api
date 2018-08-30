@@ -39,9 +39,11 @@ public class NLPTools {
     );
     private static StanfordCoreNLP pipeline = new StanfordCoreNLP(setProperties()); // For complex analysis.
     private static NLPTools ourInstance = new NLPTools();
-
     public static NLPTools getInstance() {
         return ourInstance;
+    }
+
+    private NLPTools() {
     }
 
     private static Properties setProperties() {

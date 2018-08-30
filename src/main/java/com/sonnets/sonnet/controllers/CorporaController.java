@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.CorporaDto;
+import com.sonnets.sonnet.persistence.dtos.CorporaItemsDto;
 import com.sonnets.sonnet.services.CorporaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,7 +30,7 @@ public class CorporaController {
 
     // Get user corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/my_corpora", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getUserCorpora(Principal principal) {
         return corporaService.getUserCorpora(principal);
@@ -37,7 +38,7 @@ public class CorporaController {
 
     // Create a corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PostMapping(value = "/secure/corpora/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createCorpora(@RequestBody @Valid CorporaDto corporaDto, Principal principal) {
         return corporaService.createCorpora(corporaDto);
@@ -45,18 +46,18 @@ public class CorporaController {
 
     // Add item to corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
-    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PutMapping(value = "/secure/corpora/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addItemsToCorpora(@RequestBody @Valid CorporaDto dto) {
-        return corporaService.addItems(dto.getId(), dto.getSonnetIds());
+    public ResponseEntity<Void> addItemsToCorpora(@RequestBody @Valid CorporaItemsDto dto) {
+        return corporaService.addItems(dto);
     }
 
     // Remove item from corpora.
     @CrossOrigin(origins = ALLOWED_ORIGIN) //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpora/remove", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> removeItemsFromCorpora(@RequestBody @Valid CorporaDto dto) {
-        return corporaService.removeItems(dto.getId(), dto.getSonnetIds());
+    public ResponseEntity<Void> removeItemsFromCorpora(@RequestBody @Valid CorporaItemsDto dto) {
+        return corporaService.removeItems(dto);
     }
 
     // Modify corpora.

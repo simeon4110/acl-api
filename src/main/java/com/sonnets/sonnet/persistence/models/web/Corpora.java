@@ -16,8 +16,9 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Model object for corpera.
@@ -52,13 +53,13 @@ public class Corpora extends Auditable<String> implements Serializable {
                     @MetaValue(targetEntity = Annotation.class, value = "ANNO")
             }
     )
-    @Cascade({CascadeType.ALL})
+    @Cascade({CascadeType.PERSIST, CascadeType.DETACH})
     @JoinTable(
             name = "corpora_items",
-            joinColumns = @JoinColumn(name = "corpora_id"),
-            inverseJoinColumns = @JoinColumn(name = "item_id")
+            joinColumns = @JoinColumn(name = "corpora_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id", referencedColumnName = "id")
     )
-    private List<Item> items;
+    private Set<Item> items = new HashSet<>();
 
     public Corpora() {
         super();
@@ -88,11 +89,11 @@ public class Corpora extends Auditable<String> implements Serializable {
         this.description = description;
     }
 
-    public List<Item> getItems() {
+    public Set<Item> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(Set<Item> items) {
         this.items = items;
     }
 

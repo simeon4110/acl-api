@@ -1,7 +1,9 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
+import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
@@ -14,16 +16,12 @@ import org.apache.lucene.search.*;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
-import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Handles dynamic BooleanQuery building and other Lucene focused search jobs. It is overly complex because a simple
@@ -79,7 +77,7 @@ public class SearchService {
         BooleanQuery.Builder query = new BooleanQuery.Builder();
 
         // Add category.
-        if (dto.getCategory() != null) {
+        if (dto.getCategory() != null && !dto.getCategory().equals("")) {
             LOGGER.debug("Category: " + dto.getCategory());
             query.add(new TermQuery(new Term(CATEGORY, dto.getCategory().toLowerCase())), BooleanClause.Occur.MUST);
         }
@@ -87,13 +85,13 @@ public class SearchService {
         // Add author.
         if (dto.getAuthor() != null) {
             // Add author first name.
-            if (dto.getAuthor().getFirstName() != null) {
+            if (dto.getAuthor().getFirstName() != null && !dto.getAuthor().getFirstName().equals("")) {
                 LOGGER.debug("Author first name: " + dto.getAuthor().getFirstName());
                 query.add(new TermQuery(new Term(AUTHOR_FIRST_NAME, dto.getAuthor().getFirstName().toLowerCase())),
                         BooleanClause.Occur.MUST);
             }
             // Add author last name.
-            if (dto.getAuthor().getLastName() != null) {
+            if (dto.getAuthor().getLastName() != null && !dto.getAuthor().getLastName().equals("")) {
                 LOGGER.debug("Author last name: " + dto.getAuthor().getLastName());
                 query.add(new TermQuery(new Term(AUTHOR_LAST_NAME, dto.getAuthor().getLastName().toLowerCase())),
                         BooleanClause.Occur.MUST);
@@ -101,7 +99,7 @@ public class SearchService {
         }
 
         // Add title.
-        if (dto.getTitle() != null) {
+        if (dto.getTitle() != null && !dto.getTitle().equals("")) {
             LOGGER.debug("Title: " + dto.getTitle());
             query.add(new FuzzyQuery(new Term(TITLE, dto.getTitle().toLowerCase()), EDIT_DISTANCE, PREFIX_LENGTH),
                     BooleanClause.Occur.MUST);
@@ -117,13 +115,13 @@ public class SearchService {
         }
 
         // Add topics.
-        if (dto.getTopics() != null) {
+        if (dto.getTopics() != null && !dto.getTopics().equals("")) {
             LOGGER.debug("Topics: " + dto.getTopics());
             query.add(new TermQuery(new Term(PERIOD, dto.getPeriod().toLowerCase())), BooleanClause.Occur.MUST);
         }
 
         // Add text.
-        if (dto.getText() != null) {
+        if (dto.getText() != null && !dto.getText().equals("")) {
             LOGGER.debug("Text: " + dto.getText());
             PhraseQuery.Builder phraseQuery = new PhraseQuery.Builder();
             phraseQuery.setSlop(SLOP);
@@ -151,7 +149,7 @@ public class SearchService {
     // Adds poem specific search params.
     private static void parsePoemParams(BooleanQuery.Builder builder, SearchDto dto) {
         LOGGER.debug("Parsing POEM params.");
-        if (dto.getForm() != null) {
+        if (dto.getForm() != null && !dto.getForm().equals("")) {
             LOGGER.debug("Poem FORM: " + dto.getForm());
             builder.add(new TermQuery(new Term(POEM_FORM, dto.getForm().toLowerCase())), BooleanClause.Occur.MUST);
         }
@@ -160,7 +158,7 @@ public class SearchService {
     // Adds book specific search params.
     private static void parseBookParams(BooleanQuery.Builder builder, SearchDto dto) {
         LOGGER.debug("Parsing BOOK params.");
-        if (dto.getType() != null) {
+        if (dto.getType() != null && !dto.getType().equals("")) {
             LOGGER.debug("Parsing BOOK TYPE: " + dto.getType());
             builder.add(new TermQuery(new Term(BOOK_TYPE, dto.getType().toLowerCase())), BooleanClause.Occur.MUST);
         }
@@ -169,71 +167,111 @@ public class SearchService {
     // Adds character specific search params.
     private static void parseBookCharacterParams(BooleanQuery.Builder builder, SearchDto dto) {
         LOGGER.debug("Parsing BOOK CHARACTER params.");
-        if (dto.getCharLastName() != null) {
+        if (dto.getCharFirstName() != null && !dto.getCharFirstName().equals("")) {
             LOGGER.debug("Parsing CHAR FIRST NAME: " + dto.getCharFirstName());
             builder.add(new FuzzyQuery(new Term(BOOK_CHARACTER_FN, dto.getCharFirstName().toLowerCase()),
                     EDIT_DISTANCE, PREFIX_LENGTH), BooleanClause.Occur.MUST);
         }
-        if (dto.getCharLastName() != null) {
+        if (dto.getCharLastName() != null && !dto.getCharLastName().equals("")) {
             LOGGER.debug("Parsing CHAR LAST NAME: " + dto.getCharLastName());
             builder.add(new FuzzyQuery(new Term(BOOK_CHARACTER_LN, dto.getCharLastName().toLowerCase()),
                     EDIT_DISTANCE, PREFIX_LENGTH), BooleanClause.Occur.MUST);
         }
-        if (dto.getCharGender() != null) {
+        if (dto.getCharGender() != null && !dto.getCharGender().equals("")) {
             LOGGER.debug("Parsing CHAR GENDER: " + dto.getCharGender().toLowerCase());
             builder.add(new TermQuery(new Term(BOOK_CHARACTER_SEX, dto.getCharGender())), BooleanClause.Occur.MUST);
         }
     }
 
     // Public entry method.
-    public Page search(SearchDto dto, Pageable pageable) {
+    public List search(SearchDto dto) {
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         Query query = parseQuery(dto);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(query,
-                Book.class, Other.class, Section.class, Poem.class);
+        FullTextQuery fullTextQuery;
+        if (dto.isSearchBooks() && dto.isSearchPoems()) {
+            fullTextQuery = manager.createFullTextQuery(query, Book.class, Section.class, Poem.class);
+        } else if (dto.isSearchPoems()) {
+            fullTextQuery = manager.createFullTextQuery(query, Poem.class);
+        } else if (dto.isSearchBooks()) {
+            fullTextQuery = manager.createFullTextQuery(query, Book.class, Section.class);
+        } else {
+            fullTextQuery = manager.createFullTextQuery(query, Book.class, Section.class, Poem.class, Other.class);
+        }
 
         @SuppressWarnings("unchecked")
         List<Poem> results = fullTextQuery.getResultList();
         LOGGER.debug("Found total records: " + fullTextQuery.getResultSize());
-        return new PageImpl<>(results, pageable, fullTextQuery.getResultSize());
+        return results;
     }
 
-    public void similarExistsPoem(PoemDto poemDto) {
-        LOGGER.debug("Similar poem search: " + poemDto.toString());
-        Query query;
+    public List searchAuthor(AuthorDto authorDto) {
+        LOGGER.debug("Searching for author: " + authorDto.toString());
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        QueryBuilder queryBuilder = manager.getSearchFactory().buildQueryBuilder().forEntity(Poem.class).get();
-        Author author = authorService.get(poemDto.getAuthorId());
-        if (author == null) {
-            throw new NullPointerException("Author with id '" + poemDto.getAuthorId() + "' does not exist.");
+        BooleanQuery.Builder builder = new BooleanQuery.Builder();
+
+        // Add author first name.
+        if (authorDto.getFirstName() != null && !authorDto.getFirstName().equals("")) {
+            LOGGER.debug("Author first name: " + authorDto.getFirstName());
+            builder.add(new TermQuery(new Term("firstName", authorDto.getFirstName().toLowerCase())),
+                    BooleanClause.Occur.SHOULD);
         }
-
-        // Use first line as title if title is null.
-        if (Objects.equals(poemDto.getTitle(), "")) {
-            poemDto.setTitle(PoemService.parseText(poemDto.getText()).get(0));
+        // Add author last name.
+        if (authorDto.getLastName() != null && !authorDto.getLastName().equals("")) {
+            LOGGER.debug("Author last name: " + authorDto.getLastName());
+            builder.add(new TermQuery(new Term("lastName", authorDto.getLastName().toLowerCase())),
+                    BooleanClause.Occur.SHOULD);
         }
-
-        // Boolean "must" query searches for the exact title, last name and source of a sonnet.
-        query = queryBuilder.bool()
-                .must(queryBuilder.phrase().onField(TITLE).sentence(poemDto.getTitle()).createQuery())
-                .must(queryBuilder.keyword().onField(AUTHOR_LAST_NAME).matching(
-                        author.getLastName()).createQuery()
-                )
-                .must(queryBuilder.keyword().onField(POEM_FORM).matching(poemDto.getForm()).createQuery())
-                .must(queryBuilder.phrase().onField(SOURCE).sentence(poemDto.getSourceDesc()).createQuery())
-                .createQuery();
-
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Poem.class);
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(builder.build(), Author.class);
 
         List results = fullTextQuery.getResultList();
+        LOGGER.debug("Found: " + results.toString());
+        return results;
+    }
 
-        LOGGER.debug("Found similar: " + results.toString());
+    public List searchBooks(BookDto bookDto) {
+        LOGGER.debug("Searching for books: " + bookDto);
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        BooleanQuery.Builder builder = new BooleanQuery.Builder();
+        Author author = authorService.get(bookDto.getAuthorId());
+        if (author != null) {
+            if (!author.getFirstName().equals("") && author.getFirstName() != null) {
+                LOGGER.debug("First name: " + author.getFirstName());
+                builder.add(new TermQuery(
+                        new Term(AUTHOR_FIRST_NAME, author.getFirstName().toLowerCase())), BooleanClause.Occur.SHOULD
+                );
+            }
 
-        // If the search turned up any results, throw a SonnetAlreadyExists exception.
-        if (!results.isEmpty()) {
-            throw new ItemAlreadyExistsException("Poem by: " + author.getLastName()
-                    + "With title: " + poemDto.getTitle()
-                    + " Already exists.");
+            LOGGER.debug("Book title: " + bookDto.getTitle());
+            builder.add(new TermQuery(new Term(TITLE, bookDto.getTitle().toLowerCase())), BooleanClause.Occur.SHOULD);
+
+            LOGGER.debug("Last name: " + author.getLastName());
+            builder.add(new TermQuery(new Term(AUTHOR_LAST_NAME, author.getLastName().toLowerCase())),
+                    BooleanClause.Occur.SHOULD);
+
+            FullTextQuery fullTextQuery = manager.createFullTextQuery(builder.build(), Book.class, Author.class);
+
+            List results = fullTextQuery.getResultList();
+            LOGGER.debug("Found: " + fullTextQuery.getResultList());
+            return results;
+        }
+        return Collections.emptyList();
+    }
+
+    void similarExistsPoem(PoemDto poemDto) {
+        LOGGER.debug("Similar poem search: " + poemDto.toString());
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        BooleanQuery.Builder query = new BooleanQuery.Builder();
+        FullTextQuery fullTextQuery;
+
+        Author author = authorService.get(poemDto.getAuthorId());
+        if (author != null) {
+            query.add(new TermQuery(new Term(AUTHOR_LAST_NAME, author.getLastName())), BooleanClause.Occur.MUST);
+            query.add(new TermQuery(new Term(TITLE, poemDto.getTitle())), BooleanClause.Occur.MUST);
+            fullTextQuery = manager.createFullTextQuery(query.build(), Poem.class);
+            LOGGER.debug("Found: " + fullTextQuery.getResultSize());
+            if (fullTextQuery.getResultSize() != 0) {
+                throw new ItemAlreadyExistsException("Item: '" + poemDto.toString() + "' already exists.");
+            }
         }
     }
 }

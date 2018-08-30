@@ -2,10 +2,11 @@ package com.sonnets.sonnet.persistence.models.prose;
 
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
-import org.hibernate.search.annotations.TermVector;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Parameter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,14 +22,24 @@ import java.util.Objects;
 @Indexed
 @Entity
 @DiscriminatorValue("SECT")
+@AnalyzerDef(name = "textAnalyzer",
+        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+        filters = {
+                @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+                @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
+                        @Parameter(name = "language", value = "English")
+                })
+        })
 public class Section extends Item implements Serializable {
     private static final long serialVersionUID = -7556341244036061332L;
-    @Field(name = "section_title", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "section_title", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Analyzer(definition = "textAnalyzer")
     @Column
     private String title;
     @Column
     private Confirmation confirmation;
-    @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Analyzer(definition = "textAnalyzer")
     @Column(columnDefinition = "MEDIUMTEXT")
     private String text;
     @Column

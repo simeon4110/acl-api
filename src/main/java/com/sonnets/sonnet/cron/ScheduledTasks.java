@@ -56,7 +56,7 @@ public class ScheduledTasks {
     }
 
     @Async
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(cron = "0 0 2 * * * ")
     public void nlpDocumentLoader() {
         LOGGER.info("NLP document loading started.");
         setAuth();
@@ -65,6 +65,8 @@ public class ScheduledTasks {
         while (poem != null) {
             try {
                 LOGGER.debug("Processing poem: " + poem.getId());
+
+                // Load the poem's text as an NLP document, init serializer and OOS.
                 CoreDocument document = NLPTools.loadDocument(String.valueOf(poem.getText()));
                 GenericAnnotationSerializer serializer = new GenericAnnotationSerializer();
                 ObjectOutputStream out = new ObjectOutputStream(new ByteArrayOutputStream());
@@ -93,6 +95,8 @@ public class ScheduledTasks {
         while (section != null) {
             try {
                 LOGGER.debug("Processing section: " + section.getId());
+
+                // Load the section's text as an NLP document, init serializer and OOS.
                 CoreDocument document = NLPTools.loadDocument(section.getText());
                 GenericAnnotationSerializer serializer = new GenericAnnotationSerializer();
                 ObjectOutputStream out = new ObjectOutputStream(new ByteArrayOutputStream());

@@ -1,9 +1,8 @@
 package com.sonnets.sonnet.persistence.models.base;
 
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
-import org.hibernate.search.annotations.TermVector;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,18 +16,27 @@ import java.util.Objects;
 @Indexed
 @Entity
 @Table
+@AnalyzerDef(name = "authorAnalyzer",
+        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+        filters = {
+                @TokenFilterDef(factory = LowerCaseFilterFactory.class)
+        })
 public class Author extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -590157884690722884L;
     @Id
+    @DocumentId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Field(name = "firstName", store = Store.YES, termVector = TermVector.NO)
+    @Analyzer(definition = "authorAnalyzer")
     @Column
     private String firstName;
     @Field(name = "middleName", store = Store.YES, termVector = TermVector.NO)
+    @Analyzer(definition = "authorAnalyzer")
     @Column
     private String middleName;
     @Field(name = "lastName", store = Store.YES, termVector = TermVector.NO)
+    @Analyzer(definition = "authorAnalyzer")
     @Column
     private String lastName;
 

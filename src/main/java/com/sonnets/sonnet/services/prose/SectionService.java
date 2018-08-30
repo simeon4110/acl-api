@@ -7,7 +7,7 @@ import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
-import com.sonnets.sonnet.persistence.repositories.SectionRepository;
+import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.helpers.GetObjectOrNull;
 import com.sonnets.sonnet.services.helpers.SaveObject;
@@ -32,11 +32,11 @@ public class SectionService {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
     private final GetObjectOrNull getObjectOrNull;
     private final SaveObject saveObject;
-    private final SectionRepository sectionRepository;
+    private final SectionRepositoryBase sectionRepository;
     private final MessageService messageService;
 
     @Autowired
-    public SectionService(GetObjectOrNull getObjectOrNull, SaveObject saveObject, SectionRepository sectionRepository,
+    public SectionService(GetObjectOrNull getObjectOrNull, SaveObject saveObject, SectionRepositoryBase sectionRepository,
                           MessageService messageService) {
         this.getObjectOrNull = getObjectOrNull;
         this.saveObject = saveObject;

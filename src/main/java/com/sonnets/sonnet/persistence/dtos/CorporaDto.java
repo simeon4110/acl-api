@@ -15,7 +15,7 @@ public class CorporaDto {
 
     private String description;
 
-    private String[] sonnetIds;
+    private String[] itemIds;
 
     public String getId() {
         return id;
@@ -41,12 +41,12 @@ public class CorporaDto {
         this.description = description;
     }
 
-    public String[] getSonnetIds() {
-        return sonnetIds;
+    public String[] getItemIds() {
+        return itemIds;
     }
 
-    public void setSonnetIds(String[] sonnetIds) {
-        this.sonnetIds = sonnetIds;
+    public void setItemIds(String[] itemIds) {
+        this.itemIds = itemIds;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CorporaDto {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", sonnetIds=" + Arrays.toString(sonnetIds) +
+                ", itemIds=" + Arrays.toString(itemIds) +
                 '}';
     }
 }

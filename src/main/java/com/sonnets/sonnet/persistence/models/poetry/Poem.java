@@ -23,7 +23,7 @@ import java.util.Objects;
 @DiscriminatorValue("POEM")
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
-    @Field(name = "poem_form", store = Store.YES, termVector = TermVector.NO)
+    @Field(name = "poem_form", store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
     @Column
     private String form; // The form of genre of the poem.
     @JsonIgnore
@@ -31,7 +31,8 @@ public class Poem extends Item implements Serializable {
     private Confirmation confirmation;
     @Column
     @IndexedEmbedded
-    @Field(name = "text", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Analyzer(definition = "textAnalyzer")
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> text;
     @JsonIgnore

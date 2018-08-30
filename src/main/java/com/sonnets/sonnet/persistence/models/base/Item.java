@@ -27,6 +27,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     private Author author;
     @Field(name = "title", store = Store.YES, analyze = Analyze.YES)
+    @Analyzer(definition = "textAnalyzer")
     @Column
     private String title;
     @Column
@@ -126,7 +127,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
         if (!super.equals(o)) return false;
         Item item = (Item) o;
         return Objects.equals(id, item.id) &&
-                category.equals(item.category) &&
+                Objects.equals(category, item.category) &&
                 Objects.equals(author, item.author) &&
                 Objects.equals(title, item.title) &&
                 Objects.equals(description, item.description) &&
@@ -138,15 +139,14 @@ public abstract class Item extends Auditable<String> implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, category, author, title, description, publicationYear,
-                publicationStmt, sourceDesc, period);
+        return Objects.hash(super.hashCode(), id, category, author, title, description, publicationYear, publicationStmt, sourceDesc, period);
     }
 
     @Override
     public String toString() {
         return "Item{" +
                 "id=" + id +
-                ", category=" + category +
+                ", category='" + category + '\'' +
                 ", author=" + author +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
@@ -154,6 +154,6 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
-                '}';
+                "} " + super.toString();
     }
 }

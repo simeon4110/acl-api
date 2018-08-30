@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class GetObjectOrNull {
     private static final Logger LOGGER = Logger.getLogger(GetObjectOrNull.class);
     private final BookRepository bookRepository;
-    private final SectionRepository sectionRepository;
+    private final SectionRepositoryBase sectionRepository;
     private final CharacterRepository characterRepository;
     private final AuthorRepository authorRepository;
     private final OtherRepository otherRepository;
@@ -31,7 +31,7 @@ public class GetObjectOrNull {
     private final AnnotationRepository annotationRepository;
 
     @Autowired
-    public GetObjectOrNull(BookRepository bookRepository, SectionRepository sectionRepository,
+    public GetObjectOrNull(BookRepository bookRepository, SectionRepositoryBase sectionRepository,
                            CharacterRepository characterRepository, AuthorRepository authorRepository,
                            OtherRepository otherRepository, PoemRepository poemRepository,
                            AnnotationRepository annotationRepository) {

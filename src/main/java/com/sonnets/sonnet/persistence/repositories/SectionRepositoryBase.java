@@ -10,6 +10,6 @@ import java.util.Optional;
  * @author Josh Harkema
  */
 @Repository
-public interface SectionRepository extends JpaRepository<Section, Long> {
+public interface SectionRepositoryBase extends JpaRepository<Section, Long> {
     Optional<Section> findByProcessed(final boolean processed);
 }

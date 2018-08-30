@@ -18,14 +18,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class SaveObject {
     private final BookRepository bookRepository;
-    private final SectionRepository sectionRepository;
+    private final SectionRepositoryBase sectionRepository;
     private final CharacterRepository characterRepository;
     private final AuthorRepository authorRepository;
     private final OtherRepository otherRepository;
     private final PoemRepository poemRepository;
 
     @Autowired
-    public SaveObject(BookRepository bookRepository, SectionRepository sectionRepository,
+    public SaveObject(BookRepository bookRepository, SectionRepositoryBase sectionRepository,
                       CharacterRepository characterRepository, AuthorRepository authorRepository,
                       OtherRepository otherRepository, PoemRepository poemRepository) {
         this.bookRepository = bookRepository;
