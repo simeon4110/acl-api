@@ -2,6 +2,12 @@ package com.sonnets.sonnet.tools;
 
 import java.util.Objects;
 
+/**
+ * Apparently, Java doesn't implement an generic tuple class. Here one is.
+ *
+ * @param <key>   the key.
+ * @param <value> the value.
+ */
 public class ItemKeyValuePair<key, value> {
     private key key;
     private value value;

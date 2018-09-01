@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.services.prose;
 
-import com.sonnets.sonnet.persistence.dtos.MessageDto;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
+import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;

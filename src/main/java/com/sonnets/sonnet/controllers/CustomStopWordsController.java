@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.CustomStopWordsDto;
+import com.sonnets.sonnet.persistence.dtos.web.CustomStopWordsDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.services.CustomStopWordsService;
 import org.springframework.beans.factory.annotation.Autowired;

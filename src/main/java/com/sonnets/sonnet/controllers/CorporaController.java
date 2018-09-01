@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.CorporaDto;
-import com.sonnets.sonnet.persistence.dtos.CorporaItemsDto;
+import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
+import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.services.CorporaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

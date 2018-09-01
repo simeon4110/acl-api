@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.dtos;
+package com.sonnets.sonnet.persistence.dtos.web;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;

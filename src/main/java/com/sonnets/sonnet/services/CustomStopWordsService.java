@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.CustomStopWordsDto;
+import com.sonnets.sonnet.persistence.dtos.web.CustomStopWordsDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.CustomStopWordsRepository;

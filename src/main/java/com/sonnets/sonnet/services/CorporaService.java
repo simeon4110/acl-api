@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.CorporaDto;
-import com.sonnets.sonnet.persistence.dtos.CorporaItemsDto;
+import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
+import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Book;

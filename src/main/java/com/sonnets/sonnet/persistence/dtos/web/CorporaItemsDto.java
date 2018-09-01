@@ -1,10 +1,15 @@
-package com.sonnets.sonnet.persistence.dtos;
+package com.sonnets.sonnet.persistence.dtos.web;
 
 import com.sonnets.sonnet.tools.ItemKeyValuePair;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+/**
+ * DTO for dealing with Item sub classes and the corpora.
+ *
+ * @author Josh Harkema
+ */
 public class CorporaItemsDto {
     @NotNull
     private Long id;

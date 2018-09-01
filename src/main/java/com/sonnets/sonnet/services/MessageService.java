@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.MessageDto;
+import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.models.web.Message;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.MessageRepository;

@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.ContactDto;
+import com.sonnets.sonnet.persistence.dtos.web.ContactDto;
 import com.sonnets.sonnet.services.EmailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
