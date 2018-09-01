@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.ItemDto;
-import com.sonnets.sonnet.services.helpers.GetObjectOrNull;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
 import com.sonnets.sonnet.tools.ItemKeyValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,19 @@ import java.util.List;
 @Service
 public class ItemService {
     private static final Logger LOGGER = Logger.getLogger(ItemService.class);
-    private final GetObjectOrNull getObjectOrNull;
+    private final GetObjectOrThrowNullException getObjectOrNull;
 
     @Autowired
-    public ItemService(GetObjectOrNull getObjectOrNull) {
+    public ItemService(GetObjectOrThrowNullException getObjectOrNull) {
         this.getObjectOrNull = getObjectOrNull;
     }
 
+    /**
+     * Returns a list of mixed sub-classes of the Item class.
+     *
+     * @param dto the items to get.
+     * @return a list of items; list is empty if nothing is found.
+     */
     @SuppressWarnings("unchecked")
     public List getItems(ItemDto dto) {
         LOGGER.debug("Returning items: " + dto.getPairs());

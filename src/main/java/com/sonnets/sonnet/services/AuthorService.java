@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
 import com.sonnets.sonnet.tools.ParseParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,12 @@ import java.util.Optional;
 public class AuthorService {
     private static final Logger LOGGER = Logger.getLogger(AuthorService.class);
     private final AuthorRepository authorRepository;
+    private final GetObjectOrThrowNullException getObjectOrThrowNull;
 
     @Autowired
-    public AuthorService(AuthorRepository authorRepository) {
+    public AuthorService(AuthorRepository authorRepository, GetObjectOrThrowNullException getObjectOrThrowNull) {
         this.authorRepository = authorRepository;
+        this.getObjectOrThrowNull = getObjectOrThrowNull;
     }
 
     /**
@@ -43,6 +46,12 @@ public class AuthorService {
         return author;
     }
 
+    /**
+     * Add an author to the database.
+     *
+     * @param authorDto the dto with the new data.
+     * @return OK if the author is added.
+     */
     public ResponseEntity<Void> add(AuthorDto authorDto) {
         LOGGER.debug("Creating new author: " + authorDto.toString());
 
@@ -51,58 +60,57 @@ public class AuthorService {
             throw new AuthorAlreadyExistsException("Author: " + authorDto.getFirstName() + " " +
                     authorDto.getLastName() + " already exists.");
         }
-
         authorRepository.saveAndFlush(createOrCopyAuthor(new Author(), authorDto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Modify an author.
+     *
+     * @param authorDto the dto with the new data.
+     * @return OK if the author is modified.
+     */
     public ResponseEntity<Void> modify(AuthorDto authorDto) {
         LOGGER.debug("Modifying author: " + authorDto.toString());
-
-        Author author = getAuthorOrNull(authorDto.getId().toString());
-        if (author != null) {
-            authorRepository.saveAndFlush(createOrCopyAuthor(author, authorDto));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Author author = getObjectOrThrowNull.author(authorDto.getId().toString());
+        authorRepository.saveAndFlush(createOrCopyAuthor(author, authorDto));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // Only admins can delete.
+    /**
+     * Delete an author from the database.
+     *
+     * @param id the id of the author to delete.
+     * @return OK if the author is removed.
+     */
     public ResponseEntity<Void> delete(String id) {
         LOGGER.debug("Deleting author with id: " + id);
-        Author author = getAuthorOrNull(id);
-        if (author != null) {
-            authorRepository.delete(author);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Author author = getObjectOrThrowNull.author(id);
+        authorRepository.delete(author);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // Get an author by id.
+    /**
+     * Get an specific author.
+     *
+     * @param id the db id of the author to get.
+     * @return the author.
+     */
     public Author get(String id) {
         LOGGER.debug("Looking for author with id: " + id);
-        return getAuthorOrNull(id);
+        return getObjectOrThrowNull.author(id);
     }
 
-    // Get an author by last name.
+    /**
+     * Get an author by last name. Return null if nothing is found.
+     *
+     * @param lastName the last name to look for.
+     * @return the author, if found, or null.
+     */
     public Author getByLastName(String lastName) {
         LOGGER.debug("Looking for author with last name: " + lastName);
         lastName = ParseParam.parse(lastName);
         Optional<Author> author = authorRepository.findByLastName(lastName);
         return author.orElse(null);
-    }
-
-    // Helper method to parse id's to longs and convert optional returns from repo.
-    private Author getAuthorOrNull(String id) {
-        long parsedId;
-        try {
-            parsedId = Long.parseLong(id);
-        } catch (NumberFormatException e) {
-            LOGGER.error(e);
-            return null;
-        }
-        Optional<Author> optionalAuthor = authorRepository.findById(parsedId);
-        return optionalAuthor.orElse(null);
     }
 }

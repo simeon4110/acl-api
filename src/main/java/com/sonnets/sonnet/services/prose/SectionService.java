@@ -9,7 +9,7 @@ import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.MessageService;
-import com.sonnets.sonnet.services.helpers.GetObjectOrNull;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
 import com.sonnets.sonnet.services.helpers.SaveObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,13 +29,13 @@ import java.util.List;
 @Service
 public class SectionService {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
-    private final GetObjectOrNull getObjectOrNull;
+    private final GetObjectOrThrowNullException getObjectOrNull;
     private final SaveObject saveObject;
     private final SectionRepositoryBase sectionRepository;
     private final MessageService messageService;
 
     @Autowired
-    public SectionService(GetObjectOrNull getObjectOrNull, SaveObject saveObject,
+    public SectionService(GetObjectOrThrowNullException getObjectOrNull, SaveObject saveObject,
                           SectionRepositoryBase sectionRepository, MessageService messageService) {
         this.getObjectOrNull = getObjectOrNull;
         this.saveObject = saveObject;
@@ -44,6 +43,15 @@ public class SectionService {
         this.messageService = messageService;
     }
 
+    /**
+     * Copy data from a dto onto a section object.
+     *
+     * @param section the Section to copy the data onto.
+     * @param author  the author of the section.
+     * @param book    the book the section is in.
+     * @param dto     the dto with the new data.
+     * @return the Section with the new data copied.
+     */
     private static Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
         section.setCategory("SECTION");
         section.setAuthor(author);
@@ -58,120 +66,156 @@ public class SectionService {
         return section;
     }
 
+    /**
+     * Get a section.
+     *
+     * @param id the db id of the section to get.
+     * @return the section.
+     */
     public Section get(String id) {
         LOGGER.debug("Getting section id: " + id);
         return getObjectOrNull.section(id);
     }
 
+    /**
+     * Get all sections from a book.
+     *
+     * @param bookId the id of the book to get the sections from.
+     * @return a list of sections.
+     */
     public List<Section> getAllFromBook(String bookId) {
         LOGGER.debug("Getting all sections of: " + bookId);
         Book book = getObjectOrNull.book(bookId);
-        if (book != null) {
-            return book.getSections();
-        }
-        return Collections.emptyList();
+        return book.getSections();
     }
 
+    /**
+     * Add a section to the db.
+     *
+     * @param dto the data for the new section.
+     * @return OK if the section is added.
+     */
     public ResponseEntity<Void> add(SectionDto dto) {
         LOGGER.debug("Adding new section: " + dto.toString());
         Book book = getObjectOrNull.book(dto.getBookId().toString());
         Author author = getObjectOrNull.author(dto.getAuthorId().toString());
-        if (book != null && author != null) {
-            LOGGER.debug("BOOK: " + book.toString());
-            LOGGER.debug("AUTHOR: " + author.toString());
-            Section section = createOrCopySection(new Section(), author, book, dto);
-            sectionRepository.saveAndFlush(section);
-            book.getSections().add(section);
-            saveObject.book(book);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Section section = createOrCopySection(new Section(), author, book, dto);
+        sectionRepository.saveAndFlush(section);
+        book.getSections().add(section);
+        saveObject.book(book);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Modify a section. No user-checking.
+     *
+     * @param dto the new information.
+     * @return OK if the section is modified.
+     */
     public ResponseEntity<Void> modify(SectionDto dto) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
         Section section = getObjectOrNull.section(dto.getId().toString());
         Author author = getObjectOrNull.author(dto.getAuthorId().toString());
         Book book = getObjectOrNull.book(dto.getBookId().toString());
-        if (section != null && author != null) {
-            sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Modify a section with user checking.
+     *
+     * @param dto       the new information.
+     * @param principal the user making the request.
+     * @return OK if the section is modified.
+     */
     public ResponseEntity<Void> modify(SectionDto dto, Principal principal) {
         LOGGER.debug("Modifying section (USER): " + dto.toString());
         Section section = getObjectOrNull.section(dto.getId().toString());
         Author author = getObjectOrNull.author(dto.getAuthorId().toString());
         Book book = getObjectOrNull.book(dto.getBookId().toString());
-        if (section != null && author != null && section.getCreatedBy().equals(principal.getName())) {
+
+        // Ensure the user making the request is also the owner of the section.
+        if (section.getCreatedBy().equals(principal.getName())) {
             sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    public ResponseEntity<Void> deleteById(String id) {
-        LOGGER.debug("Deleting other with id (ADMIN): " + id);
-        Section section = getObjectOrNull.section(id);
-        if (section != null) {
-            Book book = getObjectOrNull.book(section.getParentId().toString());
-            if (book != null) {
-                book.getSections().remove(section);
-                saveObject.book(book);
-                sectionRepository.delete(section);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    public ResponseEntity<Void> confirm(String id, Principal principal) {
-        LOGGER.debug(principal.getName() + " is confirming section: " + id);
-        Section section = getObjectOrNull.section(id);
-        if (section != null) {
-            Confirmation confirmation = section.getConfirmation();
-            confirmation.setConfirmedBy(principal.getName());
-            confirmation.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
-            confirmation.setConfirmed(true);
-            confirmation.setPendingRevision(false);
-            section.setConfirmation(confirmation);
-            sectionRepository.saveAndFlush(section);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    public ResponseEntity<Void> reject(RejectDto rejectDto) {
-        LOGGER.debug("Rejecting section: " + rejectDto.toString());
-        Section section = getObjectOrNull.section(rejectDto.getId());
-        if (section != null) {
-            Confirmation confirmation = section.getConfirmation();
-            confirmation.setConfirmedBy(null);
-            confirmation.setConfirmedAt(null);
-            confirmation.setConfirmed(false);
-            confirmation.setPendingRevision(true);
-            section.setConfirmation(confirmation);
-            sectionRepository.saveAndFlush(section);
-
-            MessageDto messageDto = new MessageDto();
-            messageDto.setUserFrom("Administrator");
-            messageDto.setUserTo(section.getCreatedBy());
-            messageDto.setSubject("One of your Sections has been rejected.");
-            messageDto.setContent(rejectDto.getRejectMessage());
-            messageService.sendAdminMessage(messageDto);
-
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Delete a section from the database.
+     *
+     * @param id the id of the book to delete.
+     * @return OK if the book is deleted.
+     */
+    public ResponseEntity<Void> deleteById(String id) {
+        LOGGER.debug("Deleting other with id (ADMIN): " + id);
+        Section section = getObjectOrNull.section(id);
+        Book book = getObjectOrNull.book(section.getParentId().toString());
+        book.getSections().remove(section);
+        saveObject.book(book);
+        sectionRepository.delete(section);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Confirm a section.
+     *
+     * @param id        the id of the section to confirm.
+     * @param principal the user doing the confirming.
+     * @return 200 if the book is confirmed.
+     */
+    public ResponseEntity<Void> confirm(String id, Principal principal) {
+        LOGGER.debug(principal.getName() + " is confirming section: " + id);
+        Section section = getObjectOrNull.section(id);
+        Confirmation confirmation = section.getConfirmation();
+        confirmation.setConfirmedBy(principal.getName());
+        confirmation.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
+        confirmation.setConfirmed(true);
+        confirmation.setPendingRevision(false);
+        section.setConfirmation(confirmation);
+        sectionRepository.saveAndFlush(section);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Reject a section.
+     *
+     * @param rejectDto a valid rejection dto.
+     * @return OK if the section is rejected.
+     */
+    public ResponseEntity<Void> reject(RejectDto rejectDto) {
+        LOGGER.debug("Rejecting section: " + rejectDto.toString());
+        Section section = getObjectOrNull.section(rejectDto.getId());
+        Confirmation confirmation = section.getConfirmation();
+        confirmation.setConfirmedBy(null);
+        confirmation.setConfirmedAt(null);
+        confirmation.setConfirmed(false);
+        confirmation.setPendingRevision(true);
+        section.setConfirmation(confirmation);
+        sectionRepository.saveAndFlush(section);
+
+        MessageDto messageDto = new MessageDto();
+        messageDto.setUserFrom("Administrator");
+        messageDto.setUserTo(section.getCreatedBy());
+        messageDto.setSubject("One of your Sections has been rejected.");
+        messageDto.setContent(rejectDto.getRejectMessage());
+        messageService.sendAdminMessage(messageDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * @return and unprocessed section.
+     */
     public Section getUnprocessed() {
         LOGGER.debug("Returning an unprocessed section.");
         return sectionRepository.findByProcessed(false).orElse(null);
     }
 
+    /**
+     * @param section the section object to save.
+     */
     public void save(Section section) {
         LOGGER.debug("Saving section: " + section.getId());
         sectionRepository.saveAndFlush(section);

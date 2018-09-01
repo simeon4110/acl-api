@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
  * @author Josh Harkema
  */
 @Component
-public class GetObjectOrNull {
-    private static final Logger LOGGER = Logger.getLogger(GetObjectOrNull.class);
+public class GetObjectOrThrowNullException {
+    private static final Logger LOGGER = Logger.getLogger(GetObjectOrThrowNullException.class);
     private final BookRepository bookRepository;
     private final SectionRepositoryBase sectionRepository;
     private final CharacterRepository characterRepository;
@@ -31,10 +31,10 @@ public class GetObjectOrNull {
     private final AnnotationRepository annotationRepository;
 
     @Autowired
-    public GetObjectOrNull(BookRepository bookRepository, SectionRepositoryBase sectionRepository,
-                           CharacterRepository characterRepository, AuthorRepository authorRepository,
-                           OtherRepository otherRepository, PoemRepository poemRepository,
-                           AnnotationRepository annotationRepository) {
+    public GetObjectOrThrowNullException(BookRepository bookRepository, SectionRepositoryBase sectionRepository,
+                                         CharacterRepository characterRepository, AuthorRepository authorRepository,
+                                         OtherRepository otherRepository, PoemRepository poemRepository,
+                                         AnnotationRepository annotationRepository) {
         this.bookRepository = bookRepository;
         this.sectionRepository = sectionRepository;
         this.characterRepository = characterRepository;
@@ -52,7 +52,7 @@ public class GetObjectOrNull {
             LOGGER.error(e);
             return null;
         }
-        return poemRepository.findById(parsedId).orElse(null);
+        return poemRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 
     public Book book(String id) {
@@ -63,7 +63,7 @@ public class GetObjectOrNull {
             LOGGER.error(e);
             return null;
         }
-        return bookRepository.findById(parsedId).orElse(null);
+        return bookRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 
     public Author author(String id) {
@@ -74,7 +74,7 @@ public class GetObjectOrNull {
             LOGGER.error(e);
             return null;
         }
-        return authorRepository.findById(parsedId).orElse(null);
+        return authorRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 
     public Section section(String id) {
@@ -85,7 +85,7 @@ public class GetObjectOrNull {
             LOGGER.error(e);
             return null;
         }
-        return sectionRepository.findById(parsedId).orElse(null);
+        return sectionRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 
     public BookCharacter character(String id) {
@@ -96,7 +96,7 @@ public class GetObjectOrNull {
             LOGGER.error(e);
             return null;
         }
-        return characterRepository.findById(parsedId).orElse(null);
+        return characterRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 
     public Other other(String id) {
@@ -107,7 +107,7 @@ public class GetObjectOrNull {
             LOGGER.error(e);
             return null;
         }
-        return otherRepository.findById(parsedId).orElse(null);
+        return otherRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 
     public Annotation annotation(String id) {
@@ -118,6 +118,6 @@ public class GetObjectOrNull {
             LOGGER.error(e);
             return null;
         }
-        return annotationRepository.findById(parsedId).orElse(null);
+        return annotationRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 }

@@ -33,6 +33,11 @@ public class MessageService {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Sends a message where the sender = admin.
+     *
+     * @param messageDto the dto with the data.
+     */
     public void sendAdminMessage(MessageDto messageDto) {
         LOGGER.debug("Sending admin message: " + messageDto.toString());
         Message message = new Message();
@@ -46,23 +51,21 @@ public class MessageService {
         messageRepository.saveAndFlush(message);
     }
 
+    /**
+     * A generic message sender.
+     *
+     * @param messageDto the message data.
+     * @param principal  the user sending the message.
+     * @return Ok if the message is sent.
+     */
     public ResponseEntity<Void> sendMessage(MessageDto messageDto, Principal principal) {
         LOGGER.debug("Sending message: " + messageDto.toString());
         Message message = new Message();
         User userFrom = userDetailsService.loadUserObjectByUsername(messageDto.getUserFrom());
         User userTo = userDetailsService.loadUserObjectByUsername(messageDto.getUserTo());
-
-        if (userFrom == null) {
-            throw new NullPointerException("User: '" + messageDto.getUserFrom() + "' does not exist.");
-        }
-
-        if (userTo == null) {
-            throw new NullPointerException("User: '" + messageDto.getUserTo() + "' does not exist.");
-        }
-
-        if (!Objects.equals(principal.getName(), userFrom.getUsername())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        assert userFrom != null;
+        assert userTo != null;
+        assert principal.getName().equals(userFrom.getUsername());
 
         message.setUserFrom(userFrom.getUsername());
         message.setUserTo(userTo.getUsername());
@@ -71,10 +74,16 @@ public class MessageService {
         message.setRead(false);
 
         messageRepository.saveAndFlush(message);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Read a message.
+     *
+     * @param principal the user requesting the message.
+     * @param id        the id of the message to mark read.
+     * @return OK if the message is read, NOT_FOUND if the message doesn't exist or the userTo != the principal.
+     */
     public ResponseEntity<Void> readMessage(Principal principal, Long id) {
         LOGGER.debug("Setting message read: " + id);
         Optional<Message> message = messageRepository.findById(id);
@@ -90,6 +99,13 @@ public class MessageService {
         }
     }
 
+    /**
+     * Delete a message.
+     *
+     * @param principal the user deleting the message.
+     * @param id        the id of the message to delete.
+     * @return OK if the message is read, NOT_FOUND if the message doesn't exist or the userTo != the principal.
+     */
     public ResponseEntity<Void> deleteMessage(Principal principal, Long id) {
         LOGGER.debug("Deleting message: " + id);
         Optional<Message> message = messageRepository.findById(id);
@@ -104,9 +120,14 @@ public class MessageService {
         }
     }
 
+    /**
+     * Get a user's inbox.
+     *
+     * @param principal the user to get the inbox of.
+     * @return the user's inbox as a List of Messages or null if the list is empty.
+     */
     public List<Message> getInbox(Principal principal) {
         LOGGER.debug("Get inbox for user: " + principal.getName());
         return messageRepository.findAllByUserTo(principal.getName());
     }
-
 }

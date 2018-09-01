@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,6 +33,13 @@ public class CustomStopWordsService {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Create a new list of stop words.
+     *
+     * @param customStopWordsDto the data for the new list.
+     * @param principal          the user making the list.
+     * @return OK if the list is added.
+     */
     public ResponseEntity<Void> create(CustomStopWordsDto customStopWordsDto, Principal principal) {
         LOGGER.debug("Creating stop words: " + customStopWordsDto.toString());
         CustomStopWords customStopWords = new CustomStopWords();
@@ -46,42 +52,70 @@ public class CustomStopWordsService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Modify a list of stop words. Checks the user making the mod is the user who created the list.
+     *
+     * @param dto       the new data.
+     * @param principal the user making the list.
+     * @return OK if the list is modified.
+     */
     public ResponseEntity<Void> modify(CustomStopWordsDto dto, Principal principal) {
         LOGGER.debug("Modifying stop words: " + dto.toString());
         CustomStopWords stopWords = getWordsListOrNull(dto.getId().toString());
-        if (stopWords != null && stopWords.getCreatedBy().equals(principal.getName())) {
-            stopWords.setName(dto.getName());
-            stopWords.setWords(Arrays.asList(dto.getWords()));
-            customStopWordsRepository.saveAndFlush(stopWords);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        assert stopWords != null;
+        assert stopWords.getCreatedBy().equals(principal.getName());
+        stopWords.setName(dto.getName());
+        stopWords.setWords(Arrays.asList(dto.getWords()));
+        customStopWordsRepository.saveAndFlush(stopWords);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Delete a list of stop words. Ensure the user made the list being deleted.
+     *
+     * @param id        the id of the list to delete.
+     * @param principal the user deleting the list.
+     * @return OK if the list is deleted.
+     */
     public ResponseEntity<Void> delete(String id, Principal principal) {
         LOGGER.debug("Deleting custom stop words with id: " + id);
         CustomStopWords stopWords = getWordsListOrNull(id);
-        if (stopWords != null && stopWords.getCreatedBy().equals(principal.getName())) {
-            customStopWordsRepository.delete(stopWords);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        assert stopWords != null;
+        assert stopWords.getCreatedBy().equals(principal.getName());
+        customStopWordsRepository.delete(stopWords);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Get a list of words.
+     *
+     * @param id the id of the list.
+     * @return the list of words.
+     */
     public List<String> getWords(String id) {
         LOGGER.debug("Getting stop words list with id: " + id);
         CustomStopWords stopWords = getWordsListOrNull(id);
-        if (stopWords != null) {
-            return stopWords.getWords();
-        }
-        return Collections.emptyList();
+        assert stopWords != null;
+        return stopWords.getWords();
     }
 
+    /**
+     * Get all of a user's lists.
+     *
+     * @param principal the user to look for.
+     * @return a list of all the user's lists, null if there aren't any.
+     */
     public List<CustomStopWords> getAllByUser(Principal principal) {
         LOGGER.debug("Getting all lists of stop words by: " + principal.getName());
         return customStopWordsRepository.findAllByCreatedBy(principal.getName());
     }
 
+    /**
+     * Helper for getting lists, returns null if a list isn't found.
+     *
+     * @param id the id of the list to find.
+     * @return the list or null.
+     */
     private CustomStopWords getWordsListOrNull(String id) {
         long parsedId;
         try {
