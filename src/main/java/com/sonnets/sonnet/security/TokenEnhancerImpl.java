@@ -16,6 +16,7 @@ import java.util.Set;
 /**
  * @author Josh Harkema
  */
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Component
 public class TokenEnhancerImpl implements TokenEnhancer {
     @Autowired

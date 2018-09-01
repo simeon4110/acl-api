@@ -47,7 +47,9 @@ public class ScheduledTasks {
         this.sectionService = sectionService;
     }
 
-    // Creates a fake auth object for the
+    /**
+     * Creates a fake auth object for the scheduled tasks.
+     */
     private static void setAuth() {
         Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ADMIN", "USER");
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -121,7 +123,6 @@ public class ScheduledTasks {
                 LOGGER.error(e);
             }
         }
-
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

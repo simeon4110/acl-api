@@ -3,6 +3,7 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.prose.CharacterDto;
 import com.sonnets.sonnet.services.prose.CharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,8 +17,8 @@ import javax.validation.Valid;
  * @author Josh Harkema
  */
 @RestController
+@PropertySource("classpath:global.properties")
 public class CharacterController {
-    private static final String ALLOWED_ORIGIN = "*";
     private final CharacterService characterService;
 
     @Autowired
@@ -25,21 +26,32 @@ public class CharacterController {
         this.characterService = characterService;
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Add a character.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/character/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> add(@RequestBody @Valid CharacterDto dto) {
         return characterService.add(dto);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Modify a character (ADMIN ONLY).
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/secure/character/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modify(@RequestBody @Valid CharacterDto dto) {
         return characterService.modify(dto);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Delete a character (ADMIN ONLY).
+     *
+     * @param id the id of the character to delete.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/character/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {

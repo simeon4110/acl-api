@@ -3,6 +3,7 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.web.ContactDto;
 import com.sonnets.sonnet.services.EmailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,8 +19,8 @@ import javax.validation.Valid;
  * @author Josh Harkema
  */
 @RestController
+@PropertySource("classpath:global.properties")
 public class EmailController {
-    private static final String ALLOWED_ORIGIN = "*";
     private final EmailServiceImpl emailService;
 
     @Autowired
@@ -33,7 +34,7 @@ public class EmailController {
      * @param contactDto a valid contactDto with.
      * @return success / failure response entity.
      */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @CrossOrigin(origins = "${allowed-origin}")
     @PostMapping(value = "/about/send_message", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> aboutEmailHandler(@RequestBody @Valid ContactDto contactDto) {
         return emailService.sendAboutMessage(contactDto);

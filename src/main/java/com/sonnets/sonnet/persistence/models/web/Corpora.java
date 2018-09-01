@@ -1,9 +1,7 @@
 package com.sonnets.sonnet.persistence.models.web;
 
-import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.persistence.models.base.Item;
-import com.sonnets.sonnet.persistence.models.base.Version;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Other;
@@ -27,7 +25,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "corpora")
-@DiscriminatorValue("CORP")
 public class Corpora extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -3561569564692824043L;
     @Id
@@ -38,27 +35,22 @@ public class Corpora extends Auditable<String> implements Serializable {
     private String name;
     @Column
     private String description;
-    @ManyToAny(
-            metaColumn = @Column(name = "item_type", length = 4),
-            fetch = FetchType.EAGER
-    )
+    @ManyToAny(metaDef = "itemMetaDef", metaColumn = @Column(name = "item_type", length = 4))
     @AnyMetaDef(
-            metaType = "string", idType = "long",
+            name = "itemMetaDef", metaType = "string", idType = "long",
             metaValues = {
                     @MetaValue(targetEntity = Book.class, value = "BOOK"),
                     @MetaValue(targetEntity = Poem.class, value = "POEM"),
                     @MetaValue(targetEntity = Section.class, value = "SECT"),
-                    @MetaValue(targetEntity = Other.class, value = "OTHR"),
-                    @MetaValue(targetEntity = Version.class, value = "VERS"),
-                    @MetaValue(targetEntity = Annotation.class, value = "ANNO")
+                    @MetaValue(targetEntity = Other.class, value = "OTHR")
             }
     )
-    @Cascade({CascadeType.PERSIST, CascadeType.DETACH})
     @JoinTable(
             name = "corpora_items",
-            joinColumns = @JoinColumn(name = "corpora_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "item_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(name = "corpora_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "item_id", nullable = false)
     )
+    @Cascade({CascadeType.DETACH, CascadeType.REMOVE})
     private Set<Item> items = new HashSet<>();
 
     public Corpora() {

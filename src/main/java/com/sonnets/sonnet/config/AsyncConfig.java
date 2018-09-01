@@ -9,7 +9,7 @@ import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecu
 import java.util.concurrent.Executor;
 
 /**
- * This is primarily used by backend services.
+ * This is primarily used by backend services. In fact, I'm not 100% sure it's used.
  *
  * @author Josh Harkema
  */

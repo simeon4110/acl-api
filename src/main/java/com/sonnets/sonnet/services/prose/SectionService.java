@@ -36,8 +36,8 @@ public class SectionService {
     private final MessageService messageService;
 
     @Autowired
-    public SectionService(GetObjectOrNull getObjectOrNull, SaveObject saveObject, SectionRepositoryBase sectionRepository,
-                          MessageService messageService) {
+    public SectionService(GetObjectOrNull getObjectOrNull, SaveObject saveObject,
+                          SectionRepositoryBase sectionRepository, MessageService messageService) {
         this.getObjectOrNull = getObjectOrNull;
         this.saveObject = saveObject;
         this.sectionRepository = sectionRepository;
@@ -45,7 +45,7 @@ public class SectionService {
     }
 
     private static Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
-        section.setCategory(book.getCategory());
+        section.setCategory("SECTION");
         section.setAuthor(author);
         section.setTitle(dto.getTitle());
         section.setDescription(dto.getDescription());
@@ -158,7 +158,7 @@ public class SectionService {
             MessageDto messageDto = new MessageDto();
             messageDto.setUserFrom("Administrator");
             messageDto.setUserTo(section.getCreatedBy());
-            messageDto.setSubject("One of your Sectopms has been rejected.");
+            messageDto.setSubject("One of your Sections has been rejected.");
             messageDto.setContent(rejectDto.getRejectMessage());
             messageService.sendAdminMessage(messageDto);
 

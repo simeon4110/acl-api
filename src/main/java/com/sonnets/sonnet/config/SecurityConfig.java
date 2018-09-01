@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
- * Security configuration for Spring.
+ * Security configuration for Spring. Almost stock with a custom auth handler to allow for a custom user definition.
  *
  * @author Josh Harkema
  */
@@ -77,5 +77,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }

@@ -28,7 +28,7 @@ public class MalletTools {
     private static final int FINAL_THINNING = 1;
     private static final int FINAL_BURN_IN = 5;
 
-    private static MalletTools ourInstance = new MalletTools();
+    private static final MalletTools ourInstance = new MalletTools();
 
     public static MalletTools getInstance() {
         return ourInstance;

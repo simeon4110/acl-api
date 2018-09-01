@@ -37,8 +37,8 @@ public class NLPTools {
             "other", "aren", "where", "this", "it's", "'s", "--", "'", "``", "''", "one", "would", "could", "may",
             "every", "make", "upon", "thy", "have", "doth", "ah", "thou"
     );
-    private static StanfordCoreNLP pipeline = new StanfordCoreNLP(setProperties()); // For complex analysis.
-    private static NLPTools ourInstance = new NLPTools();
+    private static final StanfordCoreNLP pipeline = new StanfordCoreNLP(setProperties()); // For complex analysis.
+    private static final NLPTools ourInstance = new NLPTools();
     public static NLPTools getInstance() {
         return ourInstance;
     }

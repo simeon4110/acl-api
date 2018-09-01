@@ -25,6 +25,7 @@ public class ItemService {
         this.getObjectOrNull = getObjectOrNull;
     }
 
+    @SuppressWarnings("unchecked")
     public List getItems(ItemDto dto) {
         LOGGER.debug("Returning items: " + dto.getPairs());
         List items = new ArrayList();

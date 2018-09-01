@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.persistence.models.poetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import org.hibernate.annotations.Fetch;
@@ -21,6 +22,7 @@ import java.util.Objects;
 @Entity
 @Table
 @DiscriminatorValue("POEM")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
     @Field(name = "poem_form", store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
@@ -39,7 +41,7 @@ public class Poem extends Item implements Serializable {
     @Column
     private Annotation annotation;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Version> versions;
     @JsonIgnore

@@ -3,29 +3,30 @@ package com.sonnets.sonnet.tools;
 import java.util.Objects;
 
 /**
- * Apparently, Java doesn't implement an generic tuple class. Here one is.
+ * Apparently, Java doesn't implement an generic tuple class. Here one is. For reals, there is no way to
+ * create a list of tuples in Java.
  *
- * @param <key>   the key.
- * @param <value> the value.
+ * @param <K>   the K.
+ * @param <V> the V.
  */
-public class ItemKeyValuePair<key, value> {
-    private key key;
-    private value value;
+public class ItemKeyValuePair<K, V> {
+    private K k;
+    private V v;
 
     public ItemKeyValuePair() {
     }
 
-    public ItemKeyValuePair(key key, value value) {
-        this.key = key;
-        this.value = value;
+    public ItemKeyValuePair(K k, V v) {
+        this.k = k;
+        this.v = v;
     }
 
-    public key getKey() {
-        return key;
+    public K getKey() {
+        return k;
     }
 
-    public value getValue() {
-        return value;
+    public V getValue() {
+        return v;
     }
 
     @Override
@@ -33,20 +34,20 @@ public class ItemKeyValuePair<key, value> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemKeyValuePair<?, ?> that = (ItemKeyValuePair<?, ?>) o;
-        return Objects.equals(key, that.key) &&
-                Objects.equals(value, that.value);
+        return Objects.equals(k, that.k) &&
+                Objects.equals(v, that.v);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(k, v);
     }
 
     @Override
     public String toString() {
         return "ItemKeyValuePair{" +
-                "key=" + key +
-                ", value=" + value +
+                "K=" + k +
+                ", V=" + v +
                 '}';
     }
 }

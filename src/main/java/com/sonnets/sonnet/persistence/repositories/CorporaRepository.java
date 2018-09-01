@@ -11,6 +11,7 @@ import java.util.List;
  *
  * @author Josh Harkema
  */
+@SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
 @Repository
 public interface CorporaRepository extends JpaRepository<Corpora, Long> {
     List<Corpora> findAllByCreatedBy(final String createdBy);

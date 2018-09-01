@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import javax.sql.DataSource;
 
 /**
- * OAuth2 resource server. WIP.
+ * OAuth2 resource server. Deals with secure access to resources.
  *
  * @author Josh Harkema
  */

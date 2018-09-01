@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * @author Josh Harkema
  */
+@SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
 @Repository
 public interface PoemRepository extends JpaRepository<Poem, Long> {
     List<Poem> findAllByForm(final String form);

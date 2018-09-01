@@ -7,9 +7,14 @@ import java.util.*;
  *
  * @author Josh Harkema
  */
-public abstract class FrequencyDistribution {
+public class FrequencyDistribution {
     private static final int MAX_RETURN = 20; // the total number of results to return
-    private static Map<String, Integer> frequency = new HashMap<>();
+    private static final Map<String, Integer> frequency = new HashMap<>();
+    private static final FrequencyDistribution ourInstance = new FrequencyDistribution();
+
+    public static FrequencyDistribution getInstance() {
+        return ourInstance;
+    }
 
     private FrequencyDistribution() {
     }
@@ -18,7 +23,7 @@ public abstract class FrequencyDistribution {
      * @param toScan the raw text to run a freqdist on.
      * @return a map where key = the word and value = the count.
      */
-    public static Map<String, Integer> getFrequency(List<String> toScan) {
+    public Map<String, Integer> getFrequency(final List<String> toScan) {
         for (String s : toScan) {
             s = s.toLowerCase();
             int wordFrequency = frequencyOf(s, toScan);

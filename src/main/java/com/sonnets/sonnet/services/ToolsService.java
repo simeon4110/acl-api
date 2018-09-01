@@ -2,7 +2,6 @@ package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
-import com.sonnets.sonnet.wordtools.KWIC;
 import com.sonnets.sonnet.wordtools.MalletTools;
 import com.sonnets.sonnet.wordtools.NLPTools;
 import org.apache.log4j.Logger;
@@ -18,10 +17,11 @@ import java.util.Map;
  * @author Josh Harkema
  */
 @Service
-public class ToolsService implements KWIC {
+public class ToolsService {
     private static final Logger LOGGER = Logger.getLogger(ToolsService.class);
     private static final NLPTools pipeline = NLPTools.getInstance();
     private static final MalletTools malletTools = MalletTools.getInstance();
+    private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
 
     /**
      * @param text a textDto with the text to lemmatize and optional custom stop words.
@@ -38,7 +38,7 @@ public class ToolsService implements KWIC {
      */
     public Map<String, Integer> frequencyDistribution(TextDto textDto) {
         List<String> strings = pipeline.getListOfLemmatizedWords(textDto);
-        return FrequencyDistribution.getFrequency(strings);
+        return freqDist.getFrequency(strings);
     }
 
     /**

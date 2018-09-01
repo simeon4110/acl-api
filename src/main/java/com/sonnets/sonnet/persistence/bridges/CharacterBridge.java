@@ -15,7 +15,7 @@ import java.util.Collection;
 public class CharacterBridge implements FieldBridge {
     @Override
     public void set(String s, Object o, Document document, LuceneOptions luceneOptions) {
-        Collection<BookCharacter> bookCharacters = (Collection<BookCharacter>) o;
+        @SuppressWarnings("unchecked") Collection<BookCharacter> bookCharacters = (Collection<BookCharacter>) o;
 
         for (BookCharacter bookCharacter : bookCharacters) {
             luceneOptions.addFieldToDocument(s + ".firstName", bookCharacter.getFirstName(), document);

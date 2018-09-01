@@ -48,7 +48,6 @@ public class SearchService {
     private static final String AUTHOR_LAST_NAME = "author.lastName";
     private static final String YEAR = "publicationYear";
     private static final String TITLE = "title";
-    private static final String SOURCE = "source";
     private static final String PERIOD = "period";
     // Item specific field names.
     private static final String POEM_FORM = "poem_form";

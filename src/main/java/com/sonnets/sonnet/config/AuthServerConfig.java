@@ -31,7 +31,7 @@ import org.springframework.web.filter.CorsFilter;
 import javax.sql.DataSource;
 
 /**
- * OAuth2 authorization server config. WIP.
+ * OAuth2 authorization server config. All secure access to the API is via OAuth2.
  *
  * @author Josh Harkema
  */

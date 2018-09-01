@@ -42,6 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private static final String GUEST_PRIVILEGE = "GUEST";
     private static final int ENCODER_STRENGTH = 11;
     private static final Random RANDOM = new SecureRandom();
+    @SuppressWarnings("SpellCheckingInspection")
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final int PASSWORD_LENGTH = 12;
 

@@ -18,7 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.security.Principal;
 import java.util.*;
 
@@ -28,15 +31,18 @@ import java.util.*;
  * @author Josh Harkema
  */
 @Service
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class CorporaService {
-    private static final Logger LOGGER = Logger.getLogger(CorporaRepository.class);
+    private static final Logger LOGGER = Logger.getLogger(CorporaService.class);
     private final CorporaRepository corporaRepository;
     private final GetObjectOrNull getObjectOrNull;
+    private final EntityManager em;
 
     @Autowired
-    public CorporaService(CorporaRepository corporaRepository, GetObjectOrNull getObjectOrNull) {
+    public CorporaService(CorporaRepository corporaRepository, GetObjectOrNull getObjectOrNull, EntityManager em) {
         this.corporaRepository = corporaRepository;
         this.getObjectOrNull = getObjectOrNull;
+        this.em = em;
     }
 
     public ResponseEntity<Void> createCorpora(CorporaDto corporaDto) {
@@ -67,7 +73,12 @@ public class CorporaService {
         if (corpora != null) {
             return corpora.getItems();
         }
-        return null;
+        return Collections.emptySet();
+    }
+
+    public Corpora getSingle(String corporaId) {
+        LOGGER.debug("Getting corpora by id:" + corporaId);
+        return getCorporaOrNull(corporaId);
     }
 
     public ResponseEntity<Void> addItems(CorporaItemsDto dto) {
@@ -77,23 +88,25 @@ public class CorporaService {
             Set<Item> items = corpora.getItems();
             for (ItemKeyValuePair<String, String> pair : dto.getIds()) {
                 switch (pair.getKey()) {
-                    case "POEM":
+                    case "POETRY":
                         Poem poem = getObjectOrNull.poem(pair.getValue());
                         if (poem != null) {
                             items.add(poem);
                         }
                         break;
-                    case "BOOK":
+                    case "PROSE":
                         Book book = getObjectOrNull.book(pair.getValue());
                         if (book != null) {
                             items.add(book);
                         }
                         break;
-                    case "SECT":
+                    case "SECTION":
                         Section section = getObjectOrNull.section(pair.getValue());
                         if (section != null) {
                             items.add(section);
                         }
+                        break;
+                    default:
                         break;
                 }
             }
@@ -108,31 +121,48 @@ public class CorporaService {
         LOGGER.debug("Removing items: " + dto.getIds());
         Corpora corpora = getCorporaOrNull(dto.getId().toString());
         if (corpora != null) {
-            Set<Item> items = corpora.getItems();
             for (ItemKeyValuePair<String, String> pair : dto.getIds()) {
                 switch (pair.getKey()) {
-                    case "POEM":
+                    case "POETRY":
                         Poem poem = getObjectOrNull.poem(pair.getValue());
                         if (poem != null) {
-                            items.remove(poem);
+                            em.createNativeQuery("DELETE FROM `corpora_items` WHERE  " +
+                                    "`corpora_id` = :corporaId AND " +
+                                    "`item_type` LIKE  'POEM' ESCAPE '#' AND " +
+                                    "`item_id` = :itemId")
+                                    .setParameter("corporaId", corpora.getId().toString())
+                                    .setParameter("itemId", poem.getId().toString())
+                                    .executeUpdate();
                         }
                         break;
-                    case "BOOK":
+                    case "PROSE":
                         Book book = getObjectOrNull.book(pair.getValue());
                         if (book != null) {
-                            items.remove(book);
+                            em.createNativeQuery("DELETE FROM `corpora_items` WHERE  " +
+                                    "`corpora_id` = :corporaId AND " +
+                                    "`item_type` LIKE  'BOOK' ESCAPE '#' AND " +
+                                    "`item_id` = :itemId")
+                                    .setParameter("corporaId", corpora.getId().toString())
+                                    .setParameter("itemId", book.getId().toString())
+                                    .executeUpdate();
                         }
                         break;
-                    case "SECT":
+                    case "SECTION":
                         Section section = getObjectOrNull.section(pair.getValue());
                         if (section != null) {
-                            items.remove(section);
+                            em.createNativeQuery("DELETE FROM `corpora_items` WHERE  " +
+                                    "`corpora_id` = :corporaId AND " +
+                                    "`item_type` LIKE  'SECT' ESCAPE '#' AND " +
+                                    "`item_id` = :itemId")
+                                    .setParameter("corporaId", corpora.getId().toString())
+                                    .setParameter("itemId", section.getId().toString())
+                                    .executeUpdate();
                         }
+                        break;
+                    default:
                         break;
                 }
             }
-            corpora.setItems(items);
-            corporaRepository.saveAndFlush(corpora);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

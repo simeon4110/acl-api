@@ -3,6 +3,7 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.base.ItemDto;
 import com.sonnets.sonnet.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +18,8 @@ import java.util.List;
  * @author Josh Harkema
  */
 @RestController
+@PropertySource("classpath:global.properties")
 public class ItemController {
-    private static final String ALLOWED_ORIGIN = "*";
     private final ItemService itemService;
 
     @Autowired
@@ -26,7 +27,10 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * @return list of items, see ItemDto for formatting instructions of JSON for request.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PostMapping(value = "/items/get", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List getItems(@RequestBody ItemDto dto) {

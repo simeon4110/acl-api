@@ -139,7 +139,8 @@ public abstract class Item extends Auditable<String> implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, category, author, title, description, publicationYear, publicationStmt, sourceDesc, period);
+        return Objects.hash(super.hashCode(), id, category, author, title, description, publicationYear,
+                publicationStmt, sourceDesc, period);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.services.AuthorService;
 import com.sonnets.sonnet.services.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,8 +20,8 @@ import java.util.List;
  * @author Josh Harkema
  */
 @RestController
+@PropertySource("classpath:global.properties")
 public class AuthorController {
-    private static final String ALLOWED_ORIGIN = "*";
     private final AuthorService authorService;
     private final SearchService searchService;
 
@@ -30,49 +31,65 @@ public class AuthorController {
         this.searchService = searchService;
     }
 
-    // Add an author.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Add an author to the db.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/author/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> add(@RequestBody @Valid AuthorDto authorDto) {
         return authorService.add(authorDto);
     }
 
-    // Modify an author.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Modify an existing author.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/author/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modify(@RequestBody @Valid AuthorDto authorDto) {
         return authorService.modify(authorDto);
     }
 
-    // Delete an author.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Administrator author deletion. Users cannot delete authors.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/author/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         return authorService.delete(id);
     }
 
-    // Get an author by id.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * @param id the db id of the author to get.
+     * @return an author by db id.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/author/get_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Author getById(@PathVariable("id") String id) {
         return authorService.get(id);
     }
 
-    // Get an author by last name.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * @param lastName the author's last name.
+     * @return an author by last name.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/author/get_by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Author getByLastName(@PathVariable("lastName") String lastName) {
         lastName = lastName.replace('_', ' ');
         return authorService.getByLastName(lastName);
     }
 
-    // Search for an Author.
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PostMapping(value = "/author/search", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    /**
+     * Search endpoint specific to author objects.
+     *
+     * @return the result's of the search.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PostMapping(value = "/author/search", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List search(@RequestBody AuthorDto authorDto) {
         return searchService.searchAuthor(authorDto);
     }

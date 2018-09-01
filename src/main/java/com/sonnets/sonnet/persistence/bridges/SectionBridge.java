@@ -15,7 +15,7 @@ import java.util.Collection;
 public class SectionBridge implements FieldBridge {
     @Override
     public void set(String s, Object o, Document document, LuceneOptions luceneOptions) {
-        Collection<Section> sections = (Collection<Section>) o;
+        @SuppressWarnings("unchecked") Collection<Section> sections = (Collection<Section>) o;
 
         for (Section section : sections) {
             luceneOptions.addFieldToDocument(section + ".title", section.getTitle(), document);

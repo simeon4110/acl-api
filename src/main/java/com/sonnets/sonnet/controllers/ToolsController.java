@@ -2,6 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.services.ToolsService;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +19,8 @@ import java.util.Map;
  * @author Josh Harkema
  */
 @RestController
+@PropertySource("classpath:global.properties")
 public class ToolsController {
-    private static final String ALLOWED_ORIGIN = "*";
     private final ToolsService toolsService;
 
     public ToolsController(ToolsService toolsService) {
@@ -32,7 +33,7 @@ public class ToolsController {
      * @param text the text to lemmatize.
      * @return a list of lemmatized words.
      */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @CrossOrigin(origins = "${allowed-origin}")
     @PostMapping(value = "/tools/text/lemmatize", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> lemmatizeText(@RequestBody @Valid TextDto text) {
@@ -45,7 +46,7 @@ public class ToolsController {
      * @param textDto a textDto with the text and optional custom stop words.
      * @return a Map of where key = word and value = frequency of key.
      */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @CrossOrigin(origins = "${allowed-origin}")
     @PostMapping(value = "/tools/text/freqdist", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Integer> getFrequencyDistribution(@RequestBody @Valid TextDto textDto) {
@@ -59,7 +60,7 @@ public class ToolsController {
      * @return a Map where the key is an integer (0 = most likely, -1 = trimmed) and the key is a Map where the key
      * is the exact probability of the model and the value is the model.
      */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @CrossOrigin(origins = "${allowed-origin}")
     @PostMapping(value = "/tools/text/topic_model", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<Integer, Map<Double, String>> runTopicModel(@RequestBody @Valid TextDto textDto) {

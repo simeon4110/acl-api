@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
@@ -30,6 +31,7 @@ import java.util.Objects;
                         @Parameter(name = "language", value = "English")
                 })
         })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Section extends Item implements Serializable {
     private static final long serialVersionUID = -7556341244036061332L;
     @Field(name = "section_title", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)

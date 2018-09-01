@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.services.prose.SectionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,8 +21,8 @@ import java.util.List;
  * @author Josh Harkema
  */
 @RestController
+@PropertySource("classpath:global.properties")
 public class SectionController {
-    private static final String ALLOWED_ORIGIN = "*";
     private final SectionService sectionService;
 
     @Autowired
@@ -29,54 +30,84 @@ public class SectionController {
         this.sectionService = sectionService;
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * @param id the id of the section to get.
+     * @return section by db id.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Section get(@PathVariable("id") String id) {
         return sectionService.get(id);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * @param bookId the id of the book.
+     * @return all sections in a book by the book's db id.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get/from_book/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllFromBook(@PathVariable("id") String bookId) {
         return sectionService.getAllFromBook(bookId);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Add a section to the db.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> add(@RequestBody @Valid SectionDto dto) {
         return sectionService.add(dto);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Modify a section in the db (ADMIN ONLY).
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/secure/section/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modify(@RequestBody @Valid SectionDto dto) {
         return sectionService.modify(dto);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Modify a section in the db (OWNER ONLY).
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/section/user_modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modifyUser(@RequestBody @Valid SectionDto dto, Principal principal) {
         return sectionService.modify(dto, principal);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Delete a section by id (ADMIN ONLY).
+     *
+     * @param id the id of the section to delete.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/section/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         return sectionService.deleteById(id);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Confirm a section by db id.
+     *
+     * @param id the id of the section to confirm.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/confirm/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> confirm(@PathVariable("id") String id, Principal principal) {
         return sectionService.confirm(id, principal);
     }
 
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    /**
+     * Reject a section.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/reject", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> reject(@RequestBody @Valid RejectDto dto) {

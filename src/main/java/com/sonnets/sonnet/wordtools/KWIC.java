@@ -7,15 +7,24 @@ import java.util.*;
  *
  * @author Josh Harkema
  */
-public interface KWIC {
+public class KWIC {
+    private static final KWIC ourInstance = new KWIC();
+
+    private KWIC() {
+    }
+
+    public static KWIC getInstance() {
+        return ourInstance;
+    }
+
     /**
      * @param text   the text to search.
      * @param word   the word to search for.
      * @param length the context length (each side)
      * @return a Map of the matches and context. The word is replaced with an '=' sign.
      */
-    static List<Map.Entry<String, String>> searchByWord(final String text, final String word,
-                                                        final int length) {
+    private static List<Map.Entry<String, String>> searchByWord(final String text, final String word,
+                                                                final int length) {
         ArrayList<String> tokens = new ArrayList<>(Arrays.asList(text.replace("\n", " ")
                 .split(" ")));
 

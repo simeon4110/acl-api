@@ -55,7 +55,7 @@ public class UserController {
     /**
      * Handles put requests to update a user's admin status.
      *
-     * @param modifyUserDto the dto vaid dto with the new user data.
+     * @param modifyUserDto the dto valid dto with the new user data.
      * @return HttpStatus.NOT_ACCEPTABLE if username does not exist; HttpStatus.ACCEPTED if successful.
      */
     @CrossOrigin(origins = ALLOWED_ORIGIN)

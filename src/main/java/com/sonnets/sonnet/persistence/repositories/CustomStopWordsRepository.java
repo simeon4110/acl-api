@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * @author Josh Harkema
  */
+@SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
 @Repository
 public interface CustomStopWordsRepository extends JpaRepository<CustomStopWords, Long> {
     List<CustomStopWords> findAllByCreatedBy(final String username);

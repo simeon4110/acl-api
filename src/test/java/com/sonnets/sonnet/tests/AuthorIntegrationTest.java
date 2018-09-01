@@ -57,8 +57,8 @@ public class AuthorIntegrationTest {
     @Autowired
     private FilterChainProxy filterChainProxy;
     private MockMvc mockMvc;
-    private Gson gson = new Gson();
-    private JacksonJsonParser jsonParser = new JacksonJsonParser();
+    private final Gson gson = new Gson();
+    private final JacksonJsonParser jsonParser = new JacksonJsonParser();
     private String token;
 
     @Before
@@ -157,7 +157,7 @@ public class AuthorIntegrationTest {
     }
 
     public void deleteAuthor(Author author) throws Exception {
-        LOGGER.debug("Deleteing author with ID: " + author.getId());
+        LOGGER.debug("Deleting author with ID: " + author.getId());
 
         mockMvc.perform(delete("/secure/author/delete/" + author.getId())
                 .header("Authorization", "Bearer " + token)

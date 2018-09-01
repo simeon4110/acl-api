@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler;
 
 /**
- * Method security handler for OAuth endpoints.
+ * Method security handler for OAuth endpoints. Allows @PreAuthorize to be defined on each endpoint.
  *
  * @author Josh Harkema
  */

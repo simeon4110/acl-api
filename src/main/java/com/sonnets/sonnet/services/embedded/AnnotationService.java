@@ -6,7 +6,6 @@ import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.AnnotationRepository;
-import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.helpers.GetObjectOrNull;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +22,11 @@ import org.springframework.stereotype.Service;
 public class AnnotationService {
     private static final Logger LOGGER = Logger.getLogger(AnnotationService.class);
     private final AnnotationRepository annotationRepository;
-    private final MessageService messageService;
     private final GetObjectOrNull getObjectOrNull;
 
     @Autowired
-    public AnnotationService(AnnotationRepository annotationRepository, MessageService messageService,
-                             GetObjectOrNull getObjectOrNull) {
+    public AnnotationService(AnnotationRepository annotationRepository, GetObjectOrNull getObjectOrNull) {
         this.annotationRepository = annotationRepository;
-        this.messageService = messageService;
         this.getObjectOrNull = getObjectOrNull;
     }
 
