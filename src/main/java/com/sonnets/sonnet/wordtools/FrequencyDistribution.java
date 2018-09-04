@@ -62,6 +62,7 @@ public class FrequencyDistribution {
      * @param <V> the values.
      * @return a sorted map limited to MAX_RETURN values.
      */
+    @SuppressWarnings("SameParameterValue")
     private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
         list.sort(Map.Entry.comparingByValue());

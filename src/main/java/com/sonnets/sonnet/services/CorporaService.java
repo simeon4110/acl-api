@@ -8,7 +8,7 @@ import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.repositories.CorporaRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.tools.ItemKeyValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +35,12 @@ import java.util.Set;
 public class CorporaService {
     private static final Logger LOGGER = Logger.getLogger(CorporaService.class);
     private final CorporaRepository corporaRepository;
-    private final GetObjectOrThrowNullException getObjectOrNull;
+    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final EntityManager em;
 
     @Autowired
-    public CorporaService(CorporaRepository corporaRepository, GetObjectOrThrowNullException getObjectOrNull, EntityManager em) {
+    public CorporaService(CorporaRepository corporaRepository, GetObjectOrThrowNullPointer getObjectOrNull,
+                          EntityManager em) {
         this.corporaRepository = corporaRepository;
         this.getObjectOrNull = getObjectOrNull;
         this.em = em;

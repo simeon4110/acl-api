@@ -9,7 +9,7 @@ import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.MessageService;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.services.helpers.SaveObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +29,13 @@ import java.util.List;
 @Service
 public class SectionService {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
-    private final GetObjectOrThrowNullException getObjectOrNull;
+    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final SaveObject saveObject;
     private final SectionRepositoryBase sectionRepository;
     private final MessageService messageService;
 
     @Autowired
-    public SectionService(GetObjectOrThrowNullException getObjectOrNull, SaveObject saveObject,
+    public SectionService(GetObjectOrThrowNullPointer getObjectOrNull, SaveObject saveObject,
                           SectionRepositoryBase sectionRepository, MessageService messageService) {
         this.getObjectOrNull = getObjectOrNull;
         this.saveObject = saveObject;

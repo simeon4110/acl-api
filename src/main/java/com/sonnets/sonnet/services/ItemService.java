@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.ItemDto;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.tools.ItemKeyValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +18,10 @@ import java.util.List;
 @Service
 public class ItemService {
     private static final Logger LOGGER = Logger.getLogger(ItemService.class);
-    private final GetObjectOrThrowNullException getObjectOrNull;
+    private final GetObjectOrThrowNullPointer getObjectOrNull;
 
     @Autowired
-    public ItemService(GetObjectOrThrowNullException getObjectOrNull) {
+    public ItemService(GetObjectOrThrowNullPointer getObjectOrNull) {
         this.getObjectOrNull = getObjectOrNull;
     }
 

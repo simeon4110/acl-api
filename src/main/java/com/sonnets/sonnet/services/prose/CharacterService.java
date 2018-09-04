@@ -1,10 +1,11 @@
 package com.sonnets.sonnet.services.prose;
 
 import com.sonnets.sonnet.persistence.dtos.prose.CharacterDto;
+import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.CharacterRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,11 +22,11 @@ import java.util.List;
 @Service
 public class CharacterService {
     private static final Logger LOGGER = Logger.getLogger(CharacterService.class);
-    private final GetObjectOrThrowNullException getObjectOrNull;
+    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final CharacterRepository characterRepository;
 
     @Autowired
-    public CharacterService(GetObjectOrThrowNullException getObjectOrNull, CharacterRepository characterRepository) {
+    public CharacterService(GetObjectOrThrowNullPointer getObjectOrNull, CharacterRepository characterRepository) {
         this.getObjectOrNull = getObjectOrNull;
         this.characterRepository = characterRepository;
     }
@@ -73,6 +74,11 @@ public class CharacterService {
     public ResponseEntity<Void> add(CharacterDto dto) {
         LOGGER.debug("Adding character: " + dto.toString());
         Book book = getObjectOrNull.book(dto.getBookId());
+        if (characterAlreadyExists(book, dto.getFirstName(), dto.getLastName())) {
+            throw new AuthorAlreadyExistsException(
+                    String.format("Author: %s %s already exists", dto.getFirstName(), dto.getLastName())
+            );
+        }
         BookCharacter bookCharacter = new BookCharacter();
         book.getBookCharacters().add(createOrCopyCharacter(bookCharacter, dto));
         return new ResponseEntity<>(HttpStatus.OK);

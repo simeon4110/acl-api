@@ -217,7 +217,7 @@ its
 itself
 j
 just
-k
+key
 keep
 keeps
 kept
@@ -463,7 +463,7 @@ uses
 using
 usually
 uucp
-v
+value
 value
 various
 very

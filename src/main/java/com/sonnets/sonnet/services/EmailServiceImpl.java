@@ -55,6 +55,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendSimpleMessageUsingTemplate(String to, String subject, SimpleMailMessage template,
                                                String... templateArgs) {
         if (template.getText() != null) {
+            @SuppressWarnings("ConfusingArgumentToVarargsMethod")
             String text = String.format(template.getText(), templateArgs);
             sendSimpleMessage(to, subject, text);
         }

@@ -6,27 +6,27 @@ import java.util.Objects;
  * Apparently, Java doesn't implement an generic tuple class. Here one is. For reals, there is no way to
  * create a list of tuples in Java.
  *
- * @param <K>   the K.
- * @param <V> the V.
+ * @param <K> the Key.
+ * @param <V> the Value.
  */
 public class ItemKeyValuePair<K, V> {
-    private K k;
-    private V v;
+    private K key;
+    private V value;
 
     public ItemKeyValuePair() {
     }
 
-    public ItemKeyValuePair(K k, V v) {
-        this.k = k;
-        this.v = v;
+    public ItemKeyValuePair(K key, V value) {
+        this.key = key;
+        this.value = value;
     }
 
     public K getKey() {
-        return k;
+        return key;
     }
 
     public V getValue() {
-        return v;
+        return value;
     }
 
     @Override
@@ -34,20 +34,20 @@ public class ItemKeyValuePair<K, V> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemKeyValuePair<?, ?> that = (ItemKeyValuePair<?, ?>) o;
-        return Objects.equals(k, that.k) &&
-                Objects.equals(v, that.v);
+        return Objects.equals(key, that.key) &&
+                Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(k, v);
+        return Objects.hash(key, value);
     }
 
     @Override
     public String toString() {
         return "ItemKeyValuePair{" +
-                "K=" + k +
-                ", V=" + v +
+                "K=" + key +
+                ", V=" + value +
                 '}';
     }
 }

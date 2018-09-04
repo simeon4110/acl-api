@@ -4,7 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.prose.OtherDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.repositories.OtherRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,11 +19,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class OtherService {
     private static final Logger LOGGER = Logger.getLogger(OtherService.class);
-    private final GetObjectOrThrowNullException getObjectOrNull;
+    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final OtherRepository otherRepository;
 
     @Autowired
-    public OtherService(GetObjectOrThrowNullException getObjectOrNull, OtherRepository otherRepository) {
+    public OtherService(GetObjectOrThrowNullPointer getObjectOrNull, OtherRepository otherRepository) {
         this.getObjectOrNull = getObjectOrNull;
         this.otherRepository = otherRepository;
     }

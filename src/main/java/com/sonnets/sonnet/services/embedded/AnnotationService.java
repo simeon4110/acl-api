@@ -6,7 +6,7 @@ import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.AnnotationRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,10 +22,10 @@ import org.springframework.stereotype.Service;
 public class AnnotationService {
     private static final Logger LOGGER = Logger.getLogger(AnnotationService.class);
     private final AnnotationRepository annotationRepository;
-    private final GetObjectOrThrowNullException getObjectOrNull;
+    private final GetObjectOrThrowNullPointer getObjectOrNull;
 
     @Autowired
-    public AnnotationService(AnnotationRepository annotationRepository, GetObjectOrThrowNullException getObjectOrNull) {
+    public AnnotationService(AnnotationRepository annotationRepository, GetObjectOrThrowNullPointer getObjectOrNull) {
         this.annotationRepository = annotationRepository;
         this.getObjectOrNull = getObjectOrNull;
     }

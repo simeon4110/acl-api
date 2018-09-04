@@ -4,7 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.repositories.BookRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,11 +22,11 @@ import java.util.List;
 @Service
 public class BookService {
     private static final Logger LOGGER = Logger.getLogger(BookService.class);
-    private final GetObjectOrThrowNullException getObjectOrNull;
+    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final BookRepository bookRepository;
 
     @Autowired
-    public BookService(GetObjectOrThrowNullException getObjectOrNull, BookRepository bookRepository) {
+    public BookService(GetObjectOrThrowNullPointer getObjectOrNull, BookRepository bookRepository) {
         this.getObjectOrNull = getObjectOrNull;
         this.bookRepository = bookRepository;
     }

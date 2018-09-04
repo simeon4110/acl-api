@@ -4,7 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullException;
+import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.tools.ParseParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +23,10 @@ import java.util.Optional;
 public class AuthorService {
     private static final Logger LOGGER = Logger.getLogger(AuthorService.class);
     private final AuthorRepository authorRepository;
-    private final GetObjectOrThrowNullException getObjectOrThrowNull;
+    private final GetObjectOrThrowNullPointer getObjectOrThrowNull;
 
     @Autowired
-    public AuthorService(AuthorRepository authorRepository, GetObjectOrThrowNullException getObjectOrThrowNull) {
+    public AuthorService(AuthorRepository authorRepository, GetObjectOrThrowNullPointer getObjectOrThrowNull) {
         this.authorRepository = authorRepository;
         this.getObjectOrThrowNull = getObjectOrThrowNull;
     }
