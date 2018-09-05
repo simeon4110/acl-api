@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.services.prose.SectionService;
+import com.sonnets.sonnet.tools.ParseParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -48,6 +49,17 @@ public class SectionController {
     @GetMapping(value = "/section/get/from_book/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllFromBook(@PathVariable("id") String bookId) {
         return sectionService.getAllFromBook(bookId);
+    }
+
+    /**
+     * @param lastName the last name of the author to look for.
+     * @return a list of all the sections matching the author.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/section/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Section> getAllByAuthorLastName(@PathVariable("lastName") String lastName) {
+        lastName = ParseParam.parse(lastName);
+        return sectionService.getAllByAuthorLastName(lastName);
     }
 
     /**

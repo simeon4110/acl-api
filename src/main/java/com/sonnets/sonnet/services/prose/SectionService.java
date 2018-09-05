@@ -89,6 +89,11 @@ public class SectionService {
         return book.getSections();
     }
 
+    public List<Section> getAllByAuthorLastName(String lastName) {
+        LOGGER.debug("Returning all sections by author: " + lastName);
+        return sectionRepository.findAllByAuthor_LastName(lastName).orElseThrow(NullPointerException::new);
+    }
+
     /**
      * Add a section to the db.
      *

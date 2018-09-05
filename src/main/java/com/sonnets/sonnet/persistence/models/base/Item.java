@@ -43,6 +43,8 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Field(name = "period", store = Store.YES, analyze = Analyze.NO)
     @Column
     private String period;
+    @Column
+    private UserAnnotation userAnnotation;
 
     protected Item() {
         // Empty for spring data.
@@ -120,6 +122,14 @@ public abstract class Item extends Auditable<String> implements Serializable {
         this.period = period;
     }
 
+    public UserAnnotation getUserAnnotation() {
+        return userAnnotation;
+    }
+
+    public void setUserAnnotation(UserAnnotation userAnnotation) {
+        this.userAnnotation = userAnnotation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -134,13 +144,14 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 Objects.equals(publicationYear, item.publicationYear) &&
                 Objects.equals(publicationStmt, item.publicationStmt) &&
                 Objects.equals(sourceDesc, item.sourceDesc) &&
-                Objects.equals(period, item.period);
+                Objects.equals(period, item.period) &&
+                Objects.equals(userAnnotation, item.userAnnotation);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, category, author, title, description, publicationYear,
-                publicationStmt, sourceDesc, period);
+                publicationStmt, sourceDesc, period, userAnnotation);
     }
 
     @Override
@@ -155,6 +166,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
+                ", userAnnotation=" + userAnnotation +
                 "} " + super.toString();
     }
 }

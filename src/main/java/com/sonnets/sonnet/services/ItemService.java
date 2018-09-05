@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.ItemDto;
+import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.tools.ItemKeyValuePair;
 import org.apache.log4j.Logger;
@@ -51,5 +52,19 @@ public class ItemService {
             }
         }
         return items;
+    }
+
+    public Item getItem(String type, String id) {
+        LOGGER.debug(String.format("Returning item id: %s of type %s", id, type));
+        switch (type) {
+            case "POEM":
+                return getObjectOrNull.poem(id);
+            case "BOOk":
+                return getObjectOrNull.book(id);
+            case "SECT":
+                return getObjectOrNull.section(id);
+            default:
+                return null;
+        }
     }
 }

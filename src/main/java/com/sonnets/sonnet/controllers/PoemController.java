@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.PoemService;
+import com.sonnets.sonnet.tools.ParseParam;
 import com.sonnets.sonnet.tools.PoemConverter;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,17 @@ public class PoemController {
     @GetMapping(value = "/secure/poem/get_user_poems", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getUserPoems(Principal principal) {
         return poemService.getAllByUser(principal);
+    }
+
+    /**
+     * @param lastName the last name of the author to search for.
+     * @return a list of poems matching the last name.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/poems/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Poem> getByAuthorLastName(@PathVariable("lastName") String lastName) {
+        lastName = ParseParam.parse(lastName);
+        return poemService.getAllByAuthorLastName(lastName);
     }
 
     /**

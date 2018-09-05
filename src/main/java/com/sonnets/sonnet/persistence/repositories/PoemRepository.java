@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Josh Harkema
@@ -19,6 +20,8 @@ public interface PoemRepository extends JpaRepository<Poem, Long> {
     Page<Poem> findAllByForm(final String form, final Pageable pageable);
 
     List<Poem> findAllByCreatedBy(final String createdBy);
+
+    Optional<List<Poem>> findAllByAuthor_LastName(final String lastName);
 
     Poem findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNot(
             final boolean confirmed,

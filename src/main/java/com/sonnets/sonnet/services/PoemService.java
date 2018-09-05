@@ -284,6 +284,11 @@ public class PoemService {
         return poemRepository.findAllByCreatedBy(principal.getName());
     }
 
+    public List<Poem> getAllByAuthorLastName(String lastName) {
+        LOGGER.debug("Returning all poems by author: " + lastName);
+        return poemRepository.findAllByAuthor_LastName(lastName).orElseThrow(NullPointerException::new);
+    }
+
     // User - delete poem.
     public ResponseEntity<Void> deleteById(String id, Principal principal) {
         LOGGER.debug("Deleting poem with id (USER): " + id);
