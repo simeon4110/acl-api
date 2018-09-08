@@ -120,30 +120,30 @@ public class CorporaService {
             switch (pair.getKey()) {
                 case "POETRY":
                     Poem poem = getObjectOrNull.poem(pair.getValue());
-                    em.createNativeQuery("DELETE FROM `corpora_items` WHERE  " +
-                            "`corpora_id` = :corporaId AND " +
-                            "`item_type` LIKE  'POEM' ESCAPE '#' AND " +
-                            "`item_id` = :itemId")
+                    em.createNativeQuery("DELETE FROM [corpora_items] WHERE  " +
+                            "[corpora_id] = :corporaId AND " +
+                            "[item_type] LIKE  'POEM' ESCAPE '#' AND " +
+                            "[item_id] = :itemId")
                             .setParameter("corporaId", corpora.getId().toString())
                             .setParameter("itemId", poem.getId().toString())
                             .executeUpdate();
                     break;
                 case "PROSE":
                     Book book = getObjectOrNull.book(pair.getValue());
-                    em.createNativeQuery("DELETE FROM `corpora_items` WHERE  " +
-                            "`corpora_id` = :corporaId AND " +
-                            "`item_type` LIKE  'BOOK' ESCAPE '#' AND " +
-                            "`item_id` = :itemId")
+                    em.createNativeQuery("DELETE FROM [corpora_items] WHERE  " +
+                            "[corpora_id] = :corporaId AND " +
+                            "[item_type] LIKE  'BOOK' ESCAPE '#' AND " +
+                            "[item_id] = :itemId")
                             .setParameter("corporaId", corpora.getId().toString())
                             .setParameter("itemId", book.getId().toString())
                             .executeUpdate();
                     break;
                 case "SECTION":
                     Section section = getObjectOrNull.section(pair.getValue());
-                    em.createNativeQuery("DELETE FROM `corpora_items` WHERE  " +
-                            "`corpora_id` = :corporaId AND " +
-                            "`item_type` LIKE  'SECT' ESCAPE '#' AND " +
-                            "`item_id` = :itemId")
+                    em.createNativeQuery("DELETE FROM [corpora_items] WHERE  " +
+                            "[corpora_id] = :corporaId AND " +
+                            "[item_type] LIKE  'SECT' ESCAPE '#' AND " +
+                            "[item_id] = :itemId")
                             .setParameter("corporaId", corpora.getId().toString())
                             .setParameter("itemId", section.getId().toString())
                             .executeUpdate();

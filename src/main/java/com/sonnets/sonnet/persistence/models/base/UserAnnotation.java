@@ -15,7 +15,7 @@ public class UserAnnotation extends Auditable<String> implements Serializable {
     private long parentId;
     @Column
     private String parentType;
-    @Column
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
     @Column
     private Confirmation confirmation;

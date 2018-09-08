@@ -15,7 +15,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.*;
@@ -26,6 +30,7 @@ import java.util.*;
  * @author Josh Harkema
  */
 @Service
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
     private static final int NUMBER_OF_RANDOM_SONNETS = 2;
@@ -33,14 +38,16 @@ public class PoemService {
     private final SearchService searchService;
     private final MessageService messageService;
     private final AuthorService authorService;
+    private final EntityManager em;
 
     @Autowired
     public PoemService(PoemRepository poemRepository, SearchService searchService, MessageService messageService,
-                       AuthorService authorService) {
+                       AuthorService authorService, EntityManager em) {
         this.poemRepository = poemRepository;
         this.searchService = searchService;
         this.messageService = messageService;
         this.authorService = authorService;
+        this.em = em;
     }
 
     /**
@@ -49,7 +56,7 @@ public class PoemService {
      * @param text a string[] of the text.
      * @return an ArrayList of the string[].
      */
-    private static List<String> parseText(String text) {
+    public static List<String> parseText(String text) {
         List<String> strings = new ArrayList<>();
         String[] textArr = text.split("\\r?\\n");
 
@@ -217,6 +224,7 @@ public class PoemService {
 
     /**
      * Get a poem by id.
+     *
      * @param id the id of the poem to get.
      * @return the poem or null if it isn't found.
      */
@@ -227,6 +235,7 @@ public class PoemService {
 
     /**
      * Get a list of poems by a list of ids.
+     *
      * @param ids the ids of the poems to get.
      * @return a list of poems or null if the poems aren't found.
      */
@@ -259,9 +268,41 @@ public class PoemService {
         return twoRandom;
     }
 
-    public List<Poem> getAll() {
+    /**
+     * This query is for getting all poems via an SQL query rather than a slow ass db crawl. It places a \n
+     * after each line in a poem.
+     *
+     * @return all poems as a list.
+     */
+    public List getAll() {
         LOGGER.debug("Returning all poems.");
-        return poemRepository.findAll();
+
+        Query query = em.createNativeQuery("SELECT poem.id,\n" +
+                "\t   poem.title,\n" +
+                "\t   poem.category,\n" +
+                "\t   poem.publication_year,\n" +
+                "\t   poem.publication_stmt,\n" +
+                "\t   poem.source_desc,\n" +
+                "\t   poem.period,\n" +
+                "\t   poem.form,\n" +
+                "\t   poem.confirmed,\n" +
+                "\t   poem.pending_revision,\n" +
+                "\t   poem.author_id,\n" +
+                "\t   [author].[first_name],\n" +
+                "\t   [author].[last_name],\n" +
+                "\t   SUBSTRING(\n" +
+                "\t\t   (\n" +
+                "\t\t\t   SELECT ' ' + poem_text.text + '\n' AS [text()]\n" +
+                "\t\t\t   FROM [dbo].[poem_text] poem_text\n" +
+                "\t\t\t   WHERE poem_text.poem_id = poem.id\n" +
+                "\t\t\t   FOR XML PATH('')\n" +
+                "\t\t   ), 2, 1000) [poem_text]\n" +
+                "\t   FROM [dbo].[poem] poem\n" +
+                "\t   INNER JOIN [author] ON poem.author_id = [author].[id]", "PoemMap");
+        List resultList = query.getResultList();
+        LOGGER.debug(resultList);
+        return resultList;
+
     }
 
     public Page<Poem> getAllPaged(Pageable pageable) {

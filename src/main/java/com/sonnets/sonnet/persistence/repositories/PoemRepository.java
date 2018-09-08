@@ -15,6 +15,7 @@ import java.util.Optional;
 @SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
 @Repository
 public interface PoemRepository extends JpaRepository<Poem, Long> {
+
     List<Poem> findAllByForm(final String form);
 
     Page<Poem> findAllByForm(final String form, final Pageable pageable);

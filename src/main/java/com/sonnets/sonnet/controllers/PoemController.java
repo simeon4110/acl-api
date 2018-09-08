@@ -74,7 +74,7 @@ public class PoemController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Poem> getAllPoems() {
+    public List getAllPoems() {
         return poemService.getAll();
     }
 

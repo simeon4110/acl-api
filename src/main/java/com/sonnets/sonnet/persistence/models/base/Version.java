@@ -21,7 +21,7 @@ import java.util.Objects;
 public class Version extends Item implements Serializable {
     private static final long serialVersionUID = 5008563910579946114L;
     @Field(name = "version_text", store = Store.YES, termVector = TermVector.YES)
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
 
     public Version() {

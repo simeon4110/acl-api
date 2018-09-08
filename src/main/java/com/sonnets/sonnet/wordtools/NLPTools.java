@@ -48,8 +48,7 @@ public class NLPTools {
 
     private static Properties setProperties() {
         Properties localProperties = new Properties();
-        localProperties.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
-        localProperties.setProperty("coref.algorithm", "neural");
+        localProperties.setProperty("annotators", "tokenize,ssplit,pos,lemma");
         return localProperties;
     }
 

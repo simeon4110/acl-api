@@ -32,7 +32,7 @@ public class Other extends Item implements Serializable {
     @Column
     private Confirmation confirmation;
     @Field(name = "other_text", store = Store.YES, termVector = TermVector.YES)
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
     @Column
     private Annotation annotation;

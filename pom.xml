@@ -8,8 +8,8 @@
     <version>1.0.0-TEST</version>
     <packaging>war</packaging>
     <name>Sonnet</name>
-    <description>The Augmented Criticism Lab's digital sonnet database.</description>
-    <url>https://database.acriticismlab.org</url>
+    <description>The Augmented Criticism Lab's database and toolkit.</description>
+    <url>https://acriticismlab.org</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
         <dependency>
@@ -128,11 +128,10 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>7.0.0.jre10</version>
         </dependency>
-        <!--Testing package-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -184,12 +183,6 @@
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
             <version>3.9.1</version>
-            <classifier>models</classifier>
-        </dependency>
-        <dependency>
-            <groupId>edu.stanford.nlp</groupId>
-            <artifactId>stanford-corenlp</artifactId>
-            <version>3.9.1</version>
             <classifier>models-english</classifier>
         </dependency>
         <dependency>
@@ -214,9 +207,7 @@
             <artifactId>mallet</artifactId>
             <version>2.0.8</version>
         </dependency>
-
     </dependencies>
-
     <build>
         <finalName>api</finalName>
         <plugins>

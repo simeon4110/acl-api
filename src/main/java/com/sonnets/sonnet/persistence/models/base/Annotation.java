@@ -20,7 +20,7 @@ public class Annotation implements Serializable {
     @DocumentId
     private Long id;
     @Lob
-    @Column(columnDefinition = "BLOB")
+    @Column(columnDefinition = "VARBINARY(MAX)")
     private byte[] annotationBlob;
 
     public Annotation() {

@@ -42,7 +42,7 @@ public class Section extends Item implements Serializable {
     private Confirmation confirmation;
     @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = "textAnalyzer")
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
     @Column
     private Annotation annotation;

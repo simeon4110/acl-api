@@ -2,6 +2,7 @@ package com.sonnets.sonnet.persistence.models.poetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import org.hibernate.annotations.Fetch;
@@ -10,6 +11,7 @@ import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,6 +20,28 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
+@SqlResultSetMapping(
+        name = "PoemMap",
+        classes = @ConstructorResult(
+                targetClass = PoemOutDto.class,
+                columns = {
+                        @ColumnResult(name = "id", type = BigDecimal.class),
+                        @ColumnResult(name = "title"),
+                        @ColumnResult(name = "category"),
+                        @ColumnResult(name = "publication_year", type = Integer.class),
+                        @ColumnResult(name = "publication_stmt"),
+                        @ColumnResult(name = "source_desc"),
+                        @ColumnResult(name = "period"),
+                        @ColumnResult(name = "form"),
+                        @ColumnResult(name = "confirmed", type = boolean.class),
+                        @ColumnResult(name = "pending_revision", type = boolean.class),
+                        @ColumnResult(name = "author_id", type = BigDecimal.class),
+                        @ColumnResult(name = "first_name"),
+                        @ColumnResult(name = "last_name"),
+                        @ColumnResult(name = "poem_text")
+                }
+        )
+)
 @Indexed
 @Entity
 @Table

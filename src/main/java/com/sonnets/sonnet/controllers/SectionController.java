@@ -41,6 +41,12 @@ public class SectionController {
         return sectionService.get(id);
     }
 
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/section/get_all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Section> getAll() {
+        return sectionService.getAll();
+    }
+
     /**
      * @param bookId the id of the book.
      * @return all sections in a book by the book's db id.
