@@ -12,6 +12,7 @@ import org.hibernate.search.annotations.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,12 +29,15 @@ import java.util.Objects;
                         @ColumnResult(name = "id", type = BigDecimal.class),
                         @ColumnResult(name = "title"),
                         @ColumnResult(name = "category"),
+                        @ColumnResult(name = "description"),
                         @ColumnResult(name = "publication_year", type = Integer.class),
                         @ColumnResult(name = "publication_stmt"),
                         @ColumnResult(name = "source_desc"),
                         @ColumnResult(name = "period"),
                         @ColumnResult(name = "form"),
                         @ColumnResult(name = "confirmed", type = boolean.class),
+                        @ColumnResult(name = "confirmed_at", type = Timestamp.class),
+                        @ColumnResult(name = "confirmed_by"),
                         @ColumnResult(name = "pending_revision", type = boolean.class),
                         @ColumnResult(name = "author_id", type = BigDecimal.class),
                         @ColumnResult(name = "first_name"),

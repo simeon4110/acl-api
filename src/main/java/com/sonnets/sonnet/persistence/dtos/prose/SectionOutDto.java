@@ -1,45 +1,40 @@
-package com.sonnets.sonnet.persistence.dtos.poetry;
+package com.sonnets.sonnet.persistence.dtos.prose;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
+import com.sonnets.sonnet.persistence.models.prose.Book;
 
 import java.math.BigDecimal;
 
-/**
- * This POJO is the result of nearly 10 hours of figuring out that SQL doesn't map the same way as MySQL. I
- * now feel like I've learned how far M$ is willing to go to prevent interoperability.
- *
- * @author Josh Harkema
- */
 @JsonSerialize
-public class PoemOutDto {
+public class SectionOutDto {
     private BigDecimal id;
-    private String title;
     private String category;
     private String description;
-    private Integer publicationYear;
-    private String publicationStmt;
-    private String sourceDesc;
     private String period;
-    private String form;
+    private String publicationStmt;
+    private Integer publicationYear;
+    private String sourceDesc;
+    private String title;
     private Confirmation confirmation;
     private Author author;
+    private Book book;
     private String text;
 
-    public PoemOutDto(BigDecimal id, String title, String category, String description, Integer publicationYear,
-                      String publicationStmt, String sourceDesc, String period, String form, boolean confirmed,
-                      java.util.Date confirmedAt, String confirmedBy, boolean pendingRevision, BigDecimal authorId,
-                      String firstName, String lastName, String text) {
+    public SectionOutDto(BigDecimal id, String category, String description, String period, String publicationStmt,
+                         Integer publicationYear, String sourceDesc, String title, boolean confirmed,
+                         java.util.Date confirmedAt, String confirmedBy, boolean pendingRevision, BigDecimal authorId,
+                         String firstName, String lastName, BigDecimal parentId, String bookTitle, String bookType,
+                         String text) {
         this.id = id;
-        this.title = title;
         this.category = category;
         this.description = description;
-        this.publicationYear = publicationYear;
-        this.publicationStmt = publicationStmt;
-        this.sourceDesc = sourceDesc;
         this.period = period;
-        this.form = form;
+        this.publicationStmt = publicationStmt;
+        this.publicationYear = publicationYear;
+        this.sourceDesc = sourceDesc;
+        this.title = title;
         this.confirmation = new Confirmation();
         this.confirmation.setConfirmed(confirmed);
         this.confirmation.setConfirmedAt(confirmedAt);
@@ -49,6 +44,10 @@ public class PoemOutDto {
         this.author.setId(authorId.longValue());
         this.author.setFirstName(firstName);
         this.author.setLastName(lastName);
+        this.book = new Book();
+        this.book.setId(parentId.longValue());
+        this.book.setTitle(bookTitle);
+        this.book.setType(bookType);
         this.text = text;
     }
 
@@ -58,14 +57,6 @@ public class PoemOutDto {
 
     public void setId(BigDecimal id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getCategory() {
@@ -84,12 +75,12 @@ public class PoemOutDto {
         this.description = description;
     }
 
-    public Integer getPublicationYear() {
-        return publicationYear;
+    public String getPeriod() {
+        return period;
     }
 
-    public void setPublicationYear(Integer publicationYear) {
-        this.publicationYear = publicationYear;
+    public void setPeriod(String period) {
+        this.period = period;
     }
 
     public String getPublicationStmt() {
@@ -100,6 +91,14 @@ public class PoemOutDto {
         this.publicationStmt = publicationStmt;
     }
 
+    public Integer getPublicationYear() {
+        return publicationYear;
+    }
+
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
     public String getSourceDesc() {
         return sourceDesc;
     }
@@ -108,20 +107,12 @@ public class PoemOutDto {
         this.sourceDesc = sourceDesc;
     }
 
-    public String getPeriod() {
-        return period;
+    public String getTitle() {
+        return title;
     }
 
-    public void setPeriod(String period) {
-        this.period = period;
-    }
-
-    public String getForm() {
-        return form;
-    }
-
-    public void setForm(String form) {
-        this.form = form;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Confirmation getConfirmation() {
@@ -140,6 +131,14 @@ public class PoemOutDto {
         this.author = author;
     }
 
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
     public String getText() {
         return text;
     }
@@ -150,18 +149,18 @@ public class PoemOutDto {
 
     @Override
     public String toString() {
-        return "PoemOutDto{" +
+        return "SectionOutDto{" +
                 "id=" + id +
-                ", title='" + title + '\'' +
                 ", category='" + category + '\'' +
                 ", description='" + description + '\'' +
-                ", publicationYear=" + publicationYear +
-                ", publicationStmt='" + publicationStmt + '\'' +
-                ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
-                ", form='" + form + '\'' +
+                ", publicationStmt='" + publicationStmt + '\'' +
+                ", publicationYear=" + publicationYear +
+                ", sourceDesc='" + sourceDesc + '\'' +
+                ", title='" + title + '\'' +
                 ", confirmation=" + confirmation +
                 ", author=" + author +
+                ", book=" + book +
                 ", text='" + text + '\'' +
                 '}';
     }

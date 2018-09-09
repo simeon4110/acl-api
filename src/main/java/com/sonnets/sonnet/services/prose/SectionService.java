@@ -84,21 +84,30 @@ public class SectionService {
     /**
      * @return all the sections.
      */
-    public List<Section> getAll() {
+    public List getAll() {
         Query query = em.createNativeQuery("SELECT section.id,\n" +
-                "\t\tsection.title,\n" +
-                "\t\tsection.publication_year,\n" +
-                "\t\tsection.publication_stmt,\n" +
-                "\t\tsection.source_desc,\n" +
+                "\t\tsection.category,\n" +
+                "\t\tsection.description,\n" +
                 "\t\tsection.period,\n" +
+                "\t\tsection.publication_stmt,\n" +
+                "\t\tsection.publication_year,\n" +
+                "\t\tsection.source_desc,\n" +
+                "\t\tsection.title,\n" +
+                "\t\tsection.confirmed,\n" +
+                "\t\tsection.confirmed_at,\n" +
+                "\t\tsection.confirmed_by,\n" +
+                "\t\tsection.pending_revision,\n" +
+                "\t\tsection.author_id,\n" +
                 "\t\t[author].[first_name],\n" +
                 "\t\t[author].[last_name],\n" +
+                "\t\tsection.parent_id,\n" +
                 "\t\t[book].[title] AS book_title,\n" +
-                "\t\t[book].[type]\n" +
+                "\t\t[book].[type] AS book_type,\n" +
+                "\t\tsection.text\n" +
                 "\t\tFROM [dbo].[section] section\n" +
                 "\t\tINNER JOIN [author] ON section.author_id = [author].[id]\n" +
-                "\t\tINNER JOIN [book] ON section.parent_id = [book].[id] ");
-        List<Section> results = query.getResultList();
+                "\t\tINNER JOIN [book] ON section.parent_id = [book].[id]", "SectionMap");
+        List results = query.getResultList();
         return results;
     }
 

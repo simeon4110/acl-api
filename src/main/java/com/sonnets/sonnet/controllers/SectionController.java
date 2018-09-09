@@ -43,7 +43,7 @@ public class SectionController {
 
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get_all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Section> getAll() {
+    public List getAll() {
         return sectionService.getAll();
     }
 

@@ -280,12 +280,15 @@ public class PoemService {
         Query query = em.createNativeQuery("SELECT poem.id,\n" +
                 "\t   poem.title,\n" +
                 "\t   poem.category,\n" +
+                "\t   poem.description, \n" +
                 "\t   poem.publication_year,\n" +
                 "\t   poem.publication_stmt,\n" +
                 "\t   poem.source_desc,\n" +
                 "\t   poem.period,\n" +
                 "\t   poem.form,\n" +
                 "\t   poem.confirmed,\n" +
+                "\t   poem.confirmed_at, \n" +
+                "\t   poem.confirmed_by, \n" +
                 "\t   poem.pending_revision,\n" +
                 "\t   poem.author_id,\n" +
                 "\t   [author].[first_name],\n" +

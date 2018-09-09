@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sonnets.sonnet.persistence.dtos.prose.SectionOutDto;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
@@ -11,6 +12,8 @@ import org.hibernate.search.annotations.Parameter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +23,33 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
+@SqlResultSetMapping(
+        name = "SectionMap",
+        classes = @ConstructorResult(
+                targetClass = SectionOutDto.class,
+                columns = {
+                        @ColumnResult(name = "id", type = BigDecimal.class),
+                        @ColumnResult(name = "category"),
+                        @ColumnResult(name = "description"),
+                        @ColumnResult(name = "period"),
+                        @ColumnResult(name = "publication_stmt"),
+                        @ColumnResult(name = "publication_year", type = Integer.class),
+                        @ColumnResult(name = "source_desc"),
+                        @ColumnResult(name = "title"),
+                        @ColumnResult(name = "confirmed", type = boolean.class),
+                        @ColumnResult(name = "confirmed_at", type = Timestamp.class),
+                        @ColumnResult(name = "confirmed_by"),
+                        @ColumnResult(name = "pending_revision", type = boolean.class),
+                        @ColumnResult(name = "author_id", type = BigDecimal.class),
+                        @ColumnResult(name = "first_name"),
+                        @ColumnResult(name = "last_name"),
+                        @ColumnResult(name = "parent_id", type = BigDecimal.class),
+                        @ColumnResult(name = "book_title"),
+                        @ColumnResult(name = "book_type"),
+                        @ColumnResult(name = "text")
+                }
+        )
+)
 @Indexed
 @Entity
 @DiscriminatorValue("SECT")
