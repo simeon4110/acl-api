@@ -14,8 +14,9 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -23,6 +24,22 @@ import java.util.Set;
  *
  * @author Josh Harkema
  */
+@SqlResultSetMapping(
+        name = "CorporaMap",
+        classes = @ConstructorResult(
+                targetClass = Corpora.class,
+                columns = {
+                        @ColumnResult(name = "id", type = BigDecimal.class),
+                        @ColumnResult(name = "created_by"),
+                        @ColumnResult(name = "created_date", type = Date.class),
+                        @ColumnResult(name = "last_modified_by"),
+                        @ColumnResult(name = "last_modified_date", type = Date.class),
+                        @ColumnResult(name = "description"),
+                        @ColumnResult(name = "name"),
+                        @ColumnResult(name = "total_items", type = int.class)
+                }
+        )
+)
 @Entity
 @Table(name = "corpora")
 public class Corpora extends Auditable<String> implements Serializable {
@@ -35,7 +52,7 @@ public class Corpora extends Auditable<String> implements Serializable {
     private String name;
     @Column
     private String description;
-    @ManyToAny(metaDef = "itemMetaDef", metaColumn = @Column(name = "item_type", length = 4))
+    @ManyToAny(metaDef = "itemMetaDef", metaColumn = @Column(name = "item_type", length = 4), fetch = FetchType.LAZY)
     @AnyMetaDef(
             name = "itemMetaDef", metaType = "string", idType = "long",
             metaValues = {
@@ -53,8 +70,23 @@ public class Corpora extends Auditable<String> implements Serializable {
     @Cascade({CascadeType.DETACH, CascadeType.REMOVE})
     private Set<Item> items = new HashSet<>();
 
+    private int totalItems;
+
     public Corpora() {
         super();
+    }
+
+    public Corpora(final BigDecimal id, final String createdBy, final Date createdDate, final String lastModifiedBy,
+                   final Date lastModifiedDate, final String description, final String name, final int totalItems) {
+        super();
+        super.setCreatedBy(createdBy);
+        super.setCreatedDate(createdDate);
+        super.setLastModifiedBy(lastModifiedBy);
+        super.setLastModifiedDate(lastModifiedDate);
+        this.id = id.longValue();
+        this.description = description;
+        this.name = name;
+        this.totalItems = totalItems;
     }
 
     public Long getId() {
@@ -87,32 +119,14 @@ public class Corpora extends Auditable<String> implements Serializable {
 
     public void setItems(Set<Item> items) {
         this.items = items;
+        this.totalItems = this.items.size();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Corpora corpora = (Corpora) o;
-        return Objects.equals(id, corpora.id) &&
-                Objects.equals(name, corpora.name) &&
-                Objects.equals(description, corpora.description) &&
-                Objects.equals(items, corpora.items);
+    public int getTotalItems() {
+        return totalItems;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), id, name, description, items);
-    }
-
-    @Override
-    public String toString() {
-        return "Corpora{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", items=" + items +
-                "} " + super.toString();
+    public void setTotalItems(int totalItems) {
+        this.totalItems = totalItems;
     }
 }

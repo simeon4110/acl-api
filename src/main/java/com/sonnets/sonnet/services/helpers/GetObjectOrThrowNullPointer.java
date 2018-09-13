@@ -12,6 +12,8 @@ import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.persistence.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Helper component for controlling object pulls from the database. Returns null if the ID is not a valid long, or the
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component;
  * @author Josh Harkema
  */
 @Component
+@Transactional(propagation = Propagation.SUPPORTS)
 public class GetObjectOrThrowNullPointer {
     private final BookRepository bookRepository;
     private final SectionRepositoryBase sectionRepository;

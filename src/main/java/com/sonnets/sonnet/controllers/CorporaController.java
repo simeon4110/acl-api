@@ -2,6 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
+import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.services.CorporaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Handles all corpora related REST endpoints.
@@ -51,6 +53,14 @@ public class CorporaController {
         return corporaService.getSingle(id);
     }
 
+    @CrossOrigin(origins = "${allowed-origin}") //
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
+    @GetMapping(value = "/secure/corpora/get_items_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<Item> getItemsById(@PathVariable("id") String id) {
+        return corporaService.getCorporaItems(id);
+    }
+
+
     /**
      * Create a new corpora.
      */
@@ -69,6 +79,24 @@ public class CorporaController {
     @PutMapping(value = "/secure/corpora/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addItemsToCorpora(@RequestBody @Valid CorporaItemsDto dto) {
         return corporaService.addItems(dto);
+    }
+
+    /**
+     * Add a single item to a corpora.
+     *
+     * @param type      the item's type.
+     * @param corporaId the id of the corpora to add to.
+     * @param itemId    the id of the item to add.
+     * @return ok if the item is added.
+     */
+    @CrossOrigin(origins = "${allowed-origin}") //
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
+    @GetMapping(value = "/secure/corpora/add_single/{type}/{corporaId}/{itemId}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addSingleItemToCorpora(@PathVariable("type") String type,
+                                                       @PathVariable("corporaId") String corporaId,
+                                                       @PathVariable("itemId") String itemId) {
+        return corporaService.addSingleItem(type, corporaId, itemId);
     }
 
     /**

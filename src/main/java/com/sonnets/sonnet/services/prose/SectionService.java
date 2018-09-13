@@ -82,7 +82,8 @@ public class SectionService {
     }
 
     /**
-     * @return all the sections.
+     * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
+     * It takes 20 seconds to return all the data. This way takes 200ms.
      */
     public List getAll() {
         Query query = em.createNativeQuery("SELECT section.id,\n" +

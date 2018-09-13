@@ -7,6 +7,11 @@ import com.sonnets.sonnet.persistence.models.prose.Book;
 
 import java.math.BigDecimal;
 
+/**
+ * POJO for mapping native query onto section metadata. Not pretty, but it gets the job done.
+ *
+ * @author Josh Harkema
+ */
 @JsonSerialize
 public class SectionOutDto {
     private BigDecimal id;

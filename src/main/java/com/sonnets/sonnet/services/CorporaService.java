@@ -3,9 +3,6 @@ package com.sonnets.sonnet.services;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.base.Item;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.persistence.models.prose.Book;
-import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.repositories.CorporaRepository;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
@@ -14,12 +11,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,11 +31,12 @@ import java.util.Set;
  */
 @SuppressWarnings("SqlResolve")
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+@Transactional()
 public class CorporaService {
     private static final Logger LOGGER = Logger.getLogger(CorporaService.class);
     private final CorporaRepository corporaRepository;
     private final GetObjectOrThrowNullPointer getObjectOrNull;
+    @PersistenceContext
     private final EntityManager em;
 
     @Autowired
@@ -57,7 +58,7 @@ public class CorporaService {
         Corpora newCorpora = new Corpora();
         newCorpora.setName(corporaDto.getName());
         newCorpora.setDescription(corporaDto.getDescription());
-        corporaRepository.saveAndFlush(newCorpora);
+        corporaRepository.save(newCorpora);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -69,7 +70,46 @@ public class CorporaService {
      */
     public Corpora getSingle(String corporaId) {
         LOGGER.debug("Getting corpora by id:" + corporaId);
-        return getCorporaOrNull(corporaId);
+        return ((Corpora) em.createNativeQuery("SELECT [id], [created_by], [created_date], [last_modified_by], " +
+                        "[last_modified_date], [description], [name], [total_items] FROM [corpora] WHERE id = :id",
+                "CorporaMap")
+                .setParameter("id", Long.valueOf(corporaId))
+                .getSingleResult());
+    }
+
+    public ResponseEntity<Void> addSingleItem(String type, String corporaId, String itemId) {
+        LOGGER.debug("Adding single item: ");
+        Query query;
+        switch (type) {
+            case "POETRY":
+                query = em.createNativeQuery("IF NOT EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                        "LIKE 'POEM' AND item_id = :itemId) " +
+                        "INSERT INTO [corpora_items] (corpora_id, item_type, item_id) " +
+                        "VALUES (:corporaId, 'POEM', :itemId)")
+                        .setParameter("corporaId", Long.valueOf(corporaId))
+                        .setParameter("itemId", Long.valueOf(itemId));
+                break;
+            case "PROSE":
+                query = em.createNativeQuery("IF NOT EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                        "LIKE 'BOOK' AND item_id = :itemId) " +
+                        "INSERT INTO [corpora_items] (corpora_id, item_type, item_id) " +
+                        "VALUES (:corporaId, 'BOOK', :itemId)")
+                        .setParameter("corporaId", Long.valueOf(corporaId))
+                        .setParameter("itemId", Long.valueOf(itemId));
+                break;
+            case "SECTION":
+                query = em.createNativeQuery("IF NOT EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                        "LIKE 'SECT' AND item_id = :itemId) " +
+                        "INSERT INTO [corpora_items] (corpora_id, item_type, item_id) " +
+                        "VALUES (:corporaId, 'SECT', :itemId)")
+                        .setParameter("corporaId", Long.valueOf(corporaId))
+                        .setParameter("itemId", Long.valueOf(itemId));
+                break;
+            default:
+                throw new RuntimeException(String.format("Item type: '%s' does not exist.", type));
+        }
+        executeQueryAsync(query);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -80,29 +120,51 @@ public class CorporaService {
      */
     public ResponseEntity<Void> addItems(CorporaItemsDto dto) {
         LOGGER.debug("Adding items: " + dto.getIds());
-        Corpora corpora = getCorporaOrNull(dto.getId().toString());
-        assert corpora != null;
-        Set<Item> items = corpora.getItems();
         for (ItemKeyValuePair<String, String> pair : dto.getIds()) {
+            Query query;
             switch (pair.getKey()) {
                 case "POETRY":
-                    Poem poem = getObjectOrNull.poem(pair.getValue());
-                    items.add(poem);
+                    query = em.createNativeQuery("IF NOT EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                            "LIKE 'POEM' AND item_id = :itemId) " +
+                            "INSERT INTO [corpora_items] (corpora_id, item_type, item_id) " +
+                            "VALUES (:corporaId, 'POEM', :itemId)")
+                            .setParameter("corporaId", dto.getId())
+                            .setParameter("itemId", pair.getValue());
                     break;
                 case "PROSE":
-                    Book book = getObjectOrNull.book(pair.getValue());
-                    items.add(book);
+                    query = em.createNativeQuery("IF NOT EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                            "LIKE 'BOOK' AND item_id = :itemId) " +
+                            "INSERT INTO [corpora_items] (corpora_id, item_type, item_id) " +
+                            "VALUES (:corporaId, 'BOOK', :itemId)")
+                            .setParameter("corporaId", dto.getId())
+                            .setParameter("itemId", pair.getValue());
                     break;
                 case "SECTION":
-                    Section section = getObjectOrNull.section(pair.getValue());
-                    items.add(section);
+                    query = em.createNativeQuery("IF NOT EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                            "LIKE 'SECT' AND item_id = :itemId) " +
+                            "INSERT INTO [corpora_items] (corpora_id, item_type, item_id) " +
+                            "VALUES (:corporaId, 'SECT', :itemId)")
+                            .setParameter("corporaId", dto.getId())
+                            .setParameter("itemId", pair.getValue());
                     break;
                 default:
-                    break;
+                    throw new RuntimeException(String.format("Item type: '%s' does not exist.", pair.getKey()));
             }
-            corpora.setItems(items);
+            executeQueryAsync(query);
         }
-        corporaRepository.saveAndFlush(corpora);
+
+        int count = em.createNativeQuery("SELECT corpora_id FROM [corpora_items] " +
+                "WHERE corpora_id = :corporaId")
+                .setParameter("corporaId", dto.getId())
+                .getResultList().size();
+
+        Query query = em.createNativeQuery("UPDATE [corpora]" +
+                "SET total_items = :itemCount " +
+                "WHERE id = :id")
+                .setParameter("itemCount", count)
+                .setParameter("id", dto.getId());
+        executeQueryAsync(query);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -112,46 +174,49 @@ public class CorporaService {
      * @param dto the dto with the items to remove.
      * @return OK if the items are removed.
      */
+    @Transactional
     public ResponseEntity<Void> removeItems(CorporaItemsDto dto) {
         LOGGER.debug("Removing items: " + dto.getIds());
-        Corpora corpora = getCorporaOrNull(dto.getId().toString());
-        assert corpora != null;
+
         for (ItemKeyValuePair<String, String> pair : dto.getIds()) {
+            Query query;
             switch (pair.getKey()) {
                 case "POETRY":
-                    Poem poem = getObjectOrNull.poem(pair.getValue());
-                    em.createNativeQuery("DELETE FROM [corpora_items] WHERE  " +
-                            "[corpora_id] = :corporaId AND " +
-                            "[item_type] LIKE  'POEM' ESCAPE '#' AND " +
-                            "[item_id] = :itemId")
-                            .setParameter("corporaId", corpora.getId().toString())
-                            .setParameter("itemId", poem.getId().toString())
-                            .executeUpdate();
+                    query = em.createNativeQuery("IF EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                            "LIKE 'POEM' AND item_id = :itemId) " +
+                            "DELETE FROM [corpora_items] WHERE item_type LIKE 'POEM' AND item_id = :itemId")
+                            .setParameter("itemId", pair.getValue());
                     break;
                 case "PROSE":
-                    Book book = getObjectOrNull.book(pair.getValue());
-                    em.createNativeQuery("DELETE FROM [corpora_items] WHERE  " +
-                            "[corpora_id] = :corporaId AND " +
-                            "[item_type] LIKE  'BOOK' ESCAPE '#' AND " +
-                            "[item_id] = :itemId")
-                            .setParameter("corporaId", corpora.getId().toString())
-                            .setParameter("itemId", book.getId().toString())
-                            .executeUpdate();
+                    query = em.createNativeQuery("IF EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                            "LIKE 'POEM' AND item_id = :itemId) " +
+                            "DELETE FROM [corpora_items] WHERE item_type LIKE 'BOOK' AND item_id = :itemId")
+                            .setParameter("itemId", pair.getValue());
                     break;
                 case "SECTION":
-                    Section section = getObjectOrNull.section(pair.getValue());
-                    em.createNativeQuery("DELETE FROM [corpora_items] WHERE  " +
-                            "[corpora_id] = :corporaId AND " +
-                            "[item_type] LIKE  'SECT' ESCAPE '#' AND " +
-                            "[item_id] = :itemId")
-                            .setParameter("corporaId", corpora.getId().toString())
-                            .setParameter("itemId", section.getId().toString())
-                            .executeUpdate();
+                    query = em.createNativeQuery("IF EXISTS (SELECT * FROM [corpora_items] WHERE item_type " +
+                            "LIKE 'POEM' AND item_id = :itemId) " +
+                            "DELETE FROM [corpora_items] WHERE item_type LIKE 'SECT' AND item_id = :itemId")
+                            .setParameter("itemId", pair.getValue());
                     break;
                 default:
-                    break;
+                    throw new RuntimeException(String.format("Item type: '%s' does not exist.", pair.getKey()));
             }
+            executeQueryAsync(query);
         }
+
+        int count = em.createNativeQuery("SELECT corpora_id FROM [corpora_items] " +
+                "WHERE corpora_id = :corporaId")
+                .setParameter("corporaId", dto.getId())
+                .getResultList().size();
+
+        Query query = em.createNativeQuery("UPDATE [corpora]" +
+                "SET total_items = :itemCount " +
+                "WHERE id = :corporaId")
+                .setParameter("itemCount", count)
+                .setParameter("corporaId", dto.getId());
+        executeQueryAsync(query);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -169,7 +234,7 @@ public class CorporaService {
         assert corpora != null;
         corpora.setName(name);
         corpora.setDescription(description);
-        corporaRepository.saveAndFlush(corpora);
+        corporaRepository.save(corpora);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -195,7 +260,57 @@ public class CorporaService {
      */
     public List getUserCorpora(Principal principal) {
         LOGGER.debug("Returning corpera for user: " + principal.getName());
-        return corporaRepository.findAllByCreatedBy(principal.getName());
+        return em.createNativeQuery("SELECT [id], [created_by], [created_date], [description], [name], " +
+                "[total_items] FROM [dbo].[corpora] WHERE [created_by] = ?1")
+                .setParameter(1, principal.getName()).getResultList();
+    }
+
+
+    public Set<Item> getCorporaItems(String id) {
+        LOGGER.debug("Getting corpora items: " + id);
+
+        List result = em.createNativeQuery("SELECT i.corpora_id, i.item_id, i.item_type,\n" +
+                "\tCOALESCE (p.created_by, s.created_by, b.created_by) AS created_by,\n" +
+                "\tCOALESCE (p.created_date, s.created_date, b.created_date) AS created_date,\n" +
+                "\tCOALESCE (p.last_modified_by, s.last_modified_by, b.last_modified_by) AS last_modified_by,\n" +
+                "\tCOALESCE (p.last_modified_date, s.last_modified_date, b.last_modified_date) AS last_modified_date,\n" +
+                "\tCOALESCE (p.category, s.category, b.category) AS category,\n" +
+                "\tCOALESCE (p.description, s.description, b.description) AS description,\n" +
+                "\tCOALESCE (p.period, s.period, b.period) AS period,\n" +
+                "\tCOALESCE (p.publication_stmt, s.publication_stmt, b.publication_stmt) AS publication_stmt,\n" +
+                "\tCOALESCE (p.publication_year, s.publication_year, b.publication_year) AS publication_year,\n" +
+                "\tCOALESCE (p.source_desc, s.source_desc, b.source_desc) AS source_desc,\n" +
+                "\tCOALESCE (p.title, s.title, b.title) AS title,\n" +
+                "\tCOALESCE (p.user_annotation, s.user_annotation, b.user_annotation) AS user_annotation,\n" +
+                "\tCOALESCE (p.annotation, s.annotation) AS annotation,\n" +
+                "\tCOALESCE (p.confirmed, s.confirmed) AS confirmed,\n" +
+                "\tCOALESCE (p.confirmed_at, s.confirmed_at) AS confirmed_at,\n" +
+                "\tCOALESCE (p.confirmed_by, s.confirmed_by) AS confirmed_by,\n" +
+                "\tCOALESCE (p.pending_revision, s.pending_revision) AS pending_revision,\n" +
+                "\ts.parent_id,\n" +
+                "\tb.type,\n" +
+                "\ts.text,\n" +
+                "\tauthor.first_name,\n" +
+                "\tauthor.last_name,\n" +
+                "\tbook.title book_tit,\n" +
+                "\tCASE WHEN i.item_type LIKE 'POEM' THEN\n" +
+                "\t\tSUBSTRING(\n" +
+                "\t\t\t(\n" +
+                "\t\t\t\tSELECT ' ' + poem_text.text + '\\n' AS [text()]\n" +
+                "\t\t\t\tFROM [dbo].[poem_text] poem_text\n" +
+                "\t\t\t\tWHERE poem_text.poem_id = p.id\n" +
+                "\t\t\t\tFOR XML PATH('')\n" +
+                "\t\t\t), 2, 1000) END AS poem_text\n" +
+                "FROM [dbo].[corpora_items] i \n" +
+                "\tLEFT JOIN dbo.poem p ON (i.item_id = p.id AND i.item_type = 'POEM')\n" +
+                "\tLEFT JOIN dbo.section s ON (i.item_id = s.id AND i.item_type = 'SECT')\n" +
+                "\tLEFT JOIN dbo.book b ON (i.item_id = b.id AND i.item_type = 'BOOK')\n" +
+                "\tLEFT JOIN dbo.author ON (p.author_id = author.id OR s.author_id = author.id OR b.author_id = author.id)\n" +
+                "\tLEFT JOIN dbo.book ON (s.parent_id = book.id) " +
+                "WHERE corpora_id = :corporaId", "itemMap")
+                .setParameter("corporaId", id).getResultList();
+
+        return new HashSet<>(result);
     }
 
     /**
@@ -213,6 +328,13 @@ public class CorporaService {
             return null;
         }
         Optional<Corpora> corporaOptional = corporaRepository.findById(parsedId);
-        return corporaOptional.orElse(null);
+        return corporaOptional.orElseThrow(NullPointerException::new);
     }
+
+    @Async
+    public void executeQueryAsync(Query query) {
+        query.executeUpdate();
+        em.joinTransaction();
+    }
+
 }

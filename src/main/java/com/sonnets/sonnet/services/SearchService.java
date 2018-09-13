@@ -150,7 +150,7 @@ public class SearchService {
         LOGGER.debug("Parsing POEM params.");
         if (dto.getForm() != null && !dto.getForm().equals("")) {
             LOGGER.debug("Poem FORM: " + dto.getForm());
-            builder.add(new TermQuery(new Term(POEM_FORM, dto.getForm().toLowerCase())), BooleanClause.Occur.MUST);
+            builder.add(new TermQuery(new Term(POEM_FORM, dto.getForm())), BooleanClause.Occur.MUST);
         }
     }
 
