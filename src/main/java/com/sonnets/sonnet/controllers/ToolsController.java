@@ -39,6 +39,19 @@ public class ToolsController {
     }
 
     /**
+     * Runs a POS tag and Lemmatizer on arbitrary text.
+     *
+     * @param text the text to tag.
+     * @return a JSON indexed list of all the words and their POS tags and lemmas.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PostMapping(value = "/tools/text/simple_tagger", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public String tagRawTextSimple(@RequestBody @Valid TextDto text) {
+        return toolsService.tagTextSimple(text);
+    }
+
+    /**
      * Lemmatize corpora content.
      *
      * @param corporaId   the corpora db id.

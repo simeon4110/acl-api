@@ -39,6 +39,7 @@ public class NLPTools {
     );
     private static final StanfordCoreNLP pipeline = new StanfordCoreNLP(setProperties()); // For complex analysis.
     private static final NLPTools ourInstance = new NLPTools();
+
     public static NLPTools getInstance() {
         return ourInstance;
     }
@@ -67,6 +68,18 @@ public class NLPTools {
         CoreDocument document = new CoreDocument(text);
         pipeline.annotate(document);
         return document;
+    }
+
+    /**
+     * This little method is a gosh-darned miracle.
+     *
+     * @param textDto a textDto containing the text to tag.
+     * @return tagged text.
+     */
+    public String tagTextSimple(TextDto textDto) {
+        String text = textDto.getText();
+        Document document = new Document(text);
+        return document.json(Sentence::lemmas);
     }
 
     /**
@@ -102,7 +115,7 @@ public class NLPTools {
         return result;
     }
 
-    String getLemmatizedWords(String textToLemmatize) {
+    public String getLemmatizedWords(String textToLemmatize) {
         textToLemmatize = textToLemmatize.replace("-", " ");
         textToLemmatize = textToLemmatize.replaceAll("\\p{Punct}", "");
         textToLemmatize = textToLemmatize.replaceAll("[0-9]", "");

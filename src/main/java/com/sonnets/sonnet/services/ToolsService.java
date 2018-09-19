@@ -90,6 +90,15 @@ public class ToolsService {
     }
 
     /**
+     * @param text a textDto with some text to tag.
+     * @return a JSON index of all the tags.
+     */
+    public String tagTextSimple(TextDto text) {
+        LOGGER.debug("Running simple tagger.");
+        return pipeline.tagTextSimple(text);
+    }
+
+    /**
      * @param textDto a textDto with the text to lemmatize and optional custom stop words.
      * @return a sorted freqdist of the top 20 results.
      */
