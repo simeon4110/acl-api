@@ -81,7 +81,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     private UserAnnotation userAnnotation;
 
-    protected Item() {
+    public Item() {
         // Empty for spring data.
     }
 

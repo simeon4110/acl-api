@@ -5,12 +5,14 @@ import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Tools singleton for interacting with the NLP.
@@ -44,12 +46,11 @@ public class NLPTools {
         return ourInstance;
     }
 
-    private NLPTools() {
-    }
-
     private static Properties setProperties() {
         Properties localProperties = new Properties();
         localProperties.setProperty("annotators", "tokenize,ssplit,pos,lemma");
+        localProperties.setProperty("parse.model",
+                "edu/stanford/nlp/models/pos-tagger/english-left3words/wsj-0-18-left3words-distsim.tagger");
         return localProperties;
     }
 
@@ -88,7 +89,8 @@ public class NLPTools {
      * @param textDto the text and optional list of custom stop words.
      * @return a cleaned up list of lemmatize words.
      */
-    public List<String> getListOfLemmatizedWords(TextDto textDto) {
+    @Async
+    public CompletableFuture<List<String>> getListOfLemmatizedWords(TextDto textDto) {
         String text = textDto.getText();
         List<String> localStopWords;
         text = text.replace("-", " ");
@@ -112,7 +114,7 @@ public class NLPTools {
                 }
             }
         }
-        return result;
+        return CompletableFuture.completedFuture(result);
     }
 
     public String getLemmatizedWords(String textToLemmatize) {

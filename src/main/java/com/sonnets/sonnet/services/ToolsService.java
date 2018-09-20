@@ -13,12 +13,14 @@ import com.sonnets.sonnet.wordtools.MalletTools;
 import com.sonnets.sonnet.wordtools.NLPTools;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -66,7 +68,8 @@ public class ToolsService {
      * @param text a textDto with the text to lemmatize and optional custom stop words.
      * @return a list of lemmatized strings.
      */
-    public List<String> lemmatizeText(TextDto text) {
+    @Async
+    public CompletableFuture<List<String>> lemmatizeText(TextDto text) {
         LOGGER.debug("Running text lemmatizer (raw text.)");
         return pipeline.getListOfLemmatizedWords(text);
     }
@@ -76,7 +79,8 @@ public class ToolsService {
      * @param stopWordsId a stop words id.
      * @return a list of lemmatized strings.
      */
-    public List<String> lemmatizeText(String corporaId, String stopWordsId) {
+    @Async
+    public CompletableFuture<List<String>> lemmatizeText(String corporaId, String stopWordsId) {
         LOGGER.debug("Running text lemmatizer (corpora): " + corporaId);
         TextDto dto = new TextDto();
         Corpora corpora = getObjectOrThrowNullPointer.corpora(corporaId);
@@ -93,19 +97,22 @@ public class ToolsService {
      * @param text a textDto with some text to tag.
      * @return a JSON index of all the tags.
      */
-    public String tagTextSimple(TextDto text) {
+    @Async
+    public CompletableFuture<String> tagTextSimple(TextDto text) {
         LOGGER.debug("Running simple tagger.");
-        return pipeline.tagTextSimple(text);
+        String result = pipeline.tagTextSimple(text);
+        return CompletableFuture.completedFuture(result);
     }
 
     /**
      * @param textDto a textDto with the text to lemmatize and optional custom stop words.
      * @return a sorted freqdist of the top 20 results.
      */
-    public Map<String, Integer> frequencyDistribution(TextDto textDto) {
+    @Async
+    public CompletableFuture<Map<String, Integer>> frequencyDistribution(TextDto textDto) {
         LOGGER.debug("Running frequency distribution (raw text.)");
-        List<String> strings = pipeline.getListOfLemmatizedWords(textDto);
-        return freqDist.getFrequency(strings);
+        CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(textDto);
+        return strings.thenApplyAsync(freqDist::getFrequency);
     }
 
     /**
@@ -113,7 +120,8 @@ public class ToolsService {
      * @param stopWordsId a stop words id.
      * @return a list of lemmatized strings.
      */
-    public Map<String, Integer> frequencyDistribution(String corporaId, String stopWordsId) {
+    @Async
+    public CompletableFuture<Map<String, Integer>> frequencyDistribution(String corporaId, String stopWordsId) {
         LOGGER.debug("Running frequency distribution (corpora): " + corporaId);
         TextDto dto = new TextDto();
         Corpora corpora = getObjectOrThrowNullPointer.corpora(corporaId);
@@ -123,8 +131,8 @@ public class ToolsService {
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
         dto.setText(parseCorporaItems(corpora.getItems()));
-        List<String> strings = pipeline.getListOfLemmatizedWords(dto);
-        return freqDist.getFrequency(strings);
+        CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(dto);
+        return strings.thenApplyAsync(freqDist::getFrequency);
     }
 
     /**
@@ -134,10 +142,12 @@ public class ToolsService {
      * @return a Map where the key is an integer (0 = most likely, -1 = trimmed) and the key is a Map where the key
      * is the exact probability of the model and the value is the model.
      */
-    public Map<Integer, Map<Double, String>> runMalletTopicModel(TextDto textDto) {
+    @Async
+    public CompletableFuture<Map<Integer, Map<Double, String>>> runMalletTopicModel(TextDto textDto) {
         LOGGER.debug("Running topic model (raw text).");
         try {
-            return malletTools.topicModel(textDto.getText(), textDto.getNumberOfTopics());
+            return CompletableFuture.completedFuture(malletTools.topicModel(textDto.getText(),
+                    textDto.getNumberOfTopics()));
         } catch (IOException e) {
             LOGGER.error(e);
             return null;
@@ -152,11 +162,13 @@ public class ToolsService {
      * @return a Map where the key is an integer (0 = most likely, -1 = trimmed) and the key is a Map where the key
      * is the exact probability of the model and the value is the model.
      */
-    public Map<Integer, Map<Double, String>> runMalletTopicModel(String corporaId, int numberOfTopics) {
+    @Async
+    public CompletableFuture<Map<Integer, Map<Double, String>>> runMalletTopicModel(String corporaId, int numberOfTopics) {
         LOGGER.debug("Running topic model (corpora): " + corporaId);
         Corpora corpora = getObjectOrThrowNullPointer.corpora(corporaId);
         try {
-            return malletTools.topicModel(parseCorporaItems(corpora.getItems()), numberOfTopics);
+            return CompletableFuture.completedFuture(malletTools.topicModel(parseCorporaItems(corpora.getItems()),
+                    numberOfTopics));
         } catch (IOException e) {
             LOGGER.error(e);
             return null;
