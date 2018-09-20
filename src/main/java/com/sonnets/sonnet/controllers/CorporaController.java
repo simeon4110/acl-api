@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
-import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.services.CorporaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class CorporaController {
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get_items_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<Item> getItemsById(@PathVariable("id") String id) {
+    public Set<ItemOutDto> getItemsById(@PathVariable("id") String id) {
         return corporaService.getCorporaItems(id);
     }
 

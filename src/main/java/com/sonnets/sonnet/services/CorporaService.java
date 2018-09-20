@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
-import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.repositories.CorporaRepository;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,7 +107,17 @@ public class CorporaService {
             default:
                 throw new RuntimeException(String.format("Item type: '%s' does not exist.", type));
         }
-        executeQueryAsync(query);
+        query.executeUpdate();
+        int count = (int) em.createNativeQuery("SELECT COUNT(*) FROM [corpora_items] WHERE corpora_id = :corporaId")
+                .setParameter("corporaId", Long.valueOf(corporaId))
+                .getSingleResult();
+
+        em.createNativeQuery("UPDATE  [corpora] SET total_items = :totalItems WHERE id = :corporaId")
+                .setParameter("totalItems", count)
+                .setParameter("corporaId", corporaId)
+                .executeUpdate();
+
+        em.joinTransaction();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -150,20 +159,19 @@ public class CorporaService {
                 default:
                     throw new RuntimeException(String.format("Item type: '%s' does not exist.", pair.getKey()));
             }
-            executeQueryAsync(query);
+            query.executeUpdate();
+            em.joinTransaction();
         }
 
-        int count = em.createNativeQuery("SELECT corpora_id FROM [corpora_items] " +
-                "WHERE corpora_id = :corporaId")
+        int count = (int) em.createNativeQuery("SELECT COUNT(*) FROM [corpora_items] WHERE corpora_id = :corporaId")
                 .setParameter("corporaId", dto.getId())
-                .getResultList().size();
+                .getSingleResult();
 
-        Query query = em.createNativeQuery("UPDATE [corpora]" +
-                "SET total_items = :itemCount " +
-                "WHERE id = :id")
-                .setParameter("itemCount", count)
-                .setParameter("id", dto.getId());
-        executeQueryAsync(query);
+        em.createNativeQuery("UPDATE  [corpora] SET total_items = :totalItems WHERE id = :corporaId")
+                .setParameter("totalItems", count)
+                .setParameter("corporaId", dto.getId())
+                .executeUpdate();
+        em.joinTransaction();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -202,7 +210,8 @@ public class CorporaService {
                 default:
                     throw new RuntimeException(String.format("Item type: '%s' does not exist.", pair.getKey()));
             }
-            executeQueryAsync(query);
+            query.executeUpdate();
+            em.joinTransaction();
         }
 
         int count = em.createNativeQuery("SELECT corpora_id FROM [corpora_items] " +
@@ -215,7 +224,8 @@ public class CorporaService {
                 "WHERE id = :corporaId")
                 .setParameter("itemCount", count)
                 .setParameter("corporaId", dto.getId());
-        executeQueryAsync(query);
+        query.executeUpdate();
+        em.joinTransaction();
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -266,7 +276,7 @@ public class CorporaService {
     }
 
 
-    public Set<Item> getCorporaItems(String id) {
+    public Set<ItemOutDto> getCorporaItems(String id) {
         LOGGER.debug("Getting corpora items: " + id);
 
         List result = em.createNativeQuery("SELECT i.corpora_id, i.item_id, i.item_type,\n" +
@@ -330,11 +340,4 @@ public class CorporaService {
         Optional<Corpora> corporaOptional = corporaRepository.findById(parsedId);
         return corporaOptional.orElseThrow(NullPointerException::new);
     }
-
-    @Async
-    public void executeQueryAsync(Query query) {
-        query.executeUpdate();
-        em.joinTransaction();
-    }
-
 }

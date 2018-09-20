@@ -1,11 +1,7 @@
 package com.sonnets.sonnet.services;
 
+import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
-import com.sonnets.sonnet.persistence.models.base.Item;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.persistence.models.prose.Book;
-import com.sonnets.sonnet.persistence.models.prose.Section;
-import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
@@ -35,10 +31,12 @@ public class ToolsService {
     private static final MalletTools malletTools = MalletTools.getInstance();
     private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
     private final GetObjectOrThrowNullPointer getObjectOrThrowNullPointer;
+    private final CorporaService corporaService;
 
     @Autowired
-    public ToolsService(GetObjectOrThrowNullPointer getObjectOrThrowNullPointer) {
+    public ToolsService(GetObjectOrThrowNullPointer getObjectOrThrowNullPointer, CorporaService corporaService) {
         this.getObjectOrThrowNullPointer = getObjectOrThrowNullPointer;
+        this.corporaService = corporaService;
     }
 
     /**
@@ -47,17 +45,16 @@ public class ToolsService {
      * @param items the items to strip.
      * @return a string of the combined item's text.
      */
-    private static String parseCorporaItems(final Set<Item> items) {
+    private static String parseCorporaItems(final Set<ItemOutDto> items) {
         StringBuilder sb = new StringBuilder();
-        Consumer<Item> itemConsumer = item -> { // Function strips items into text only.
-            if (item instanceof Poem) {
-                ((Poem) item).getText().forEach(s -> sb.append(s).append(" "));
-            } else if (item instanceof Section) {
-                sb.append(((Section) item).getText()).append(" ");
-            } else if (item instanceof Book) {
-                ((Book) item).getSections().forEach(s -> sb.append(s.getText()).append(" "));
-            } else {
-                LOGGER.error("Unhandled type in corpora. Text not copied.");
+        Consumer<ItemOutDto> itemConsumer = item -> { // Function strips items into text only.
+            switch (item.getCategory()) {
+                case "POEM":
+                    sb.append(item.getPoemText());
+                    break;
+                case "SECTION":
+                    sb.append(item.getText());
+                    break;
             }
         };
         items.forEach(itemConsumer);
@@ -83,13 +80,12 @@ public class ToolsService {
     public CompletableFuture<List<String>> lemmatizeText(String corporaId, String stopWordsId) {
         LOGGER.debug("Running text lemmatizer (corpora): " + corporaId);
         TextDto dto = new TextDto();
-        Corpora corpora = getObjectOrThrowNullPointer.corpora(corporaId);
         CustomStopWords customStopWords;
         if (Integer.parseInt(stopWordsId) != 0) {
             customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        dto.setText(parseCorporaItems(corpora.getItems()));
+        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
         return pipeline.getListOfLemmatizedWords(dto);
     }
 
@@ -124,13 +120,12 @@ public class ToolsService {
     public CompletableFuture<Map<String, Integer>> frequencyDistribution(String corporaId, String stopWordsId) {
         LOGGER.debug("Running frequency distribution (corpora): " + corporaId);
         TextDto dto = new TextDto();
-        Corpora corpora = getObjectOrThrowNullPointer.corpora(corporaId);
         CustomStopWords customStopWords;
         if (Integer.parseInt(stopWordsId) != 0) {
             customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        dto.setText(parseCorporaItems(corpora.getItems()));
+        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
         CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(dto);
         return strings.thenApplyAsync(freqDist::getFrequency);
     }
@@ -165,9 +160,9 @@ public class ToolsService {
     @Async
     public CompletableFuture<Map<Integer, Map<Double, String>>> runMalletTopicModel(String corporaId, int numberOfTopics) {
         LOGGER.debug("Running topic model (corpora): " + corporaId);
-        Corpora corpora = getObjectOrThrowNullPointer.corpora(corporaId);
         try {
-            return CompletableFuture.completedFuture(malletTools.topicModel(parseCorporaItems(corpora.getItems()),
+            return CompletableFuture.completedFuture(malletTools.topicModel(
+                    parseCorporaItems(corporaService.getCorporaItems(corporaId)),
                     numberOfTopics));
         } catch (IOException e) {
             LOGGER.error(e);
