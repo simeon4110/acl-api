@@ -4,7 +4,6 @@ import org.hibernate.search.annotations.DocumentId;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -13,15 +12,14 @@ import java.util.Objects;
  * @author Josh Harkema
  */
 @Entity
-public class Annotation implements Serializable {
+public class Annotation extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -7131872492811694640L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     private Long id;
-    @Lob
-    @Column(columnDefinition = "VARBINARY(MAX)")
-    private byte[] annotationBlob;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String annotationBody;
 
     public Annotation() {
         super();
@@ -35,12 +33,12 @@ public class Annotation implements Serializable {
         this.id = id;
     }
 
-    public byte[] getAnnotationBlob() {
-        return annotationBlob;
+    public String getAnnotationBody() {
+        return annotationBody;
     }
 
-    public void setAnnotationBlob(byte[] annotationBlob) {
-        this.annotationBlob = annotationBlob;
+    public void setAnnotationBody(String annotationBody) {
+        this.annotationBody = annotationBody;
     }
 
     @Override
@@ -49,21 +47,19 @@ public class Annotation implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Annotation that = (Annotation) o;
         return Objects.equals(id, that.id) &&
-                Arrays.equals(annotationBlob, that.annotationBlob);
+                Objects.equals(annotationBody, that.annotationBody);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id);
-        result = 31 * result + Arrays.hashCode(annotationBlob);
-        return result;
+        return Objects.hash(id, annotationBody);
     }
 
     @Override
     public String toString() {
         return "Annotation{" +
                 "id=" + id +
-                ", annotationBlob=" + Arrays.toString(annotationBlob) +
+                ", annotationBody='" + annotationBody + '\'' +
                 '}';
     }
 }

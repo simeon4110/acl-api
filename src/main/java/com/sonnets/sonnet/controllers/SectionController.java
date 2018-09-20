@@ -1,7 +1,9 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
+import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.services.prose.SectionService;
 import com.sonnets.sonnet.tools.ParseParam;
@@ -130,5 +132,19 @@ public class SectionController {
     @PostMapping(value = "/secure/section/reject", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> reject(@RequestBody @Valid RejectDto dto) {
         return sectionService.reject(dto);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PostMapping(value = "/secure/section/annotation/set/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> setAnnotation(@RequestBody @Valid AnnotationDto dto, @PathVariable("id") String id) {
+        return sectionService.setAnnotation(dto, id);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/section/annotation/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Annotation getAnnotation(@PathVariable("id") String id) {
+        return sectionService.getAnnotation(id);
     }
 }

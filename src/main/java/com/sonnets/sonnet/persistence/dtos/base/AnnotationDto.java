@@ -1,46 +1,36 @@
 package com.sonnets.sonnet.persistence.dtos.base;
 
-import javax.validation.constraints.NotEmpty;
-
 /**
  * @author Josh Harkema
  */
 public class AnnotationDto {
-    @NotEmpty
-    private String parentId;
-    private String annotationId;
-    private String description;
+    private String id;
+    private String annotationBody;
 
-    public String getParentId() {
-        return parentId;
+    public AnnotationDto() {
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public String getId() {
+        return id;
     }
 
-    public String getAnnotationId() {
-        return annotationId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setAnnotationId(String annotationId) {
-        this.annotationId = annotationId;
+    public String getAnnotationBody() {
+        return annotationBody;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAnnotationBody(String annotationBody) {
+        this.annotationBody = annotationBody;
     }
 
     @Override
     public String toString() {
         return "AnnotationDto{" +
-                "parentId='" + parentId + '\'' +
-                ", annotationId='" + annotationId + '\'' +
-                ", description='" + description + '\'' +
+                "id='" + id + '\'' +
+                ", annotationBody='" + annotationBody + '\'' +
                 '}';
     }
 }

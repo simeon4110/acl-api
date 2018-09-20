@@ -161,6 +161,6 @@
     <orderEntry type="library" name="Maven: net.sourceforge.f2j:arpack_combined_all:0.1" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.6.1" level="project" />
-    <orderEntry type="library" name="Maven: com.stanford.coreNLP:custom-build:1" level="project" />
+    <orderEntry type="library" name="Maven: com.stanford.coreNLP:custom-build:0.1.1" level="project" />
   </component>
 </module>

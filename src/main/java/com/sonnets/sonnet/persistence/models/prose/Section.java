@@ -74,7 +74,7 @@ public class Section extends Item implements Serializable {
     @Analyzer(definition = "textAnalyzer")
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
-    @Column
+    @OneToOne(cascade = CascadeType.ALL)
     private Annotation annotation;
     @OneToMany(fetch = FetchType.LAZY)
     private List<Version> versions;

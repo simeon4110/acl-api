@@ -1,8 +1,10 @@
 package com.sonnets.sonnet.services.prose;
 
+import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
+import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
@@ -65,9 +67,20 @@ public class SectionService {
         section.setPublicationStmt(book.getPublicationStmt());
         section.setSourceDesc(book.getSourceDesc());
         section.setPeriod(book.getPeriod());
-        section.setText(dto.getText());
+        section.setText(parseText(dto.getText()));
         section.setParentId(dto.getBookId());
         return section;
+    }
+
+    private static String parseText(String text) {
+        StringBuilder sb = new StringBuilder();
+        for (String line : text.split("\n")) {
+            if (!line.equals("")) {
+                sb.append(line.trim());
+                sb.append('\n');
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -259,5 +272,24 @@ public class SectionService {
     public void save(Section section) {
         LOGGER.debug("Saving section: " + section.getId());
         sectionRepository.saveAndFlush(section);
+    }
+
+    public ResponseEntity<Void> setAnnotation(AnnotationDto dto, String id) {
+        LOGGER.debug(String.format("Setting annotation id '%s' to: %s", id, dto));
+        Section section = getObjectOrNull.section(id);
+        Annotation annotation = section.getAnnotation();
+        if (annotation == null) { // Null check is important here.
+            annotation = new Annotation();
+        }
+        annotation.setAnnotationBody(dto.getAnnotationBody());
+        section.setAnnotation(annotation);
+        sectionRepository.saveAndFlush(section);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public Annotation getAnnotation(String id) {
+        LOGGER.debug("Getting annotation: " + id);
+        Section section = getObjectOrNull.section(id);
+        return section.getAnnotation();
     }
 }
