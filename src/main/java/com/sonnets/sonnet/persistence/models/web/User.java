@@ -39,9 +39,11 @@ public class User extends Auditable<String> implements Serializable {
     @JoinTable(name = "users_privileges", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private Set<Privilege> privileges;
-    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id", cascade = CascadeType.ALL)
     private List<UserPrivateText> privateTexts;
-    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id", cascade = CascadeType.ALL)
     private List<CustomStopWords> customStopWords;
 
     public User() {
