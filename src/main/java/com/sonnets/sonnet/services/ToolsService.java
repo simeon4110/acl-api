@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -45,7 +45,7 @@ public class ToolsService {
      * @param items the items to strip.
      * @return a string of the combined item's text.
      */
-    private static String parseCorporaItems(final Set<ItemOutDto> items) {
+    private String parseCorporaItems(final Set<ItemOutDto> items) {
         StringBuilder sb = new StringBuilder();
         Consumer<ItemOutDto> itemConsumer = item -> { // Function strips items into text only.
             switch (item.getCategory()) {
@@ -85,7 +85,7 @@ public class ToolsService {
             customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
+        corporaService.getCorporaItems(corporaId).thenAccept(s -> dto.setText(parseCorporaItems(s)));
         return pipeline.getListOfLemmatizedWords(dto);
     }
 
@@ -96,7 +96,18 @@ public class ToolsService {
     @Async
     public CompletableFuture<String> tagTextSimple(TextDto text) {
         LOGGER.debug("Running simple tagger.");
-        String result = pipeline.tagTextSimple(text);
+        String result = NLPTools.tagTextSimple(text);
+        return CompletableFuture.completedFuture(result);
+    }
+
+    /**
+     * @param text the text to tag.
+     * @return a JSON index of all the tags.
+     */
+    @Async
+    public CompletableFuture<String> tagTextSimple(String text) {
+        LOGGER.debug("Running simple tagger on raw text.");
+        String result = NLPTools.tagTextSimple(text);
         return CompletableFuture.completedFuture(result);
     }
 
@@ -125,7 +136,7 @@ public class ToolsService {
             customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
+        corporaService.getCorporaItems(corporaId).thenAccept(s -> dto.setText(parseCorporaItems(s)));
         CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(dto);
         return strings.thenApplyAsync(freqDist::getFrequency);
     }
@@ -140,13 +151,8 @@ public class ToolsService {
     @Async
     public CompletableFuture<Map<Integer, Map<Double, String>>> runMalletTopicModel(TextDto textDto) {
         LOGGER.debug("Running topic model (raw text).");
-        try {
-            return CompletableFuture.completedFuture(malletTools.topicModel(textDto.getText(),
-                    textDto.getNumberOfTopics()));
-        } catch (IOException e) {
-            LOGGER.error(e);
-            return null;
-        }
+        return malletTools.topicModel(textDto.getText(), textDto.getNumberOfTopics())
+                .orTimeout(60, TimeUnit.SECONDS);
     }
 
     /**
@@ -158,15 +164,10 @@ public class ToolsService {
      * is the exact probability of the model and the value is the model.
      */
     @Async
-    public CompletableFuture<Map<Integer, Map<Double, String>>> runMalletTopicModel(String corporaId, int numberOfTopics) {
+    public CompletableFuture runMalletTopicModel(String corporaId, int numberOfTopics) {
         LOGGER.debug("Running topic model (corpora): " + corporaId);
-        try {
-            return CompletableFuture.completedFuture(malletTools.topicModel(
-                    parseCorporaItems(corporaService.getCorporaItems(corporaId)),
-                    numberOfTopics));
-        } catch (IOException e) {
-            LOGGER.error(e);
-            return null;
-        }
+        CompletableFuture<Set<ItemOutDto>> items = corporaService.getCorporaItems(corporaId);
+        return items.thenApply(this::parseCorporaItems)
+                .thenApplyAsync(s -> malletTools.topicModel(s, numberOfTopics)).orTimeout(60, TimeUnit.SECONDS);
     }
 }

@@ -67,7 +67,8 @@ public class ToolsController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/tools/corpora/lemmatize", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<List<String>> lemmatizeCorpora(@RequestParam("corpora_id") String corporaId,
-                                                            @RequestParam(value = "stop_words_id", required = false) String stopWordsId) {
+                                                            @RequestParam(value = "stop_words_id", required = false)
+                                                                    String stopWordsId) {
         return toolsService.lemmatizeText(corporaId, stopWordsId);
     }
 
@@ -96,9 +97,12 @@ public class ToolsController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/tools/corpora/freqdist", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<Map<String, Integer>> getFrequencyDistributionCorpora(@RequestParam("corpora_id") String corporaId,
-                                                                                   @RequestParam(value = "stop_words_id",
-                                                                        required = false) String stopWordsId) {
+    public CompletableFuture<Map<String, Integer>> getFrequencyDistributionCorpora(@RequestParam("corpora_id")
+                                                                                           String corporaId,
+                                                                                   @RequestParam(
+                                                                                           value = "stop_words_id",
+                                                                                           required = false)
+                                                                                           String stopWordsId) {
         return toolsService.frequencyDistribution(corporaId, stopWordsId);
     }
 
@@ -129,8 +133,8 @@ public class ToolsController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/tools/corpora/topic_model", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<Map<Integer, Map<Double, String>>> runTopicModelCorpora(@RequestParam("corpora_id") String corporaId,
-                                                                                     @RequestParam("number_topics") int numberTopics) {
+    public CompletableFuture runTopicModelCorpora(@RequestParam("corpora_id") String corporaId,
+                                                  @RequestParam("number_topics") int numberTopics) {
         return toolsService.runMalletTopicModel(corporaId, numberTopics);
     }
 }

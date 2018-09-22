@@ -11,6 +11,7 @@ import cc.mallet.types.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 /**
@@ -43,12 +44,11 @@ public class MalletTools {
      * @param text           the text to run the model for.
      * @param numberOfTopics the number of topics to run.
      * @return an array of topics where item 0 is the most likely.
-     * @throws IOException if the stop words list cannot be found.
      */
-    public Map<Integer, Map<Double, String>> topicModel(final String text, final int numberOfTopics)
-            throws IOException {
-        // Run the words through the lemmatizer and stop word filter.
+    public CompletableFuture<Map<Integer, Map<Double, String>>> topicModel(final String text,
+                                                                           final int numberOfTopics) {
         NLPTools nlpTools = NLPTools.getInstance();
+        // Run the words through the lemmatizer and stop word filter.
         String cleanText = nlpTools.getLemmatizedWords(text);
 
         ArrayList<Pipe> pipeList = new ArrayList<>();
@@ -67,7 +67,11 @@ public class MalletTools {
         model.addInstances(instances);
         model.setNumThreads(NUM_THREADS);
         model.setNumIterations(NUM_ITERATIONS);
-        model.estimate();
+        try {
+            model.estimate();
+        } catch (IOException e) {
+            throw new RuntimeException("The topic model broke.");
+        }
 
         // Get the total number of words(and how many occurrences of each).
         Alphabet alphabet = instances.getAlphabet();
@@ -127,6 +131,6 @@ public class MalletTools {
         Map<Double, String> itemZero = new HashMap<>();
         itemZero.put(testProbabilities[0], "FINAL");
         resultMap.put(-1, itemZero);
-        return resultMap;
+        return CompletableFuture.completedFuture(resultMap);
     }
 }

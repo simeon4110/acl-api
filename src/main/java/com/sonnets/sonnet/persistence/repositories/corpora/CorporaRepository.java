@@ -1,10 +1,8 @@
-package com.sonnets.sonnet.persistence.repositories;
+package com.sonnets.sonnet.persistence.repositories.corpora;
 
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * Abstract interface for Spring data.
@@ -13,7 +11,5 @@ import java.util.List;
  */
 @SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
 @Repository
-public interface CorporaRepository extends CrudRepository<Corpora, Long> {
-
-    List<Corpora> findAllByCreatedBy(final String createdBy);
+public interface CorporaRepository extends CrudRepository<Corpora, Long>, CorporaRepositoryStoredProcedures {
 }

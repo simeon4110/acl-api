@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.wordtools;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
-import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
@@ -55,31 +54,25 @@ public class NLPTools {
     }
 
     /**
-     * Parses text into a CoreDocument and strips all newlines.
-     *
-     * @param text the string to load and strip.
-     * @return the loaded and stripped CoreDocument.
-     */
-    public static CoreDocument loadDocument(String text) {
-        text = text.replace(",", "");
-        text = text.replace(";", "");
-        text = text.replace(":", "");
-        text = text.replace("'s", "");
-        text = text.replace("\n", " ");
-        CoreDocument document = new CoreDocument(text);
-        pipeline.annotate(document);
-        return document;
-    }
-
-    /**
      * This little method is a gosh-darned miracle.
      *
      * @param textDto a textDto containing the text to tag.
      * @return tagged text.
      */
-    public String tagTextSimple(TextDto textDto) {
+    public static String tagTextSimple(TextDto textDto) {
         String text = textDto.getText();
         Document document = new Document(text);
+        return document.json(Sentence::lemmas);
+    }
+
+    /**
+     * Runs without the need for a DTO.
+     *
+     * @param string the text to tag.
+     * @return tagged text.
+     */
+    public static String tagTextSimple(String string) {
+        Document document = new Document(string);
         return document.json(Sentence::lemmas);
     }
 
@@ -117,7 +110,7 @@ public class NLPTools {
         return CompletableFuture.completedFuture(result);
     }
 
-    public String getLemmatizedWords(String textToLemmatize) {
+    String getLemmatizedWords(String textToLemmatize) {
         textToLemmatize = textToLemmatize.replace("-", " ");
         textToLemmatize = textToLemmatize.replaceAll("\\p{Punct}", "");
         textToLemmatize = textToLemmatize.replaceAll("[0-9]", "");
@@ -128,7 +121,7 @@ public class NLPTools {
 
         for (Sentence sentence : document.sentences()) {
             for (int i = 0; i < sentence.length() - 1; i++) {
-                if (!STOP_WORDS.contains(sentence.word(i).toLowerCase()) && sentence.nerTag(i).equals("O")) {
+                if (!STOP_WORDS.contains(sentence.word(i).toLowerCase())) {
                     result.append(sentence.word(i));
                     result.append(" ");
                 }

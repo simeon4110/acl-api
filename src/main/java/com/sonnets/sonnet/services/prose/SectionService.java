@@ -11,6 +11,7 @@ import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.MessageService;
+import com.sonnets.sonnet.services.ToolsService;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.services.helpers.SaveObject;
 import org.apache.log4j.Logger;
@@ -24,6 +25,7 @@ import javax.persistence.Query;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Deals with everything related to sections.
@@ -37,15 +39,18 @@ public class SectionService {
     private final SaveObject saveObject;
     private final SectionRepositoryBase sectionRepository;
     private final MessageService messageService;
+    private final ToolsService toolsService;
     private final EntityManager em;
 
     @Autowired
     public SectionService(GetObjectOrThrowNullPointer getObjectOrNull, SaveObject saveObject,
-                          SectionRepositoryBase sectionRepository, MessageService messageService, EntityManager em) {
+                          SectionRepositoryBase sectionRepository, MessageService messageService,
+                          ToolsService toolsService, EntityManager em) {
         this.getObjectOrNull = getObjectOrNull;
         this.saveObject = saveObject;
         this.sectionRepository = sectionRepository;
         this.messageService = messageService;
+        this.toolsService = toolsService;
         this.em = em;
     }
 
@@ -58,7 +63,7 @@ public class SectionService {
      * @param dto     the dto with the new data.
      * @return the Section with the new data copied.
      */
-    private static Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
+    private Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
         section.setCategory("SECTION");
         section.setAuthor(author);
         section.setTitle(dto.getTitle());
@@ -69,6 +74,12 @@ public class SectionService {
         section.setPeriod(book.getPeriod());
         section.setText(parseText(dto.getText()));
         section.setParentId(dto.getBookId());
+        if (section.getAnnotation() == null) { // null check to prevent overwriting a section's annotation.
+            Annotation annotation = new Annotation();
+            CompletableFuture<String> taggedText = toolsService.tagTextSimple(dto.getText());
+            taggedText.thenAccept(annotation::setAnnotationBody);
+            section.setAnnotation(annotation);
+        }
         return section;
     }
 
@@ -97,6 +108,8 @@ public class SectionService {
     /**
      * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
      * It takes 20 seconds to return all the data. This way takes 200ms.
+     *
+     * :todo: move query into stored procedure.
      */
     public List getAll() {
         Query query = em.createNativeQuery("SELECT section.id,\n" +

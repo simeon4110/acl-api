@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.persistence.models.poetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
@@ -50,23 +49,21 @@ import java.util.Objects;
 @Entity
 @Table
 @DiscriminatorValue("POEM")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
     @Field(name = "poem_form", store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
     @Column
     private String form; // The form of genre of the poem.
-    @JsonIgnore
-    @Column
+    @Embedded
     private Confirmation confirmation;
-    @Column
     @IndexedEmbedded
     @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = "textAnalyzer")
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> text;
-    @JsonIgnore
-    @Column
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "annotation_id")
+    @MapsId
     private Annotation annotation;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -75,7 +72,7 @@ public class Poem extends Item implements Serializable {
     @JsonIgnore
     @Column
     private boolean processed;
-    @Column
+    @Embedded
     private TopicModel topicModel;
 
     public Poem() {

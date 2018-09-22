@@ -3,11 +3,16 @@ package com.sonnets.sonnet.persistence.dtos.base;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.base.UserAnnotation;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * This monstrosity is necessary to deal with the dynamic output of the corpora_items table. Do not judge me
+ * by the failings of hibernate.
+ *
+ * @author Josh Harkema
+ */
 public class ItemOutDto {
     private BigDecimal id;
     private BigDecimal itemId;
@@ -23,7 +28,6 @@ public class ItemOutDto {
     private int publicationYear;
     private String sourceDesc;
     private String title;
-    private UserAnnotation userAnnotation;
     private Annotation annotation;
     private Confirmation confirmation;
     private BigDecimal parentId;
@@ -40,7 +44,9 @@ public class ItemOutDto {
                       final String title, final boolean confirmed, final Date confirmedAt,
                       final String confirmedBy, final boolean pendingRevision, final BigDecimal parentId,
                       final String bookTitle, final String text, final String poemText, final String firstName,
-                      final String lastName) {
+                      final String lastName, final String annotationBody, final String annotationCreatedBy,
+                      final Date annotationCreatedDate, final String annotationLastModifiedBy,
+                      final Date annotationLastModifiedDate) {
         this.id = id;
         this.itemId = itemId;
         this.itemType = itemType;
@@ -67,6 +73,12 @@ public class ItemOutDto {
         this.author = new Author();
         this.author.setFirstName(firstName);
         this.author.setLastName(lastName);
+        this.annotation = new Annotation();
+        this.annotation.setAnnotationBody(annotationBody);
+        this.annotation.setCreatedBy(annotationCreatedBy);
+        this.annotation.setCreatedDate(annotationCreatedDate);
+        this.annotation.setLastModifiedBy(annotationLastModifiedBy);
+        this.annotation.setLastModifiedDate(annotationLastModifiedDate);
     }
 
     public BigDecimal getId() {
@@ -181,14 +193,6 @@ public class ItemOutDto {
         this.title = title;
     }
 
-    public UserAnnotation getUserAnnotation() {
-        return userAnnotation;
-    }
-
-    public void setUserAnnotation(UserAnnotation userAnnotation) {
-        this.userAnnotation = userAnnotation;
-    }
-
     public Annotation getAnnotation() {
         return annotation;
     }
@@ -270,7 +274,6 @@ public class ItemOutDto {
                 ", publicationYear=" + publicationYear +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", title='" + title + '\'' +
-                ", userAnnotation=" + userAnnotation +
                 ", annotation=" + annotation +
                 ", confirmation=" + confirmation +
                 ", parentId=" + parentId +

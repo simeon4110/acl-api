@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
+import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
@@ -16,6 +17,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Handles all corpora related REST endpoints.
@@ -53,13 +55,31 @@ public class CorporaController {
         return corporaService.getSingle(id);
     }
 
+    /**
+     * Get a single corpora's items
+     *
+     * @param id the db id of the corpora.
+     * @return a set of all the items.
+     */
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get_items_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<ItemOutDto> getItemsById(@PathVariable("id") String id) {
+    public CompletableFuture<Set<ItemOutDto>> getItemsById(@PathVariable("id") String id) {
         return corporaService.getCorporaItems(id);
     }
 
+    /**
+     * Get just the title, author, <<important fields>> of a single corpora's items.
+     *
+     * @param id the db id of the corpora.
+     * @return a set of all the items.
+     */
+    @CrossOrigin(origins = "${allowed-origin}") //
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
+    @GetMapping(value = "/secure/corpora/get_items_by_id_simple/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<Set<ItemOutSimpleDto>> getItemsByIdSimple(@PathVariable("id") String id) {
+        return corporaService.getCorporaItemsSimple(id);
+    }
 
     /**
      * Create a new corpora.
@@ -67,7 +87,7 @@ public class CorporaController {
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PostMapping(value = "/secure/corpora/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createCorpora(@RequestBody @Valid CorporaDto corporaDto, Principal principal) {
+    public ResponseEntity<Void> createCorpora(@RequestBody @Valid CorporaDto corporaDto) {
         return corporaService.createCorpora(corporaDto);
     }
 

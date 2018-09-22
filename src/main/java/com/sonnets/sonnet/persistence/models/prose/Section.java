@@ -1,12 +1,14 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionOutDto;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.annotations.Parameter;
 
@@ -23,6 +25,7 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
+
 @SqlResultSetMapping(
         name = "SectionMap",
         classes = @ConstructorResult(
@@ -61,28 +64,32 @@ import java.util.Objects;
                         @Parameter(name = "language", value = "English")
                 })
         })
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Section extends Item implements Serializable {
     private static final long serialVersionUID = -7556341244036061332L;
     @Field(name = "section_title", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = "textAnalyzer")
     @Column
     private String title;
-    @Column
+    @Embedded
     private Confirmation confirmation;
     @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = "textAnalyzer")
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "annotation_id")
+    @MapsId
     private Annotation annotation;
-    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Version> versions;
+    @JsonIgnore
     @Column
     private boolean processed;
     @Column
     private Long parentId;
-    @Column
+    @Embedded
     private TopicModel topicModel;
 
     public Section() {

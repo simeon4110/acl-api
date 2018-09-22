@@ -1,7 +1,5 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sonnets.sonnet.persistence.bridges.CharacterBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.base.Item;
@@ -22,18 +20,15 @@ import java.util.Objects;
 @Entity
 @Table
 @DiscriminatorValue("BOOK")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Book extends Item implements Serializable {
     private static final long serialVersionUID = -5579725087589223758L;
     @Field(name = "book_type", store = Store.YES, termVector = TermVector.NO)
     @Column
     private String type;
-    @JsonIgnore
     @Field(name = "book_section", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Section> sections;
-    @JsonIgnore
     @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterBridge.class)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)

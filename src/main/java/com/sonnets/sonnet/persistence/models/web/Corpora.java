@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -24,6 +25,80 @@ import java.util.Set;
  *
  * @author Josh Harkema
  */
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "countCorporaItems",
+                procedureName = "count_items",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId"),
+                        @StoredProcedureParameter(mode = ParameterMode.INOUT, type = Integer.class, name = "itemCount")
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "addCorporaItem",
+                procedureName = "add_corpora_items",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId"),
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "itemId"),
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "itemType")
+                }
+
+        ),
+        @NamedStoredProcedureQuery(
+                name = "updateCorporaItemCount",
+                procedureName = "update_corpora_count",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId"),
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "count")
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getCorpora",
+                procedureName = "get_corpora",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                },
+                resultSetMappings = {
+                        "CorporaMap"
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getCorporaItems",
+                procedureName = "get_corpora_items",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                },
+                resultSetMappings = {
+                        "itemMap"
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getCorporaItemsSimple",
+                procedureName = "get_corpora_items_simple",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                },
+                resultSetMappings = {
+                        "itemMapSimple"
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getCorporaUser",
+                procedureName = "get_corpora_user",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "createdBy")
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "deleteCorporaItem",
+                procedureName = "delete_corpora_item",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "itemType"),
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "itemId"),
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                }
+        )
+})
 @SqlResultSetMapping(
         name = "CorporaMap",
         classes = @ConstructorResult(
@@ -128,5 +203,34 @@ public class Corpora extends Auditable<String> implements Serializable {
 
     public void setTotalItems(int totalItems) {
         this.totalItems = totalItems;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Corpora corpora = (Corpora) o;
+        return totalItems == corpora.totalItems &&
+                Objects.equals(id, corpora.id) &&
+                Objects.equals(name, corpora.name) &&
+                Objects.equals(description, corpora.description) &&
+                Objects.equals(items, corpora.items);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, name, description, items, totalItems);
+    }
+
+    @Override
+    public String toString() {
+        return "Corpora{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", items=" + items +
+                ", totalItems=" + totalItems +
+                "} " + super.toString();
     }
 }

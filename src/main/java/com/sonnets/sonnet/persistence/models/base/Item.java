@@ -2,6 +2,7 @@ package com.sonnets.sonnet.persistence.models.base;
 
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
+import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -15,38 +16,61 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@SqlResultSetMapping(
-        name = "itemMap",
-        classes = @ConstructorResult(
-                targetClass = ItemOutDto.class,
-                columns = {
-                        @ColumnResult(name = "corpora_id", type = BigDecimal.class),
-                        @ColumnResult(name = "item_id", type = BigDecimal.class),
-                        @ColumnResult(name = "item_type"),
-                        @ColumnResult(name = "created_by"),
-                        @ColumnResult(name = "created_date", type = Date.class),
-                        @ColumnResult(name = "last_modified_by"),
-                        @ColumnResult(name = "last_modified_date", type = Date.class),
-                        @ColumnResult(name = "category"),
-                        @ColumnResult(name = "description"),
-                        @ColumnResult(name = "period"),
-                        @ColumnResult(name = "publication_stmt"),
-                        @ColumnResult(name = "publication_year", type = int.class),
-                        @ColumnResult(name = "source_desc"),
-                        @ColumnResult(name = "title"),
-                        @ColumnResult(name = "confirmed", type = boolean.class),
-                        @ColumnResult(name = "confirmed_at", type = Date.class),
-                        @ColumnResult(name = "confirmed_by"),
-                        @ColumnResult(name = "pending_revision", type = boolean.class),
-                        @ColumnResult(name = "parent_id", type = BigDecimal.class),
-                        @ColumnResult(name = "book_tit"),
-                        @ColumnResult(name = "text"),
-                        @ColumnResult(name = "poem_text"),
-                        @ColumnResult(name = "first_name"),
-                        @ColumnResult(name = "last_name")
-                }
+@SqlResultSetMappings({
+        @SqlResultSetMapping(
+                name = "itemMap",
+                classes = @ConstructorResult(
+                        targetClass = ItemOutDto.class,
+                        columns = {
+                                @ColumnResult(name = "corpora_id", type = BigDecimal.class),
+                                @ColumnResult(name = "item_id", type = BigDecimal.class),
+                                @ColumnResult(name = "item_type"),
+                                @ColumnResult(name = "created_by"),
+                                @ColumnResult(name = "created_date", type = Date.class),
+                                @ColumnResult(name = "last_modified_by"),
+                                @ColumnResult(name = "last_modified_date", type = Date.class),
+                                @ColumnResult(name = "category"),
+                                @ColumnResult(name = "description"),
+                                @ColumnResult(name = "period"),
+                                @ColumnResult(name = "publication_stmt"),
+                                @ColumnResult(name = "publication_year", type = int.class),
+                                @ColumnResult(name = "source_desc"),
+                                @ColumnResult(name = "title"),
+                                @ColumnResult(name = "confirmed", type = boolean.class),
+                                @ColumnResult(name = "confirmed_at", type = Date.class),
+                                @ColumnResult(name = "confirmed_by"),
+                                @ColumnResult(name = "pending_revision", type = boolean.class),
+                                @ColumnResult(name = "parent_id", type = BigDecimal.class),
+                                @ColumnResult(name = "book_tit"),
+                                @ColumnResult(name = "text"),
+                                @ColumnResult(name = "poem_text"),
+                                @ColumnResult(name = "first_name"),
+                                @ColumnResult(name = "last_name"),
+                                @ColumnResult(name = "annotation_body"),
+                                @ColumnResult(name = "annotation_created_by"),
+                                @ColumnResult(name = "annotation_created_date", type = Date.class),
+                                @ColumnResult(name = "annotation_last_modified_by"),
+                                @ColumnResult(name = "annotation_last_modified_date", type = Date.class)
+
+                        }
+                )
+        ),
+        @SqlResultSetMapping(
+                name = "itemMapSimple",
+                classes = @ConstructorResult(
+                        targetClass = ItemOutSimpleDto.class,
+                        columns = {
+                                @ColumnResult(name = "id", type = BigDecimal.class),
+                                @ColumnResult(name = "item_id", type = BigDecimal.class),
+                                @ColumnResult(name = "first_name"),
+                                @ColumnResult(name = "last_name"),
+                                @ColumnResult(name = "title"),
+                                @ColumnResult(name = "book_tit"),
+                                @ColumnResult(name = "item_type")
+                        }
+                )
         )
-)
+})
 @MappedSuperclass
 public abstract class Item extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -5596854181341354264L;
@@ -78,7 +102,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Field(name = "period", store = Store.YES, analyze = Analyze.NO)
     @Column
     private String period;
-    @Column
+    @OneToOne(fetch = FetchType.LAZY)
     private UserAnnotation userAnnotation;
 
     public Item() {
