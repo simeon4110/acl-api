@@ -18,7 +18,6 @@ import java.util.Objects;
  */
 @Indexed
 @Entity
-@Table
 @DiscriminatorValue("BOOK")
 public class Book extends Item implements Serializable {
     private static final long serialVersionUID = -5579725087589223758L;

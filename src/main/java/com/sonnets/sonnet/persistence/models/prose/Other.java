@@ -29,7 +29,7 @@ public class Other extends Item implements Serializable {
     @Field(name = "other_sub_type", store = Store.YES)
     @Column
     private String subType;
-    @Column
+    @Embedded
     private Confirmation confirmation;
     @Field(name = "other_text", store = Store.YES, termVector = TermVector.YES)
     @Column(columnDefinition = "NVARCHAR(MAX)")
@@ -37,7 +37,7 @@ public class Other extends Item implements Serializable {
     @Column
     private Annotation annotation;
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Version> versions;
 
     public Other() {

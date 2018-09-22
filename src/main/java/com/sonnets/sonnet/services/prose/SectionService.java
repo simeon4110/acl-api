@@ -9,7 +9,7 @@ import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
-import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
+import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.ToolsService;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
@@ -20,8 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.List;
@@ -40,18 +38,16 @@ public class SectionService {
     private final SectionRepositoryBase sectionRepository;
     private final MessageService messageService;
     private final ToolsService toolsService;
-    private final EntityManager em;
 
     @Autowired
     public SectionService(GetObjectOrThrowNullPointer getObjectOrNull, SaveObject saveObject,
                           SectionRepositoryBase sectionRepository, MessageService messageService,
-                          ToolsService toolsService, EntityManager em) {
+                          ToolsService toolsService) {
         this.getObjectOrNull = getObjectOrNull;
         this.saveObject = saveObject;
         this.sectionRepository = sectionRepository;
         this.messageService = messageService;
         this.toolsService = toolsService;
-        this.em = em;
     }
 
     /**
@@ -108,34 +104,9 @@ public class SectionService {
     /**
      * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
      * It takes 20 seconds to return all the data. This way takes 200ms.
-     *
-     * :todo: move query into stored procedure.
      */
     public List getAll() {
-        Query query = em.createNativeQuery("SELECT section.id,\n" +
-                "\t\tsection.category,\n" +
-                "\t\tsection.description,\n" +
-                "\t\tsection.period,\n" +
-                "\t\tsection.publication_stmt,\n" +
-                "\t\tsection.publication_year,\n" +
-                "\t\tsection.source_desc,\n" +
-                "\t\tsection.title,\n" +
-                "\t\tsection.confirmed,\n" +
-                "\t\tsection.confirmed_at,\n" +
-                "\t\tsection.confirmed_by,\n" +
-                "\t\tsection.pending_revision,\n" +
-                "\t\tsection.author_id,\n" +
-                "\t\t[author].[first_name],\n" +
-                "\t\t[author].[last_name],\n" +
-                "\t\tsection.parent_id,\n" +
-                "\t\t[book].[title] AS book_title,\n" +
-                "\t\t[book].[type] AS book_type,\n" +
-                "\t\tsection.text\n" +
-                "\t\tFROM [dbo].[section] section\n" +
-                "\t\tINNER JOIN [author] ON section.author_id = [author].[id]\n" +
-                "\t\tINNER JOIN [book] ON section.parent_id = [book].[id]", "SectionMap");
-        List results = query.getResultList();
-        return results;
+        return sectionRepository.getAllSections().orElseThrow(NullPointerException::new);
     }
 
     /**

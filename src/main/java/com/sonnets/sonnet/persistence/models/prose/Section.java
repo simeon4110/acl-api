@@ -25,7 +25,15 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "getAllSections",
+                procedureName = "get_all_sections",
+                resultSetMappings = {
+                        "SectionMap"
+                }
+        )
+})
 @SqlResultSetMapping(
         name = "SectionMap",
         classes = @ConstructorResult(
@@ -76,9 +84,8 @@ public class Section extends Item implements Serializable {
     @Analyzer(definition = "textAnalyzer")
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "annotation_id")
-    @MapsId
     private Annotation annotation;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -11,6 +11,8 @@ import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.persistence.repositories.*;
 import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
+import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

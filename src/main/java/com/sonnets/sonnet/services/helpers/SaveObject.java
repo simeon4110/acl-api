@@ -6,7 +6,12 @@ import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
-import com.sonnets.sonnet.persistence.repositories.*;
+import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
+import com.sonnets.sonnet.persistence.repositories.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.CharacterRepository;
+import com.sonnets.sonnet.persistence.repositories.OtherRepository;
+import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

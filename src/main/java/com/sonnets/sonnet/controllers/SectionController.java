@@ -43,6 +43,9 @@ public class SectionController {
         return sectionService.get(id);
     }
 
+    /**
+     * @return All sections in the db.
+     */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get_all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getAll() {
@@ -134,6 +137,13 @@ public class SectionController {
         return sectionService.reject(dto);
     }
 
+    /**
+     * Set an annotation.
+     *
+     * @param dto a valid annotation dto.
+     * @param id  the id of the section.
+     * @return 200 if good.
+     */
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/annotation/set/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -141,6 +151,12 @@ public class SectionController {
         return sectionService.setAnnotation(dto, id);
     }
 
+    /**
+     * Get an annotation.
+     *
+     * @param id the id of the section.
+     * @return an annotation NullPointer is thrown if it does not exist.
+     */
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/section/annotation/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

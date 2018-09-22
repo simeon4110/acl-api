@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.repositories;
+package com.sonnets.sonnet.persistence.repositories.poem;
 
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import org.springframework.data.domain.Page;
@@ -14,7 +14,7 @@ import java.util.Optional;
  */
 @SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
 @Repository
-public interface PoemRepository extends JpaRepository<Poem, Long> {
+public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositoryStoredProcedures {
 
     List<Poem> findAllByForm(final String form);
 
@@ -31,6 +31,4 @@ public interface PoemRepository extends JpaRepository<Poem, Long> {
     );
 
     Poem findFirstByProcessed(final boolean processed);
-
-    Long countByForm(final String form);
 }

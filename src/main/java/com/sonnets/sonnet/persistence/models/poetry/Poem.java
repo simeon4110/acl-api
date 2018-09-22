@@ -20,6 +20,25 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "getAllPoemsManual",
+                procedureName = "get_all_poems",
+                resultSetMappings = {
+                        "PoemMap"
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getRandomPoem",
+                procedureName = "get_random_poem",
+                parameters = {
+                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "form")
+                },
+                resultSetMappings = {
+                        "PoemMap"
+                }
+        )
+})
 @SqlResultSetMapping(
         name = "PoemMap",
         classes = @ConstructorResult(
@@ -47,7 +66,6 @@ import java.util.Objects;
 )
 @Indexed
 @Entity
-@Table
 @DiscriminatorValue("POEM")
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
@@ -56,14 +74,13 @@ public class Poem extends Item implements Serializable {
     private String form; // The form of genre of the poem.
     @Embedded
     private Confirmation confirmation;
-    @IndexedEmbedded
     @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = "textAnalyzer")
     @ElementCollection(fetch = FetchType.EAGER)
+    @IndexedEmbedded
     private List<String> text;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "annotation_id")
-    @MapsId
     private Annotation annotation;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -81,21 +98,6 @@ public class Poem extends Item implements Serializable {
         this.confirmation.setConfirmed(false);
         this.confirmation.setPendingRevision(false);
         this.processed = false;
-    }
-
-    /**
-     * This parses a Sonnet so it shows "pretty" in html <textarea></textarea> elements. (adds \n for newlines.)
-     *
-     * @return a nicely formatted string.
-     */
-    public String getTextPretty() {
-        StringBuilder sb = new StringBuilder();
-        for (String s : text) {
-            s = s.trim();
-            sb.append(s).append("\n");
-        }
-
-        return sb.toString();
     }
 
     public String getForm() {

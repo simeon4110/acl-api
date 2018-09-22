@@ -2,12 +2,13 @@ package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
+import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.persistence.repositories.PoemRepository;
+import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,14 +16,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.security.Principal;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Handles all CRUD for the poem repository.
@@ -30,7 +30,6 @@ import java.util.*;
  * @author Josh Harkema
  */
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
     private static final int NUMBER_OF_RANDOM_SONNETS = 2;
@@ -38,16 +37,14 @@ public class PoemService {
     private final SearchService searchService;
     private final MessageService messageService;
     private final AuthorService authorService;
-    private final EntityManager em;
 
     @Autowired
     public PoemService(PoemRepository poemRepository, SearchService searchService, MessageService messageService,
-                       AuthorService authorService, EntityManager em) {
+                       AuthorService authorService) {
         this.poemRepository = poemRepository;
         this.searchService = searchService;
         this.messageService = messageService;
         this.authorService = authorService;
-        this.em = em;
     }
 
     /**
@@ -56,7 +53,7 @@ public class PoemService {
      * @param text a string[] of the text.
      * @return an ArrayList of the string[].
      */
-    public static List<String> parseText(String text) {
+    private static List<String> parseText(String text) {
         List<String> strings = new ArrayList<>();
         String[] textArr = text.split("\\r?\\n");
 
@@ -108,6 +105,7 @@ public class PoemService {
         Author author = authorService.get(dto.getAuthorId());
         assert author != null;
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
+        LOGGER.debug(poem.toString());
         poemRepository.saveAndFlush(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -254,16 +252,12 @@ public class PoemService {
     /**
      * @return two random sonnets.
      */
-    public List<Poem> getTwoRandomSonnets() {
+    public List<PoemOutDto> getTwoRandomSonnets() {
         LOGGER.debug("Returning two random sonnets.");
-        Random random = new Random();
-        List<Poem> twoRandom = new ArrayList<>();
-        long count = poemRepository.countByForm("SONNET");
+        List<PoemOutDto> twoRandom = new ArrayList<>();
         while (twoRandom.size() < NUMBER_OF_RANDOM_SONNETS) {
-            Poem poem = getPoemOrNull(String.valueOf(random.nextInt((int) count)));
-            if (poem != null) {
-                twoRandom.add(poem);
-            }
+            PoemOutDto poem = poemRepository.getRandomPoem("SONNET").orElseThrow(NullPointerException::new);
+            twoRandom.add(poem);
         }
         return twoRandom;
     }
@@ -274,38 +268,8 @@ public class PoemService {
      *
      * @return all poems as a list.
      */
-    public List getAll() {
-        LOGGER.debug("Returning all poems.");
-
-        Query query = em.createNativeQuery("SELECT poem.id,\n" +
-                "\t   poem.title,\n" +
-                "\t   poem.category,\n" +
-                "\t   poem.description, \n" +
-                "\t   poem.publication_year,\n" +
-                "\t   poem.publication_stmt,\n" +
-                "\t   poem.source_desc,\n" +
-                "\t   poem.period,\n" +
-                "\t   poem.form,\n" +
-                "\t   poem.confirmed,\n" +
-                "\t   poem.confirmed_at, \n" +
-                "\t   poem.confirmed_by, \n" +
-                "\t   poem.pending_revision,\n" +
-                "\t   poem.author_id,\n" +
-                "\t   [author].[first_name],\n" +
-                "\t   [author].[last_name],\n" +
-                "\t   SUBSTRING(\n" +
-                "\t\t   (\n" +
-                "\t\t\t   SELECT ' ' + poem_text.text + '\n' AS [text()]\n" +
-                "\t\t\t   FROM [dbo].[poem_text] poem_text\n" +
-                "\t\t\t   WHERE poem_text.poem_id = poem.id\n" +
-                "\t\t\t   FOR XML PATH('')\n" +
-                "\t\t   ), 2, 1000) [poem_text]\n" +
-                "\t   FROM [dbo].[poem] poem\n" +
-                "\t   INNER JOIN [author] ON poem.author_id = [author].[id]", "PoemMap");
-        List resultList = query.getResultList();
-        LOGGER.debug(resultList);
-        return resultList;
-
+    public List<Poem> getAll() {
+        return poemRepository.getAllPoemsManual().orElseThrow(NullPointerException::new);
     }
 
     public Page<Poem> getAllPaged(Pageable pageable) {

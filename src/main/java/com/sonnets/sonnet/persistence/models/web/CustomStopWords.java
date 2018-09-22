@@ -19,8 +19,9 @@ public class CustomStopWords extends Auditable<String> implements Serializable {
     private Long id;
     @Column
     private String name;
-    @Column
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "custom_stop_words_words", joinColumns = @JoinColumn(name = "custom_stop_words_id"))
+    @Column(name = "words")
     private List<String> words;
 
     public CustomStopWords() {

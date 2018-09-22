@@ -102,7 +102,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Field(name = "period", store = Store.YES, analyze = Analyze.NO)
     @Column
     private String period;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private UserAnnotation userAnnotation;
 
     public Item() {

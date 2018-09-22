@@ -2,6 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
+import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.PoemService;
 import com.sonnets.sonnet.tools.ParseParam;
@@ -65,7 +66,7 @@ public class PoemController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Poem> getTwoRandomSonnets() {
+    public List<PoemOutDto> getTwoRandomSonnets() {
         return poemService.getTwoRandomSonnets();
     }
 

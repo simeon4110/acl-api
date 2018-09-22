@@ -18,8 +18,8 @@ import javax.persistence.PersistenceContext;
  *
  * @author Josh Harkema
  */
-@Transactional
 @Component
+@Transactional
 public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEvent> {
     private static final Logger LOGGER = Logger.getLogger(BuildSearchIndex.class);
     @PersistenceContext
