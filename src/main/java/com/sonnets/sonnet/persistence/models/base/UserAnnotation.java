@@ -21,6 +21,7 @@ public class UserAnnotation extends Auditable<String> implements Serializable {
     private Confirmation confirmation;
 
     public UserAnnotation() {
+        // Empty by design.
     }
 
     public Long getId() {

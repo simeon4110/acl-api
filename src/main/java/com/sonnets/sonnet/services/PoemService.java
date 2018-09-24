@@ -9,12 +9,14 @@ import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Handles all CRUD for the poem repository.
@@ -73,7 +76,7 @@ public class PoemService {
      */
     private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
         poem.setAuthor(author);
-        poem.setCategory("POETRY");
+        poem.setCategory("POEM");
         poem.setTitle(dto.getTitle());
         poem.setConfirmation(new Confirmation());
         poem.setPublicationYear(dto.getPublicationYear());
@@ -256,7 +259,7 @@ public class PoemService {
         LOGGER.debug("Returning two random sonnets.");
         List<PoemOutDto> twoRandom = new ArrayList<>();
         while (twoRandom.size() < NUMBER_OF_RANDOM_SONNETS) {
-            PoemOutDto poem = poemRepository.getRandomPoem("SONNET").orElseThrow(NullPointerException::new);
+            PoemOutDto poem = poemRepository.getRandomPoem("SONNET").orElseThrow(ItemNotFoundException::new);
             twoRandom.add(poem);
         }
         return twoRandom;
@@ -264,12 +267,13 @@ public class PoemService {
 
     /**
      * This query is for getting all poems via an SQL query rather than a slow ass db crawl. It places a \n
-     * after each line in a poem.
+     * after each line in a poem. Runs async.
      *
      * @return all poems as a list.
      */
     public List<Poem> getAll() {
-        return poemRepository.getAllPoemsManual().orElseThrow(NullPointerException::new);
+        CompletableFuture<Optional<List<Poem>>> future = poemRepository.getAllPoemsManual();
+        return future.join().orElseThrow(ItemNotFoundException::new);
     }
 
     public Page<Poem> getAllPaged(Pageable pageable) {
@@ -287,14 +291,16 @@ public class PoemService {
         return poemRepository.findAllByForm(form, pageable);
     }
 
-    public List<Poem> getAllByUser(Principal principal) {
+    @Async
+    public CompletableFuture<List> getAllByUser(Principal principal) {
         LOGGER.debug("Returning all sonnets added by user: " + principal.getName());
-        return poemRepository.findAllByCreatedBy(principal.getName());
+        return poemRepository.getPoemsByUser(principal.getName()).thenApply(poems ->
+                poems.orElseThrow(ItemNotFoundException::new));
     }
 
     public List<Poem> getAllByAuthorLastName(String lastName) {
         LOGGER.debug("Returning all poems by author: " + lastName);
-        return poemRepository.findAllByAuthor_LastName(lastName).orElseThrow(NullPointerException::new);
+        return poemRepository.findAllByAuthor_LastName(lastName).orElseThrow(ItemNotFoundException::new);
     }
 
     // User - delete poem.

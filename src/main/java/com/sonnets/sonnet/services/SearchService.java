@@ -13,7 +13,6 @@ import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
-import org.hibernate.Session;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
@@ -187,7 +186,7 @@ public class SearchService {
     // Public entry method.
     @Transactional(readOnly = true)
     public List search(SearchDto dto) {
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager.unwrap(Session.class));
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         Query query = parseQuery(dto);
         FullTextQuery fullTextQuery;
         if (dto.isSearchBooks() && dto.isSearchPoems()) {
@@ -209,7 +208,7 @@ public class SearchService {
     @Transactional(readOnly = true)
     public List searchAuthor(AuthorDto authorDto) {
         LOGGER.debug("Searching for author: " + authorDto.toString());
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager.unwrap(Session.class));
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
 
         // Add author first name.
@@ -234,7 +233,7 @@ public class SearchService {
     @Transactional(readOnly = true)
     public List searchBooks(BookDto bookDto) {
         LOGGER.debug("Searching for books: " + bookDto);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager.unwrap(Session.class));
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
         Author author = authorService.get(bookDto.getAuthorId());
         if (author != null) {
@@ -264,7 +263,7 @@ public class SearchService {
     @Transactional(readOnly = true)
     public void similarExistsPoem(PoemDto poemDto) {
         LOGGER.debug("Similar poem search: " + poemDto.toString());
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager.unwrap(Session.class));
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         BooleanQuery.Builder query = new BooleanQuery.Builder();
         FullTextQuery fullTextQuery;
 

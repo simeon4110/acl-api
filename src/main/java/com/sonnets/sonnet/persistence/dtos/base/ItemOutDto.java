@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -13,7 +14,8 @@ import java.util.Date;
  *
  * @author Josh Harkema
  */
-public class ItemOutDto {
+public class ItemOutDto implements Serializable {
+    private static final long serialVersionUID = -5792420470777872258L;
     private BigDecimal id;
     private BigDecimal itemId;
     private String itemType;

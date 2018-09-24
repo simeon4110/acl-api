@@ -10,6 +10,7 @@ import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.persistence.repositories.*;
+import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;

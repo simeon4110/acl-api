@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.models.poetry.Poem;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Interface to define stored procedure methods.
@@ -12,7 +13,9 @@ import java.util.Optional;
  * @author Josh Harkema
  */
 public interface PoemRepositoryStoredProcedures {
-    Optional<List<Poem>> getAllPoemsManual();
+    CompletableFuture<Optional<List<Poem>>> getAllPoemsManual();
 
     Optional<PoemOutDto> getRandomPoem(final String form);
+
+    CompletableFuture<Optional<List<Poem>>> getPoemsByUser(final String userName);
 }

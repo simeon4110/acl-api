@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Boilerplate email service.
@@ -54,11 +55,9 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendSimpleMessageUsingTemplate(String to, String subject, SimpleMailMessage template,
                                                String... templateArgs) {
-        if (template.getText() != null) {
-            @SuppressWarnings("ConfusingArgumentToVarargsMethod")
-            String text = String.format(template.getText(), templateArgs);
-            sendSimpleMessage(to, subject, text);
-        }
+        @SuppressWarnings({"ConfusingArgumentToVarargsMethod"})
+        String text = String.format(Objects.requireNonNull(template.getText()), templateArgs);
+        sendSimpleMessage(to, subject, text);
     }
 
     @Override

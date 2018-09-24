@@ -8,6 +8,7 @@ public class AnnotationDto {
     private String annotationBody;
 
     public AnnotationDto() {
+        // Empty by design.
     }
 
     public String getId() {

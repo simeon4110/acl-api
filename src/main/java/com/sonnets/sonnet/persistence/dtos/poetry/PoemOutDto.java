@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -13,7 +14,8 @@ import java.math.BigDecimal;
  * @author Josh Harkema
  */
 @JsonSerialize
-public class PoemOutDto {
+public class PoemOutDto implements Serializable {
+    private static final long serialVersionUID = -114794321718486288L;
     private BigDecimal id;
     private String title;
     private String category;

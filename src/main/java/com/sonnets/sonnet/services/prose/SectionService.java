@@ -12,12 +12,14 @@ import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.ToolsService;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.services.helpers.SaveObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -60,7 +62,7 @@ public class SectionService {
      * @return the Section with the new data copied.
      */
     private Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
-        section.setCategory("SECTION");
+        section.setCategory("SECT");
         section.setAuthor(author);
         section.setTitle(dto.getTitle());
         section.setDescription(dto.getDescription());
@@ -106,7 +108,7 @@ public class SectionService {
      * It takes 20 seconds to return all the data. This way takes 200ms.
      */
     public List getAll() {
-        return sectionRepository.getAllSections().orElseThrow(NullPointerException::new);
+        return sectionRepository.getAllSections().orElseThrow(ItemNotFoundException::new);
     }
 
     /**
@@ -123,7 +125,7 @@ public class SectionService {
 
     public List<Section> getAllByAuthorLastName(String lastName) {
         LOGGER.debug("Returning all sections by author: " + lastName);
-        return sectionRepository.findAllByAuthor_LastName(lastName).orElseThrow(NullPointerException::new);
+        return sectionRepository.findAllByAuthor_LastName(lastName).orElseThrow(ItemNotFoundException::new);
     }
 
     /**
@@ -275,5 +277,11 @@ public class SectionService {
         LOGGER.debug("Getting annotation: " + id);
         Section section = getObjectOrNull.section(id);
         return section.getAnnotation();
+    }
+
+    @Async
+    public CompletableFuture<List> getUserSections(Principal principal) {
+        return sectionRepository.getAllByUser(principal.getName()).thenApply(sections ->
+                sections.orElseThrow(ItemNotFoundException::new));
     }
 }

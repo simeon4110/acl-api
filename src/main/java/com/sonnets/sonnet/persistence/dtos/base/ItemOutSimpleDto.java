@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.dtos.base;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -7,7 +8,8 @@ import java.math.BigDecimal;
  *
  * @author Josh Harkema
  */
-public class ItemOutSimpleDto {
+public class ItemOutSimpleDto implements Serializable {
+    private static final long serialVersionUID = -7256193728535479636L;
     private BigDecimal id;
     private BigDecimal itemId;
     private String firstName;

@@ -32,6 +32,16 @@ import java.util.Objects;
                 resultSetMappings = {
                         "SectionMap"
                 }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getSectionsByUser",
+                procedureName = "get_user_sections",
+                parameters = {
+                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
+                },
+                resultClasses = {
+                        Section.class
+                }
         )
 })
 @SqlResultSetMapping(
@@ -84,7 +94,7 @@ public class Section extends Item implements Serializable {
     @Analyzer(definition = "textAnalyzer")
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String text;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @JsonIgnore

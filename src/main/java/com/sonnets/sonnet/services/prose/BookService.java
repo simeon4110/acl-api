@@ -3,10 +3,12 @@ package com.sonnets.sonnet.services.prose;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.prose.Book;
-import com.sonnets.sonnet.persistence.repositories.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,22 @@ public class BookService {
     public Book get(String id) {
         LOGGER.debug("Getting book: " + id);
         return getObjectOrNull.book(id);
+    }
+
+    /**
+     * Get a book's title on the quick.
+     *
+     * @param id the db id of the book to get the title of.
+     * @return the book's title.
+     */
+    public String getTitle(String id) {
+        String title = bookRepository.getBookTitle(Long.parseLong(id)).orElseThrow(NullPointerException::new);
+        try {
+            return new JSONObject().put("title", title).toString();
+        } catch (JSONException e) {
+            LOGGER.error(e);
+            return null;
+        }
     }
 
     /**

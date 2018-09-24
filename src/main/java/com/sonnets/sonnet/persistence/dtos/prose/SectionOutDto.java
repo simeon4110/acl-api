@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -13,7 +14,8 @@ import java.math.BigDecimal;
  * @author Josh Harkema
  */
 @JsonSerialize
-public class SectionOutDto {
+public class SectionOutDto implements Serializable {
+    private static final long serialVersionUID = -3175081379710406854L;
     private BigDecimal id;
     private String category;
     private String description;

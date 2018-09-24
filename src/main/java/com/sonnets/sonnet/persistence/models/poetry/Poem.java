@@ -32,10 +32,20 @@ import java.util.Objects;
                 name = "getRandomPoem",
                 procedureName = "get_random_poem",
                 parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "form")
+                        @StoredProcedureParameter(name = "form", mode = ParameterMode.IN, type = String.class)
                 },
                 resultSetMappings = {
                         "PoemMap"
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getPoemsByUser",
+                procedureName = "get_user_poems",
+                parameters = {
+                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
+                },
+                resultClasses = {
+                        Poem.class
                 }
         )
 })
@@ -79,7 +89,7 @@ public class Poem extends Item implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @IndexedEmbedded
     private List<String> text;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @JsonIgnore

@@ -27,36 +27,20 @@ import java.util.Set;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = "countCorporaItems",
-                procedureName = "count_items",
-                parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId"),
-                        @StoredProcedureParameter(mode = ParameterMode.INOUT, type = Integer.class, name = "itemCount")
-                }
-        ),
-        @NamedStoredProcedureQuery(
                 name = "addCorporaItem",
-                procedureName = "add_corpora_items",
+                procedureName = "add_corpora_item",
                 parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId"),
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "itemId"),
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "itemType")
+                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = "itemId", mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = "itemType", mode = ParameterMode.IN, type = String.class)
                 }
 
-        ),
-        @NamedStoredProcedureQuery(
-                name = "updateCorporaItemCount",
-                procedureName = "update_corpora_count",
-                parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId"),
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "count")
-                }
         ),
         @NamedStoredProcedureQuery(
                 name = "getCorpora",
                 procedureName = "get_corpora",
                 parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
                 },
                 resultSetMappings = {
                         "CorporaMap"
@@ -66,7 +50,7 @@ import java.util.Set;
                 name = "getCorporaItems",
                 procedureName = "get_corpora_items",
                 parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
                 },
                 resultSetMappings = {
                         "itemMap"
@@ -76,7 +60,7 @@ import java.util.Set;
                 name = "getCorporaItemsSimple",
                 procedureName = "get_corpora_items_simple",
                 parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
                 },
                 resultSetMappings = {
                         "itemMapSimple"
@@ -86,16 +70,16 @@ import java.util.Set;
                 name = "getCorporaUser",
                 procedureName = "get_corpora_user",
                 parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "createdBy")
+                        @StoredProcedureParameter(name = "createdBy", mode = ParameterMode.IN, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
                 name = "deleteCorporaItem",
                 procedureName = "delete_corpora_item",
                 parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = String.class, name = "itemType"),
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "itemId"),
-                        @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class, name = "corporaId")
+                        @StoredProcedureParameter(name = "itemType", mode = ParameterMode.IN, type = String.class),
+                        @StoredProcedureParameter(name = "itemId", mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
                 }
         )
 })

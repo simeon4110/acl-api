@@ -55,6 +55,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.emailService = emailService;
     }
 
+
     private static String generatePassword() {
         StringBuilder sb = new StringBuilder(PASSWORD_LENGTH);
         for (int i = 0; i < PASSWORD_LENGTH; i++) {

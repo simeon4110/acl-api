@@ -8,6 +8,7 @@ import cc.mallet.pipe.iterator.StringArrayIterator;
 import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.topics.TopicInferencer;
 import cc.mallet.types.*;
+import com.sonnets.sonnet.services.exceptions.TopicModelException;
 
 import java.io.IOException;
 import java.util.*;
@@ -70,7 +71,7 @@ public class MalletTools {
         try {
             model.estimate();
         } catch (IOException e) {
-            throw new RuntimeException("The topic model broke.");
+            throw new TopicModelException(e);
         }
 
         // Get the total number of words(and how many occurrences of each).

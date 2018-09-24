@@ -8,6 +8,9 @@ import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.services.prose.SectionService;
 import com.sonnets.sonnet.tools.ParseParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,7 @@ public class SectionController {
      * @param id the id of the section to get.
      * @return section by db id.
      */
+    @Cacheable(value = "section-single", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Section get(@PathVariable("id") String id) {
@@ -46,6 +50,7 @@ public class SectionController {
     /**
      * @return All sections in the db.
      */
+    @Cacheable(value = "section-all")
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get_all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List getAll() {
@@ -56,6 +61,7 @@ public class SectionController {
      * @param bookId the id of the book.
      * @return all sections in a book by the book's db id.
      */
+    @Cacheable(value = "section-book", key = "#bookId")
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get/from_book/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllFromBook(@PathVariable("id") String bookId) {
@@ -76,6 +82,7 @@ public class SectionController {
     /**
      * Add a section to the db.
      */
+    @CacheEvict(value = "section-all")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -86,6 +93,10 @@ public class SectionController {
     /**
      * Modify a section in the db (ADMIN ONLY).
      */
+    @Caching(evict = {
+            @CacheEvict(value = "section-all"),
+            @CacheEvict(value = "section-single", key = "#dto.id")
+    })
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/secure/section/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -96,6 +107,10 @@ public class SectionController {
     /**
      * Modify a section in the db (OWNER ONLY).
      */
+    @Caching(evict = {
+            @CacheEvict(value = "section-all"),
+            @CacheEvict(value = "section-single", key = "#dto.id")
+    })
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/section/user_modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -108,6 +123,10 @@ public class SectionController {
      *
      * @param id the id of the section to delete.
      */
+    @Caching(evict = {
+            @CacheEvict(value = "section-all"),
+            @CacheEvict(value = "section-single", key = "#id")
+    })
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/section/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -120,6 +139,10 @@ public class SectionController {
      *
      * @param id the id of the section to confirm.
      */
+    @Caching(evict = {
+            @CacheEvict(value = "section-all"),
+            @CacheEvict(value = "section-single", key = "#id")
+    })
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/confirm/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -130,6 +153,10 @@ public class SectionController {
     /**
      * Reject a section.
      */
+    @Caching(evict = {
+            @CacheEvict(value = "section-all"),
+            @CacheEvict(value = "section-single", key = "#dto.id")
+    })
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/reject", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -144,6 +171,7 @@ public class SectionController {
      * @param id  the id of the section.
      * @return 200 if good.
      */
+    @CacheEvict(value = "section-annotation", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/annotation/set/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -157,6 +185,7 @@ public class SectionController {
      * @param id the id of the section.
      * @return an annotation NullPointer is thrown if it does not exist.
      */
+    @Cacheable(value = "section-annotation", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/section/annotation/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

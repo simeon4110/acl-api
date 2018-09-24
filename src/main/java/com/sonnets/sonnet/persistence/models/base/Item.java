@@ -3,6 +3,8 @@ package com.sonnets.sonnet.persistence.models.base;
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
+import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -16,6 +18,28 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "getUserPoems",
+                procedureName = "get_user_poems",
+                parameters = {
+                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
+                },
+                resultClasses = {
+                        Poem.class
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getUserSections",
+                procedureName = "get_user_sections",
+                parameters = {
+                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
+                },
+                resultClasses = {
+                        Section.class
+                }
+        )
+})
 @SqlResultSetMappings({
         @SqlResultSetMapping(
                 name = "itemMap",
@@ -102,7 +126,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Field(name = "period", store = Store.YES, analyze = Analyze.NO)
     @Column
     private String period;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserAnnotation userAnnotation;
 
     public Item() {
@@ -228,6 +252,4 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", userAnnotation=" + userAnnotation +
                 "} " + super.toString();
     }
-
-
 }

@@ -3,15 +3,18 @@ package com.sonnets.sonnet.persistence.repositories.corpora;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Concrete class for handling stored procedures.
@@ -19,27 +22,15 @@ import java.util.Set;
  * @author Josh Harkema
  */
 @Repository
+@Transactional
 public class CorporaRepositoryImpl implements CorporaRepositoryStoredProcedures {
+    @Resource
     @PersistenceContext
     EntityManager em;
 
     @Override
-    public int countCorporaItems(Long corporaId) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("countCorporaItems");
-        query.setParameter("corporaId", corporaId);
-        query.execute();
-        return (int) query.getOutputParameterValue("itemCount");
-    }
-
-    @Override
-    public void setCorporaItemsCount(Long corporaId, int count) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("updateCorporaItemCount");
-        query.setParameter("corporaId", corporaId);
-        query.setParameter("count", count);
-        query.execute();
-    }
-
-    @Override
+    @Async
+    @Transactional
     public void addCorporaItem(Long corporaId, Long itemId, String itemType) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("addCorporaItem");
         query.setParameter("corporaId", corporaId);
@@ -49,6 +40,8 @@ public class CorporaRepositoryImpl implements CorporaRepositoryStoredProcedures 
     }
 
     @Override
+    @Async
+    @Transactional
     public void removeCorporaItem(Long corporaId, Long itemId, String itemType) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("deleteCorporaItem");
         query.setParameter("corporaId", corporaId);
@@ -58,6 +51,7 @@ public class CorporaRepositoryImpl implements CorporaRepositoryStoredProcedures 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Corpora> getCorpora(Long corporaId) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getCorpora");
         query.setParameter("corporaId", corporaId);
@@ -65,22 +59,27 @@ public class CorporaRepositoryImpl implements CorporaRepositoryStoredProcedures 
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Async
     @SuppressWarnings("unchecked")
-    public Optional<Set<ItemOutDto>> getCorporaItems(Long corporaId) {
+    public CompletableFuture<Optional<HashSet<ItemOutDto>>> getCorporaItems(Long corporaId) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getCorporaItems");
         query.setParameter("corporaId", corporaId);
-        return Optional.of(new HashSet<ItemOutDto>(query.getResultList()));
+        return CompletableFuture.completedFuture(Optional.of(new HashSet<ItemOutDto>(query.getResultList())));
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Async
     @SuppressWarnings("unchecked")
-    public Optional<Set<ItemOutSimpleDto>> getCorporaItemsSimple(Long corporaId) {
+    public CompletableFuture<Optional<HashSet<ItemOutSimpleDto>>> getCorporaItemsSimple(Long corporaId) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getCorporaItemsSimple");
         query.setParameter("corporaId", corporaId);
-        return Optional.of(new HashSet<ItemOutSimpleDto>(query.getResultList()));
+        return CompletableFuture.completedFuture(Optional.of(new HashSet<ItemOutSimpleDto>(query.getResultList())));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<List> getCorporaUser(String createdBy) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getCorporaUser");
         query.setParameter("createdBy", createdBy);

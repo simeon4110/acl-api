@@ -3,6 +3,7 @@ package com.sonnets.sonnet.services;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
 import com.sonnets.sonnet.wordtools.MalletTools;
@@ -33,6 +34,8 @@ public class ToolsService {
     private final GetObjectOrThrowNullPointer getObjectOrThrowNullPointer;
     private final CorporaService corporaService;
 
+    private static final int REQUEST_TIMEOUT = 60;
+
     @Autowired
     public ToolsService(GetObjectOrThrowNullPointer getObjectOrThrowNullPointer, CorporaService corporaService) {
         this.getObjectOrThrowNullPointer = getObjectOrThrowNullPointer;
@@ -52,9 +55,11 @@ public class ToolsService {
                 case "POEM":
                     sb.append(item.getPoemText());
                     break;
-                case "SECTION":
+                case "SECT":
                     sb.append(item.getText());
                     break;
+                default:
+                    throw new ItemNotFoundException(String.format("Item type %s does not exist.", item.getCategory()));
             }
         };
         items.forEach(itemConsumer);
@@ -85,7 +90,7 @@ public class ToolsService {
             customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        corporaService.getCorporaItems(corporaId).thenAccept(s -> dto.setText(parseCorporaItems(s)));
+        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
         return pipeline.getListOfLemmatizedWords(dto);
     }
 
@@ -119,7 +124,7 @@ public class ToolsService {
     public CompletableFuture<Map<String, Integer>> frequencyDistribution(TextDto textDto) {
         LOGGER.debug("Running frequency distribution (raw text.)");
         CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(textDto);
-        return strings.thenApplyAsync(freqDist::getFrequency);
+        return strings.thenApply(freqDist::getFrequency);
     }
 
     /**
@@ -136,9 +141,9 @@ public class ToolsService {
             customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        corporaService.getCorporaItems(corporaId).thenAccept(s -> dto.setText(parseCorporaItems(s)));
+        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
         CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(dto);
-        return strings.thenApplyAsync(freqDist::getFrequency);
+        return strings.thenApply(freqDist::getFrequency);
     }
 
     /**
@@ -152,7 +157,7 @@ public class ToolsService {
     public CompletableFuture<Map<Integer, Map<Double, String>>> runMalletTopicModel(TextDto textDto) {
         LOGGER.debug("Running topic model (raw text).");
         return malletTools.topicModel(textDto.getText(), textDto.getNumberOfTopics())
-                .orTimeout(60, TimeUnit.SECONDS);
+                .orTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
     }
 
     /**
@@ -166,8 +171,7 @@ public class ToolsService {
     @Async
     public CompletableFuture runMalletTopicModel(String corporaId, int numberOfTopics) {
         LOGGER.debug("Running topic model (corpora): " + corporaId);
-        CompletableFuture<Set<ItemOutDto>> items = corporaService.getCorporaItems(corporaId);
-        return items.thenApply(this::parseCorporaItems)
-                .thenApplyAsync(s -> malletTools.topicModel(s, numberOfTopics)).orTimeout(60, TimeUnit.SECONDS);
+        return malletTools.topicModel(parseCorporaItems(corporaService.getCorporaItems(corporaId)), numberOfTopics)
+                .orTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
     }
 }

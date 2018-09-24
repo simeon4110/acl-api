@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.base.Item;
@@ -16,6 +17,14 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
+@NamedStoredProcedureQuery(
+        name = "getBookTitle",
+        procedureName = "get_book_title",
+        parameters = {
+                @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
+                @StoredProcedureParameter(name = "title", mode = ParameterMode.INOUT, type = String.class)
+        }
+)
 @Indexed
 @Entity
 @DiscriminatorValue("BOOK")
@@ -26,8 +35,9 @@ public class Book extends Item implements Serializable {
     private String type;
     @Field(name = "book_section", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Section> sections;
+    @JsonIgnore
     @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterBridge.class)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)

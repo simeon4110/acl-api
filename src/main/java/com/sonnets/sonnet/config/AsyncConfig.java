@@ -16,9 +16,9 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
-    private static final int CORE_POOL_SIZE = 20;
-    private static final int MAX_POOL_SIZE = 40;
-    private static final int QUEUE_CAPACITY = 500;
+    private static final int CORE_POOL_SIZE = 50;
+    private static final int MAX_POOL_SIZE = 100;
+    private static final int QUEUE_CAPACITY = 1000;
 
     @Override
     public Executor getAsyncExecutor() {

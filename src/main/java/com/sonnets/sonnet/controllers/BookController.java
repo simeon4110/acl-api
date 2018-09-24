@@ -42,6 +42,17 @@ public class BookController {
     }
 
     /**
+     * Returns the title of a book from its ide.
+     *
+     * @param id the db id of the book to get the title for.
+     * @return the book's title.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/book/get_title/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getTitle(@PathVariable("id") String id) {
+        return bookService.getTitle(id);
+    }
+    /**
      * @return a list of all books in the db.
      */
     @CrossOrigin(origins = "${allowed-origin}")
