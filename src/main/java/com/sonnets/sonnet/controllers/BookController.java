@@ -62,6 +62,15 @@ public class BookController {
     }
 
     /**
+     * @return a JSON formatted string of just the basic details of all books in the db.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/book/get_all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllSimple() {
+        return bookService.getBooksSimple();
+    }
+
+    /**
      * Add a book.
      */
     @CrossOrigin(origins = "${allowed-origin}")

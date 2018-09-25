@@ -1,16 +1,12 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -20,65 +16,14 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = "getUserPoems",
-                procedureName = "get_user_poems",
+                name = "getUserItems",
+                procedureName = "get_user_items",
                 parameters = {
                         @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
-                },
-                resultClasses = {
-                        Poem.class
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = "getUserSections",
-                procedureName = "get_user_sections",
-                parameters = {
-                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
-                },
-                resultClasses = {
-                        Section.class
                 }
         )
 })
 @SqlResultSetMappings({
-        @SqlResultSetMapping(
-                name = "itemMap",
-                classes = @ConstructorResult(
-                        targetClass = ItemOutDto.class,
-                        columns = {
-                                @ColumnResult(name = "corpora_id", type = BigDecimal.class),
-                                @ColumnResult(name = "item_id", type = BigDecimal.class),
-                                @ColumnResult(name = "item_type"),
-                                @ColumnResult(name = "created_by"),
-                                @ColumnResult(name = "created_date", type = Date.class),
-                                @ColumnResult(name = "last_modified_by"),
-                                @ColumnResult(name = "last_modified_date", type = Date.class),
-                                @ColumnResult(name = "category"),
-                                @ColumnResult(name = "description"),
-                                @ColumnResult(name = "period"),
-                                @ColumnResult(name = "publication_stmt"),
-                                @ColumnResult(name = "publication_year", type = int.class),
-                                @ColumnResult(name = "source_desc"),
-                                @ColumnResult(name = "title"),
-                                @ColumnResult(name = "confirmed", type = boolean.class),
-                                @ColumnResult(name = "confirmed_at", type = Date.class),
-                                @ColumnResult(name = "confirmed_by"),
-                                @ColumnResult(name = "pending_revision", type = boolean.class),
-                                @ColumnResult(name = "parent_id", type = BigDecimal.class),
-                                @ColumnResult(name = "book_tit"),
-                                @ColumnResult(name = "text"),
-                                @ColumnResult(name = "poem_text"),
-                                @ColumnResult(name = "first_name"),
-                                @ColumnResult(name = "last_name"),
-                                @ColumnResult(name = "annotation_body"),
-                                @ColumnResult(name = "annotation_created_by"),
-                                @ColumnResult(name = "annotation_created_date", type = Date.class),
-                                @ColumnResult(name = "annotation_last_modified_by"),
-                                @ColumnResult(name = "annotation_last_modified_date", type = Date.class)
-
-                        }
-                )
-        ),
         @SqlResultSetMapping(
                 name = "itemMapSimple",
                 classes = @ConstructorResult(

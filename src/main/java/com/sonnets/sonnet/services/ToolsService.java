@@ -10,6 +10,8 @@ import com.sonnets.sonnet.wordtools.MalletTools;
 import com.sonnets.sonnet.wordtools.NLPTools;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +66,31 @@ public class ToolsService {
         };
         items.forEach(itemConsumer);
         return sb.toString();
+    }
+
+    private String parseCorporaItems(final String items) {
+        StringBuilder result = new StringBuilder();
+        JSONArray array = null;
+        try {
+            array = new JSONArray(items);
+            for (int i = 0; i < array.length(); i++) {
+                switch (array.getJSONObject(i).getString("item_type")) {
+                    case "POEM":
+                        result.append(array.getJSONObject(i).getString("poem_text"));
+                        result.append(" ");
+                        break;
+                    case "SECT":
+                        result.append(array.getJSONObject(i).getString("text"));
+                        result.append(" ");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (JSONException e) {
+            LOGGER.error(e);
+        }
+        return result.toString();
     }
 
     /**

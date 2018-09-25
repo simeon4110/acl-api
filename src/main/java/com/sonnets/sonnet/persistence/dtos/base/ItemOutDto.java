@@ -1,12 +1,9 @@
 package com.sonnets.sonnet.persistence.dtos.base;
 
-import com.sonnets.sonnet.persistence.models.base.Annotation;
-import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.persistence.models.base.Confirmation;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This monstrosity is necessary to deal with the dynamic output of the corpora_items table. Do not judge me
@@ -16,7 +13,7 @@ import java.util.Date;
  */
 public class ItemOutDto implements Serializable {
     private static final long serialVersionUID = -5792420470777872258L;
-    private BigDecimal id;
+    private BigDecimal corporaId;
     private BigDecimal itemId;
     private String itemType;
     private String createdBy;
@@ -30,65 +27,28 @@ public class ItemOutDto implements Serializable {
     private int publicationYear;
     private String sourceDesc;
     private String title;
-    private Annotation annotation;
-    private Confirmation confirmation;
-    private BigDecimal parentId;
+    private boolean confirmed;
+    private Date confirmedAt;
+    private String confirmedBy;
+    private boolean pendingRevision;
+    private String parentId;
     private String bookType;
-    private String bookTitle;
     private String text;
+    private String firstName;
+    private String lastName;
+    private String bookTitle;
     private String poemText;
-    private Author author;
 
-    public ItemOutDto(final BigDecimal id, final BigDecimal itemId, final String itemType, final String createdBy,
-                      final Date createdDate, final String lastModifiedBy, final Date lastModifiedDate,
-                      final String category, final String description, final String period,
-                      final String publicationStmt, final int publicationYear, final String sourceDesc,
-                      final String title, final boolean confirmed, final Date confirmedAt,
-                      final String confirmedBy, final boolean pendingRevision, final BigDecimal parentId,
-                      final String bookTitle, final String text, final String poemText, final String firstName,
-                      final String lastName, final String annotationBody, final String annotationCreatedBy,
-                      final Date annotationCreatedDate, final String annotationLastModifiedBy,
-                      final Date annotationLastModifiedDate) {
-        this.id = id;
-        this.itemId = itemId;
-        this.itemType = itemType;
-        this.createdBy = createdBy;
-        this.createdDate = createdDate;
-        this.lastModifiedBy = lastModifiedBy;
-        this.lastModifiedDate = lastModifiedDate;
-        this.category = category;
-        this.description = description;
-        this.period = period;
-        this.publicationStmt = publicationStmt;
-        this.publicationYear = publicationYear;
-        this.sourceDesc = sourceDesc;
-        this.title = title;
-        this.confirmation = new Confirmation();
-        this.confirmation.setConfirmed(confirmed);
-        this.confirmation.setConfirmedAt(confirmedAt);
-        this.confirmation.setConfirmedBy(confirmedBy);
-        this.confirmation.setPendingRevision(pendingRevision);
-        this.parentId = parentId;
-        this.bookTitle = bookTitle;
-        this.text = text;
-        this.poemText = poemText;
-        this.author = new Author();
-        this.author.setFirstName(firstName);
-        this.author.setLastName(lastName);
-        this.annotation = new Annotation();
-        this.annotation.setAnnotationBody(annotationBody);
-        this.annotation.setCreatedBy(annotationCreatedBy);
-        this.annotation.setCreatedDate(annotationCreatedDate);
-        this.annotation.setLastModifiedBy(annotationLastModifiedBy);
-        this.annotation.setLastModifiedDate(annotationLastModifiedDate);
+    public ItemOutDto() {
+
     }
 
-    public BigDecimal getId() {
-        return id;
+    public BigDecimal getCorporaId() {
+        return corporaId;
     }
 
-    public void setId(BigDecimal id) {
-        this.id = id;
+    public void setCorporaId(BigDecimal corporaId) {
+        this.corporaId = corporaId;
     }
 
     public BigDecimal getItemId() {
@@ -195,27 +155,43 @@ public class ItemOutDto implements Serializable {
         this.title = title;
     }
 
-    public Annotation getAnnotation() {
-        return annotation;
+    public boolean isConfirmed() {
+        return confirmed;
     }
 
-    public void setAnnotation(Annotation annotation) {
-        this.annotation = annotation;
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
     }
 
-    public Confirmation getConfirmation() {
-        return confirmation;
+    public Date getConfirmedAt() {
+        return confirmedAt;
     }
 
-    public void setConfirmation(Confirmation confirmation) {
-        this.confirmation = confirmation;
+    public void setConfirmedAt(Date confirmedAt) {
+        this.confirmedAt = confirmedAt;
     }
 
-    public BigDecimal getParentId() {
+    public String getConfirmedBy() {
+        return confirmedBy;
+    }
+
+    public void setConfirmedBy(String confirmedBy) {
+        this.confirmedBy = confirmedBy;
+    }
+
+    public boolean isPendingRevision() {
+        return pendingRevision;
+    }
+
+    public void setPendingRevision(boolean pendingRevision) {
+        this.pendingRevision = pendingRevision;
+    }
+
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(BigDecimal parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
@@ -227,20 +203,36 @@ public class ItemOutDto implements Serializable {
         this.bookType = bookType;
     }
 
-    public String getBookTitle() {
-        return bookTitle;
-    }
-
-    public void setBookTitle(String bookTitle) {
-        this.bookTitle = bookTitle;
-    }
-
     public String getText() {
         return text;
     }
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
     }
 
     public String getPoemText() {
@@ -251,18 +243,50 @@ public class ItemOutDto implements Serializable {
         this.poemText = poemText;
     }
 
-    public Author getAuthor() {
-        return author;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ItemOutDto dto = (ItemOutDto) o;
+        return publicationYear == dto.publicationYear &&
+                confirmed == dto.confirmed &&
+                pendingRevision == dto.pendingRevision &&
+                Objects.equals(corporaId, dto.corporaId) &&
+                Objects.equals(itemId, dto.itemId) &&
+                Objects.equals(itemType, dto.itemType) &&
+                Objects.equals(createdBy, dto.createdBy) &&
+                Objects.equals(createdDate, dto.createdDate) &&
+                Objects.equals(lastModifiedBy, dto.lastModifiedBy) &&
+                Objects.equals(lastModifiedDate, dto.lastModifiedDate) &&
+                Objects.equals(category, dto.category) &&
+                Objects.equals(description, dto.description) &&
+                Objects.equals(period, dto.period) &&
+                Objects.equals(publicationStmt, dto.publicationStmt) &&
+                Objects.equals(sourceDesc, dto.sourceDesc) &&
+                Objects.equals(title, dto.title) &&
+                Objects.equals(confirmedAt, dto.confirmedAt) &&
+                Objects.equals(confirmedBy, dto.confirmedBy) &&
+                Objects.equals(parentId, dto.parentId) &&
+                Objects.equals(bookType, dto.bookType) &&
+                Objects.equals(text, dto.text) &&
+                Objects.equals(firstName, dto.firstName) &&
+                Objects.equals(lastName, dto.lastName) &&
+                Objects.equals(bookTitle, dto.bookTitle) &&
+                Objects.equals(poemText, dto.poemText);
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    @Override
+    public int hashCode() {
+        return Objects.hash(corporaId, itemId, itemType, createdBy, createdDate, lastModifiedBy, lastModifiedDate,
+                category, description, period, publicationStmt, publicationYear, sourceDesc, title, confirmed,
+                confirmedAt, confirmedBy, pendingRevision, parentId, bookType, text, firstName, lastName, bookTitle,
+                poemText);
     }
 
     @Override
     public String toString() {
         return "ItemOutDto{" +
-                "id=" + id +
+                "corporaId=" + corporaId +
                 ", itemId=" + itemId +
                 ", itemType='" + itemType + '\'' +
                 ", createdBy='" + createdBy + '\'' +
@@ -276,14 +300,17 @@ public class ItemOutDto implements Serializable {
                 ", publicationYear=" + publicationYear +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", title='" + title + '\'' +
-                ", annotation=" + annotation +
-                ", confirmation=" + confirmation +
-                ", parentId=" + parentId +
+                ", confirmed=" + confirmed +
+                ", confirmedAt=" + confirmedAt +
+                ", confirmedBy='" + confirmedBy + '\'' +
+                ", pendingRevision=" + pendingRevision +
+                ", parentId='" + parentId + '\'' +
                 ", bookType='" + bookType + '\'' +
-                ", bookTitle='" + bookTitle + '\'' +
                 ", text='" + text + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", bookTitle='" + bookTitle + '\'' +
                 ", poemText='" + poemText + '\'' +
-                ", author=" + author +
                 '}';
     }
 }

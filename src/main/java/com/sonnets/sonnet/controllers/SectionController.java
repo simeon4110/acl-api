@@ -68,6 +68,13 @@ public class SectionController {
         return sectionService.getAllFromBook(bookId);
     }
 
+    @Cacheable(value = "section-book-simple", key = "#bookId")
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/section/get/from_book_simple/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllFromBookSimple(@PathVariable("id") String bookId) {
+        return sectionService.getAllFromBookSimple(bookId);
+    }
+
     /**
      * @param lastName the last name of the author to look for.
      * @return a list of all the sections matching the author.

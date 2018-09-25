@@ -42,6 +42,14 @@ import java.util.Objects;
                 resultClasses = {
                         Section.class
                 }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getBookSectionsSimple",
+                procedureName = "get_book_sections_simple",
+                parameters = {
+                        @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
+                }
         )
 })
 @SqlResultSetMapping(

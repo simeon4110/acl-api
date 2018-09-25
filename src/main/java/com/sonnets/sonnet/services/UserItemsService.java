@@ -1,14 +1,10 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.services.prose.SectionService;
+import com.sonnets.sonnet.persistence.repositories.items.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Simple service for merging item types added by a user.
@@ -17,26 +13,21 @@ import java.util.concurrent.CompletableFuture;
  */
 @Service
 public class UserItemsService {
-    private final SectionService sectionService;
-    private final PoemService poemService;
+    private final ItemRepository itemRepository;
 
     @Autowired
-    public UserItemsService(SectionService sectionService, PoemService poemService) {
-        this.sectionService = sectionService;
-        this.poemService = poemService;
+    public UserItemsService(ItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
     }
 
-    @Async
-    @SuppressWarnings("unchecked")
-    public CompletableFuture<List> getUserItems(Principal principal) {
-        List results = new ArrayList();
-        CompletableFuture<List> sections = sectionService.getUserSections(principal);
-        CompletableFuture<List> poems = poemService.getAllByUser(principal);
-        CompletableFuture<Void> allFutures = CompletableFuture.allOf(sections, poems);
-        return allFutures.thenApply(future -> {
-            results.addAll(sections.join());
-            results.addAll(poems.join());
-            return results;
-        });
+    /**
+     * Returns the item id, type, title, author.first_name AS first_name, and author.last_name AS last_name
+     * of every section and poem the user has added to the db.
+     *
+     * @param principal the principal of the user making the request.
+     * @return a JSON formatted string.
+     */
+    public String getUserItems(Principal principal) {
+        return itemRepository.getItemsByUser(principal.getName());
     }
 }

@@ -44,4 +44,12 @@ public class SectionRepositoryBaseImpl implements SectionRepositoryStoredProcedu
                 Optional.of((List<Section>) query.getResultList())
         );
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<String> getBookSectionsSimple(Long bookId) {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getBookSectionsSimple");
+        query.setParameter("bookId", bookId);
+        return Optional.of((String) query.getOutputParameterValue("output"));
+    }
 }

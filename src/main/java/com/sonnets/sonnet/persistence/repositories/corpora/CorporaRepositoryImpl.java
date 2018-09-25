@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.repositories.corpora;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import org.springframework.scheduling.annotation.Async;
@@ -60,12 +59,14 @@ public class CorporaRepositoryImpl implements CorporaRepositoryStoredProcedures 
 
     @Override
     @Transactional(readOnly = true)
-    @Async
     @SuppressWarnings("unchecked")
-    public CompletableFuture<Optional<HashSet<ItemOutDto>>> getCorporaItems(Long corporaId) {
+    public String getCorporaItems(Long corporaId) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getCorporaItems");
         query.setParameter("corporaId", corporaId);
-        return CompletableFuture.completedFuture(Optional.of(new HashSet<ItemOutDto>(query.getResultList())));
+        CompletableFuture.supplyAsync(query::execute);
+        StringBuilder sb = new StringBuilder();
+        sb.append(query.getResultList());
+        return sb.toString();
     }
 
     @Override

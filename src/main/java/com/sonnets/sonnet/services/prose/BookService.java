@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,16 @@ public class BookService {
     public List<Book> getAll() {
         LOGGER.debug("Returning all books.");
         return bookRepository.findAll();
+    }
+
+    /**
+     * Returns the title, author.first_name AS first_name, and author.last_name AS last_name as a JSON string.
+     *
+     * @return a JSON formatted string.
+     */
+    public String getBooksSimple() {
+        LOGGER.debug("Returning all books as JSON.");
+        return bookRepository.getBooksSimple().orElseThrow(ItemNotFoundException::new);
     }
 
     /**

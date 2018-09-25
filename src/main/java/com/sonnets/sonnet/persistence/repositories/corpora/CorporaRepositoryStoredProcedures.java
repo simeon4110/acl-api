@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.repositories.corpora;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 
@@ -22,7 +21,7 @@ public interface CorporaRepositoryStoredProcedures {
 
     Optional<Corpora> getCorpora(final Long corporaId);
 
-    CompletableFuture<Optional<HashSet<ItemOutDto>>> getCorporaItems(final Long corporaId);
+    String getCorporaItems(final Long corporaId);
 
     CompletableFuture<Optional<HashSet<ItemOutSimpleDto>>> getCorporaItemsSimple(final Long corporaId);
 

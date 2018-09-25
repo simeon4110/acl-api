@@ -9,4 +9,6 @@ import java.util.Optional;
  */
 public interface BookRepositoryStoredProcedures {
     Optional<String> getBookTitle(final Long bookId);
+
+    Optional<String> getBooksSimple();
 }

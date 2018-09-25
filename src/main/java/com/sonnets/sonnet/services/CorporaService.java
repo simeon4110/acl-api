@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
@@ -157,10 +156,9 @@ public class CorporaService {
      * @param id the db id of the corpora to get.
      * @return a set of all the items in the corpora.
      */
-    public Set<ItemOutDto> getCorporaItems(String id) {
+    public String getCorporaItems(String id) {
         LOGGER.debug("Getting corpora items: " + id);
-        CompletableFuture<Optional<HashSet<ItemOutDto>>> future = corporaRepository.getCorporaItems(Long.valueOf(id));
-        return future.join().orElseThrow(ItemNotFoundException::new);
+        return corporaRepository.getCorporaItems(Long.parseLong(id));
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
@@ -69,7 +68,7 @@ public class CorporaController {
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get_items_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<ItemOutDto> getItemsById(@PathVariable("id") String id) {
+    public String getItemsById(@PathVariable("id") String id) {
         return corporaService.getCorporaItems(id);
     }
 

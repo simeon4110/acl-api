@@ -129,6 +129,17 @@ public class SectionService {
     }
 
     /**
+     * Returns the section title and id as a JSON string.
+     *
+     * @param bookId the book to get the sections of.
+     * @return a JSON string of all the sections.
+     */
+    public String getAllFromBookSimple(String bookId) {
+        LOGGER.debug(String.format("Returning all sections from book id '%s' as JSON.", bookId));
+        return sectionRepository.getBookSectionsSimple(Long.parseLong(bookId)).orElseThrow(ItemNotFoundException::new);
+    }
+
+    /**
      * Add a section to the db.
      *
      * @param dto the data for the new section.

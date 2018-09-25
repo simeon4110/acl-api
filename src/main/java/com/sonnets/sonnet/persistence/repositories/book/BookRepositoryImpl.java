@@ -29,4 +29,11 @@ public class BookRepositoryImpl implements BookRepositoryStoredProcedures {
         query.execute();
         return Optional.of((String) query.getOutputParameterValue("title"));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<String> getBooksSimple() {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getBooksSimple");
+        return Optional.of((String) query.getOutputParameterValue("output"));
+    }
 }

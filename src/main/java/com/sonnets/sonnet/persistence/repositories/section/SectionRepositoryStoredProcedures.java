@@ -15,4 +15,6 @@ public interface SectionRepositoryStoredProcedures {
     Optional<List<Section>> getAllSections();
 
     CompletableFuture<Optional<List<Section>>> getAllByUser(final String userName);
+
+    Optional<String> getBookSectionsSimple(final Long bookId);
 }

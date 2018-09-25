@@ -17,14 +17,23 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@NamedStoredProcedureQuery(
-        name = "getBookTitle",
-        procedureName = "get_book_title",
-        parameters = {
-                @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
-                @StoredProcedureParameter(name = "title", mode = ParameterMode.INOUT, type = String.class)
-        }
-)
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "getBookTitle",
+                procedureName = "get_book_title",
+                parameters = {
+                        @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = "title", mode = ParameterMode.INOUT, type = String.class)
+                }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getBooksSimple",
+                procedureName = "get_books_simple",
+                parameters = {
+                        @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
+                }
+        )
+})
 @Indexed
 @Entity
 @DiscriminatorValue("BOOK")

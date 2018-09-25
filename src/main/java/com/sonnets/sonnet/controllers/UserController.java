@@ -157,7 +157,7 @@ public class UserController {
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/user/get_items", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getUserItems(Principal principal) {
-        return userItemsService.getUserItems(principal).join();
+    public String getUserItems(Principal principal) {
+        return userItemsService.getUserItems(principal);
     }
 }
