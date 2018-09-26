@@ -1,9 +1,12 @@
-package com.sonnets.sonnet.persistence.dtos;
+package com.sonnets.sonnet.persistence.dtos.web;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author Josh Harkema
+ */
 public class ContactDto {
     @NotEmpty
     private String name;

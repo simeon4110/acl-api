@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.models;
+package com.sonnets.sonnet.persistence.models.web;
 
 import javax.persistence.*;
 import java.io.Serializable;

@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.config;
 
-import com.sonnets.sonnet.persistence.models.Sonnet;
+import com.sonnets.sonnet.persistence.models.base.Author;
+import com.sonnets.sonnet.persistence.models.base.Item;
 import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -17,8 +18,8 @@ import javax.persistence.PersistenceContext;
  *
  * @author Josh Harkema
  */
-@Transactional
 @Component
+@Transactional
 public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEvent> {
     private static final Logger LOGGER = Logger.getLogger(BuildSearchIndex.class);
     @PersistenceContext
@@ -28,12 +29,11 @@ public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEve
     public void onApplicationEvent(@SuppressWarnings("NullableProblems") final ApplicationReadyEvent event) {
         try {
             FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-            manager.createIndexer(Sonnet.class).startAndWait();
+            manager.createIndexer(Item.class, Author.class)
+                    .startAndWait();
         } catch (InterruptedException e) {
             LOGGER.error(e);
             Thread.currentThread().interrupt();
         }
-
-
     }
 }

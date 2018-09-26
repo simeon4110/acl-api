@@ -12,6 +12,7 @@ import java.util.Properties;
  *
  * @author Josh Harkema
  */
+@SuppressWarnings("SpellCheckingInspection")
 @Configuration
 public class MailConfig {
     private static final String HOST = "smtp.gmail.com";

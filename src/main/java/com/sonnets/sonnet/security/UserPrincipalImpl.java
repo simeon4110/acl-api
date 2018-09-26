@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.security;
 
-import com.sonnets.sonnet.persistence.models.Privilege;
-import com.sonnets.sonnet.persistence.models.User;
+import com.sonnets.sonnet.persistence.models.web.Privilege;
+import com.sonnets.sonnet.persistence.models.web.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class UserPrincipalImpl implements UserDetails {
     private static final long serialVersionUID = 3195560688097836277L;
-    private User user;
+    private final User user;
 
     UserPrincipalImpl(User user) {
         this.user = user;
