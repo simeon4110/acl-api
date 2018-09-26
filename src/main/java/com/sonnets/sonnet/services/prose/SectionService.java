@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.services.prose;
 
-import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
@@ -271,16 +270,9 @@ public class SectionService {
         sectionRepository.saveAndFlush(section);
     }
 
-    public ResponseEntity<Void> setAnnotation(AnnotationDto dto, String id) {
-        LOGGER.debug(String.format("Setting annotation id '%s' to: %s", id, dto));
-        Section section = getObjectOrNull.section(id);
-        Annotation annotation = section.getAnnotation();
-        if (annotation == null) { // Null check is important here.
-            annotation = new Annotation();
-        }
-        annotation.setAnnotationBody(dto.getAnnotationBody());
-        section.setAnnotation(annotation);
-        sectionRepository.saveAndFlush(section);
+    public ResponseEntity<Void> setAnnotation(String body, String id) {
+        LOGGER.debug(String.format("Setting annotation id '%s' to: %s", id, body));
+        sectionRepository.updateSectionAnnotation(body, Long.parseLong(id));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

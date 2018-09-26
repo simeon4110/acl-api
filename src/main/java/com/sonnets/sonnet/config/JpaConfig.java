@@ -19,7 +19,14 @@ import javax.persistence.EntityManager;
  * @author Josh Harkema
  */
 @Configuration
-@EnableJpaRepositories("com.sonnets.sonnet.persistence.repositories")
+@EnableJpaRepositories(basePackages = {
+        "com.sonnets.sonnet.persistence.repositories",
+        "com.sonnets.sonnet.persistence.repositories.book",
+        "com.sonnets.sonnet.persistence.repositories.corpora",
+        "com.sonnets.sonnet.persistence.repositories.items",
+        "com.sonnets.sonnet.persistence.repositories.poem",
+        "com.sonnets.sonnet.persistence.repositories.section"
+})
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableTransactionManagement
 public class JpaConfig {

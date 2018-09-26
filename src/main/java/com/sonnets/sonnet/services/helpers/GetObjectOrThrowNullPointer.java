@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GetObjectOrThrowNullPointer {
     private final BookRepository bookRepository;
     private final SectionRepositoryBase sectionRepository;
-    private final CharacterRepository characterRepository;
+    private final BookCharacterRepository bookCharacterRepository;
     private final AuthorRepository authorRepository;
     private final OtherRepository otherRepository;
     private final PoemRepository poemRepository;
@@ -41,13 +41,13 @@ public class GetObjectOrThrowNullPointer {
 
     @Autowired
     public GetObjectOrThrowNullPointer(BookRepository bookRepository, SectionRepositoryBase sectionRepository,
-                                       CharacterRepository characterRepository, AuthorRepository authorRepository,
+                                       BookCharacterRepository bookCharacterRepository, AuthorRepository authorRepository,
                                        OtherRepository otherRepository, PoemRepository poemRepository,
                                        AnnotationRepository annotationRepository, CorporaRepository corporaRepository,
                                        CustomStopWordsRepository customStopWordsRepository) {
         this.bookRepository = bookRepository;
         this.sectionRepository = sectionRepository;
-        this.characterRepository = characterRepository;
+        this.bookCharacterRepository = bookCharacterRepository;
         this.authorRepository = authorRepository;
         this.otherRepository = otherRepository;
         this.poemRepository = poemRepository;
@@ -78,7 +78,7 @@ public class GetObjectOrThrowNullPointer {
 
     public BookCharacter character(String id) {
         long parsedId = Long.parseLong(id);
-        return characterRepository.findById(parsedId).orElseThrow(NullPointerException::new);
+        return bookCharacterRepository.findById(parsedId).orElseThrow(NullPointerException::new);
     }
 
     public Other other(String id) {

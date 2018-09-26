@@ -11,4 +11,6 @@ public interface BookRepositoryStoredProcedures {
     Optional<String> getBookTitle(final Long bookId);
 
     Optional<String> getBooksSimple();
+
+    String getBookCharactersSimple(final Long bookId);
 }

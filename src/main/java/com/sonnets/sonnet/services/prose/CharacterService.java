@@ -4,7 +4,8 @@ import com.sonnets.sonnet.persistence.dtos.prose.CharacterDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
-import com.sonnets.sonnet.persistence.repositories.CharacterRepository;
+import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
+import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,15 @@ import java.util.List;
 public class CharacterService {
     private static final Logger LOGGER = Logger.getLogger(CharacterService.class);
     private final GetObjectOrThrowNullPointer getObjectOrNull;
-    private final CharacterRepository characterRepository;
+    private final BookCharacterRepository bookCharacterRepository;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public CharacterService(GetObjectOrThrowNullPointer getObjectOrNull, CharacterRepository characterRepository) {
+    public CharacterService(GetObjectOrThrowNullPointer getObjectOrNull,
+                            BookCharacterRepository bookCharacterRepository, BookRepository bookRepository) {
         this.getObjectOrNull = getObjectOrNull;
-        this.characterRepository = characterRepository;
+        this.bookCharacterRepository = bookCharacterRepository;
+        this.bookRepository = bookRepository;
     }
 
     /**
@@ -81,6 +85,8 @@ public class CharacterService {
         }
         BookCharacter bookCharacter = new BookCharacter();
         book.getBookCharacters().add(createOrCopyCharacter(bookCharacter, dto));
+        bookCharacterRepository.saveAndFlush(bookCharacter);
+        bookRepository.saveAndFlush(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -93,7 +99,7 @@ public class CharacterService {
     public ResponseEntity<Void> modify(CharacterDto dto) {
         LOGGER.debug("Modifying bookCharacter: " + dto.toString());
         BookCharacter bookCharacter = getObjectOrNull.character(dto.getId());
-        characterRepository.saveAndFlush(createOrCopyCharacter(bookCharacter, dto));
+        bookCharacterRepository.saveAndFlush(createOrCopyCharacter(bookCharacter, dto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -106,7 +112,7 @@ public class CharacterService {
     public ResponseEntity<Void> delete(String id) {
         LOGGER.debug("Deleting bookCharacter: " + id);
         BookCharacter character = getObjectOrNull.character(id);
-        characterRepository.delete(character);
+        bookCharacterRepository.delete(character);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

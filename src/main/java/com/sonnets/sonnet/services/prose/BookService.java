@@ -145,4 +145,9 @@ public class BookService {
         bookRepository.delete(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    public String getBookCharacters(String id) {
+        LOGGER.debug("Getting book chars for: " + id);
+        return bookRepository.getBookCharactersSimple(Long.parseLong(id));
+    }
 }

@@ -55,8 +55,8 @@ create table oauth_approvals (
   expiresAt TIMESTAMP,
 );
 
-drop table if exists ClientDetails;
-create table ClientDetails (
+drop table if exists client_details;
+create table client_details (
   appId                  VARCHAR(4096) PRIMARY KEY,
   resourceIds            VARCHAR(4096),
   appSecret              VARCHAR(4096),

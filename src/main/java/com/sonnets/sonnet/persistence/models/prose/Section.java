@@ -50,6 +50,14 @@ import java.util.Objects;
                         @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
                         @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
                 }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "updateSectionAnnotation",
+                procedureName = "update_section_annotation",
+                parameters = {
+                        @StoredProcedureParameter(name = "annotation", mode = ParameterMode.IN, type = String.class),
+                        @StoredProcedureParameter(name = "annotationId", mode = ParameterMode.IN, type = Long.class)
+                }
         )
 })
 @SqlResultSetMapping(

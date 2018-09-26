@@ -2,6 +2,8 @@ package com.sonnets.sonnet.persistence.models.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -41,9 +43,11 @@ public class User extends Auditable<String> implements Serializable {
     private Set<Privilege> privileges;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id")
+    @Fetch(FetchMode.SUBSELECT)
     private List<UserPrivateText> privateTexts;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id")
+    @Fetch(FetchMode.SUBSELECT)
     private List<CustomStopWords> customStopWords;
 
     public User() {

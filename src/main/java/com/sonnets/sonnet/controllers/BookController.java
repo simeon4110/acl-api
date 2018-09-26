@@ -109,4 +109,10 @@ public class BookController {
     public List search(@RequestBody BookDto bookDto) {
         return searchService.searchBooks(bookDto);
     }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/book/get_characters/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getBookCharacters(@PathVariable("id") String id) {
+        return bookService.getBookCharacters(id);
+    }
 }

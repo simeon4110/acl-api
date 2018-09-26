@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
@@ -181,9 +180,10 @@ public class SectionController {
     @CacheEvict(value = "section-annotation", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secure/section/annotation/set/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> setAnnotation(@RequestBody @Valid AnnotationDto dto, @PathVariable("id") String id) {
-        return sectionService.setAnnotation(dto, id);
+    @PostMapping(value = "/secure/section/annotation/set/{id}", consumes = {MediaType.TEXT_PLAIN_VALUE,
+            MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Void> setAnnotation(@RequestBody String body, @PathVariable("id") String id) {
+        return sectionService.setAnnotation(body, id);
     }
 
     /**

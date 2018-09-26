@@ -7,7 +7,7 @@ import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
-import com.sonnets.sonnet.persistence.repositories.CharacterRepository;
+import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
 import com.sonnets.sonnet.persistence.repositories.OtherRepository;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
@@ -24,18 +24,18 @@ import org.springframework.stereotype.Component;
 public class SaveObject {
     private final BookRepository bookRepository;
     private final SectionRepositoryBase sectionRepository;
-    private final CharacterRepository characterRepository;
+    private final BookCharacterRepository bookCharacterRepository;
     private final AuthorRepository authorRepository;
     private final OtherRepository otherRepository;
     private final PoemRepository poemRepository;
 
     @Autowired
     public SaveObject(BookRepository bookRepository, SectionRepositoryBase sectionRepository,
-                      CharacterRepository characterRepository, AuthorRepository authorRepository,
+                      BookCharacterRepository bookCharacterRepository, AuthorRepository authorRepository,
                       OtherRepository otherRepository, PoemRepository poemRepository) {
         this.bookRepository = bookRepository;
         this.sectionRepository = sectionRepository;
-        this.characterRepository = characterRepository;
+        this.bookCharacterRepository = bookCharacterRepository;
         this.authorRepository = authorRepository;
         this.otherRepository = otherRepository;
         this.poemRepository = poemRepository;
@@ -58,7 +58,7 @@ public class SaveObject {
     }
 
     public void character(BookCharacter character) {
-        characterRepository.saveAndFlush(character);
+        bookCharacterRepository.saveAndFlush(character);
     }
 
     public void other(Other other) {

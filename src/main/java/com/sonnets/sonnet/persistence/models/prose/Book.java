@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.base.Item;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -32,6 +34,13 @@ import java.util.Objects;
                 parameters = {
                         @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
                 }
+        ),
+        @NamedStoredProcedureQuery(
+                name = "getBookCharacters",
+                procedureName = "get_book_characters",
+                parameters = {
+                        @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class)
+                }
         )
 })
 @Indexed
@@ -49,11 +58,12 @@ public class Book extends Item implements Serializable {
     @JsonIgnore
     @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterBridge.class)
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "book_characters", joinColumns = {
             @JoinColumn(name = "book_id", referencedColumnName = "id"),
             @JoinColumn(name = "character_id", referencedColumnName = "id")
     })
+    @Fetch(FetchMode.SUBSELECT)
     private List<BookCharacter> bookCharacters;
 
     public Book() {
