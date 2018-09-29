@@ -41,13 +41,11 @@ public class User extends Auditable<String> implements Serializable {
     @JoinTable(name = "users_privileges", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private Set<Privilege> privileges;
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id")
-    @Fetch(FetchMode.SELECT)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "id")
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<UserPrivateText> privateTexts;
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id")
-    @Fetch(FetchMode.SELECT)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "id")
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<CustomStopWords> customStopWords;
 
     public User() {
