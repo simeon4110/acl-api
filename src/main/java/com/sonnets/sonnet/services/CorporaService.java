@@ -6,6 +6,7 @@ import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import com.sonnets.sonnet.tools.ItemKeyValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +148,7 @@ public class CorporaService {
      */
     public List getUserCorpora(Principal principal) {
         LOGGER.debug("Returning corpera for user: " + principal.getName());
-        return corporaRepository.getCorporaUser(principal.getName()).orElseThrow(ItemNotFoundException::new);
+        return corporaRepository.getCorporaUser(principal.getName()).orElseThrow(NoResultsException::new);
     }
 
     /**

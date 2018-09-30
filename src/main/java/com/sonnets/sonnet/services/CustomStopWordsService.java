@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.CustomStopWordsRepository;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,8 +62,7 @@ public class CustomStopWordsService {
      */
     public ResponseEntity<Void> modify(CustomStopWordsDto dto, Principal principal) {
         LOGGER.debug("Modifying stop words: " + dto.toString());
-        CustomStopWords stopWords = getWordsListOrNull(dto.getId().toString());
-        assert stopWords != null;
+        CustomStopWords stopWords = getWordsListOrThrowNotFound(dto.getId().toString());
         assert stopWords.getCreatedBy().equals(principal.getName());
         stopWords.setName(dto.getName());
         stopWords.setWords(Arrays.asList(dto.getWords()));
@@ -79,8 +79,7 @@ public class CustomStopWordsService {
      */
     public ResponseEntity<Void> delete(String id, Principal principal) {
         LOGGER.debug("Deleting custom stop words with id: " + id);
-        CustomStopWords stopWords = getWordsListOrNull(id);
-        assert stopWords != null;
+        CustomStopWords stopWords = getWordsListOrThrowNotFound(id);
         assert stopWords.getCreatedBy().equals(principal.getName());
         customStopWordsRepository.delete(stopWords);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -94,8 +93,7 @@ public class CustomStopWordsService {
      */
     public List<String> getWords(String id) {
         LOGGER.debug("Getting stop words list with id: " + id);
-        CustomStopWords stopWords = getWordsListOrNull(id);
-        assert stopWords != null;
+        CustomStopWords stopWords = getWordsListOrThrowNotFound(id);
         return stopWords.getWords();
     }
 
@@ -116,7 +114,7 @@ public class CustomStopWordsService {
      * @param id the id of the list to find.
      * @return the list or null.
      */
-    private CustomStopWords getWordsListOrNull(String id) {
+    CustomStopWords getWordsListOrThrowNotFound(String id) {
         long parsedId;
         try {
             parsedId = Long.parseLong(id);
@@ -124,6 +122,6 @@ public class CustomStopWordsService {
             LOGGER.error(id + " is not a number.");
             return null;
         }
-        return customStopWordsRepository.findById(parsedId).orElse(null);
+        return customStopWordsRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
     }
 }

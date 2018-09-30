@@ -4,18 +4,21 @@ import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
+import com.sonnets.sonnet.services.AuthorService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
+import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This class deals with the components of a prose work. Characters and sections are managed here.
@@ -25,13 +28,13 @@ import java.util.List;
 @Service
 public class BookService {
     private static final Logger LOGGER = Logger.getLogger(BookService.class);
-    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final BookRepository bookRepository;
+    private final AuthorService authorService;
 
     @Autowired
-    public BookService(GetObjectOrThrowNullPointer getObjectOrNull, BookRepository bookRepository) {
-        this.getObjectOrNull = getObjectOrNull;
+    public BookService(BookRepository bookRepository, AuthorService authorService) {
         this.bookRepository = bookRepository;
+        this.authorService = authorService;
     }
 
     /**
@@ -64,7 +67,7 @@ public class BookService {
      */
     public Book get(String id) {
         LOGGER.debug("Getting book: " + id);
-        return getObjectOrNull.book(id);
+        return getBookOrThrowNotFound(id);
     }
 
     /**
@@ -74,7 +77,7 @@ public class BookService {
      * @return the book's title.
      */
     public String getTitle(String id) {
-        String title = bookRepository.getBookTitle(Long.parseLong(id)).orElseThrow(NullPointerException::new);
+        String title = bookRepository.getBookTitle(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
         try {
             return new JSONObject().put("title", title).toString();
         } catch (JSONException e) {
@@ -98,7 +101,7 @@ public class BookService {
      */
     public String getBooksSimple() {
         LOGGER.debug("Returning all books as JSON.");
-        return bookRepository.getBooksSimple().orElseThrow(ItemNotFoundException::new);
+        return bookRepository.getBooksSimple().orElseThrow(NoResultsException::new);
     }
 
     /**
@@ -110,7 +113,7 @@ public class BookService {
     public ResponseEntity<Void> add(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
         Book book = new Book();
-        Author author = getObjectOrNull.author(dto.getAuthorId());
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         // Check if book does not exist exists.
         if (bookRepository.findByAuthor_IdAndTitle(Long.parseLong(dto.getAuthorId()), dto.getTitle()) == null) {
             bookRepository.saveAndFlush(createOrCopyBook(book, author, dto));
@@ -127,8 +130,8 @@ public class BookService {
      */
     public ResponseEntity<Void> modify(BookDto dto) {
         LOGGER.debug("Modifying book: " + dto.toString());
-        Book book = getObjectOrNull.book(dto.getId().toString());
-        Author author = getObjectOrNull.author(dto.getAuthorId());
+        Book book = getBookOrThrowNotFound(dto.getId());
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         bookRepository.saveAndFlush(createOrCopyBook(book, author, dto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -141,7 +144,7 @@ public class BookService {
      */
     public ResponseEntity<Void> delete(String id) {
         LOGGER.debug("Deleting book: " + id);
-        Book book = getObjectOrNull.book(id);
+        Book book = getBookOrThrowNotFound(id);
         bookRepository.delete(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -149,5 +152,22 @@ public class BookService {
     public String getBookCharacters(String id) {
         LOGGER.debug("Getting book chars for: " + id);
         return bookRepository.getBookCharactersSimple(Long.parseLong(id));
+    }
+
+    Book getBookOrThrowNotFound(Long id) {
+        LOGGER.debug("Getting book with id: " + id);
+        return bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+    }
+
+    Book getBookOrThrowNotFound(String id) {
+        LOGGER.debug("Getting book with id: " + id);
+        long parsedId = Long.parseLong(id);
+        return bookRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    @Async
+    void save(Book book) {
+        LOGGER.debug("Saving book: " + book.toString());
+        CompletableFuture.runAsync(() -> bookRepository.saveAndFlush(book));
     }
 }

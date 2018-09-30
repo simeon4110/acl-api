@@ -114,9 +114,9 @@ public class SearchService {
             ), BooleanClause.Occur.MUST);
         }
 
-        // Add topics.
-        if (dto.getTopics() != null && !dto.getTopics().equals("")) {
-            LOGGER.debug("Topics: " + dto.getTopics());
+        // Add period.
+        if (dto.getPeriod() != null && !dto.getPeriod().equals("")) {
+            LOGGER.debug("Period: " + dto.getPeriod());
             query.add(new TermQuery(new Term(PERIOD, dto.getPeriod().toLowerCase())), BooleanClause.Occur.MUST);
         }
 

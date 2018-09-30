@@ -9,11 +9,11 @@ import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
+import com.sonnets.sonnet.services.AuthorService;
 import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.ToolsService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
-import com.sonnets.sonnet.services.helpers.SaveObject;
+import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,21 +34,20 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class SectionService {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
-    private final GetObjectOrThrowNullPointer getObjectOrNull;
-    private final SaveObject saveObject;
     private final SectionRepositoryBase sectionRepository;
     private final MessageService messageService;
     private final ToolsService toolsService;
+    private final BookService bookService;
+    private final AuthorService authorService;
 
     @Autowired
-    public SectionService(GetObjectOrThrowNullPointer getObjectOrNull, SaveObject saveObject,
-                          SectionRepositoryBase sectionRepository, MessageService messageService,
-                          ToolsService toolsService) {
-        this.getObjectOrNull = getObjectOrNull;
-        this.saveObject = saveObject;
+    public SectionService(SectionRepositoryBase sectionRepository, MessageService messageService,
+                          ToolsService toolsService, BookService bookService, AuthorService authorService) {
         this.sectionRepository = sectionRepository;
         this.messageService = messageService;
         this.toolsService = toolsService;
+        this.bookService = bookService;
+        this.authorService = authorService;
     }
 
     /**
@@ -99,7 +98,7 @@ public class SectionService {
      */
     public Section get(String id) {
         LOGGER.debug("Getting section id: " + id);
-        return getObjectOrNull.section(id);
+        return getSectionOrThrowNotFound(id);
     }
 
     /**
@@ -118,7 +117,7 @@ public class SectionService {
      */
     public List<Section> getAllFromBook(String bookId) {
         LOGGER.debug("Getting all sections of: " + bookId);
-        Book book = getObjectOrNull.book(bookId);
+        Book book = bookService.getBookOrThrowNotFound(bookId);
         return book.getSections();
     }
 
@@ -146,12 +145,12 @@ public class SectionService {
      */
     public ResponseEntity<Void> add(SectionDto dto) {
         LOGGER.debug("Adding new section: " + dto.toString());
-        Book book = getObjectOrNull.book(dto.getBookId().toString());
-        Author author = getObjectOrNull.author(dto.getAuthorId().toString());
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
         Section section = createOrCopySection(new Section(), author, book, dto);
         sectionRepository.saveAndFlush(section);
         book.getSections().add(section);
-        saveObject.book(book);
+        bookService.save(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -163,9 +162,9 @@ public class SectionService {
      */
     public ResponseEntity<Void> modify(SectionDto dto) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
-        Section section = getObjectOrNull.section(dto.getId().toString());
-        Author author = getObjectOrNull.author(dto.getAuthorId().toString());
-        Book book = getObjectOrNull.book(dto.getBookId().toString());
+        Section section = getSectionOrThrowNotFound(dto.getId());
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
         sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -179,9 +178,9 @@ public class SectionService {
      */
     public ResponseEntity<Void> modify(SectionDto dto, Principal principal) {
         LOGGER.debug("Modifying section (USER): " + dto.toString());
-        Section section = getObjectOrNull.section(dto.getId().toString());
-        Author author = getObjectOrNull.author(dto.getAuthorId().toString());
-        Book book = getObjectOrNull.book(dto.getBookId().toString());
+        Section section = getSectionOrThrowNotFound(dto.getId());
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
 
         // Ensure the user making the request is also the owner of the section.
         if (section.getCreatedBy().equals(principal.getName())) {
@@ -199,10 +198,10 @@ public class SectionService {
      */
     public ResponseEntity<Void> deleteById(String id) {
         LOGGER.debug("Deleting other with id (ADMIN): " + id);
-        Section section = getObjectOrNull.section(id);
-        Book book = getObjectOrNull.book(section.getParentId().toString());
+        Section section = getSectionOrThrowNotFound(id);
+        Book book = bookService.getBookOrThrowNotFound(section.getParentId());
         book.getSections().remove(section);
-        saveObject.book(book);
+        bookService.save(book);
         sectionRepository.delete(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -216,7 +215,7 @@ public class SectionService {
      */
     public ResponseEntity<Void> confirm(String id, Principal principal) {
         LOGGER.debug(principal.getName() + " is confirming section: " + id);
-        Section section = getObjectOrNull.section(id);
+        Section section = getSectionOrThrowNotFound(id);
         Confirmation confirmation = section.getConfirmation();
         confirmation.setConfirmedBy(principal.getName());
         confirmation.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
@@ -235,7 +234,7 @@ public class SectionService {
      */
     public ResponseEntity<Void> reject(RejectDto rejectDto) {
         LOGGER.debug("Rejecting section: " + rejectDto.toString());
-        Section section = getObjectOrNull.section(rejectDto.getId());
+        Section section = getSectionOrThrowNotFound(rejectDto.getId());
         Confirmation confirmation = section.getConfirmation();
         confirmation.setConfirmedBy(null);
         confirmation.setConfirmedAt(null);
@@ -265,9 +264,10 @@ public class SectionService {
     /**
      * @param section the section object to save.
      */
+    @Async
     public void save(Section section) {
         LOGGER.debug("Saving section: " + section.getId());
-        sectionRepository.saveAndFlush(section);
+        CompletableFuture.runAsync(() -> sectionRepository.saveAndFlush(section));
     }
 
     public ResponseEntity<Void> setAnnotation(String body, String id) {
@@ -278,13 +278,22 @@ public class SectionService {
 
     public Annotation getAnnotation(String id) {
         LOGGER.debug("Getting annotation: " + id);
-        Section section = getObjectOrNull.section(id);
+        Section section = getSectionOrThrowNotFound(id);
         return section.getAnnotation();
     }
 
     @Async
     public CompletableFuture<List> getUserSections(Principal principal) {
         return sectionRepository.getAllByUser(principal.getName()).thenApply(sections ->
-                sections.orElseThrow(ItemNotFoundException::new));
+                sections.orElseThrow(NoResultsException::new));
+    }
+
+    private Section getSectionOrThrowNotFound(String id) {
+        long parsedId = Long.parseLong(id);
+        return sectionRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    private Section getSectionOrThrowNotFound(Long id) {
+        return sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 }

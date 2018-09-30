@@ -4,7 +4,6 @@ import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
 import com.sonnets.sonnet.wordtools.MalletTools;
 import com.sonnets.sonnet.wordtools.NLPTools;
@@ -33,15 +32,15 @@ public class ToolsService {
     private static final NLPTools pipeline = NLPTools.getInstance();
     private static final MalletTools malletTools = MalletTools.getInstance();
     private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
-    private final GetObjectOrThrowNullPointer getObjectOrThrowNullPointer;
     private final CorporaService corporaService;
+    private final CustomStopWordsService stopWords;
 
     private static final int REQUEST_TIMEOUT = 60;
 
     @Autowired
-    public ToolsService(GetObjectOrThrowNullPointer getObjectOrThrowNullPointer, CorporaService corporaService) {
-        this.getObjectOrThrowNullPointer = getObjectOrThrowNullPointer;
+    public ToolsService(CorporaService corporaService, CustomStopWordsService stopWords) {
         this.corporaService = corporaService;
+        this.stopWords = stopWords;
     }
 
     /**
@@ -70,7 +69,7 @@ public class ToolsService {
 
     private String parseCorporaItems(final String items) {
         StringBuilder result = new StringBuilder();
-        JSONArray array = null;
+        JSONArray array;
         try {
             array = new JSONArray(items);
             for (int i = 0; i < array.length(); i++) {
@@ -114,7 +113,7 @@ public class ToolsService {
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
         if (Integer.parseInt(stopWordsId) != 0) {
-            customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
+            customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
         dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
@@ -165,7 +164,7 @@ public class ToolsService {
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
         if (Integer.parseInt(stopWordsId) != 0) {
-            customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
+            customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
         dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));

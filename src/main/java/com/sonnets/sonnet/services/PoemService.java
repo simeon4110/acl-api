@@ -104,11 +104,8 @@ public class PoemService {
             LOGGER.error(e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-
-        Author author = authorService.get(dto.getAuthorId());
-        assert author != null;
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
-        LOGGER.debug(poem.toString());
         poemRepository.saveAndFlush(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -121,15 +118,10 @@ public class PoemService {
      */
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
-        Optional<Poem> optionalPoem = poemRepository.findById(dto.getId());
-        Author author = authorService.get(dto.getAuthorId());
-        if (optionalPoem.isPresent() && author != null) {
-            Poem poem = createOrUpdateFromDto(optionalPoem.get(), dto, author);
-            poemRepository.saveAndFlush(poem);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Poem poem = createOrUpdateFromDto(getPoemOrThrowNotFound(dto.getId()), dto, author);
+        poemRepository.saveAndFlush(poem);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -142,14 +134,12 @@ public class PoemService {
      */
     public ResponseEntity<Void> modify(PoemDto dto, Principal principal) {
         LOGGER.debug("Modifying poem (USER): " + dto.toString());
-        Poem poem = getPoemOrNull(dto.getId().toString());
-        Author author = authorService.get(dto.getAuthorId());
-        // ensure poem was created by the user trying to modify it.
-        if (poem != null && author != null && principal.getName().equals(poem.getCreatedBy())) {
-            poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Poem poem = getPoemOrThrowNotFound(dto.getId().toString());
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        assert poem != null;
+        assert principal.getName().equals(poem.getCreatedBy());
+        poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -160,7 +150,7 @@ public class PoemService {
      */
     public ResponseEntity<Void> deleteById(String id) {
         LOGGER.debug("Deleting poem with id (ADMIN): " + id);
-        Poem poem = getPoemOrNull(id);
+        Poem poem = getPoemOrThrowNotFound(id);
         assert poem != null;
         poemRepository.delete(poem);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -175,7 +165,7 @@ public class PoemService {
      */
     public ResponseEntity<Void> confirm(String id, Principal principal) {
         LOGGER.debug("Confirming sonnet: " + id);
-        Poem poem = getPoemOrNull(id);
+        Poem poem = getPoemOrThrowNotFound(id);
         assert poem != null;
         poem.getConfirmation().setConfirmed(true);
         poem.getConfirmation().setConfirmedBy(principal.getName());
@@ -193,7 +183,7 @@ public class PoemService {
      */
     public ResponseEntity<Void> reject(RejectDto rejectDto) {
         LOGGER.debug("Rejecting poem: " + rejectDto.getId());
-        Poem poem = getPoemOrNull(rejectDto.getId());
+        Poem poem = getPoemOrThrowNotFound(rejectDto.getId());
         assert poem != null;
         poem.getConfirmation().setConfirmed(false);
         poem.getConfirmation().setPendingRevision(true);
@@ -231,7 +221,7 @@ public class PoemService {
      */
     public Poem getById(String id) {
         LOGGER.debug("Getting poem with id: " + id);
-        return getPoemOrNull(id);
+        return getPoemOrThrowNotFound(id);
     }
 
     /**
@@ -306,7 +296,7 @@ public class PoemService {
     // User - delete poem.
     public ResponseEntity<Void> deleteById(String id, Principal principal) {
         LOGGER.debug("Deleting poem with id (USER): " + id);
-        Poem poem = getPoemOrNull(id);
+        Poem poem = getPoemOrThrowNotFound(id);
         if (poem != null && poem.getCreatedBy().equals(principal.getName())) {
             poemRepository.delete(poem);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -324,7 +314,7 @@ public class PoemService {
         poemRepository.saveAndFlush(poem);
     }
 
-    private Poem getPoemOrNull(String id) {
+    private Poem getPoemOrThrowNotFound(String id) {
         long parsedId;
         try {
             parsedId = Long.parseLong(id);
@@ -332,6 +322,10 @@ public class PoemService {
             LOGGER.error(e);
             return null;
         }
-        return poemRepository.findById(parsedId).orElse(null);
+        return poemRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    private Poem getPoemOrThrowNotFound(Long id) {
+        return poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 }

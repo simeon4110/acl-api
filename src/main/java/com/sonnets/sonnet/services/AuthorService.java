@@ -4,15 +4,14 @@ import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import com.sonnets.sonnet.tools.ParseParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
  * Deals with all author related functions.
@@ -23,12 +22,10 @@ import java.util.Optional;
 public class AuthorService {
     private static final Logger LOGGER = Logger.getLogger(AuthorService.class);
     private final AuthorRepository authorRepository;
-    private final GetObjectOrThrowNullPointer getObjectOrThrowNull;
 
     @Autowired
-    public AuthorService(AuthorRepository authorRepository, GetObjectOrThrowNullPointer getObjectOrThrowNull) {
+    public AuthorService(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
-        this.getObjectOrThrowNull = getObjectOrThrowNull;
     }
 
     /**
@@ -42,7 +39,6 @@ public class AuthorService {
         author.setFirstName(authorDto.getFirstName());
         author.setMiddleName(authorDto.getMiddleName());
         author.setLastName(authorDto.getLastName());
-
         return author;
     }
 
@@ -72,7 +68,7 @@ public class AuthorService {
      */
     public ResponseEntity<Void> modify(AuthorDto authorDto) {
         LOGGER.debug("Modifying author: " + authorDto.toString());
-        Author author = getObjectOrThrowNull.author(authorDto.getId().toString());
+        Author author = getAuthorOrThrowNotFound(authorDto.getId());
         authorRepository.saveAndFlush(createOrCopyAuthor(author, authorDto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -85,7 +81,7 @@ public class AuthorService {
      */
     public ResponseEntity<Void> delete(String id) {
         LOGGER.debug("Deleting author with id: " + id);
-        Author author = getObjectOrThrowNull.author(id);
+        Author author = getAuthorOrThrowNotFound(id);
         authorRepository.delete(author);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -98,7 +94,7 @@ public class AuthorService {
      */
     public Author get(String id) {
         LOGGER.debug("Looking for author with id: " + id);
-        return getObjectOrThrowNull.author(id);
+        return getAuthorOrThrowNotFound(id);
     }
 
     /**
@@ -110,7 +106,15 @@ public class AuthorService {
     public Author getByLastName(String lastName) {
         LOGGER.debug("Looking for author with last name: " + lastName);
         lastName = ParseParam.parse(lastName);
-        Optional<Author> author = authorRepository.findByLastName(lastName);
-        return author.orElse(null);
+        return authorRepository.findByLastName(lastName).orElseThrow(NoResultsException::new);
+    }
+
+    public Author getAuthorOrThrowNotFound(String id) {
+        long parsedId = Long.parseLong(id);
+        return authorRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    public Author getAuthorOrThrowNotFound(Long id) {
+        return authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 }

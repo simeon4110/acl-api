@@ -40,7 +40,7 @@ public class ItemOutDto implements Serializable {
     private String poemText;
 
     public ItemOutDto() {
-
+        // Empty by design.
     }
 
     public BigDecimal getCorporaId() {

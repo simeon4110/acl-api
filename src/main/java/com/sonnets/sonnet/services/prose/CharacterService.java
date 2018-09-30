@@ -5,8 +5,7 @@ import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
-import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,16 +22,13 @@ import java.util.List;
 @Service
 public class CharacterService {
     private static final Logger LOGGER = Logger.getLogger(CharacterService.class);
-    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final BookCharacterRepository bookCharacterRepository;
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
     @Autowired
-    public CharacterService(GetObjectOrThrowNullPointer getObjectOrNull,
-                            BookCharacterRepository bookCharacterRepository, BookRepository bookRepository) {
-        this.getObjectOrNull = getObjectOrNull;
+    public CharacterService(BookCharacterRepository bookCharacterRepository, BookService bookService) {
         this.bookCharacterRepository = bookCharacterRepository;
-        this.bookRepository = bookRepository;
+        this.bookService = bookService;
     }
 
     /**
@@ -77,7 +73,7 @@ public class CharacterService {
      */
     public ResponseEntity<Void> add(CharacterDto dto) {
         LOGGER.debug("Adding character: " + dto.toString());
-        Book book = getObjectOrNull.book(dto.getBookId());
+        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
         if (characterAlreadyExists(book, dto.getFirstName(), dto.getLastName())) {
             throw new AuthorAlreadyExistsException(
                     String.format("Author: %s %s already exists", dto.getFirstName(), dto.getLastName())
@@ -86,7 +82,7 @@ public class CharacterService {
         BookCharacter bookCharacter = new BookCharacter();
         book.getBookCharacters().add(createOrCopyCharacter(bookCharacter, dto));
         bookCharacterRepository.saveAndFlush(bookCharacter);
-        bookRepository.saveAndFlush(book);
+        bookService.save(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -98,7 +94,7 @@ public class CharacterService {
      */
     public ResponseEntity<Void> modify(CharacterDto dto) {
         LOGGER.debug("Modifying bookCharacter: " + dto.toString());
-        BookCharacter bookCharacter = getObjectOrNull.character(dto.getId());
+        BookCharacter bookCharacter = getCharacterOrThrowNotFound(dto.getId());
         bookCharacterRepository.saveAndFlush(createOrCopyCharacter(bookCharacter, dto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -111,8 +107,13 @@ public class CharacterService {
      */
     public ResponseEntity<Void> delete(String id) {
         LOGGER.debug("Deleting bookCharacter: " + id);
-        BookCharacter character = getObjectOrNull.character(id);
+        BookCharacter character = getCharacterOrThrowNotFound(id);
         bookCharacterRepository.delete(character);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private BookCharacter getCharacterOrThrowNotFound(String id) {
+        long parsedId = Long.parseLong(id);
+        return bookCharacterRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
     }
 }
