@@ -114,7 +114,7 @@ public class Section extends Item implements Serializable {
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Version> versions;
     @JsonIgnore
