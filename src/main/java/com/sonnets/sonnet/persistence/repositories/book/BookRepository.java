@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, BookRepositoryStoredProcedures {
     Book findByAuthor_IdAndTitle(final long id, final String title);
+
+    Book findByTitle(final String title);
 }

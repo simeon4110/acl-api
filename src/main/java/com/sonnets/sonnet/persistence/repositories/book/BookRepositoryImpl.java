@@ -44,8 +44,6 @@ public class BookRepositoryImpl implements BookRepositoryStoredProcedures {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getBookCharacters");
         query.setParameter("bookId", bookId);
         CompletableFuture.supplyAsync(query::execute);
-        StringBuilder sb = new StringBuilder();
-        sb.append(query.getResultList());
-        return sb.toString();
+        return String.valueOf(query.getResultList());
     }
 }

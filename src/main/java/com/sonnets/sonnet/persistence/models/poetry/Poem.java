@@ -89,7 +89,7 @@ public class Poem extends Item implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @IndexedEmbedded
     private List<String> text;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @JsonIgnore

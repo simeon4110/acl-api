@@ -173,7 +173,7 @@ public class SectionController {
     /**
      * Set an annotation.
      *
-     * @param dto a valid annotation dto.
+     * @param body the JSON string.
      * @param id  the id of the section.
      * @return 200 if good.
      */

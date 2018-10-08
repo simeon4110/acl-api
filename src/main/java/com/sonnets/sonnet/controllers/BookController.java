@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.services.SearchService;
 import com.sonnets.sonnet.services.prose.BookService;
+import com.sonnets.sonnet.tools.ParseParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -39,6 +40,13 @@ public class BookController {
     @GetMapping(value = "/book/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Book get(@PathVariable("id") String id) {
         return bookService.get(id);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/book/get_by_title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Book getByTitle(@PathVariable("title") String title) {
+        title = ParseParam.parse(title);
+        return bookService.getBookByTitle(title);
     }
 
     /**

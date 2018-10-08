@@ -150,7 +150,7 @@ public class SectionService {
         Section section = createOrCopySection(new Section(), author, book, dto);
         sectionRepository.saveAndFlush(section);
         book.getSections().add(section);
-        bookService.save(book);
+        CompletableFuture.runAsync(() -> bookService.save(book));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -201,7 +201,7 @@ public class SectionService {
         Section section = getSectionOrThrowNotFound(id);
         Book book = bookService.getBookOrThrowNotFound(section.getParentId());
         book.getSections().remove(section);
-        bookService.save(book);
+        CompletableFuture.runAsync(() -> bookService.save(book));
         sectionRepository.delete(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * All BookCharacter related methods are here.
@@ -82,7 +83,7 @@ public class CharacterService {
         BookCharacter bookCharacter = new BookCharacter();
         book.getBookCharacters().add(createOrCopyCharacter(bookCharacter, dto));
         bookCharacterRepository.saveAndFlush(bookCharacter);
-        bookService.save(book);
+        CompletableFuture.runAsync(() -> bookService.save(book));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
