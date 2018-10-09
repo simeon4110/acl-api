@@ -54,7 +54,8 @@ import java.util.Objects;
                 procedureName = "update_section_annotation",
                 parameters = {
                         @StoredProcedureParameter(name = "annotation", mode = ParameterMode.IN, type = String.class),
-                        @StoredProcedureParameter(name = "annotationId", mode = ParameterMode.IN, type = Long.class)
+                        @StoredProcedureParameter(name = "annotationId", mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
                 }
         )
 })

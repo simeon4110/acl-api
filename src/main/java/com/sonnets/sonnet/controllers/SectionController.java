@@ -182,8 +182,9 @@ public class SectionController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/annotation/set/{id}", consumes = {MediaType.TEXT_PLAIN_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Void> setAnnotation(@RequestBody String body, @PathVariable("id") String id) {
-        return sectionService.setAnnotation(body, id);
+    public ResponseEntity<Void> setAnnotation(@RequestBody String body, @PathVariable("id") String id,
+                                              Principal principal) {
+        return sectionService.setAnnotation(body, id, principal);
     }
 
     /**
