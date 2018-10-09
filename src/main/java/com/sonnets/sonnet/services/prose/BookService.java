@@ -70,6 +70,11 @@ public class BookService {
         return getBookOrThrowNotFound(id);
     }
 
+    public Book getBookByTitle(String title) {
+        LOGGER.debug("Getting book by title: " + title);
+        return bookRepository.findByTitle(title);
+    }
+
     /**
      * Get a book's title on the quick.
      *
@@ -168,6 +173,6 @@ public class BookService {
     @Async
     void save(Book book) {
         LOGGER.debug("Saving book: " + book.toString());
-        CompletableFuture.runAsync(() -> bookRepository.saveAndFlush(book));
+        CompletableFuture.runAsync(() -> bookRepository.save(book));
     }
 }

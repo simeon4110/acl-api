@@ -55,10 +55,11 @@ public class SectionRepositoryBaseImpl implements SectionRepositoryStoredProcedu
 
     @Override
     @Transactional
-    public void updateSectionAnnotation(String annotation, Long annotationId) {
+    public void updateSectionAnnotation(String annotation, Long annotationId, String userName) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("updateSectionAnnotation");
         query.setParameter("annotation", annotation);
         query.setParameter("annotationId", annotationId);
+        query.setParameter("userName", userName);
         query.execute();
     }
 }

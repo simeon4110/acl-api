@@ -18,5 +18,5 @@ public interface SectionRepositoryStoredProcedures {
 
     Optional<String> getBookSectionsSimple(final Long bookId);
 
-    void updateSectionAnnotation(final String annotation, final Long annotationId);
+    void updateSectionAnnotation(final String annotation, final Long annotationId, final String userName);
 }

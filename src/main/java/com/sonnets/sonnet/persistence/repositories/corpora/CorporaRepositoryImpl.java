@@ -64,9 +64,7 @@ public class CorporaRepositoryImpl implements CorporaRepositoryStoredProcedures 
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getCorporaItems");
         query.setParameter("corporaId", corporaId);
         CompletableFuture.supplyAsync(query::execute);
-        StringBuilder sb = new StringBuilder();
-        sb.append(query.getResultList());
-        return sb.toString();
+        return String.valueOf(query.getResultList());
     }
 
     @Override

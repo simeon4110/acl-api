@@ -150,7 +150,7 @@ public class SectionService {
         Section section = createOrCopySection(new Section(), author, book, dto);
         sectionRepository.saveAndFlush(section);
         book.getSections().add(section);
-        bookService.save(book);
+        CompletableFuture.runAsync(() -> bookService.save(book));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -201,7 +201,7 @@ public class SectionService {
         Section section = getSectionOrThrowNotFound(id);
         Book book = bookService.getBookOrThrowNotFound(section.getParentId());
         book.getSections().remove(section);
-        bookService.save(book);
+        CompletableFuture.runAsync(() -> bookService.save(book));
         sectionRepository.delete(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -270,9 +270,9 @@ public class SectionService {
         CompletableFuture.runAsync(() -> sectionRepository.saveAndFlush(section));
     }
 
-    public ResponseEntity<Void> setAnnotation(String body, String id) {
+    public ResponseEntity<Void> setAnnotation(String body, String id, Principal principal) {
         LOGGER.debug(String.format("Setting annotation id '%s' to: %s", id, body));
-        sectionRepository.updateSectionAnnotation(body, Long.parseLong(id));
+        sectionRepository.updateSectionAnnotation(body, Long.parseLong(id), principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

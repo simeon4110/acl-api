@@ -1,11 +1,8 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.base.Item;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -53,9 +50,8 @@ public class Book extends Item implements Serializable {
     private String type;
     @Field(name = "book_section", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Section> sections;
-    @JsonIgnore
     @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterBridge.class)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
@@ -63,7 +59,6 @@ public class Book extends Item implements Serializable {
             @JoinColumn(name = "book_id", referencedColumnName = "id"),
             @JoinColumn(name = "character_id", referencedColumnName = "id")
     })
-    @Fetch(FetchMode.SUBSELECT)
     private List<BookCharacter> bookCharacters;
 
     public Book() {
