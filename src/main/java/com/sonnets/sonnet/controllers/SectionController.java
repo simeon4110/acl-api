@@ -2,7 +2,6 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
-import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.services.prose.SectionService;
 import com.sonnets.sonnet.tools.ParseParam;
@@ -174,7 +173,7 @@ public class SectionController {
      * Set an annotation.
      *
      * @param body the JSON string.
-     * @param id  the id of the section.
+     * @param id   the id of the section.
      * @return 200 if good.
      */
     @CacheEvict(value = "section-annotation", key = "#id")
@@ -182,9 +181,8 @@ public class SectionController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/annotation/set/{id}", consumes = {MediaType.TEXT_PLAIN_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Void> setAnnotation(@RequestBody String body, @PathVariable("id") String id,
-                                              Principal principal) {
-        return sectionService.setAnnotation(body, id, principal);
+    public ResponseEntity<Void> setAnnotation(@RequestBody String body, @PathVariable("id") String id) {
+        return sectionService.setAnnotation(body, id);
     }
 
     /**
@@ -197,7 +195,7 @@ public class SectionController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/section/annotation/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Annotation getAnnotation(@PathVariable("id") String id) {
-        return sectionService.getAnnotation(id);
+    public String getAnnotation(@PathVariable("id") String id) {
+        return sectionService.getAnnotation(id).toString();
     }
 }

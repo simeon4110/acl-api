@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
-import com.sonnets.sonnet.persistence.bridges.CharacterBridge;
+import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import org.hibernate.search.annotations.*;
@@ -53,7 +53,7 @@ public class Book extends Item implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Section> sections;
     @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
-    @FieldBridge(impl = CharacterBridge.class)
+    @FieldBridge(impl = CharacterListBridge.class)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "book_characters", joinColumns = {
             @JoinColumn(name = "book_id", referencedColumnName = "id"),

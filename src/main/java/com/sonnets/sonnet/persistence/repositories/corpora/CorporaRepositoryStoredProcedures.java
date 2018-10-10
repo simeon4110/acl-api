@@ -1,12 +1,9 @@
 package com.sonnets.sonnet.persistence.repositories.corpora;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Interface to define store procedure methods.
@@ -23,7 +20,7 @@ public interface CorporaRepositoryStoredProcedures {
 
     String getCorporaItems(final Long corporaId);
 
-    CompletableFuture<Optional<HashSet<ItemOutSimpleDto>>> getCorporaItemsSimple(final Long corporaId);
+    String getCorporaItemsSimple(final Long corporaId);
 
     Optional<List> getCorporaUser(final String createdBy);
 }

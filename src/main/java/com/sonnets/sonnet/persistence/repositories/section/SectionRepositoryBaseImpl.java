@@ -53,13 +53,4 @@ public class SectionRepositoryBaseImpl implements SectionRepositoryStoredProcedu
         return Optional.of((String) query.getOutputParameterValue("output"));
     }
 
-    @Override
-    @Transactional
-    public void updateSectionAnnotation(String annotation, Long annotationId, String userName) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("updateSectionAnnotation");
-        query.setParameter("annotation", annotation);
-        query.setParameter("annotationId", annotationId);
-        query.setParameter("userName", userName);
-        query.execute();
-    }
 }

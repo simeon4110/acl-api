@@ -1,12 +1,15 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sonnets.sonnet.persistence.bridges.NarratorBridge;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionOutDto;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.annotations.Parameter;
 
@@ -47,15 +50,6 @@ import java.util.Objects;
                 parameters = {
                         @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
                         @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = "updateSectionAnnotation",
-                procedureName = "update_section_annotation",
-                parameters = {
-                        @StoredProcedureParameter(name = "annotation", mode = ParameterMode.IN, type = String.class),
-                        @StoredProcedureParameter(name = "annotationId", mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
                 }
         )
 })
@@ -122,6 +116,11 @@ public class Section extends Item implements Serializable {
     private Long parentId;
     @Embedded
     private TopicModel topicModel;
+    @Field(name = "narrator", store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
+    @FieldBridge(impl = NarratorBridge.class)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
+    private BookCharacter narrator;
 
     public Section() {
         super();
@@ -198,6 +197,14 @@ public class Section extends Item implements Serializable {
         this.topicModel = topicModel;
     }
 
+    public BookCharacter getNarrator() {
+        return narrator;
+    }
+
+    public void setNarrator(BookCharacter narrator) {
+        this.narrator = narrator;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -211,13 +218,14 @@ public class Section extends Item implements Serializable {
                 Objects.equals(annotation, section.annotation) &&
                 Objects.equals(versions, section.versions) &&
                 Objects.equals(parentId, section.parentId) &&
-                Objects.equals(topicModel, section.topicModel);
+                Objects.equals(topicModel, section.topicModel) &&
+                Objects.equals(narrator, section.narrator);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), title, confirmation, text, annotation, versions, processed, parentId,
-                topicModel);
+                topicModel, narrator);
     }
 
     @Override
@@ -231,6 +239,7 @@ public class Section extends Item implements Serializable {
                 ", processed=" + processed +
                 ", parentId=" + parentId +
                 ", topicModel=" + topicModel +
+                ", narrator=" + narrator +
                 "} " + super.toString();
     }
 }

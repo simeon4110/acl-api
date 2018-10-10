@@ -17,6 +17,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,15 +32,17 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
+@PropertySource("classpath:global.properties")
 public class SearchService {
-    private final EntityManager entityManager;
     private static final Logger LOGGER = Logger.getLogger(SearchService.class);
+    private final EntityManager entityManager;
     // Numeric range query settings.
     private static final int INT_DISTANCE = 20;
 
     // General field names.
     private static final String CATEGORY = "category";
     private static final int PRECISION_STEP = 2;
+    private final AuthorService authorService;
 
     // Lucene fuzzy and phrase query constants.
     private static final int PREFIX_LENGTH = 0; // How many chars are "fixed" to the front.
@@ -57,9 +60,9 @@ public class SearchService {
     private static final String BOOK_CHARACTER_FN = "character_first_name";
     private static final String BOOK_CHARACTER_LN = "character_last_name";
     private static final String BOOK_CHARACTER_SEX = "character_gender";
-    private final AuthorService authorService;
 
     @Autowired
+    @SuppressWarnings("unchecked")
     public SearchService(EntityManager entityManager, AuthorService authorService) {
         this.entityManager = entityManager;
         this.authorService = authorService;

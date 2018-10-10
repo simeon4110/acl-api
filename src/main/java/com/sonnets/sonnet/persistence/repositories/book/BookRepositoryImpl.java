@@ -48,7 +48,6 @@ public class BookRepositoryImpl implements BookRepositoryStoredProcedures {
         for (Object o : query.getResultList()) {
             sb.append(o.toString());
         }
-        System.out.println(sb.toString());
         return sb.toString();
     }
 }

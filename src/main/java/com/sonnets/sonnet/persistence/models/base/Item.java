@@ -1,12 +1,10 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -21,23 +19,6 @@ import java.util.Objects;
                 parameters = {
                         @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
                 }
-        )
-})
-@SqlResultSetMappings({
-        @SqlResultSetMapping(
-                name = "itemMapSimple",
-                classes = @ConstructorResult(
-                        targetClass = ItemOutSimpleDto.class,
-                        columns = {
-                                @ColumnResult(name = "id", type = BigDecimal.class),
-                                @ColumnResult(name = "item_id", type = BigDecimal.class),
-                                @ColumnResult(name = "first_name"),
-                                @ColumnResult(name = "last_name"),
-                                @ColumnResult(name = "title"),
-                                @ColumnResult(name = "book_tit"),
-                                @ColumnResult(name = "item_type")
-                        }
-                )
         )
 })
 @MappedSuperclass

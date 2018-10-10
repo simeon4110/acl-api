@@ -15,4 +15,6 @@ public interface SectionRepositoryBase extends JpaRepository<Section, Long>, Sec
     Optional<Section> findByProcessed(final boolean processed);
 
     Optional<List<Section>> findAllByAuthor_LastName(final String lastName);
+
+    Optional<Section> findById(final Long id);
 }

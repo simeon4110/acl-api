@@ -58,9 +58,6 @@ import java.util.Set;
                 procedureName = "get_corpora_items_simple",
                 parameters = {
                         @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
-                },
-                resultSetMappings = {
-                        "itemMapSimple"
                 }
         ),
         @NamedStoredProcedureQuery(

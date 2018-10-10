@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Handles all corpora related REST endpoints.
@@ -82,7 +80,7 @@ public class CorporaController {
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get_items_by_id_simple/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<ItemOutSimpleDto> getItemsByIdSimple(@PathVariable("id") String id) {
+    public String getItemsByIdSimple(@PathVariable("id") String id) {
         return corporaService.getCorporaItemsSimple(id);
     }
 

@@ -12,10 +12,12 @@ import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase
 import com.sonnets.sonnet.services.AuthorService;
 import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.ToolsService;
+import com.sonnets.sonnet.services.annotations.AnnotationsParseService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -39,15 +41,18 @@ public class SectionService {
     private final ToolsService toolsService;
     private final BookService bookService;
     private final AuthorService authorService;
+    private final AnnotationsParseService annotationsParseService;
 
     @Autowired
     public SectionService(SectionRepositoryBase sectionRepository, MessageService messageService,
-                          ToolsService toolsService, BookService bookService, AuthorService authorService) {
+                          ToolsService toolsService, BookService bookService, AuthorService authorService,
+                          AnnotationsParseService annotationsParseService) {
         this.sectionRepository = sectionRepository;
         this.messageService = messageService;
         this.toolsService = toolsService;
         this.bookService = bookService;
         this.authorService = authorService;
+        this.annotationsParseService = annotationsParseService;
     }
 
     /**
@@ -97,6 +102,11 @@ public class SectionService {
      * @return the section.
      */
     public Section get(String id) {
+        LOGGER.debug("Getting section id: " + id);
+        return getSectionOrThrowNotFound(id);
+    }
+
+    public Section get(Long id) {
         LOGGER.debug("Getting section id: " + id);
         return getSectionOrThrowNotFound(id);
     }
@@ -254,32 +264,23 @@ public class SectionService {
     }
 
     /**
-     * @return and unprocessed section.
+     * This is the opposite of a good way to do things. Parses annotations into dialog objects and adds a narrator.
+     *
+     * @param body the raw JSON.
+     * @param id   the id of the section.
+     * @return 200 if good.
      */
-    public Section getUnprocessed() {
-        LOGGER.debug("Returning an unprocessed section.");
-        return sectionRepository.findByProcessed(false).orElse(null);
-    }
-
-    /**
-     * @param section the section object to save.
-     */
-    @Async
-    public void save(Section section) {
-        LOGGER.debug("Saving section: " + section.getId());
-        CompletableFuture.runAsync(() -> sectionRepository.saveAndFlush(section));
-    }
-
-    public ResponseEntity<Void> setAnnotation(String body, String id, Principal principal) {
+    public ResponseEntity<Void> setAnnotation(String body, String id) {
         LOGGER.debug(String.format("Setting annotation id '%s' to: %s", id, body));
-        sectionRepository.updateSectionAnnotation(body, Long.parseLong(id), principal.getName());
+        Section section = getSectionOrThrowNotFound(id);
+        section = annotationsParseService.parseSectionAnnotations(body, section);
+        sectionRepository.save(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public Annotation getAnnotation(String id) {
+    public JSONObject getAnnotation(String id) {
         LOGGER.debug("Getting annotation: " + id);
-        Section section = getSectionOrThrowNotFound(id);
-        return section.getAnnotation();
+        return annotationsParseService.parseSectionAnnotationOut(getSectionOrThrowNotFound(id));
     }
 
     @Async

@@ -9,6 +9,7 @@ import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.topics.TopicInferencer;
 import cc.mallet.types.*;
 import com.sonnets.sonnet.services.exceptions.TopicModelException;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
  * @author Josh Harkema
  */
 public class MalletTools {
+    private static final Logger LOGGER = Logger.getLogger(MalletTools.class);
     private static final double ALPHA_SUM = 1.0D;
     private static final double BETA = 0.01D;
     private static final int NUM_THREADS = 2;
@@ -80,10 +82,14 @@ public class MalletTools {
         // Log some stats I don't fully understand.
         FeatureSequence tokens = (FeatureSequence) model.getData().get(0).instance.getData();
         LabelSequence topics = model.getData().get(0).topicSequence;
-        Formatter out = new Formatter(new StringBuilder(), Locale.US);
-        for (int position = 0; position < tokens.getLength(); position++) {
-            out.format("%s-%d ", alphabet.lookupObject(tokens.getIndexAtPosition(position)),
-                    topics.getIndexAtPosition(position));
+
+        try (Formatter out = new Formatter(new StringBuilder(), Locale.US)) {
+            for (int position = 0; position < tokens.getLength(); position++) {
+                out.format("%s-%d ", alphabet.lookupObject(tokens.getIndexAtPosition(position)),
+                        topics.getIndexAtPosition(position));
+            }
+        } catch (Exception e) {
+            LOGGER.error(e);
         }
 
         double[] topicDistribution = model.getTopicProbabilities(0);
@@ -93,21 +99,23 @@ public class MalletTools {
         Iterator iterator;
         int rank;
         IDSorter idCountPair;
-        Formatter outItem;
-        // Log the sequence and probabilities after each 10 generations.
-        for (int i = 0; i < numberOfTopics; i++) {
-            iterator = topicSortedWords.get(i).iterator();
-            out = new Formatter(new StringBuilder(), Locale.US);
-            outItem = new Formatter(new StringBuilder(), Locale.US);
-            out.format("%.3f\t -- ", topicDistribution[i]);
-            for (rank = 0; iterator.hasNext() && rank < TOP_WORDS; ++rank) {
-                idCountPair = (IDSorter) iterator.next();
-                out.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
-                outItem.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+        try (Formatter out = new Formatter(new StringBuilder(), Locale.US);
+             Formatter outItem = new Formatter(new StringBuilder(), Locale.US)) {
+            // Log the sequence and probabilities after each 10 generations.
+            for (int i = 0; i < numberOfTopics; i++) {
+                iterator = topicSortedWords.get(i).iterator();
+                out.format("%.3f\t -- ", topicDistribution[i]);
+                for (rank = 0; iterator.hasNext() && rank < TOP_WORDS; ++rank) {
+                    idCountPair = (IDSorter) iterator.next();
+                    out.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+                    outItem.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+                }
+                Map<Double, String> item = new HashMap<>();
+                item.put(topicDistribution[i], outItem.toString());
+                resultMap.put(i, item);
             }
-            Map<Double, String> item = new HashMap<>();
-            item.put(topicDistribution[i], outItem.toString());
-            resultMap.put(i, item);
+        } catch (Exception e) {
+            LOGGER.error(e);
         }
 
         // Create a new instance with high probability of topic 0

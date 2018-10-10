@@ -17,6 +17,4 @@ public interface SectionRepositoryStoredProcedures {
     CompletableFuture<Optional<List<Section>>> getAllByUser(final String userName);
 
     Optional<String> getBookSectionsSimple(final Long bookId);
-
-    void updateSectionAnnotation(final String annotation, final Long annotationId, final String userName);
 }

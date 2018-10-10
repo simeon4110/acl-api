@@ -14,7 +14,6 @@ public class AuthorBridge implements FieldBridge {
     @Override
     public void set(String s, Object o, Document document, LuceneOptions luceneOptions) {
         Author author = (Author) o;
-
         luceneOptions.addFieldToDocument(s + ".firstName", author.getFirstName(), document);
         luceneOptions.addFieldToDocument(s + ".lastName", author.getLastName(), document);
     }

@@ -1,13 +1,11 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
+import com.sonnets.sonnet.persistence.bridges.DialogBridge;
+import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
-import com.sonnets.sonnet.persistence.models.base.Dialog;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,6 +37,8 @@ public class BookCharacter extends Auditable<String> implements Serializable {
     private String description;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
+    @Field(name = "character_dialog", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @FieldBridge(impl = DialogBridge.class)
     private Set<Dialog> dialog;
 
     public BookCharacter() {

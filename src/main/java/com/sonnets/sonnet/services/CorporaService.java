@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
@@ -15,10 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -168,11 +165,9 @@ public class CorporaService {
      * @param id the db id of the corpora's items to get.
      * @return a set of the basic details for all items in a corpora.
      */
-    public Set<ItemOutSimpleDto> getCorporaItemsSimple(String id) {
+    public String getCorporaItemsSimple(String id) {
         LOGGER.debug("Getting corpora items simple: " + id);
-        CompletableFuture<Optional<HashSet<ItemOutSimpleDto>>> future =
-                corporaRepository.getCorporaItemsSimple(Long.valueOf(id));
-        return future.join().orElseThrow(ItemNotFoundException::new);
+        return corporaRepository.getCorporaItemsSimple(Long.parseLong(id));
     }
 
     /**

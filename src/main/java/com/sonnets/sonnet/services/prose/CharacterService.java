@@ -113,8 +113,17 @@ public class CharacterService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private BookCharacter getCharacterOrThrowNotFound(String id) {
+    public void save(BookCharacter bookCharacter) {
+        LOGGER.debug("Saving book character: " + bookCharacter.toString());
+        bookCharacterRepository.saveAndFlush(bookCharacter);
+    }
+
+    public BookCharacter getCharacterOrThrowNotFound(String id) {
         long parsedId = Long.parseLong(id);
         return bookCharacterRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    public BookCharacter getCharacterOrThrowNotFound(Long id) {
+        return bookCharacterRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 }
