@@ -17,6 +17,7 @@ import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -117,6 +118,27 @@ public class SectionService {
      */
     public List getAll() {
         return sectionRepository.getAllSections().orElseThrow(ItemNotFoundException::new);
+    }
+
+    /**
+     * Get a section's title as well as it's parent title on the quick.
+     *
+     * @param id the db id of the book to get the title of.
+     * @return the book's title. (title = section title, bookTitle = parent title}
+     */
+    public String getTitle(String id) {
+        Section section = sectionRepository.findById(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
+        JSONObject bookTitle;
+        try {
+            bookTitle = new JSONObject(bookService.getTitle(String.valueOf(section.getParentId())));
+            JSONObject result = new JSONObject();
+            result.put("title", section.getTitle());
+            result.put("bookTitle", bookTitle.get("title"));
+            return result.toString();
+        } catch (JSONException e) {
+            LOGGER.error(e);
+            return null;
+        }
     }
 
     /**
@@ -278,9 +300,9 @@ public class SectionService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public JSONObject getAnnotation(String id) {
+    public String getAnnotation(String id) {
         LOGGER.debug("Getting annotation: " + id);
-        return annotationsParseService.parseSectionAnnotationOut(getSectionOrThrowNotFound(id));
+        return annotationsParseService.parseSectionAnnotationOut(getSectionOrThrowNotFound(id)).toString();
     }
 
     @Async

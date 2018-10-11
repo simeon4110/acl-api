@@ -45,6 +45,13 @@ public class SectionController {
         return sectionService.get(id);
     }
 
+    @Cacheable(value = "section-title", key = "#id")
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/section/get_title/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getTitle(@PathVariable("id") String id) {
+        return sectionService.getTitle(id);
+    }
+
     /**
      * @return All sections in the db.
      */
@@ -196,6 +203,6 @@ public class SectionController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/section/annotation/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAnnotation(@PathVariable("id") String id) {
-        return sectionService.getAnnotation(id).toString();
+        return sectionService.getAnnotation(id);
     }
 }

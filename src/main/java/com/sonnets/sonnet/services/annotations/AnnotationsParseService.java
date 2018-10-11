@@ -6,6 +6,7 @@ import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.DialogRepository;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.prose.CharacterService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -65,7 +64,7 @@ public class AnnotationsParseService {
             BookCharacter narrator = parseNarratorAnnotation(annotationsArray);
             section.setNarrator(narrator);
             section.getAnnotation().setAnnotationBody(sentencesArray.toString());
-        } catch (JSONException | ParseException e) {
+        } catch (JSONException e) {
             LOGGER.error(e);
         }
         return section;
@@ -77,36 +76,22 @@ public class AnnotationsParseService {
      * @param annotationsArray a loaded JSONArray of all the annotations.
      * @param sectionId        the id of the section the annotations came from
      * @throws JSONException  not always a real error.
-     * @throws ParseException
      */
-    private void parseDialogAnnotations(final JSONArray annotationsArray, final Long sectionId)
-            throws JSONException, ParseException {
+    private void parseDialogAnnotations(final JSONArray annotationsArray, final Long sectionId) throws JSONException {
         for (int i = 0; i < annotationsArray.length(); i++) {
             JSONObject o = annotationsArray.getJSONObject(i);
-            Dialog dialog = null;
             if (o.getString(env.getProperty("annotation.type")).equals(env.getProperty("annotation.type.character"))) {
                 BookCharacter character = characterService.getCharacterOrThrowNotFound(
                         String.valueOf(o.getString(env.getProperty("annotation.itemId")))
                 );
-                try {
-                    if (dialogRepository.existsById(o.getLong(env.getProperty("annotation.id")))) {
-                        dialog = dialogRepository.getOne(o.getLong(env.getProperty("annotation.id")));
-                    }
-                } catch (JSONException e) {
-                    LOGGER.error(e);
-                    dialog = new Dialog();
-                }
-
-                Objects.requireNonNull(dialog).setItemFriendly(o.getString(env.getProperty("annotation.itemFriendly")));
+                Dialog dialog = this.loadDialogOrCreateNew(o);
+                dialog.setItemFriendly(o.getString(env.getProperty("annotation.itemFriendly")));
                 dialog.setItemId(Long.parseLong(o.getString(env.getProperty("annotation.itemId"))));
                 dialog.setBody(o.getString(env.getProperty("annotation.body")));
                 dialog.setCharacterOffsetBegin(o.getLong(env.getProperty("annotation.offsetBegin")));
                 dialog.setCharacterOffsetEnd(o.getLong(env.getProperty("annotation.offsetEnd")));
                 dialog.setSectionId(sectionId);
-                dialog.setCreatedBy(o.getString(env.getProperty("auditor.createdBy")));
-                dialog.setCreatedDate(new SimpleDateFormat("dd-MM-yy")
-                        .parse(o.getString(env.getProperty("auditor.createdDate"))));
-
+                dialog.setCreatedBy(o.getString(env.getProperty("auditor.createdBy"))); // :TODO: remove when migrated.
                 dialogRepository.save(dialog);
                 character.getDialog().add(dialog);
                 characterService.save(character);
@@ -172,7 +157,7 @@ public class AnnotationsParseService {
      *
      * @param annotationsArray a loaded JSONArray containing all the annotations.
      * @return a loaded BookCharacter object if the annotations contain a narrator, null if nothing is found.
-     * @throws JSONException
+     * @throws JSONException if the annotationsArray cannot be parsed.
      */
     private BookCharacter parseNarratorAnnotation(final JSONArray annotationsArray)
             throws JSONException {
@@ -184,5 +169,24 @@ public class AnnotationsParseService {
             }
         }
         return null;
+    }
+
+    /**
+     * Searches the database for an exising dialog with the same id, if one is found it is returned, if nothing is
+     * found a new dialog is returned.
+     *
+     * @param o the raw annotation object.
+     * @return an existing dialog (if found) or a new dialog (if nothing is found.)
+     */
+    private Dialog loadDialogOrCreateNew(JSONObject o) {
+        try {
+            if (dialogRepository.existsById(o.getLong(env.getProperty("annotation.id")))) {
+                Optional<Dialog> dialog = dialogRepository.findById(o.getLong(env.getProperty("annotation.id")));
+                return dialog.orElseThrow(ItemNotFoundException::new);
+            }
+        } catch (JSONException e) {
+            LOGGER.error(e);
+        }
+        return new Dialog();
     }
 }

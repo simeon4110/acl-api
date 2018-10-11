@@ -5,9 +5,11 @@ import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
+import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.apache.log4j.Logger;
@@ -60,6 +62,7 @@ public class SearchService {
     private static final String BOOK_CHARACTER_FN = "character_first_name";
     private static final String BOOK_CHARACTER_LN = "character_last_name";
     private static final String BOOK_CHARACTER_SEX = "character_gender";
+    private static final String CHARACTER_DIALOG = "character_dialog.body";
 
     @Autowired
     @SuppressWarnings("unchecked")
@@ -184,6 +187,10 @@ public class SearchService {
             LOGGER.debug("Parsing CHAR GENDER: " + dto.getCharGender().toLowerCase());
             builder.add(new TermQuery(new Term(BOOK_CHARACTER_SEX, dto.getCharGender())), BooleanClause.Occur.MUST);
         }
+        if (dto.getText() != null && !dto.getText().equals("")) {
+            LOGGER.debug("Parsing char dialog: " + dto.getText().toLowerCase());
+            builder.add(new TermQuery(new Term(CHARACTER_DIALOG, dto.getText())), BooleanClause.Occur.MUST);
+        }
     }
 
     // Public entry method.
@@ -198,6 +205,8 @@ public class SearchService {
             fullTextQuery = manager.createFullTextQuery(query, Poem.class);
         } else if (dto.isSearchBooks()) {
             fullTextQuery = manager.createFullTextQuery(query, Book.class, Section.class);
+        } else if (dto.isSearchBookCharacters()) {
+            fullTextQuery = manager.createFullTextQuery(query, Dialog.class, BookCharacter.class, Section.class);
         } else {
             fullTextQuery = manager.createFullTextQuery(query, Book.class, Section.class, Poem.class, Other.class);
         }
