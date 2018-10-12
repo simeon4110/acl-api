@@ -35,7 +35,7 @@ public class BookCharacter extends Auditable<String> implements Serializable {
     private String gender;
     @Column
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     @Field(name = "character_dialog", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @FieldBridge(impl = DialogBridge.class)

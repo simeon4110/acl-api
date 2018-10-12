@@ -3,6 +3,7 @@ package com.sonnets.sonnet.services.annotations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
+import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.DialogRepository;
@@ -48,34 +49,87 @@ public class AnnotationsParseService {
      * them in the proper book character object.
      *
      * @param rawJSON the raw JSON string.
+     * @param section the section to add the annotations to.
+     * @return a section object with new annotations parsed into it.
      */
     public Section parseSectionAnnotations(final String rawJSON, Section section) {
         LOGGER.debug("Parsing annotations for section: " + section.getId());
         JSONObject jsonObject;
+        JSONObject jsonObjectOut;
         JSONArray annotationsArray;
         JSONArray sentencesArray;
         try {
             jsonObject = new JSONObject(rawJSON);
+            jsonObjectOut = new JSONObject();
 
-            annotationsArray = jsonObject.getJSONArray(ANNOTATIONS);
+            annotationsArray = getAnnotations(jsonObject);
             sentencesArray = jsonObject.getJSONArray(SENTENCES);
 
-            parseDialogAnnotations(annotationsArray, section.getId());
-            BookCharacter narrator = parseNarratorAnnotation(annotationsArray);
-            section.setNarrator(narrator);
-            section.getAnnotation().setAnnotationBody(sentencesArray.toString());
+            // This checks to see if the annotations array exists.
+            if (annotationsArray != null) {
+                parseDialogAnnotations(annotationsArray, section.getId());
+                BookCharacter narrator = parseNarratorAnnotation(annotationsArray);
+                section.setNarrator(narrator);
+            }
+
+            jsonObjectOut.put(SENTENCES, sentencesArray);
+            if (section.getAnnotation() == null) {
+                section.setAnnotation(new Annotation());
+            }
+
+            section.getAnnotation().setAnnotationBody(jsonObjectOut.toString());
         } catch (JSONException e) {
             LOGGER.error(e);
+            LOGGER.error("Escaping into the aether.");
+            return getSentencesSolo(rawJSON, section);
         }
         return section;
     }
 
     /**
-     * Parses dialog objects from RAW JSON into database objects.
+     * Catches parses errors for empty sentences arrays. Adds the sentences array to the section. Should not usually
+     * return null.
+     *
+     * @param rawJSON the raw json with the sentences array.
+     * @param section the section to parse the sentences onto.
+     * @return null if an error or a section if successful.
+     */
+    private Section getSentencesSolo(String rawJSON, Section section) {
+        JSONArray sentences;
+        try {
+            sentences = new JSONArray(rawJSON);
+            section.getAnnotation().setAnnotationBody(sentences.toString());
+        } catch (JSONException e) {
+            LOGGER.error(e);
+            return null;
+        }
+        return section;
+    }
+
+    /**
+     * Returns a parsed JSONArray if the rawJSON contains an annotations object. Returns null if nothing is found.
+     *
+     * @param rawJSON the JSONObject to check.
+     * @return null if an error, a valid JSONArray if successful.
+     */
+    private JSONArray getAnnotations(JSONObject rawJSON) {
+        JSONArray annotationsArray;
+        try {
+            annotationsArray = rawJSON.getJSONArray(ANNOTATIONS);
+        } catch (JSONException e) {
+            LOGGER.error(e);
+            return null;
+        }
+        return annotationsArray;
+    }
+
+    /**
+     * Parses dialog objects from RAW JSON into database objects. Saves the dialog into the db's Dialog table, as
+     * well as the respective character table.
      *
      * @param annotationsArray a loaded JSONArray of all the annotations.
      * @param sectionId        the id of the section the annotations came from
-     * @throws JSONException  not always a real error.
+     * @throws JSONException not always a real error.
      */
     private void parseDialogAnnotations(final JSONArray annotationsArray, final Long sectionId) throws JSONException {
         for (int i = 0; i < annotationsArray.length(); i++) {
@@ -100,31 +154,24 @@ public class AnnotationsParseService {
     }
 
     /**
-     * Parses together related annotation objects into JSON that can be read by the front-end.
+     * Parses together related annotation objects into JSON that can be read by the front-end. This code was
+     * a literal nightmare to write.
      *
      * @param section the section's annotations to parse into JSON.
-     * @return a JSONObject containing all the annotations.
+     * @return a JSONObject containing all the annotations or null if any errors occur.
      */
     public JSONObject parseSectionAnnotationOut(final Section section) {
         LOGGER.debug("Parsing annotations to JSON for section: " + section.getId());
         Gson gson = new GsonBuilder().create();
         try {
             JSONObject out = new JSONObject();
+            JSONObject in = new JSONObject(section.getAnnotation().getAnnotationBody());
+
+            JSONArray sentencesArray = in.getJSONArray(SENTENCES);
             JSONArray annotationsArray = new JSONArray();
 
-            // This catches cases when an object has old style annotations.
-            try {
-                JSONObject rawJsonObject = new JSONObject(section.getAnnotation().getAnnotationBody());
-                out.put(SENTENCES, rawJsonObject.getJSONArray(SENTENCES));
-                out.put(ANNOTATIONS, rawJsonObject.getJSONArray(ANNOTATIONS));
-                return out;
-            } catch (JSONException e) {
-                LOGGER.debug(e);
-                out.put(SENTENCES, new JSONArray(section.getAnnotation().getAnnotationBody()));
-            }
-
+            // Parse in dialog objects from the DB (if any exist.)
             Set<Dialog> dialogSet = dialogRepository.findAllBySectionId(section.getId());
-
             for (Dialog dialog : dialogSet) {
                 String json = gson.toJson(dialog);
                 JSONObject o = new JSONObject(json);
@@ -132,6 +179,7 @@ public class AnnotationsParseService {
                 annotationsArray.put(o);
             }
 
+            // Parse in a narrator object (if one exists.)
             if (section.getNarrator() != null) {
                 BookCharacter narrator = section.getNarrator();
                 JSONObject o = new JSONObject();
@@ -143,9 +191,11 @@ public class AnnotationsParseService {
                 o.put(env.getProperty("auditor.createdDate"), narrator.getCreatedDate());
                 annotationsArray.put(o);
             }
+
+            // Attach the arrays to the ouput object.
+            out.put(SENTENCES, sentencesArray);
             out.put(ANNOTATIONS, annotationsArray);
             return out;
-
         } catch (JSONException e) {
             LOGGER.error(e);
         }
@@ -159,8 +209,7 @@ public class AnnotationsParseService {
      * @return a loaded BookCharacter object if the annotations contain a narrator, null if nothing is found.
      * @throws JSONException if the annotationsArray cannot be parsed.
      */
-    private BookCharacter parseNarratorAnnotation(final JSONArray annotationsArray)
-            throws JSONException {
+    private BookCharacter parseNarratorAnnotation(final JSONArray annotationsArray) throws JSONException {
         LOGGER.debug("Parsing narrator annotations.");
         for (int i = 0; i < annotationsArray.length(); i++) {
             JSONObject o = annotationsArray.getJSONObject(i);

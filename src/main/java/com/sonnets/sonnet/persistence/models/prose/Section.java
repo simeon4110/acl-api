@@ -8,8 +8,6 @@ import com.sonnets.sonnet.persistence.models.base.Version;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.annotations.Parameter;
 
@@ -119,7 +117,6 @@ public class Section extends Item implements Serializable {
     @Field(name = "narrator", store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
     @FieldBridge(impl = NarratorBridge.class)
     @ManyToOne(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
     private BookCharacter narrator;
 
     public Section() {

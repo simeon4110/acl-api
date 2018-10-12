@@ -300,9 +300,9 @@ public class SectionService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public String getAnnotation(String id) {
-        LOGGER.debug("Getting annotation: " + id);
-        return annotationsParseService.parseSectionAnnotationOut(getSectionOrThrowNotFound(id)).toString();
+    public String getAnnotation(String sectionId) {
+        LOGGER.debug("Getting annotation for section: " + sectionId);
+        return annotationsParseService.parseSectionAnnotationOut(getSectionOrThrowNotFound(sectionId)).toString();
     }
 
     @Async
