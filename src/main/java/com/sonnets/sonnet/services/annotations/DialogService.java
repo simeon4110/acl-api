@@ -40,7 +40,8 @@ public class DialogService {
     @Transactional(readOnly = true)
     public List<Dialog> getAllFromCharacter(final Long id) {
         LOGGER.debug("Getting all dialog from book: " + id);
-        return dialogRepository.findAllByItemId(id).orElseThrow(ItemNotFoundException::new);
+        return dialogRepository.findAllByItemIdOrderByCharacterOffsetBeginAsc(id)
+                .orElseThrow(ItemNotFoundException::new);
     }
 
     /**

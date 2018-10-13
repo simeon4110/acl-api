@@ -69,7 +69,9 @@ public class AnnotationsParseService {
             if (annotationsArray != null) {
                 parseDialogAnnotations(annotationsArray, section.getId());
                 BookCharacter narrator = parseNarratorAnnotation(annotationsArray);
-                section.setNarrator(narrator);
+                if (narrator != null) {
+                    section.setNarrator(narrator);
+                }
             }
 
             jsonObjectOut.put(SENTENCES, sentencesArray);
@@ -80,7 +82,6 @@ public class AnnotationsParseService {
             section.getAnnotation().setAnnotationBody(jsonObjectOut.toString());
         } catch (JSONException e) {
             LOGGER.error(e);
-            LOGGER.error("Escaping into the aether.");
             return getSentencesSolo(rawJSON, section);
         }
         return section;
@@ -145,8 +146,6 @@ public class AnnotationsParseService {
                 dialog.setCharacterOffsetBegin(o.getLong(env.getProperty("annotation.offsetBegin")));
                 dialog.setCharacterOffsetEnd(o.getLong(env.getProperty("annotation.offsetEnd")));
                 dialog.setSectionId(sectionId);
-                dialog.setCreatedBy(o.getString(env.getProperty("auditor.createdBy"))); // :TODO: remove when migrated.
-                dialogRepository.save(dialog);
                 character.getDialog().add(dialog);
                 characterService.save(character);
             }
@@ -171,7 +170,7 @@ public class AnnotationsParseService {
             JSONArray annotationsArray = new JSONArray();
 
             // Parse in dialog objects from the DB (if any exist.)
-            Set<Dialog> dialogSet = dialogRepository.findAllBySectionId(section.getId());
+            Set<Dialog> dialogSet = dialogRepository.findAllBySectionIdOrderByCharacterOffsetBeginAsc(section.getId());
             for (Dialog dialog : dialogSet) {
                 String json = gson.toJson(dialog);
                 JSONObject o = new JSONObject(json);
@@ -192,7 +191,7 @@ public class AnnotationsParseService {
                 annotationsArray.put(o);
             }
 
-            // Attach the arrays to the ouput object.
+            // Attach the arrays to the output object.
             out.put(SENTENCES, sentencesArray);
             out.put(ANNOTATIONS, annotationsArray);
             return out;
@@ -229,7 +228,8 @@ public class AnnotationsParseService {
      */
     private Dialog loadDialogOrCreateNew(JSONObject o) {
         try {
-            if (dialogRepository.existsById(o.getLong(env.getProperty("annotation.id")))) {
+            if (o.getString(env.getProperty("annotation.id")) != null &&
+                    dialogRepository.existsById(o.getLong(env.getProperty("annotation.id")))) {
                 Optional<Dialog> dialog = dialogRepository.findById(o.getLong(env.getProperty("annotation.id")));
                 return dialog.orElseThrow(ItemNotFoundException::new);
             }

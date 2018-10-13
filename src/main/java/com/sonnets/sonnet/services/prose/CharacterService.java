@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,10 +41,11 @@ public class CharacterService {
      * @return the BookCharacter with the new data copied onto it.
      */
     private static BookCharacter createOrCopyCharacter(BookCharacter bookCharacter, CharacterDto dto) {
-        bookCharacter.setFirstName(dto.getFirstName());
-        bookCharacter.setLastName(dto.getLastName());
-        bookCharacter.setGender(dto.getGender());
-        bookCharacter.setDescription(dto.getDescription());
+        bookCharacter.setFirstName((dto.getFirstName() == null) ? "" : dto.getFirstName());
+        bookCharacter.setLastName((dto.getLastName() == null) ? "" : dto.getLastName());
+        bookCharacter.setGender((dto.getGender() == null) ? "" : dto.getGender());
+        bookCharacter.setDescription((dto.getDescription() == null) ? "" : dto.getDescription());
+        bookCharacter.setDialog((bookCharacter.getDialog() == null) ? new HashSet<>() : bookCharacter.getDialog());
         return bookCharacter;
     }
 
@@ -96,7 +98,7 @@ public class CharacterService {
     public ResponseEntity<Void> modify(CharacterDto dto) {
         LOGGER.debug("Modifying bookCharacter: " + dto.toString());
         BookCharacter bookCharacter = getCharacterOrThrowNotFound(dto.getId());
-        bookCharacterRepository.saveAndFlush(createOrCopyCharacter(bookCharacter, dto));
+        CompletableFuture.runAsync(() -> bookCharacterRepository.save(createOrCopyCharacter(bookCharacter, dto)));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -115,7 +117,7 @@ public class CharacterService {
 
     public void save(BookCharacter bookCharacter) {
         LOGGER.debug("Saving book character: " + bookCharacter.toString());
-        bookCharacterRepository.saveAndFlush(bookCharacter);
+        CompletableFuture.runAsync(() -> bookCharacterRepository.save(bookCharacter));
     }
 
     public BookCharacter getCharacterOrThrowNotFound(String id) {

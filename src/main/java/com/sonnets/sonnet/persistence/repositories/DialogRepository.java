@@ -15,9 +15,9 @@ import java.util.Set;
  */
 @Repository
 public interface DialogRepository extends JpaRepository<Dialog, Long> {
-    Set<Dialog> findAllBySectionId(final Long sectionId);
+    Set<Dialog> findAllBySectionIdOrderByCharacterOffsetBeginAsc(final Long sectionId);
 
-    Optional<List<Dialog>> findAllByItemId(final Long itemId);
+    Optional<List<Dialog>> findAllByItemIdOrderByCharacterOffsetBeginAsc(final Long itemId);
 
     @Override
     Optional<Dialog> findById(Long aLong);
