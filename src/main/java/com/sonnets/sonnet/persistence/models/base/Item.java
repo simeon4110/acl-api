@@ -1,12 +1,12 @@
 package com.sonnets.sonnet.persistence.models.base;
 
+import com.google.gson.annotations.Expose;
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -23,53 +23,44 @@ import java.util.Objects;
                 }
         )
 })
-@SqlResultSetMappings({
-        @SqlResultSetMapping(
-                name = "itemMapSimple",
-                classes = @ConstructorResult(
-                        targetClass = ItemOutSimpleDto.class,
-                        columns = {
-                                @ColumnResult(name = "id", type = BigDecimal.class),
-                                @ColumnResult(name = "item_id", type = BigDecimal.class),
-                                @ColumnResult(name = "first_name"),
-                                @ColumnResult(name = "last_name"),
-                                @ColumnResult(name = "title"),
-                                @ColumnResult(name = "book_tit"),
-                                @ColumnResult(name = "item_type")
-                        }
-                )
-        )
-})
 @MappedSuperclass
 public abstract class Item extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -5596854181341354264L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
+    @Expose
     private Long id;
-    @Field(name = "category", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.CATEGORY, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private String category;
-    @Field(name = "author")
+    @Field(name = SearchConstants.AUTHOR)
     @FieldBridge(impl = AuthorBridge.class)
     @ManyToOne(fetch = FetchType.EAGER)
+    @Expose
     private Author author;
-    @Field(name = "title", store = Store.YES, analyze = Analyze.YES)
-    @Analyzer(definition = "textAnalyzer")
+    @Field(name = SearchConstants.TITLE, store = Store.YES, analyze = Analyze.YES)
+    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column
+    @Expose
     private String title;
     @Column
     private String description;
-    @Field(name = "publicationYear", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.YEAR, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private Integer publicationYear;
     @Column
+    @Expose
     private String publicationStmt;
-    @Field(name = "source", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.SOURCE, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private String sourceDesc;
-    @Field(name = "period", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.PERIOD, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private String period;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserAnnotation userAnnotation;

@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
+import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -10,6 +10,7 @@ import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -35,19 +35,18 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
-    private static final int NUMBER_OF_RANDOM_SONNETS = 2;
     private final PoemRepository poemRepository;
-    private final SearchService searchService;
     private final MessageService messageService;
     private final AuthorService authorService;
+    private final SearchQueryHandlerService searchQueryHandlerService;
 
     @Autowired
-    public PoemService(PoemRepository poemRepository, SearchService searchService, MessageService messageService,
-                       AuthorService authorService) {
+    public PoemService(PoemRepository poemRepository, MessageService messageService, AuthorService authorService,
+                       SearchQueryHandlerService searchQueryHandlerService) {
         this.poemRepository = poemRepository;
-        this.searchService = searchService;
         this.messageService = messageService;
         this.authorService = authorService;
+        this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
     /**
@@ -99,16 +98,13 @@ public class PoemService {
         LOGGER.debug("Adding poem: " + dto.toString());
         // Check if poem already exists.
         try {
-            searchService.similarExistsPoem(dto);
+            similarExistsPoem(dto);
         } catch (ItemAlreadyExistsException e) {
             LOGGER.error(e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-
-        Author author = authorService.get(dto.getAuthorId());
-        assert author != null;
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
-        LOGGER.debug(poem.toString());
         poemRepository.saveAndFlush(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -121,15 +117,10 @@ public class PoemService {
      */
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
-        Optional<Poem> optionalPoem = poemRepository.findById(dto.getId());
-        Author author = authorService.get(dto.getAuthorId());
-        if (optionalPoem.isPresent() && author != null) {
-            Poem poem = createOrUpdateFromDto(optionalPoem.get(), dto, author);
-            poemRepository.saveAndFlush(poem);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Poem poem = createOrUpdateFromDto(getPoemOrThrowNotFound(dto.getId()), dto, author);
+        poemRepository.saveAndFlush(poem);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -142,14 +133,12 @@ public class PoemService {
      */
     public ResponseEntity<Void> modify(PoemDto dto, Principal principal) {
         LOGGER.debug("Modifying poem (USER): " + dto.toString());
-        Poem poem = getPoemOrNull(dto.getId().toString());
-        Author author = authorService.get(dto.getAuthorId());
-        // ensure poem was created by the user trying to modify it.
-        if (poem != null && author != null && principal.getName().equals(poem.getCreatedBy())) {
-            poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Poem poem = getPoemOrThrowNotFound(dto.getId().toString());
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        assert poem != null;
+        assert principal.getName().equals(poem.getCreatedBy());
+        poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -160,7 +149,7 @@ public class PoemService {
      */
     public ResponseEntity<Void> deleteById(String id) {
         LOGGER.debug("Deleting poem with id (ADMIN): " + id);
-        Poem poem = getPoemOrNull(id);
+        Poem poem = getPoemOrThrowNotFound(id);
         assert poem != null;
         poemRepository.delete(poem);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -175,7 +164,7 @@ public class PoemService {
      */
     public ResponseEntity<Void> confirm(String id, Principal principal) {
         LOGGER.debug("Confirming sonnet: " + id);
-        Poem poem = getPoemOrNull(id);
+        Poem poem = getPoemOrThrowNotFound(id);
         assert poem != null;
         poem.getConfirmation().setConfirmed(true);
         poem.getConfirmation().setConfirmedBy(principal.getName());
@@ -193,7 +182,7 @@ public class PoemService {
      */
     public ResponseEntity<Void> reject(RejectDto rejectDto) {
         LOGGER.debug("Rejecting poem: " + rejectDto.getId());
-        Poem poem = getPoemOrNull(rejectDto.getId());
+        Poem poem = getPoemOrThrowNotFound(rejectDto.getId());
         assert poem != null;
         poem.getConfirmation().setConfirmed(false);
         poem.getConfirmation().setPendingRevision(true);
@@ -231,7 +220,7 @@ public class PoemService {
      */
     public Poem getById(String id) {
         LOGGER.debug("Getting poem with id: " + id);
-        return getPoemOrNull(id);
+        return getPoemOrThrowNotFound(id);
     }
 
     /**
@@ -255,14 +244,9 @@ public class PoemService {
     /**
      * @return two random sonnets.
      */
-    public List<PoemOutDto> getTwoRandomSonnets() {
+    public String getTwoRandomSonnets() {
         LOGGER.debug("Returning two random sonnets.");
-        List<PoemOutDto> twoRandom = new ArrayList<>();
-        while (twoRandom.size() < NUMBER_OF_RANDOM_SONNETS) {
-            PoemOutDto poem = poemRepository.getRandomPoem("SONNET").orElseThrow(ItemNotFoundException::new);
-            twoRandom.add(poem);
-        }
-        return twoRandom;
+        return poemRepository.getRandomPoem("SONNET");
     }
 
     /**
@@ -271,9 +255,8 @@ public class PoemService {
      *
      * @return all poems as a list.
      */
-    public List<Poem> getAll() {
-        CompletableFuture<Optional<List<Poem>>> future = poemRepository.getAllPoemsManual();
-        return future.join().orElseThrow(ItemNotFoundException::new);
+    public String getAll() {
+        return poemRepository.getAllPoemsManual();
     }
 
     public Page<Poem> getAllPaged(Pageable pageable) {
@@ -306,7 +289,7 @@ public class PoemService {
     // User - delete poem.
     public ResponseEntity<Void> deleteById(String id, Principal principal) {
         LOGGER.debug("Deleting poem with id (USER): " + id);
-        Poem poem = getPoemOrNull(id);
+        Poem poem = getPoemOrThrowNotFound(id);
         if (poem != null && poem.getCreatedBy().equals(principal.getName())) {
             poemRepository.delete(poem);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -324,7 +307,7 @@ public class PoemService {
         poemRepository.saveAndFlush(poem);
     }
 
-    private Poem getPoemOrNull(String id) {
+    private Poem getPoemOrThrowNotFound(String id) {
         long parsedId;
         try {
             parsedId = Long.parseLong(id);
@@ -332,6 +315,19 @@ public class PoemService {
             LOGGER.error(e);
             return null;
         }
-        return poemRepository.findById(parsedId).orElse(null);
+        return poemRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    private Poem getPoemOrThrowNotFound(Long id) {
+        return poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+    }
+
+    private void similarExistsPoem(PoemDto dto) {
+        SearchDto searchDto = new SearchDto();
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        searchDto.setAuthor(author);
+        searchDto.setTitle(dto.getTitle());
+        searchDto.setSearchPoems(true);
+        searchQueryHandlerService.similarExistsPoem(searchDto);
     }
 }

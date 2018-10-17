@@ -5,15 +5,16 @@ import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
-import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * All BookCharacter related methods are here.
@@ -23,16 +24,13 @@ import java.util.List;
 @Service
 public class CharacterService {
     private static final Logger LOGGER = Logger.getLogger(CharacterService.class);
-    private final GetObjectOrThrowNullPointer getObjectOrNull;
     private final BookCharacterRepository bookCharacterRepository;
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
     @Autowired
-    public CharacterService(GetObjectOrThrowNullPointer getObjectOrNull,
-                            BookCharacterRepository bookCharacterRepository, BookRepository bookRepository) {
-        this.getObjectOrNull = getObjectOrNull;
+    public CharacterService(BookCharacterRepository bookCharacterRepository, BookService bookService) {
         this.bookCharacterRepository = bookCharacterRepository;
-        this.bookRepository = bookRepository;
+        this.bookService = bookService;
     }
 
     /**
@@ -43,10 +41,11 @@ public class CharacterService {
      * @return the BookCharacter with the new data copied onto it.
      */
     private static BookCharacter createOrCopyCharacter(BookCharacter bookCharacter, CharacterDto dto) {
-        bookCharacter.setFirstName(dto.getFirstName());
-        bookCharacter.setLastName(dto.getLastName());
-        bookCharacter.setGender(dto.getGender());
-        bookCharacter.setDescription(dto.getDescription());
+        bookCharacter.setFirstName((dto.getFirstName() == null) ? "" : dto.getFirstName());
+        bookCharacter.setLastName((dto.getLastName() == null) ? "" : dto.getLastName());
+        bookCharacter.setGender((dto.getGender() == null) ? "" : dto.getGender());
+        bookCharacter.setDescription((dto.getDescription() == null) ? "" : dto.getDescription());
+        bookCharacter.setDialog((bookCharacter.getDialog() == null) ? new HashSet<>() : bookCharacter.getDialog());
         return bookCharacter;
     }
 
@@ -77,7 +76,7 @@ public class CharacterService {
      */
     public ResponseEntity<Void> add(CharacterDto dto) {
         LOGGER.debug("Adding character: " + dto.toString());
-        Book book = getObjectOrNull.book(dto.getBookId());
+        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
         if (characterAlreadyExists(book, dto.getFirstName(), dto.getLastName())) {
             throw new AuthorAlreadyExistsException(
                     String.format("Author: %s %s already exists", dto.getFirstName(), dto.getLastName())
@@ -86,7 +85,7 @@ public class CharacterService {
         BookCharacter bookCharacter = new BookCharacter();
         book.getBookCharacters().add(createOrCopyCharacter(bookCharacter, dto));
         bookCharacterRepository.saveAndFlush(bookCharacter);
-        bookRepository.saveAndFlush(book);
+        CompletableFuture.runAsync(() -> bookService.save(book));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -98,8 +97,8 @@ public class CharacterService {
      */
     public ResponseEntity<Void> modify(CharacterDto dto) {
         LOGGER.debug("Modifying bookCharacter: " + dto.toString());
-        BookCharacter bookCharacter = getObjectOrNull.character(dto.getId());
-        bookCharacterRepository.saveAndFlush(createOrCopyCharacter(bookCharacter, dto));
+        BookCharacter bookCharacter = getCharacterOrThrowNotFound(dto.getId());
+        CompletableFuture.runAsync(() -> bookCharacterRepository.save(createOrCopyCharacter(bookCharacter, dto)));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -111,8 +110,22 @@ public class CharacterService {
      */
     public ResponseEntity<Void> delete(String id) {
         LOGGER.debug("Deleting bookCharacter: " + id);
-        BookCharacter character = getObjectOrNull.character(id);
+        BookCharacter character = getCharacterOrThrowNotFound(id);
         bookCharacterRepository.delete(character);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public BookCharacter save(BookCharacter bookCharacter) {
+        LOGGER.debug("Saving book character: " + bookCharacter.toString());
+        return bookCharacterRepository.save(bookCharacter);
+    }
+
+    public BookCharacter getCharacterOrThrowNotFound(String id) {
+        long parsedId = Long.parseLong(id);
+        return bookCharacterRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    public BookCharacter getCharacterOrThrowNotFound(Long id) {
+        return bookCharacterRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 }

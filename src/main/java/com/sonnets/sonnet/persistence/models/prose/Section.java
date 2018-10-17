@@ -1,21 +1,20 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.dtos.prose.SectionOutDto;
+import com.google.gson.annotations.Expose;
+import com.sonnets.sonnet.persistence.bridges.NarratorBridge;
+import com.sonnets.sonnet.persistence.models.ModelConstants;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.annotations.Parameter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,11 +26,8 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = "getAllSections",
-                procedureName = "get_all_sections",
-                resultSetMappings = {
-                        "SectionMap"
-                }
+                name = ModelConstants.GET_ALL_SECTIONS,
+                procedureName = ModelConstants.GET_ALL_SECTIONS_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
                 name = "getSectionsByUser",
@@ -50,47 +46,12 @@ import java.util.Objects;
                         @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
                         @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
                 }
-        ),
-        @NamedStoredProcedureQuery(
-                name = "updateSectionAnnotation",
-                procedureName = "update_section_annotation",
-                parameters = {
-                        @StoredProcedureParameter(name = "annotation", mode = ParameterMode.IN, type = String.class),
-                        @StoredProcedureParameter(name = "annotationId", mode = ParameterMode.IN, type = Long.class)
-                }
         )
 })
-@SqlResultSetMapping(
-        name = "SectionMap",
-        classes = @ConstructorResult(
-                targetClass = SectionOutDto.class,
-                columns = {
-                        @ColumnResult(name = "id", type = BigDecimal.class),
-                        @ColumnResult(name = "category"),
-                        @ColumnResult(name = "description"),
-                        @ColumnResult(name = "period"),
-                        @ColumnResult(name = "publication_stmt"),
-                        @ColumnResult(name = "publication_year", type = Integer.class),
-                        @ColumnResult(name = "source_desc"),
-                        @ColumnResult(name = "title"),
-                        @ColumnResult(name = "confirmed", type = boolean.class),
-                        @ColumnResult(name = "confirmed_at", type = Timestamp.class),
-                        @ColumnResult(name = "confirmed_by"),
-                        @ColumnResult(name = "pending_revision", type = boolean.class),
-                        @ColumnResult(name = "author_id", type = BigDecimal.class),
-                        @ColumnResult(name = "first_name"),
-                        @ColumnResult(name = "last_name"),
-                        @ColumnResult(name = "parent_id", type = BigDecimal.class),
-                        @ColumnResult(name = "book_title"),
-                        @ColumnResult(name = "book_type"),
-                        @ColumnResult(name = "text")
-                }
-        )
-)
 @Indexed
 @Entity
-@DiscriminatorValue("SECT")
-@AnalyzerDef(name = "textAnalyzer",
+@DiscriminatorValue(ModelConstants.TYPE_SECTION)
+@AnalyzerDef(name = SearchConstants.TEXT_ANALYZER,
         tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
         filters = {
                 @TokenFilterDef(factory = LowerCaseFilterFactory.class),
@@ -100,30 +61,31 @@ import java.util.Objects;
         })
 public class Section extends Item implements Serializable {
     private static final long serialVersionUID = -7556341244036061332L;
-    @Field(name = "section_title", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = "textAnalyzer")
-    @Column
-    private String title;
     @Embedded
     private Confirmation confirmation;
-    @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = "textAnalyzer")
+    @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Expose
     private String text;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Version> versions;
     @JsonIgnore
     @Column
     private boolean processed;
     @Column
+    @Expose
     private Long parentId;
     @Embedded
     private TopicModel topicModel;
+    @Field(name = SearchConstants.NARRATOR, store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
+    @FieldBridge(impl = NarratorBridge.class)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private BookCharacter narrator;
 
     public Section() {
         super();
@@ -132,16 +94,6 @@ public class Section extends Item implements Serializable {
         this.confirmation.setPendingRevision(false);
         this.versions = new ArrayList<>();
         this.processed = false;
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public Confirmation getConfirmation() {
@@ -200,6 +152,14 @@ public class Section extends Item implements Serializable {
         this.topicModel = topicModel;
     }
 
+    public BookCharacter getNarrator() {
+        return narrator;
+    }
+
+    public void setNarrator(BookCharacter narrator) {
+        this.narrator = narrator;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -207,32 +167,32 @@ public class Section extends Item implements Serializable {
         if (!super.equals(o)) return false;
         Section section = (Section) o;
         return processed == section.processed &&
-                Objects.equals(title, section.title) &&
                 Objects.equals(confirmation, section.confirmation) &&
                 Objects.equals(text, section.text) &&
                 Objects.equals(annotation, section.annotation) &&
                 Objects.equals(versions, section.versions) &&
                 Objects.equals(parentId, section.parentId) &&
-                Objects.equals(topicModel, section.topicModel);
+                Objects.equals(topicModel, section.topicModel) &&
+                Objects.equals(narrator, section.narrator);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), title, confirmation, text, annotation, versions, processed, parentId,
-                topicModel);
+        return Objects.hash(super.hashCode(), confirmation, text, annotation, versions, processed, parentId, topicModel,
+                narrator);
     }
 
     @Override
     public String toString() {
         return "Section{" +
-                "title='" + title + '\'' +
-                ", confirmation=" + confirmation +
+                "confirmation=" + confirmation +
                 ", text='" + text + '\'' +
                 ", annotation=" + annotation +
                 ", versions=" + versions +
                 ", processed=" + processed +
                 ", parentId=" + parentId +
                 ", topicModel=" + topicModel +
+                ", narrator=" + narrator +
                 "} " + super.toString();
     }
 }

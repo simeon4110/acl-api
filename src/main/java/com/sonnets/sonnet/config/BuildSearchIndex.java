@@ -1,7 +1,9 @@
 package com.sonnets.sonnet.config;
 
+import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import org.apache.log4j.Logger;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -29,7 +31,7 @@ public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEve
     public void onApplicationEvent(@SuppressWarnings("NullableProblems") final ApplicationReadyEvent event) {
         try {
             FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-            manager.createIndexer(Item.class, Author.class)
+            manager.createIndexer(Item.class, Author.class, Dialog.class, BookCharacter.class)
                     .startAndWait();
         } catch (InterruptedException e) {
             LOGGER.error(e);

@@ -1,9 +1,11 @@
 package com.sonnets.sonnet.persistence.models.web;
 
+import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.hibernate.annotations.*;
@@ -58,9 +60,6 @@ import java.util.Set;
                 procedureName = "get_corpora_items_simple",
                 parameters = {
                         @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
-                },
-                resultSetMappings = {
-                        "itemMapSimple"
                 }
         ),
         @NamedStoredProcedureQuery(
@@ -115,7 +114,9 @@ public class Corpora extends Auditable<String> implements Serializable {
                     @MetaValue(targetEntity = Book.class, value = "BOOK"),
                     @MetaValue(targetEntity = Poem.class, value = "POEM"),
                     @MetaValue(targetEntity = Section.class, value = "SECT"),
-                    @MetaValue(targetEntity = Other.class, value = "OTHR")
+                    @MetaValue(targetEntity = Other.class, value = "OTHR"),
+                    @MetaValue(targetEntity = BookCharacter.class, value = "BKCR"),
+                    @MetaValue(targetEntity = Dialog.class, value = "DIAL")
             }
     )
     @JoinTable(

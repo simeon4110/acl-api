@@ -18,7 +18,7 @@ public class SectionBridge implements FieldBridge {
         @SuppressWarnings("unchecked") Collection<Section> sections = (Collection<Section>) o;
 
         for (Section section : sections) {
-            luceneOptions.addFieldToDocument(section + ".title", section.getTitle(), document);
+            luceneOptions.addFieldToDocument(section + ".section_title", section.getTitle(), document);
             luceneOptions.addFieldToDocument(section + ".text", section.getText(), document);
         }
     }

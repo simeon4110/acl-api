@@ -45,7 +45,9 @@ public class BookRepositoryImpl implements BookRepositoryStoredProcedures {
         query.setParameter("bookId", bookId);
         CompletableFuture.supplyAsync(query::execute);
         StringBuilder sb = new StringBuilder();
-        sb.append(query.getResultList());
+        for (Object o : query.getResultList()) {
+            sb.append(o.toString());
+        }
         return sb.toString();
     }
 }

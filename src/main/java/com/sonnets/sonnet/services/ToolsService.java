@@ -1,10 +1,7 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutDto;
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
-import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.helpers.GetObjectOrThrowNullPointer;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
 import com.sonnets.sonnet.wordtools.MalletTools;
 import com.sonnets.sonnet.wordtools.NLPTools;
@@ -17,10 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * This service coordinates all the NLP and other tools methods.
@@ -33,44 +28,20 @@ public class ToolsService {
     private static final NLPTools pipeline = NLPTools.getInstance();
     private static final MalletTools malletTools = MalletTools.getInstance();
     private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
-    private final GetObjectOrThrowNullPointer getObjectOrThrowNullPointer;
     private final CorporaService corporaService;
+    private final CustomStopWordsService stopWords;
 
     private static final int REQUEST_TIMEOUT = 60;
 
     @Autowired
-    public ToolsService(GetObjectOrThrowNullPointer getObjectOrThrowNullPointer, CorporaService corporaService) {
-        this.getObjectOrThrowNullPointer = getObjectOrThrowNullPointer;
+    public ToolsService(CorporaService corporaService, CustomStopWordsService stopWords) {
         this.corporaService = corporaService;
-    }
-
-    /**
-     * Helper method for stripping a corpora into raw text.
-     *
-     * @param items the items to strip.
-     * @return a string of the combined item's text.
-     */
-    private String parseCorporaItems(final Set<ItemOutDto> items) {
-        StringBuilder sb = new StringBuilder();
-        Consumer<ItemOutDto> itemConsumer = item -> { // Function strips items into text only.
-            switch (item.getCategory()) {
-                case "POEM":
-                    sb.append(item.getPoemText());
-                    break;
-                case "SECT":
-                    sb.append(item.getText());
-                    break;
-                default:
-                    throw new ItemNotFoundException(String.format("Item type %s does not exist.", item.getCategory()));
-            }
-        };
-        items.forEach(itemConsumer);
-        return sb.toString();
+        this.stopWords = stopWords;
     }
 
     private String parseCorporaItems(final String items) {
         StringBuilder result = new StringBuilder();
-        JSONArray array = null;
+        JSONArray array;
         try {
             array = new JSONArray(items);
             for (int i = 0; i < array.length(); i++) {
@@ -114,7 +85,7 @@ public class ToolsService {
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
         if (Integer.parseInt(stopWordsId) != 0) {
-            customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
+            customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
         dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
@@ -165,7 +136,7 @@ public class ToolsService {
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
         if (Integer.parseInt(stopWordsId) != 0) {
-            customStopWords = getObjectOrThrowNullPointer.stopWords(stopWordsId);
+            customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
         dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));

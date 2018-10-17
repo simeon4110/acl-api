@@ -1,11 +1,11 @@
 package com.sonnets.sonnet.services;
 
-import com.sonnets.sonnet.persistence.dtos.base.ItemOutSimpleDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import com.sonnets.sonnet.tools.ItemKeyValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -147,7 +145,7 @@ public class CorporaService {
      */
     public List getUserCorpora(Principal principal) {
         LOGGER.debug("Returning corpera for user: " + principal.getName());
-        return corporaRepository.getCorporaUser(principal.getName()).orElseThrow(ItemNotFoundException::new);
+        return corporaRepository.getCorporaUser(principal.getName()).orElseThrow(NoResultsException::new);
     }
 
     /**
@@ -167,11 +165,9 @@ public class CorporaService {
      * @param id the db id of the corpora's items to get.
      * @return a set of the basic details for all items in a corpora.
      */
-    public Set<ItemOutSimpleDto> getCorporaItemsSimple(String id) {
+    public String getCorporaItemsSimple(String id) {
         LOGGER.debug("Getting corpora items simple: " + id);
-        CompletableFuture<Optional<HashSet<ItemOutSimpleDto>>> future =
-                corporaRepository.getCorporaItemsSimple(Long.valueOf(id));
-        return future.join().orElseThrow(ItemNotFoundException::new);
+        return corporaRepository.getCorporaItemsSimple(Long.parseLong(id));
     }
 
     /**

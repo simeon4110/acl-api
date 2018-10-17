@@ -28,9 +28,14 @@ public class SectionRepositoryBaseImpl implements SectionRepositoryStoredProcedu
     @Override
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public Optional<List<Section>> getAllSections() {
+    public String getAllSections() {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getAllSections");
-        return Optional.of(query.getResultList());
+        CompletableFuture.supplyAsync(query::execute);
+        StringBuilder sb = new StringBuilder();
+        for (Object o : query.getResultList()) {
+            sb.append(o.toString());
+        }
+        return sb.toString();
     }
 
     @Override
@@ -53,12 +58,4 @@ public class SectionRepositoryBaseImpl implements SectionRepositoryStoredProcedu
         return Optional.of((String) query.getOutputParameterValue("output"));
     }
 
-    @Override
-    @Transactional
-    public void updateSectionAnnotation(String annotation, Long annotationId) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("updateSectionAnnotation");
-        query.setParameter("annotation", annotation);
-        query.setParameter("annotationId", annotationId);
-        query.execute();
-    }
 }

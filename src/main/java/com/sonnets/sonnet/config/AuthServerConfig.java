@@ -110,15 +110,15 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         return initializer;
     }
 
-    @Bean
-    public TokenEnhancer tokenEnhancer() {
-        return new TokenEnhancerImpl();
-    }
-
     private DatabasePopulator databasePopulator() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(schemaScript);
         return populator;
+    }
+
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new TokenEnhancerImpl();
     }
 
     @Bean

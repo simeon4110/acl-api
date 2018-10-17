@@ -12,15 +12,14 @@ import java.util.Collection;
  *
  * @author Josh Harkema
  */
-public class CharacterBridge implements FieldBridge {
+public class CharacterListBridge implements FieldBridge {
     @Override
     public void set(String s, Object o, Document document, LuceneOptions luceneOptions) {
-        @SuppressWarnings("unchecked") Collection<BookCharacter> bookCharacters = (Collection<BookCharacter>) o;
-
+        Collection<BookCharacter> bookCharacters = (Collection<BookCharacter>) o;
         for (BookCharacter bookCharacter : bookCharacters) {
-            luceneOptions.addFieldToDocument(s + ".firstName", bookCharacter.getFirstName(), document);
-            luceneOptions.addFieldToDocument(s + ".lastName", bookCharacter.getLastName(), document);
-            luceneOptions.addFieldToDocument(s + ".gender", bookCharacter.getGender(), document);
+            luceneOptions.addFieldToDocument(s + ".character_first_name", bookCharacter.getFirstName(), document);
+            luceneOptions.addFieldToDocument(s + ".character_last_name", bookCharacter.getLastName(), document);
+            luceneOptions.addFieldToDocument(s + ".character_gender", bookCharacter.getGender(), document);
         }
     }
 }

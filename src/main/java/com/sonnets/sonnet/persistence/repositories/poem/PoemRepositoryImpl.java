@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.repositories.poem;
 
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
@@ -27,20 +26,25 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
     EntityManager em;
 
     @Override
-    @Async
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public CompletableFuture<Optional<List<Poem>>> getAllPoemsManual() {
+    public String getAllPoemsManual() {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getAllPoemsManual");
-        return CompletableFuture.completedFuture(Optional.of(query.getResultList()));
+        CompletableFuture.supplyAsync(query::execute);
+        StringBuilder sb = new StringBuilder();
+        for (Object o : query.getResultList()) {
+            sb.append(o.toString());
+        }
+        return sb.toString();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<PoemOutDto> getRandomPoem(String form) {
+    public String getRandomPoem(String form) {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getRandomPoem");
         query.setParameter("form", form);
-        return Optional.of((PoemOutDto) query.getSingleResult());
+        CompletableFuture.supplyAsync(query::execute);
+        return String.valueOf(query.getResultList());
     }
 
     @Override

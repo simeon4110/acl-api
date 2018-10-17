@@ -1,16 +1,13 @@
 package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
-import com.sonnets.sonnet.services.SearchService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * Handles all general-purpose search related endpoints.
@@ -20,11 +17,10 @@ import java.util.List;
 @RestController
 @PropertySource("classpath:global.properties")
 public class SearchController {
-    private final SearchService searchService;
+    private final SearchQueryHandlerService searchQueryHandlerService;
 
-    @Autowired
-    public SearchController(SearchService searchService) {
-        this.searchService = searchService;
+    public SearchController(SearchQueryHandlerService searchQueryHandlerService) {
+        this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
     /**
@@ -35,7 +31,7 @@ public class SearchController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PostMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List doSearch(@RequestBody SearchDto dto) {
-        return searchService.search(dto);
+    public String doSearch(@RequestBody SearchDto dto) {
+        return searchQueryHandlerService.doSearch(dto).toString();
     }
 }
