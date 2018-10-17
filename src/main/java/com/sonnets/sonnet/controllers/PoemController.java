@@ -2,15 +2,12 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.PoemService;
 import com.sonnets.sonnet.tools.ParseParam;
 import com.sonnets.sonnet.tools.PoemConverter;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +45,6 @@ public class PoemController {
      * @param id the id of the poem to get.
      * @return a poem.
      */
-    @Cacheable(value = "poem-single", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Poem getPoemById(@PathVariable("id") String id) {
@@ -70,17 +66,16 @@ public class PoemController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PoemOutDto> getTwoRandomSonnets() {
+    public String getTwoRandomSonnets() {
         return poemService.getTwoRandomSonnets();
     }
 
     /**
      * @return all poems in the database.
      */
-    @Cacheable(value = "poems-all")
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getAllPoems() {
+    public String getAllPoems() {
         return poemService.getAll();
     }
 
@@ -97,7 +92,6 @@ public class PoemController {
      * @param form the form to get.
      * @return all poems of a specific form.
      */
-    @Cacheable(value = "poems-by-form", key = "#form")
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/by_form/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getAllByForm(@PathVariable("form") String form) {
@@ -117,7 +111,6 @@ public class PoemController {
     /**
      * @return all poems added by a user.
      */
-    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/get_user_poems", produces = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<List> getUserPoems(Principal principal) {
@@ -138,7 +131,6 @@ public class PoemController {
     /**
      * Add a poem to the db.
      */
-    @CacheEvict(value = "poems-all")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/poem/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -149,7 +141,6 @@ public class PoemController {
     /**
      * Edit a poem (ADMIN ONLY).
      */
-    @CacheEvict(value = "poem-single", key = "#dto.id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping(value = "/secure/poem/edit_admin", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -160,7 +151,6 @@ public class PoemController {
     /**
      * Edit a poem (OWNER ONLY).
      */
-    @CacheEvict(value = "poem-single", key = "#dto.id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/poem/edit_user", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -171,7 +161,6 @@ public class PoemController {
     /**
      * Delete a poem (ADMIN ONLY).
      */
-    @CacheEvict(value = "poem-single", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/poem/delete_admin/{id}")
@@ -182,7 +171,6 @@ public class PoemController {
     /**
      * Delete a poem (OWNER ONLY).
      */
-    @CacheEvict(value = "poem-single", key = "id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping(value = "/secure/poem/delete_user/{id}")
@@ -197,7 +185,6 @@ public class PoemController {
      *
      * @param id the id of the poem to confirm.
      */
-    @CacheEvict(value = "poem-single", key = "id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/confirm/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -208,7 +195,6 @@ public class PoemController {
     /**
      * Reject a poem.
      */
-    @CacheEvict(value = "poem-single", key = "#rejectDto.id")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/poem/reject", consumes = MediaType.APPLICATION_JSON_VALUE)

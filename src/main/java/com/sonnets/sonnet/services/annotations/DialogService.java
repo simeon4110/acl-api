@@ -1,8 +1,10 @@
 package com.sonnets.sonnet.services.annotations;
 
+import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.DialogRepository;
+import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.prose.CharacterService;
 import org.apache.log4j.Logger;
@@ -70,5 +72,37 @@ public class DialogService {
         characterService.save(character);
         dialogRepository.delete(dialog);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private static Dialog createOrCopy(Dialog dialog, AnnotationDto dto) {
+        dialog.setBody(dto.getBody());
+        dialog.setItemId(dto.getItemId());
+        dialog.setItemFriendly(dto.getItemFriendly());
+        dialog.setSectionId(dto.getSectionId());
+        dialog.setCharacterOffsetBegin(dto.getCharacterOffsetBegin());
+        dialog.setCharacterOffsetEnd(dto.getCharacterOffsetEnd());
+        return dialog;
+    }
+
+    @Transactional
+    public Dialog add(final AnnotationDto dto) {
+        LOGGER.debug("Adding dialog: " + dto.toString());
+        if (!dto.getType().equals("CHAR")) {
+            throw new AnnotationTypeMismatchException(dto.getType() + " is not a valid dialog annotation type.");
+        }
+        Dialog dialog = createOrCopy(new Dialog(), dto);
+        BookCharacter character = characterService.getCharacterOrThrowNotFound(dto.getItemId());
+        character.getDialog().add(dialog);
+        characterService.save(character);
+        return dialog;
+    }
+
+    @Transactional
+    public Dialog modify(final AnnotationDto dto) {
+        LOGGER.debug("Modifying dialog: " + dto.toString());
+        Dialog dialog = dialogRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        return dialogRepository.save(
+                createOrCopy(dialog, dto)
+        );
     }
 }

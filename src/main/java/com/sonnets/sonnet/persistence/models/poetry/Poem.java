@@ -1,17 +1,16 @@
 package com.sonnets.sonnet.persistence.models.poetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
+import com.sonnets.sonnet.persistence.models.ModelConstants;
 import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.base.Version;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,25 +21,19 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = "getAllPoemsManual",
-                procedureName = "get_all_poems",
-                resultSetMappings = {
-                        "PoemMap"
-                }
+                name = ModelConstants.GET_ALL_POEMS,
+                procedureName = ModelConstants.GET_ALL_POEMS_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
-                name = "getRandomPoem",
-                procedureName = "get_random_poem",
+                name = ModelConstants.GET_RANDOM_POEM,
+                procedureName = ModelConstants.GET_RANDOM_POEM_PROCEDURE,
                 parameters = {
                         @StoredProcedureParameter(name = "form", mode = ParameterMode.IN, type = String.class)
-                },
-                resultSetMappings = {
-                        "PoemMap"
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "getPoemsByUser",
-                procedureName = "get_user_poems",
+                name = ModelConstants.GET_POEMS_BY_USER,
+                procedureName = ModelConstants.GET_POEMS_BY_USER_PROCEDURE,
                 parameters = {
                         @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
                 },
@@ -49,43 +42,18 @@ import java.util.Objects;
                 }
         )
 })
-@SqlResultSetMapping(
-        name = "PoemMap",
-        classes = @ConstructorResult(
-                targetClass = PoemOutDto.class,
-                columns = {
-                        @ColumnResult(name = "id", type = BigDecimal.class),
-                        @ColumnResult(name = "title"),
-                        @ColumnResult(name = "category"),
-                        @ColumnResult(name = "description"),
-                        @ColumnResult(name = "publication_year", type = Integer.class),
-                        @ColumnResult(name = "publication_stmt"),
-                        @ColumnResult(name = "source_desc"),
-                        @ColumnResult(name = "period"),
-                        @ColumnResult(name = "form"),
-                        @ColumnResult(name = "confirmed", type = boolean.class),
-                        @ColumnResult(name = "confirmed_at", type = Timestamp.class),
-                        @ColumnResult(name = "confirmed_by"),
-                        @ColumnResult(name = "pending_revision", type = boolean.class),
-                        @ColumnResult(name = "author_id", type = BigDecimal.class),
-                        @ColumnResult(name = "first_name"),
-                        @ColumnResult(name = "last_name"),
-                        @ColumnResult(name = "poem_text")
-                }
-        )
-)
 @Indexed
 @Entity
 @DiscriminatorValue("POEM")
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
-    @Field(name = "poem_form", store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
+    @Field(name = SearchConstants.POEM_FORM, store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
     @Column
     private String form; // The form of genre of the poem.
     @Embedded
     private Confirmation confirmation;
-    @Field(name = "text", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = "textAnalyzer")
+    @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @ElementCollection(fetch = FetchType.EAGER)
     @IndexedEmbedded
     private List<String> text;

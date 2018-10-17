@@ -115,9 +115,9 @@ public class CharacterService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public void save(BookCharacter bookCharacter) {
+    public BookCharacter save(BookCharacter bookCharacter) {
         LOGGER.debug("Saving book character: " + bookCharacter.toString());
-        CompletableFuture.runAsync(() -> bookCharacterRepository.save(bookCharacter));
+        return bookCharacterRepository.save(bookCharacter);
     }
 
     public BookCharacter getCharacterOrThrowNotFound(String id) {

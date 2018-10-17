@@ -1,6 +1,8 @@
 package com.sonnets.sonnet.persistence.models.base;
 
+import com.google.gson.annotations.Expose;
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -27,30 +29,38 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
+    @Expose
     private Long id;
-    @Field(name = "category", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.CATEGORY, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private String category;
-    @Field(name = "author")
+    @Field(name = SearchConstants.AUTHOR)
     @FieldBridge(impl = AuthorBridge.class)
     @ManyToOne(fetch = FetchType.EAGER)
+    @Expose
     private Author author;
-    @Field(name = "title", store = Store.YES, analyze = Analyze.YES)
-    @Analyzer(definition = "textAnalyzer")
+    @Field(name = SearchConstants.TITLE, store = Store.YES, analyze = Analyze.YES)
+    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column
+    @Expose
     private String title;
     @Column
     private String description;
-    @Field(name = "publicationYear", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.YEAR, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private Integer publicationYear;
     @Column
+    @Expose
     private String publicationStmt;
-    @Field(name = "source", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.SOURCE, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private String sourceDesc;
-    @Field(name = "period", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.PERIOD, store = Store.YES, analyze = Analyze.NO)
     @Column
+    @Expose
     private String period;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserAnnotation userAnnotation;

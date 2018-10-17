@@ -3,7 +3,7 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.services.AuthorService;
-import com.sonnets.sonnet.services.SearchService;
+import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -23,12 +23,12 @@ import java.util.List;
 @PropertySource("classpath:global.properties")
 public class AuthorController {
     private final AuthorService authorService;
-    private final SearchService searchService;
+    private final SearchQueryHandlerService searchQueryHandlerService;
 
     @Autowired
-    public AuthorController(AuthorService authorService, SearchService searchService) {
+    public AuthorController(AuthorService authorService, SearchQueryHandlerService searchQueryHandlerService) {
         this.authorService = authorService;
-        this.searchService = searchService;
+        this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
     /**
@@ -91,6 +91,6 @@ public class AuthorController {
     @PostMapping(value = "/author/search", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List search(@RequestBody AuthorDto authorDto) {
-        return searchService.searchAuthor(authorDto);
+        return searchQueryHandlerService.searchAuthor(authorDto);
     }
 }

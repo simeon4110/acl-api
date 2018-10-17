@@ -1,15 +1,16 @@
 package com.sonnets.sonnet.controllers;
 
+import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.services.annotations.DialogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -57,13 +58,28 @@ public class DialogController {
      * @param dialogId  the id of the dialog to delete.
      * @return 200 if successful.
      */
-    @CacheEvict(value = "section-annotation", key = "#sectionId")
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @DeleteMapping(value = "/annotations/dialog/delete/{sectionId}/{dialogId}")
+    @DeleteMapping(value = "/secure/annotations/dialog/delete/{sectionId}/{dialogId}")
     public ResponseEntity<Void> delete(
             @PathVariable("sectionId") Long sectionId,
             @PathVariable("dialogId") Long dialogId) {
         return dialogService.delete(dialogId);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PostMapping(value = "/secure/annotations/dialog/add", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Dialog add(@RequestBody @Valid AnnotationDto dto) {
+        return dialogService.add(dto);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PutMapping(value = "/secure/annotations/dialog/modify", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Dialog modify(@RequestBody @Valid AnnotationDto dto) {
+        return dialogService.modify(dto);
     }
 }

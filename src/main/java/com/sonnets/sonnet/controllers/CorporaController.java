@@ -5,9 +5,6 @@ import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.services.CorporaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +33,6 @@ public class CorporaController {
     /**
      * @return all of a user's corpora.
      */
-    @Cacheable(value = "corpora-user", key = "#principal.name")
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/my_corpora", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -48,7 +44,6 @@ public class CorporaController {
      * @param id the corpora's id.
      * @return a single corpora by id.
      */
-    @Cacheable(value = "corpora-single", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,7 +57,6 @@ public class CorporaController {
      * @param id the db id of the corpora.
      * @return a set of all the items.
      */
-    @Cacheable(value = "corpora-items", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get_items_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,7 +70,6 @@ public class CorporaController {
      * @param id the db id of the corpora.
      * @return a set of all the items.
      */
-    @Cacheable(value = "corpora-items-simple", key = "#id")
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/get_items_by_id_simple/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,7 +80,6 @@ public class CorporaController {
     /**
      * Create a new corpora.
      */
-    @CacheEvict(value = "corpora-user", key = "#principal.name")
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PostMapping(value = "/secure/corpora/create", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -98,11 +90,6 @@ public class CorporaController {
     /**
      * Add items to a corpora.
      */
-    @Caching(evict = {
-            @CacheEvict(value = "corpora-items", key = "#dto.id"),
-            @CacheEvict(value = "corpora-user", key = "#principal.name"),
-            @CacheEvict(value = "corpora-items-simple", key = "#dto.id")
-    })
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @PutMapping(value = "/secure/corpora/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -118,11 +105,6 @@ public class CorporaController {
      * @param itemId    the id of the item to add.
      * @return ok if the item is added.
      */
-    @Caching(evict = {
-            @CacheEvict(value = "corpora-items", key = "#corporaId"),
-            @CacheEvict(value = "corpora-user", key = "#principal.name"),
-            @CacheEvict(value = "corpora-items-simple", key = "#corporaId")
-    })
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/corpora/add_single/{type}/{corporaId}/{itemId}",
@@ -137,11 +119,6 @@ public class CorporaController {
     /**
      * Remove items from a corpora.
      */
-    @Caching(evict = {
-            @CacheEvict(value = "corpora-items", key = "#dto.id"),
-            @CacheEvict(value = "corpora-user", key = "#principal.name"),
-            @CacheEvict(value = "corpora-items-simple", key = "#dto.id")
-    })
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpora/remove", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -152,7 +129,6 @@ public class CorporaController {
     /**
      * Modify a corpora.
      */
-    @CacheEvict(value = "corpora-user", key = "#principal.name")
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpora/change_name", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -163,11 +139,6 @@ public class CorporaController {
     /**
      * Delete a corpora (OWNER ONLY)
      */
-    @Caching(evict = {
-            @CacheEvict(value = "corpora-items", key = "#id"),
-            @CacheEvict(value = "corpora-user", key = "#principal.name"),
-            @CacheEvict(value = "corpora-items-simple", key = "#id")
-    })
     @CrossOrigin(origins = "${allowed-origin}", methods = RequestMethod.DELETE)
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @DeleteMapping(value = "/secure/corpora/delete/{id}")

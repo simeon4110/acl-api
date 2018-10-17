@@ -1,8 +1,8 @@
 package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
+import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemOutDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -10,6 +10,7 @@ import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -37,17 +37,17 @@ public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
     private static final int NUMBER_OF_RANDOM_SONNETS = 2;
     private final PoemRepository poemRepository;
-    private final SearchService searchService;
     private final MessageService messageService;
     private final AuthorService authorService;
+    private final SearchQueryHandlerService searchQueryHandlerService;
 
     @Autowired
-    public PoemService(PoemRepository poemRepository, SearchService searchService, MessageService messageService,
-                       AuthorService authorService) {
+    public PoemService(PoemRepository poemRepository, MessageService messageService, AuthorService authorService,
+                       SearchQueryHandlerService searchQueryHandlerService) {
         this.poemRepository = poemRepository;
-        this.searchService = searchService;
         this.messageService = messageService;
         this.authorService = authorService;
+        this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
     /**
@@ -99,7 +99,7 @@ public class PoemService {
         LOGGER.debug("Adding poem: " + dto.toString());
         // Check if poem already exists.
         try {
-            searchService.similarExistsPoem(dto);
+            similarExistsPoem(dto);
         } catch (ItemAlreadyExistsException e) {
             LOGGER.error(e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -245,14 +245,9 @@ public class PoemService {
     /**
      * @return two random sonnets.
      */
-    public List<PoemOutDto> getTwoRandomSonnets() {
+    public String getTwoRandomSonnets() {
         LOGGER.debug("Returning two random sonnets.");
-        List<PoemOutDto> twoRandom = new ArrayList<>();
-        while (twoRandom.size() < NUMBER_OF_RANDOM_SONNETS) {
-            PoemOutDto poem = poemRepository.getRandomPoem("SONNET").orElseThrow(ItemNotFoundException::new);
-            twoRandom.add(poem);
-        }
-        return twoRandom;
+        return poemRepository.getRandomPoem("SONNET");
     }
 
     /**
@@ -261,9 +256,8 @@ public class PoemService {
      *
      * @return all poems as a list.
      */
-    public List<Poem> getAll() {
-        CompletableFuture<Optional<List<Poem>>> future = poemRepository.getAllPoemsManual();
-        return future.join().orElseThrow(ItemNotFoundException::new);
+    public String getAll() {
+        return poemRepository.getAllPoemsManual();
     }
 
     public Page<Poem> getAllPaged(Pageable pageable) {
@@ -327,5 +321,14 @@ public class PoemService {
 
     private Poem getPoemOrThrowNotFound(Long id) {
         return poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+    }
+
+    private void similarExistsPoem(PoemDto dto) {
+        SearchDto searchDto = new SearchDto();
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        searchDto.setAuthor(author);
+        searchDto.setTitle(dto.getTitle());
+        searchDto.setSearchPoems(true);
+        searchQueryHandlerService.similarExistsPoem(searchDto);
     }
 }

@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Josh Harkema
  */
 public interface SectionRepositoryStoredProcedures {
-    Optional<List<Section>> getAllSections();
+    String getAllSections();
 
     CompletableFuture<Optional<List<Section>>> getAllByUser(final String userName);
 

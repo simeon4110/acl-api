@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.base;
 
+import com.google.gson.annotations.Expose;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.search.annotations.*;
@@ -26,18 +27,22 @@ public class Author extends Auditable<String> implements Serializable {
     @Id
     @DocumentId
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Expose
     private Long id;
     @Field(name = "firstName", store = Store.YES, termVector = TermVector.NO)
     @Analyzer(definition = "authorAnalyzer")
     @Column
+    @Expose
     private String firstName;
     @Field(name = "middleName", store = Store.YES, termVector = TermVector.NO)
     @Analyzer(definition = "authorAnalyzer")
     @Column
+    @Expose
     private String middleName;
     @Field(name = "lastName", store = Store.YES, termVector = TermVector.NO)
     @Analyzer(definition = "authorAnalyzer")
     @Column
+    @Expose
     private String lastName;
 
     public Author() {

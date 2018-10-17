@@ -35,6 +35,7 @@ public class SearchDto {
     private boolean searchPoems;
     private boolean searchBooks;
     private boolean searchBookCharacters;
+    private boolean searchDialog;
 
     public Long getId() {
         return id;
@@ -172,6 +173,14 @@ public class SearchDto {
         this.searchBookCharacters = searchBookCharacters;
     }
 
+    public boolean isSearchDialog() {
+        return searchDialog;
+    }
+
+    public void setSearchDialog(boolean searchDialog) {
+        this.searchDialog = searchDialog;
+    }
+
     @Override
     public String toString() {
         return "SearchDto{" +
@@ -192,6 +201,7 @@ public class SearchDto {
                 ", searchPoems=" + searchPoems +
                 ", searchBooks=" + searchBooks +
                 ", searchBookCharacters=" + searchBookCharacters +
+                ", searchDialog=" + searchDialog +
                 '}';
     }
 }

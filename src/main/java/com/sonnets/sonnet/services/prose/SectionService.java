@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.services.prose;
 
+import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
@@ -7,16 +8,17 @@ import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import com.sonnets.sonnet.services.AuthorService;
 import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.ToolsService;
 import com.sonnets.sonnet.services.annotations.AnnotationsParseService;
+import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -42,17 +44,18 @@ public class SectionService {
     private final ToolsService toolsService;
     private final BookService bookService;
     private final AuthorService authorService;
+    private final CharacterService characterService;
     private final AnnotationsParseService annotationsParseService;
 
-    @Autowired
     public SectionService(SectionRepositoryBase sectionRepository, MessageService messageService,
                           ToolsService toolsService, BookService bookService, AuthorService authorService,
-                          AnnotationsParseService annotationsParseService) {
+                          CharacterService characterService, AnnotationsParseService annotationsParseService) {
         this.sectionRepository = sectionRepository;
         this.messageService = messageService;
         this.toolsService = toolsService;
         this.bookService = bookService;
         this.authorService = authorService;
+        this.characterService = characterService;
         this.annotationsParseService = annotationsParseService;
     }
 
@@ -116,8 +119,8 @@ public class SectionService {
      * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
      * It takes 20 seconds to return all the data. This way takes 200ms.
      */
-    public List getAll() {
-        return sectionRepository.getAllSections().orElseThrow(ItemNotFoundException::new);
+    public String getAll() {
+        return sectionRepository.getAllSections();
     }
 
     /**
@@ -245,7 +248,7 @@ public class SectionService {
      * @param principal the user doing the confirming.
      * @return 200 if the book is confirmed.
      */
-    public ResponseEntity<Void> confirm(String id, Principal principal) {
+    public ResponseEntity<Void> confirm(Long id, Principal principal) {
         LOGGER.debug(principal.getName() + " is confirming section: " + id);
         Section section = getSectionOrThrowNotFound(id);
         Confirmation confirmation = section.getConfirmation();
@@ -285,30 +288,35 @@ public class SectionService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * This is the opposite of a good way to do things. Parses annotations into dialog objects and adds a narrator.
-     *
-     * @param body the raw JSON.
-     * @param id   the id of the section.
-     * @return 200 if good.
-     */
-    public ResponseEntity<Void> setAnnotation(String body, String id) {
-        LOGGER.debug(String.format("Setting annotation id '%s' to: %s", id, body));
-        Section section = getSectionOrThrowNotFound(id);
-        section = annotationsParseService.parseSectionAnnotations(body, section);
-        sectionRepository.save(section);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public Section setNarrator(AnnotationDto dto) {
+        LOGGER.debug("Adding narrator to section: " + dto.getSectionId());
+        if (!dto.getType().equals("NARA")) {
+            throw new AnnotationTypeMismatchException(dto.getType() + " does not match narrator type annotation.");
+        }
+        Section section = sectionRepository.findById(dto.getSectionId()).orElseThrow(ItemNotFoundException::new);
+        BookCharacter character = characterService.getCharacterOrThrowNotFound(dto.getItemId());
+        section.setNarrator(character);
+        return sectionRepository.save(section);
     }
 
-    public String getAnnotation(String sectionId) {
-        LOGGER.debug("Getting annotation for section: " + sectionId);
-        return annotationsParseService.parseSectionAnnotationOut(getSectionOrThrowNotFound(sectionId)).toString();
+    public ResponseEntity<Void> deleteNarrator(Long sectionId) {
+        Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
+        section.setNarrator(null);
+        sectionRepository.saveAndFlush(section);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Async
     public CompletableFuture<List> getUserSections(Principal principal) {
         return sectionRepository.getAllByUser(principal.getName()).thenApply(sections ->
                 sections.orElseThrow(NoResultsException::new));
+    }
+
+    public String getAnnotations(final Long id) {
+        LOGGER.debug("Getting annotations for section: " + id);
+        return annotationsParseService.parseSectionAnnotationOut(
+                getSectionOrThrowNotFound(id)
+        ).toString();
     }
 
     private Section getSectionOrThrowNotFound(String id) {

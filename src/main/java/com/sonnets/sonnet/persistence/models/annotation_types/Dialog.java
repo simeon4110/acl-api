@@ -22,7 +22,8 @@ public class Dialog extends Auditable<String> implements Serializable {
     @DocumentId
     private Long id;
     @Column(columnDefinition = "NVARCHAR(MAX)")
-    @Field(name = "dialog_body", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = "dialog_body", store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Analyzer(definition = "textAnalyzer")
     private String body;
     @Column
     private Long itemId;
@@ -93,6 +94,10 @@ public class Dialog extends Auditable<String> implements Serializable {
 
     public void setCharacterOffsetEnd(Long characterOffsetEnd) {
         this.characterOffsetEnd = characterOffsetEnd;
+    }
+
+    public String getCategory() {
+        return "DIAL";
     }
 
     @Override
