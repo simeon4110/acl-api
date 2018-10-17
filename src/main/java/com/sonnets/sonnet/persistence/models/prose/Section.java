@@ -68,7 +68,6 @@ public class Section extends Item implements Serializable {
     @Column(columnDefinition = "NVARCHAR(MAX)")
     @Expose
     private String text;
-    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;

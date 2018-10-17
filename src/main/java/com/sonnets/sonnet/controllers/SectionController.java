@@ -133,7 +133,7 @@ public class SectionController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secure/section/confirm/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/secure/section/confirm/{id}")
     public ResponseEntity<Void> confirm(@PathVariable("id") Long id, Principal principal) {
         return sectionService.confirm(id, principal);
     }
