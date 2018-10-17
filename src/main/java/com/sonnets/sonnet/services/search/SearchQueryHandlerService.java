@@ -72,7 +72,8 @@ public class SearchQueryHandlerService {
                 Query query = SectionHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Section.class);
                 LOGGER.debug("BOOK OUTPUT: " + sectionGson.toJson(fullTextQuery.getResultList()));
-                results.put(ModelConstants.TYPE_SECTION, new JSONArray(sectionGson.toJson(fullTextQuery.getResultList())));
+                results.put(ModelConstants.TYPE_SECTION, new JSONArray(
+                        sectionGson.toJson(fullTextQuery.getResultList())));
                 LOGGER.debug("BOOK OUTPUT: " + fullTextQuery.getResultList().toString());
             }
             LOGGER.debug("Found: " + results.length());

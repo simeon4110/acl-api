@@ -96,10 +96,6 @@ public class Dialog extends Auditable<String> implements Serializable {
         this.characterOffsetEnd = characterOffsetEnd;
     }
 
-    public String getCategory() {
-        return "DIAL";
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

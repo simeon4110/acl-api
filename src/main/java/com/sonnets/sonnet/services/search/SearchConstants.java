@@ -4,6 +4,9 @@ package com.sonnets.sonnet.services.search;
  * Stores all search related content (i.e. field names.)
  */
 public abstract class SearchConstants {
+    private SearchConstants() {
+        // Private to block default constructor.
+    }
     // Numeric range query settings.
     public static final int INT_DISTANCE = 20;
 

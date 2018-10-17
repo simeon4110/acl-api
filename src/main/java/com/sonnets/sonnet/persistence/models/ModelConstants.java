@@ -4,6 +4,10 @@ package com.sonnets.sonnet.persistence.models;
  * Contains constants for stored procedures and item types.
  */
 public abstract class ModelConstants {
+    private ModelConstants() {
+        // To block implicit public constructor.
+    }
+
     public static final String TYPE_DIALOG = "DIAL";
     public static final String TYPE_POEM = "POEM";
     public static final String TYPE_BOOK = "BOOK";

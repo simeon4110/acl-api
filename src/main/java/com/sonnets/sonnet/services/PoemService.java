@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
-    private static final int NUMBER_OF_RANDOM_SONNETS = 2;
     private final PoemRepository poemRepository;
     private final MessageService messageService;
     private final AuthorService authorService;

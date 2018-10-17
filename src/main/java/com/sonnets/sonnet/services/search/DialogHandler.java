@@ -30,8 +30,8 @@ public interface DialogHandler {
             }
             query.add(phraseQuery.build(), BooleanClause.Occur.MUST);
         }
-        if (dto.getAuthor() != null && !dto.getAuthor().getLastName().equals("") ||
-                !dto.getAuthor().getFirstName().equals("")) {
+        if (dto.getAuthor() != null && (!dto.getAuthor().getLastName().equals("") ||
+                !dto.getAuthor().getFirstName().equals(""))) {
             AuthorFilter.filterAuthor(dto, query);
         }
         return query.build();
