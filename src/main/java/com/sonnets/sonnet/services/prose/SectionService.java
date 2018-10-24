@@ -16,6 +16,7 @@ import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.ToolsService;
 import com.sonnets.sonnet.services.annotations.AnnotationsParseService;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
+import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
@@ -214,6 +215,9 @@ public class SectionService {
     public ResponseEntity<Void> modify(SectionDto dto, Principal principal) {
         LOGGER.debug("Modifying section (USER): " + dto.toString());
         Section section = getSectionOrThrowNotFound(dto.getId());
+        if (section.getConfirmation().isConfirmed()) {
+            throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
+        }
         Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
 
@@ -294,6 +298,9 @@ public class SectionService {
             throw new AnnotationTypeMismatchException(dto.getType() + " does not match narrator type annotation.");
         }
         Section section = sectionRepository.findById(dto.getSectionId()).orElseThrow(ItemNotFoundException::new);
+        if (section.getConfirmation().isConfirmed()) {
+            throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
+        }
         BookCharacter character = characterService.getCharacterOrThrowNotFound(dto.getItemId());
         section.setNarrator(character);
         return sectionRepository.save(section);

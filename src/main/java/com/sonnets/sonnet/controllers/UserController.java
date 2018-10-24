@@ -5,7 +5,6 @@ import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.UserItemsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -153,11 +152,17 @@ public class UserController {
      * @param principal the request principal.
      * @return a list of all items added by a user.
      */
-    @Cacheable(value = "user-items-all", key = "#principal.name")
     @CrossOrigin(origins = ALLOWED_ORIGIN)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
     @GetMapping(value = "/secure/user/get_items", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getUserItems(Principal principal) {
         return userItemsService.getUserItems(principal);
+    }
+
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(value = "/secure/admin/get_all_items", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllItems() {
+        return userItemsService.getAllItems();
     }
 }

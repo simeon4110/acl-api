@@ -19,6 +19,12 @@ public abstract class ModelConstants {
     public static final String GET_ALL_SECTIONS = "getAllSections";
     public static final String GET_ALL_SECTIONS_PROCEDURE = "get_all_sections";
 
+    // Items
+    public static final String GET_USER_ITEMS = "getUserItems";
+    public static final String GET_USER_ITEMS_PROCEDURE = "get_user_items";
+    public static final String GET_ALL_ITEMS = "getAllItems";
+    public static final String GET_ALL_ITEMS_PROCEDURE = "get_all_items";
+
     // Poem
     public static final String GET_ALL_POEMS = "getAllPoemsManual";
     public static final String GET_ALL_POEMS_PROCEDURE = "get_all_poems";

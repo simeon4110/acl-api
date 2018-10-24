@@ -141,8 +141,11 @@ public class PoemService {
     public ResponseEntity<Void> modify(PoemDto dto, Principal principal) {
         LOGGER.debug("Modifying poem (USER): " + dto.toString());
         Poem poem = getPoemOrThrowNotFound(dto.getId().toString());
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         assert poem != null;
+        if (poem.getConfirmation().isConfirmed()) {
+            return new ResponseEntity<>(HttpStatus.LOCKED);
+        }
+        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         assert principal.getName().equals(poem.getCreatedBy());
         poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
         return new ResponseEntity<>(HttpStatus.OK);
@@ -158,6 +161,9 @@ public class PoemService {
         LOGGER.debug("Deleting poem with id (ADMIN): " + id);
         Poem poem = getPoemOrThrowNotFound(id);
         assert poem != null;
+        if (poem.getConfirmation().isConfirmed()) {
+            return new ResponseEntity<>(HttpStatus.LOCKED);
+        }
         poemRepository.delete(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -30,4 +30,8 @@ public class UserItemsService {
     public String getUserItems(Principal principal) {
         return itemRepository.getItemsByUser(principal.getName());
     }
+
+    public String getAllItems() {
+        return itemRepository.getAllItems();
+    }
 }
