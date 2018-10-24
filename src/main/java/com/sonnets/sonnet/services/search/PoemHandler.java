@@ -16,19 +16,7 @@ public interface PoemHandler {
 
     private static Query processQuery(SearchDto dto) {
         BooleanQuery.Builder query = new BooleanQuery.Builder();
-        if (dto.getAuthor() != null) {
-            if (dto.getAuthor().getFirstName() != null && !dto.getAuthor().getFirstName().isEmpty()) {
-                query.add(new TermQuery(new Term(SearchConstants.AUTHOR_FIRST_NAME,
-                                dto.getAuthor().getFirstName().toLowerCase())),
-                        BooleanClause.Occur.MUST);
-            }
-            if (dto.getAuthor().getLastName() != null && !dto.getAuthor().getLastName().isEmpty()) {
-                query.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME,
-                                dto.getAuthor().getLastName().toLowerCase())),
-                        BooleanClause.Occur.MUST);
-            }
-        }
-        if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getTitle())) {
             query.add(new FuzzyQuery(new Term(SearchConstants.TITLE, dto.getTitle().toLowerCase()),
                             SearchConstants.EDIT_DISTANCE, SearchConstants.PREFIX_LENGTH),
                     BooleanClause.Occur.MUST);
@@ -40,14 +28,14 @@ public interface PoemHandler {
                     dto.getPublicationYear() + SearchConstants.INT_DISTANCE, true, true
             ), BooleanClause.Occur.MUST);
         }
-        if (dto.getPeriod() != null && !dto.getPeriod().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getPeriod())) {
             query.add(new TermQuery(new Term(SearchConstants.PERIOD, dto.getPeriod().toLowerCase())),
                     BooleanClause.Occur.MUST);
         }
-        if (dto.getText() != null && !dto.getText().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getText())) {
             query.add(ParseText.getPhraseQuery(dto), BooleanClause.Occur.MUST);
         }
-        if (dto.getForm() != null && !dto.getForm().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getForm())) {
             query.add(new TermQuery(new Term(SearchConstants.POEM_FORM, dto.getForm())), BooleanClause.Occur.MUST);
         }
         if (dto.getAuthor() != null) {

@@ -17,12 +17,12 @@ public interface AuthorFilter {
     }
 
     private static void addClausesToQuery(SearchDto dto, BooleanQuery.Builder query) {
-        if (dto.getAuthor().getFirstName() != null && !dto.getAuthor().getFirstName().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getAuthor().getFirstName())) {
             query.add(new TermQuery(new Term(SearchConstants.AUTHOR_FIRST_NAME,
                             dto.getAuthor().getFirstName().toLowerCase())),
                     BooleanClause.Occur.MUST);
         }
-        if (dto.getAuthor().getLastName() != null && !dto.getAuthor().getLastName().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getAuthor().getLastName())) {
             query.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME,
                             dto.getAuthor().getLastName().toLowerCase())),
                     BooleanClause.Occur.MUST);

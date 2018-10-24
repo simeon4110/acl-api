@@ -21,6 +21,8 @@ public abstract class SearchConstants {
     public static final String AUTHOR = "author";
     public static final String AUTHOR_FIRST_NAME = "author.firstName";
     public static final String AUTHOR_LAST_NAME = "author.lastName";
+    public static final String AUTHOR_FIRST_NAME_RAW = "firstName";
+    public static final String AUTHOR_LAST_NAME_RAW = "lastName";
     public static final String YEAR = "publicationYear";
     public static final String TITLE = "title";
     public static final String PERIOD = "period";

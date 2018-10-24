@@ -316,4 +316,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    public void updateConfirmed(String username, Integer addedCount) {
+        LOGGER.debug("Updating added count: " + username + ", " + addedCount);
+        User user = userRepository.findByUsername(username);
+        if (user.getRequiredSonnets() <= addedCount) {
+            user.setCanConfirm(true);
+        } else {
+            user.setCanConfirm(false);
+        }
+        userRepository.saveAndFlush(user);
+    }
 }

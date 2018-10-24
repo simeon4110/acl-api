@@ -7,4 +7,6 @@ package com.sonnets.sonnet.persistence.repositories.items;
  */
 public interface ItemRepositoryStoredProcedures {
     String getItemsByUser(final String userName);
+
+    String getAllItems();
 }

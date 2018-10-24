@@ -20,13 +20,13 @@ public interface AuthorHandler {
     private static Query processQuery(AuthorDto dto) {
         BooleanQuery.Builder query = new BooleanQuery.Builder();
 
-        if (dto.getFirstName() != null && !dto.getFirstName().isEmpty()) {
-            query.add(new TermQuery(new Term(SearchConstants.AUTHOR_FIRST_NAME,
+        if (NullFieldParser.isNull(dto.getFirstName())) {
+            query.add(new TermQuery(new Term(SearchConstants.AUTHOR_FIRST_NAME_RAW,
                             dto.getFirstName().toLowerCase())),
                     BooleanClause.Occur.MUST);
         }
-        if (dto.getLastName() != null && !dto.getLastName().isEmpty()) {
-            query.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME,
+        if (NullFieldParser.isNull(dto.getLastName())) {
+            query.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME_RAW,
                             dto.getLastName().toLowerCase())),
                     BooleanClause.Occur.MUST);
         }

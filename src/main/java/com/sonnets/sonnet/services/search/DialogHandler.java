@@ -2,10 +2,7 @@ package com.sonnets.sonnet.services.search;
 
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.*;
 
 /**
  * Returns a dialog specific query; can be combined with other queries.
@@ -20,7 +17,7 @@ public interface DialogHandler {
 
     private static Query processQuery(SearchDto dto) {
         BooleanQuery.Builder query = new BooleanQuery.Builder();
-        if (dto.getText() != null && !dto.getText().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getText())) {
             PhraseQuery.Builder phraseQuery = new PhraseQuery.Builder();
             phraseQuery.setSlop(SearchConstants.SLOP);
             int counter = 0;
@@ -30,10 +27,19 @@ public interface DialogHandler {
             }
             query.add(phraseQuery.build(), BooleanClause.Occur.MUST);
         }
-        if (dto.getAuthor() != null && (!dto.getAuthor().getLastName().equals("") ||
-                !dto.getAuthor().getFirstName().equals(""))) {
-            AuthorFilter.filterAuthor(dto, query);
+        if (NullFieldParser.isNull(dto.getCharFirstName())) {
+            query.add(new FuzzyQuery(new Term(SearchConstants.BOOK_CHARACTER_FN,
+                    dto.getCharFirstName().toLowerCase()),
+                    SearchConstants.EDIT_DISTANCE, SearchConstants.PREFIX_LENGTH), BooleanClause.Occur.MUST);
         }
+        if (NullFieldParser.isNull(dto.getCharLastName())) {
+            query.add(new FuzzyQuery(new Term(SearchConstants.BOOK_CHARACTER_LN, dto.getCharLastName().toLowerCase()),
+                    SearchConstants.EDIT_DISTANCE, SearchConstants.PREFIX_LENGTH), BooleanClause.Occur.MUST);
+        }
+//        if (dto.getAuthor() != null && (NullFieldParser.isNull(dto.getAuthor().getFirstName()) ||
+//            NullFieldParser.isNull(dto.getAuthor().getLastName()))) {
+//            AuthorFilter.filterAuthor(dto, query);
+//        }
         return query.build();
     }
 }
