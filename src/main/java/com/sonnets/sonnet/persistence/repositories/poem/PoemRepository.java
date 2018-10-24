@@ -22,6 +22,8 @@ public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositor
 
     List<Poem> findAllByCreatedBy(final String createdBy);
 
+    Integer countAllByCreatedBy(final String createdBy);
+
     Optional<List<Poem>> findAllByAuthor_LastName(final String lastName);
 
     Poem findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNot(

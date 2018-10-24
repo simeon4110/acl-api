@@ -20,6 +20,7 @@ public class PoemDto {
     private String form;
     @NotEmpty
     private String text;
+    private Integer pageNumber;
 
     public Long getId() {
         return id;
@@ -93,18 +94,27 @@ public class PoemDto {
         this.text = text;
     }
 
+    public Integer getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(Integer pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
     @Override
     public String toString() {
         return "PoemDto{" +
                 "id=" + id +
-                ", authorId=" + authorId +
+                ", authorId='" + authorId + '\'' +
                 ", title='" + title + '\'' +
                 ", publicationYear=" + publicationYear +
                 ", publicationStmt='" + publicationStmt + '\'' +
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
-                ", form=" + form +
+                ", form='" + form + '\'' +
                 ", text='" + text + '\'' +
+                ", pageNumber=" + pageNumber +
                 '}';
     }
 }

@@ -134,8 +134,8 @@ public class PoemController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/poem/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addPoem(@RequestBody @Valid PoemDto dto) {
-        return poemService.add(dto);
+    public ResponseEntity<Void> addPoem(@RequestBody @Valid PoemDto dto, Principal principal) {
+        return poemService.add(dto, principal);
     }
 
     /**

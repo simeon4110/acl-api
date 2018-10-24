@@ -23,11 +23,11 @@ public interface SectionHandler {
                     dto.getPublicationYear() + SearchConstants.INT_DISTANCE, true, true
             ), BooleanClause.Occur.MUST);
         }
-        if (dto.getPeriod() != null && !dto.getPeriod().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getPeriod())) {
             query.add(new TermQuery(new Term(SearchConstants.PERIOD, dto.getPeriod().toLowerCase())),
                     BooleanClause.Occur.MUST);
         }
-        if (dto.getText() != null && !dto.getText().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getText())) {
             query.add(ParseText.getPhraseQuery(dto), BooleanClause.Occur.MUST);
         }
         if (dto.getAuthor() != null) {

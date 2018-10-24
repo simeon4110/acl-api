@@ -9,6 +9,7 @@ import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
@@ -38,14 +39,16 @@ public class PoemService {
     private final PoemRepository poemRepository;
     private final MessageService messageService;
     private final AuthorService authorService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final SearchQueryHandlerService searchQueryHandlerService;
 
     @Autowired
     public PoemService(PoemRepository poemRepository, MessageService messageService, AuthorService authorService,
-                       SearchQueryHandlerService searchQueryHandlerService) {
+                       UserDetailsServiceImpl userDetailsService, SearchQueryHandlerService searchQueryHandlerService) {
         this.poemRepository = poemRepository;
         this.messageService = messageService;
         this.authorService = authorService;
+        this.userDetailsService = userDetailsService;
         this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
@@ -84,6 +87,7 @@ public class PoemService {
         poem.setPeriod(dto.getPeriod());
         poem.setForm(dto.getForm());
         poem.setText(parseText(dto.getText()));
+        poem.setPageNumber(dto.getPageNumber());
 
         return poem;
     }
@@ -94,7 +98,7 @@ public class PoemService {
      * @param dto the new poem's data.
      * @return OK if the poem is added, CONFLICT if the poem exists.
      */
-    public ResponseEntity<Void> add(PoemDto dto) {
+    public ResponseEntity<Void> add(PoemDto dto, Principal principal) {
         LOGGER.debug("Adding poem: " + dto.toString());
         // Check if poem already exists.
         try {
@@ -106,8 +110,11 @@ public class PoemService {
         Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
         poemRepository.saveAndFlush(poem);
+        this.getCountAndUpdate(principal.getName());
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     /**
      * Modify a poem. (ADMIN ONLY).
@@ -329,5 +336,10 @@ public class PoemService {
         searchDto.setTitle(dto.getTitle());
         searchDto.setSearchPoems(true);
         searchQueryHandlerService.similarExistsPoem(searchDto);
+    }
+
+    private void getCountAndUpdate(String username) {
+        int count = poemRepository.countAllByCreatedBy(username);
+        userDetailsService.updateConfirmed(username, count);
     }
 }

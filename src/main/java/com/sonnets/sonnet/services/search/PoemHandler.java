@@ -16,7 +16,7 @@ public interface PoemHandler {
 
     private static Query processQuery(SearchDto dto) {
         BooleanQuery.Builder query = new BooleanQuery.Builder();
-        if (!dto.getTitle().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getTitle())) {
             query.add(new FuzzyQuery(new Term(SearchConstants.TITLE, dto.getTitle().toLowerCase()),
                             SearchConstants.EDIT_DISTANCE, SearchConstants.PREFIX_LENGTH),
                     BooleanClause.Occur.MUST);
@@ -28,14 +28,14 @@ public interface PoemHandler {
                     dto.getPublicationYear() + SearchConstants.INT_DISTANCE, true, true
             ), BooleanClause.Occur.MUST);
         }
-        if (!dto.getPeriod().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getPeriod())) {
             query.add(new TermQuery(new Term(SearchConstants.PERIOD, dto.getPeriod().toLowerCase())),
                     BooleanClause.Occur.MUST);
         }
-        if (!dto.getText().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getText())) {
             query.add(ParseText.getPhraseQuery(dto), BooleanClause.Occur.MUST);
         }
-        if (!dto.getForm().isEmpty()) {
+        if (NullFieldParser.isNull(dto.getForm())) {
             query.add(new TermQuery(new Term(SearchConstants.POEM_FORM, dto.getForm())), BooleanClause.Occur.MUST);
         }
         if (dto.getAuthor() != null) {

@@ -53,6 +53,11 @@ public class SearchQueryHandlerService {
         try {
             FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
             JSONObject results = new JSONObject();
+            if (dto.isSearchBookCharacters()) {
+                Query query = CharacterHandler.getQuery(dto);
+                FullTextQuery fullTextQuery = manager.createFullTextQuery(query, BookCharacter.class);
+                results.put(ModelConstants.TYPE_CHARACTER, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
+            }
             if (dto.isSearchDialog()) {
                 Query query = DialogHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Dialog.class);
@@ -63,18 +68,11 @@ public class SearchQueryHandlerService {
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Poem.class);
                 results.put(ModelConstants.TYPE_POEM, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
             }
-            if (dto.isSearchBookCharacters()) {
-                Query query = CharacterHandler.getQuery(dto);
-                FullTextQuery fullTextQuery = manager.createFullTextQuery(query, BookCharacter.class);
-                results.put(ModelConstants.TYPE_CHARACTER, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
-            }
             if (dto.isSearchBooks()) { // :todo: fix this when you give a shit.
                 Query query = SectionHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Section.class);
-                LOGGER.debug("BOOK OUTPUT: " + sectionGson.toJson(fullTextQuery.getResultList()));
                 results.put(ModelConstants.TYPE_SECTION, new JSONArray(
                         sectionGson.toJson(fullTextQuery.getResultList())));
-                LOGGER.debug("BOOK OUTPUT: " + fullTextQuery.getResultList().toString());
             }
             LOGGER.debug("Found: " + results.length());
             return results;

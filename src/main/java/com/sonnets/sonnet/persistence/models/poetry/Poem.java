@@ -69,6 +69,8 @@ public class Poem extends Item implements Serializable {
     private boolean processed;
     @Embedded
     private TopicModel topicModel;
+    @Column
+    private Integer pageNumber;
 
     public Poem() {
         super();
@@ -134,6 +136,14 @@ public class Poem extends Item implements Serializable {
         this.topicModel = topicModel;
     }
 
+    public Integer getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(Integer pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -146,12 +156,14 @@ public class Poem extends Item implements Serializable {
                 Objects.equals(text, poem.text) &&
                 Objects.equals(annotation, poem.annotation) &&
                 Objects.equals(versions, poem.versions) &&
-                Objects.equals(topicModel, poem.topicModel);
+                Objects.equals(topicModel, poem.topicModel) &&
+                Objects.equals(pageNumber, poem.pageNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), form, confirmation, text, annotation, versions, processed, topicModel);
+        return Objects.hash(super.hashCode(), form, confirmation, text, annotation, versions, processed, topicModel,
+                pageNumber);
     }
 
     @Override
@@ -164,6 +176,7 @@ public class Poem extends Item implements Serializable {
                 ", versions=" + versions +
                 ", processed=" + processed +
                 ", topicModel=" + topicModel +
+                ", pageNumber=" + pageNumber +
                 "} " + super.toString();
     }
 }

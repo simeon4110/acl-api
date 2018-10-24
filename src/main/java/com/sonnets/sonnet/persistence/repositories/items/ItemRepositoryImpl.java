@@ -29,7 +29,10 @@ public class ItemRepositoryImpl implements ItemRepositoryStoredProcedures {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getUserItems");
         query.setParameter("userName", userName);
         CompletableFuture.supplyAsync(query::execute);
-        sb.append(query.getResultList());
+        for (Object o : query.getResultList()) {
+            sb.append(o.toString());
+        }
+        System.out.println(sb.toString());
         return sb.toString();
     }
 }
