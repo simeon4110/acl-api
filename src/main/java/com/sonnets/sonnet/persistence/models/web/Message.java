@@ -24,7 +24,7 @@ public class Message extends Auditable<String> implements Serializable {
     private String userTo;
     @Column
     private String subject;
-    @Column
+    @Column(columnDefinition = "NVARCHAR(2000)")
     private String content;
     @Column
     private boolean isRead;
