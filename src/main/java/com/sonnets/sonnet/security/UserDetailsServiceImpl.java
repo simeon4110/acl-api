@@ -31,11 +31,11 @@ import java.util.*;
  */
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
+    private static final Logger LOGGER = Logger.getLogger(UserDetailsServiceImpl.class);
     private final UserRepository userRepository;
     private final PrivilegeRepository privilegeRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailServiceImpl emailService;
-    private static final Logger LOGGER = Logger.getLogger(UserDetailsServiceImpl.class);
 
     private static final String USER_PRIVILEGE = "USER";
     private static final String ADMIN_PRIVILEGE = "ADMIN";
@@ -315,16 +315,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }
-
-    public void updateConfirmed(String username, Integer addedCount) {
-        LOGGER.debug("Updating added count: " + username + ", " + addedCount);
-        User user = userRepository.findByUsername(username);
-        if (user.getRequiredSonnets() <= addedCount) {
-            user.setCanConfirm(true);
-        } else {
-            user.setCanConfirm(false);
-        }
-        userRepository.saveAndFlush(user);
     }
 }

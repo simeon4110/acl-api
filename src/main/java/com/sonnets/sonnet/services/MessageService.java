@@ -26,11 +26,14 @@ public class MessageService {
     private static final Logger LOGGER = Logger.getLogger(MessageService.class);
     private final MessageRepository messageRepository;
     private final UserDetailsServiceImpl userDetailsService;
+    private final EmailServiceImpl emailService;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository, UserDetailsServiceImpl userDetailsService) {
+    public MessageService(MessageRepository messageRepository, UserDetailsServiceImpl userDetailsService,
+                          EmailServiceImpl emailService) {
         this.messageRepository = messageRepository;
         this.userDetailsService = userDetailsService;
+        this.emailService = emailService;
     }
 
     /**
@@ -47,6 +50,10 @@ public class MessageService {
         message.setSubject(messageDto.getSubject());
         message.setContent(messageDto.getContent());
         message.setRead(false);
+
+        User user = userDetailsService.loadUserObjectByUsername(messageDto.getUserTo());
+        emailService.sendSimpleMessage(
+                user.getEmail(), "One of your poems has been rejected.", messageDto.getContent());
 
         messageRepository.saveAndFlush(message);
     }

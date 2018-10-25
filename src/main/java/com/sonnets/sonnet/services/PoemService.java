@@ -8,8 +8,10 @@ import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.web.User;
+import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
+import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
-import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
@@ -38,17 +40,17 @@ public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
     private final PoemRepository poemRepository;
     private final MessageService messageService;
-    private final AuthorService authorService;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthorRepository authorRepository;
+    private final UserRepository userRepository;
     private final SearchQueryHandlerService searchQueryHandlerService;
 
     @Autowired
-    public PoemService(PoemRepository poemRepository, MessageService messageService, AuthorService authorService,
-                       UserDetailsServiceImpl userDetailsService, SearchQueryHandlerService searchQueryHandlerService) {
+    public PoemService(PoemRepository poemRepository, MessageService messageService, AuthorRepository authorRepository,
+                       UserRepository userRepository, SearchQueryHandlerService searchQueryHandlerService) {
         this.poemRepository = poemRepository;
         this.messageService = messageService;
-        this.authorService = authorService;
-        this.userDetailsService = userDetailsService;
+        this.authorRepository = authorRepository;
+        this.userRepository = userRepository;
         this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
@@ -107,7 +109,8 @@ public class PoemService {
             LOGGER.error(e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
+                .orElseThrow(ItemNotFoundException::new);
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
         poemRepository.saveAndFlush(poem);
         this.getCountAndUpdate(principal.getName());
@@ -124,7 +127,8 @@ public class PoemService {
      */
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
+                .orElseThrow(ItemNotFoundException::new);
         Poem poem = createOrUpdateFromDto(getPoemOrThrowNotFound(dto.getId()), dto, author);
         poemRepository.saveAndFlush(poem);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -145,7 +149,8 @@ public class PoemService {
         if (poem.getConfirmation().isConfirmed()) {
             return new ResponseEntity<>(HttpStatus.LOCKED);
         }
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
+                .orElseThrow(ItemNotFoundException::new);
         assert principal.getName().equals(poem.getCreatedBy());
         poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
         return new ResponseEntity<>(HttpStatus.OK);
@@ -299,7 +304,6 @@ public class PoemService {
         return poemRepository.findAllByAuthor_LastName(lastName).orElseThrow(ItemNotFoundException::new);
     }
 
-    // User - delete poem.
     public ResponseEntity<Void> deleteById(String id, Principal principal) {
         LOGGER.debug("Deleting poem with id (USER): " + id);
         Poem poem = getPoemOrThrowNotFound(id);
@@ -308,16 +312,6 @@ public class PoemService {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    public Poem getUnprocessed() {
-        LOGGER.debug("Returning an unprocessed poem");
-        return poemRepository.findFirstByProcessed(false);
-    }
-
-    public void save(Poem poem) {
-        LOGGER.debug("Saving poem: " + poem.toString());
-        poemRepository.saveAndFlush(poem);
     }
 
     private Poem getPoemOrThrowNotFound(String id) {
@@ -337,7 +331,8 @@ public class PoemService {
 
     private void similarExistsPoem(PoemDto dto) {
         SearchDto searchDto = new SearchDto();
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
+                .orElseThrow(ItemNotFoundException::new);
         searchDto.setAuthor(author);
         searchDto.setTitle(dto.getTitle());
         searchDto.setSearchPoems(true);
@@ -346,6 +341,8 @@ public class PoemService {
 
     private void getCountAndUpdate(String username) {
         int count = poemRepository.countAllByCreatedBy(username);
-        userDetailsService.updateConfirmed(username, count);
+        User user = userRepository.findByUsername(username);
+        user.setCanConfirm(user.getRequiredSonnets() <= count);
+        userRepository.saveAndFlush(user);
     }
 }
