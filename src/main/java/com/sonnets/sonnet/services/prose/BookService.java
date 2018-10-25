@@ -159,7 +159,7 @@ public class BookService {
         return bookRepository.getBookCharactersSimple(Long.parseLong(id));
     }
 
-    Book getBookOrThrowNotFound(Long id) {
+    private Book getBookOrThrowNotFound(Long id) {
         LOGGER.debug("Getting book with id: " + id);
         return bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
