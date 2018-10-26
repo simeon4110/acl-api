@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.web;
 
+import com.sonnets.sonnet.persistence.models.ModelConstants;
 import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.persistence.models.base.Item;
@@ -29,53 +30,63 @@ import java.util.Set;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = "addCorporaItem",
-                procedureName = "add_corpora_item",
+                name = ModelConstants.ADD_CORPORA_ITEM,
+                procedureName = ModelConstants.ADD_CORPORA_ITEM_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(name = "itemId", mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(name = "itemType", mode = ParameterMode.IN, type = String.class)
+                        @StoredProcedureParameter(
+                                name = ModelConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(
+                                name = ModelConstants.ITEM_ID, mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(
+                                name = ModelConstants.ITEM_TYPE, mode = ParameterMode.IN, type = String.class)
                 }
 
         ),
         @NamedStoredProcedureQuery(
-                name = "getCorpora",
-                procedureName = "get_corpora",
+                name = ModelConstants.GET_CORPORA,
+                procedureName = ModelConstants.GET_CORPORA_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
+                        @StoredProcedureParameter(
+                                name = ModelConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class)
                 },
                 resultSetMappings = {
                         "CorporaMap"
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "getCorporaItems",
-                procedureName = "get_corpora_items",
+                name = ModelConstants.GET_CORPORA_ITEMS,
+                procedureName = ModelConstants.GET_CORPORA_ITEMS_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
+                        @StoredProcedureParameter(
+                                name = ModelConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "getCorporaItemsSimple",
-                procedureName = "get_corpora_items_simple",
+                name = ModelConstants.GET_CORPORA_ITEMS_SIMPLE,
+                procedureName = ModelConstants.GET_CORPORA_ITEMS_SIMPLE_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
+                        @StoredProcedureParameter(
+                                name = ModelConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "getCorporaUser",
-                procedureName = "get_corpora_user",
+                name = ModelConstants.GET_CORPORA_USER,
+                procedureName = ModelConstants.GET_CORPORA_USER_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "createdBy", mode = ParameterMode.IN, type = String.class)
+                        @StoredProcedureParameter(
+                                name = ModelConstants.CREATED_BY, mode = ParameterMode.IN, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "deleteCorporaItem",
-                procedureName = "delete_corpora_item",
+                name = ModelConstants.DELETE_CORPORA_ITEM,
+                procedureName = ModelConstants.DELETE_CORPORA_ITEM_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "itemType", mode = ParameterMode.IN, type = String.class),
-                        @StoredProcedureParameter(name = "itemId", mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(name = "corporaId", mode = ParameterMode.IN, type = Long.class)
+                        @StoredProcedureParameter(
+                                name = ModelConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(
+                                name = ModelConstants.ITEM_TYPE, mode = ParameterMode.IN, type = String.class),
+                        @StoredProcedureParameter(
+                                name = ModelConstants.ITEM_ID, mode = ParameterMode.IN, type = Long.class)
                 }
         )
 })

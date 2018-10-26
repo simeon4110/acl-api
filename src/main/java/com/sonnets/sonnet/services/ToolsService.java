@@ -2,6 +2,7 @@ package com.sonnets.sonnet.services;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
+import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
 import com.sonnets.sonnet.wordtools.MalletTools;
 import com.sonnets.sonnet.wordtools.NLPTools;
@@ -28,14 +29,14 @@ public class ToolsService {
     private static final NLPTools pipeline = NLPTools.getInstance();
     private static final MalletTools malletTools = MalletTools.getInstance();
     private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
-    private final CorporaService corporaService;
+    private final CorporaRepository corporaRepository;
     private final CustomStopWordsService stopWords;
 
     private static final int REQUEST_TIMEOUT = 60;
 
     @Autowired
-    public ToolsService(CorporaService corporaService, CustomStopWordsService stopWords) {
-        this.corporaService = corporaService;
+    public ToolsService(CorporaRepository corporaRepository, CustomStopWordsService stopWords) {
+        this.corporaRepository = corporaRepository;
         this.stopWords = stopWords;
     }
 
@@ -45,18 +46,7 @@ public class ToolsService {
         try {
             array = new JSONArray(items);
             for (int i = 0; i < array.length(); i++) {
-                switch (array.getJSONObject(i).getString("item_type")) {
-                    case "POEM":
-                        result.append(array.getJSONObject(i).getString("poem_text"));
-                        result.append(" ");
-                        break;
-                    case "SECT":
-                        result.append(array.getJSONObject(i).getString("text"));
-                        result.append(" ");
-                        break;
-                    default:
-                        break;
-                }
+                result.append(array.getJSONObject(i).getString("text"));
             }
         } catch (JSONException e) {
             LOGGER.error(e);
@@ -80,7 +70,7 @@ public class ToolsService {
      * @return a list of lemmatized strings.
      */
     @Async
-    public CompletableFuture<List<String>> lemmatizeText(String corporaId, String stopWordsId) {
+    public CompletableFuture<List<String>> lemmatizeText(Long corporaId, String stopWordsId) {
         LOGGER.debug("Running text lemmatizer (corpora): " + corporaId);
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
@@ -88,7 +78,8 @@ public class ToolsService {
             customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
+        String items = corporaRepository.getCorporaItems(corporaId);
+        dto.setText(parseCorporaItems(items));
         return pipeline.getListOfLemmatizedWords(dto);
     }
 
@@ -131,7 +122,7 @@ public class ToolsService {
      * @return a list of lemmatized strings.
      */
     @Async
-    public CompletableFuture<Map<String, Integer>> frequencyDistribution(String corporaId, String stopWordsId) {
+    public CompletableFuture<Map<String, Integer>> frequencyDistribution(Long corporaId, String stopWordsId) {
         LOGGER.debug("Running frequency distribution (corpora): " + corporaId);
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
@@ -139,7 +130,7 @@ public class ToolsService {
             customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        dto.setText(parseCorporaItems(corporaService.getCorporaItems(corporaId)));
+        dto.setText(parseCorporaItems(corporaRepository.getCorporaItems(corporaId)));
         CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(dto);
         return strings.thenApply(freqDist::getFrequency);
     }
@@ -167,9 +158,9 @@ public class ToolsService {
      * is the exact probability of the model and the value is the model.
      */
     @Async
-    public CompletableFuture runMalletTopicModel(String corporaId, int numberOfTopics) {
+    public CompletableFuture runMalletTopicModel(Long corporaId, int numberOfTopics) {
         LOGGER.debug("Running topic model (corpora): " + corporaId);
-        return malletTools.topicModel(parseCorporaItems(corporaService.getCorporaItems(corporaId)), numberOfTopics)
+        return malletTools.topicModel(parseCorporaItems(corporaRepository.getCorporaItems(corporaId)), numberOfTopics)
                 .orTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
     }
 }
