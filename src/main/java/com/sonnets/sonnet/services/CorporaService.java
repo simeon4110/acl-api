@@ -149,17 +149,6 @@ public class CorporaService {
     }
 
     /**
-     * Gets a set of all of a corpora's items. The getCorporaItems method runs async.
-     *
-     * @param id the db id of the corpora to get.
-     * @return a set of all the items in the corpora.
-     */
-    public String getCorporaItems(String id) {
-        LOGGER.debug("Getting corpora items: " + id);
-        return corporaRepository.getCorporaItems(Long.parseLong(id));
-    }
-
-    /**
      * Gets just the basics of a corpora's items. The getCorporaItemsSimple method runs async.
      *
      * @param id the db id of the corpora's items to get.
