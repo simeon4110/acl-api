@@ -32,4 +32,28 @@ public abstract class ModelConstants {
     public static final String GET_RANDOM_POEM_PROCEDURE = "get_random_poem";
     public static final String GET_POEMS_BY_USER = "getPoemsByUser";
     public static final String GET_POEMS_BY_USER_PROCEDURE = "get_user_poems";
+
+    // Corpora
+    public static final String ADD_CORPORA_ITEM = "addCorporaItem";
+    public static final String ADD_CORPORA_ITEM_PROCEDURE = "add_corpora_item";
+    public static final String GET_CORPORA = "getCorpora";
+    public static final String GET_CORPORA_PROCEDURE = "get_corpora";
+    public static final String GET_CORPORA_ITEMS = "getCorporaItems";
+    public static final String GET_CORPORA_ITEMS_PROCEDURE = "get_corpora_items";
+    public static final String GET_CORPORA_ITEMS_SIMPLE = "getCorporaItemsSimple";
+    public static final String GET_CORPORA_ITEMS_SIMPLE_PROCEDURE = "get_corpora_items_simple";
+    public static final String GET_CORPORA_USER = "getCorporaUser";
+    public static final String GET_CORPORA_USER_PROCEDURE = "get_corpora_user";
+    public static final String DELETE_CORPORA_ITEM = "deleteCorporaItem";
+    public static final String DELETE_CORPORA_ITEM_PROCEDURE = "delete_corpora_item";
+
+    // Corpora Procedure Params
+    public static final String CORPORA_ID = "corporaId";
+    public static final String ITEM_ID = "itemId";
+    public static final String ITEM_TYPE = "itemType";
+
+
+    // General Procedure Params
+    public static final String CREATED_BY = "createdBy";
+
 }
