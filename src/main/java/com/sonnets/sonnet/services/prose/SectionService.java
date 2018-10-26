@@ -10,21 +10,22 @@ import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
+import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
+import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
+import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
-import com.sonnets.sonnet.services.AuthorService;
 import com.sonnets.sonnet.services.MessageService;
 import com.sonnets.sonnet.services.ToolsService;
 import com.sonnets.sonnet.services.annotations.AnnotationsParseService;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -41,22 +42,25 @@ import java.util.concurrent.CompletableFuture;
 public class SectionService {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
     private final SectionRepositoryBase sectionRepository;
+    private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
+    private final BookCharacterRepository bookCharacterRepository;
+
     private final MessageService messageService;
     private final ToolsService toolsService;
-    private final BookService bookService;
-    private final AuthorService authorService;
-    private final CharacterService characterService;
     private final AnnotationsParseService annotationsParseService;
 
-    public SectionService(SectionRepositoryBase sectionRepository, MessageService messageService,
-                          ToolsService toolsService, BookService bookService, AuthorService authorService,
-                          CharacterService characterService, AnnotationsParseService annotationsParseService) {
+    @Autowired
+    public SectionService(SectionRepositoryBase sectionRepository, BookRepository bookRepository,
+                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository,
+                          MessageService messageService, ToolsService toolsService,
+                          AnnotationsParseService annotationsParseService) {
         this.sectionRepository = sectionRepository;
+        this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
+        this.bookCharacterRepository = bookCharacterRepository;
         this.messageService = messageService;
         this.toolsService = toolsService;
-        this.bookService = bookService;
-        this.authorService = authorService;
-        this.characterService = characterService;
         this.annotationsParseService = annotationsParseService;
     }
 
@@ -131,14 +135,9 @@ public class SectionService {
      * @return the book's title. (title = section title, bookTitle = parent title}
      */
     public String getTitle(String id) {
-        Section section = sectionRepository.findById(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
-        JSONObject bookTitle;
+        String title = bookRepository.getBookTitle(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
         try {
-            bookTitle = new JSONObject(bookService.getTitle(String.valueOf(section.getParentId())));
-            JSONObject result = new JSONObject();
-            result.put("title", section.getTitle());
-            result.put("bookTitle", bookTitle.get("title"));
-            return result.toString();
+            return new JSONObject().put("title", title).toString();
         } catch (JSONException e) {
             LOGGER.error(e);
             return null;
@@ -153,7 +152,7 @@ public class SectionService {
      */
     public List<Section> getAllFromBook(String bookId) {
         LOGGER.debug("Getting all sections of: " + bookId);
-        Book book = bookService.getBookOrThrowNotFound(bookId);
+        Book book = bookRepository.findById(Long.parseLong(bookId)).orElseThrow(ItemNotFoundException::new);
         return book.getSections();
     }
 
@@ -181,12 +180,12 @@ public class SectionService {
      */
     public ResponseEntity<Void> add(SectionDto dto) {
         LOGGER.debug("Adding new section: " + dto.toString());
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
-        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         Section section = createOrCopySection(new Section(), author, book, dto);
         sectionRepository.saveAndFlush(section);
         book.getSections().add(section);
-        CompletableFuture.runAsync(() -> bookService.save(book));
+        CompletableFuture.runAsync(() -> bookRepository.save(book));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -199,8 +198,8 @@ public class SectionService {
     public ResponseEntity<Void> modify(SectionDto dto) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
         Section section = getSectionOrThrowNotFound(dto.getId());
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
-        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -218,8 +217,8 @@ public class SectionService {
         if (section.getConfirmation().isConfirmed()) {
             throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
         }
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
-        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
 
         // Ensure the user making the request is also the owner of the section.
         if (section.getCreatedBy().equals(principal.getName())) {
@@ -238,9 +237,9 @@ public class SectionService {
     public ResponseEntity<Void> deleteById(String id) {
         LOGGER.debug("Deleting other with id (ADMIN): " + id);
         Section section = getSectionOrThrowNotFound(id);
-        Book book = bookService.getBookOrThrowNotFound(section.getParentId());
+        Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemAlreadyConfirmedException::new);
         book.getSections().remove(section);
-        CompletableFuture.runAsync(() -> bookService.save(book));
+        CompletableFuture.runAsync(() -> bookRepository.save(book));
         sectionRepository.delete(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -301,7 +300,8 @@ public class SectionService {
         if (section.getConfirmation().isConfirmed()) {
             throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
         }
-        BookCharacter character = characterService.getCharacterOrThrowNotFound(dto.getItemId());
+        BookCharacter character = bookCharacterRepository.findById(dto.getItemId())
+                .orElseThrow(ItemNotFoundException::new);
         section.setNarrator(character);
         return sectionRepository.save(section);
     }
@@ -311,12 +311,6 @@ public class SectionService {
         section.setNarrator(null);
         sectionRepository.saveAndFlush(section);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Async
-    public CompletableFuture<List> getUserSections(Principal principal) {
-        return sectionRepository.getAllByUser(principal.getName()).thenApply(sections ->
-                sections.orElseThrow(NoResultsException::new));
     }
 
     public String getAnnotations(final Long id) {

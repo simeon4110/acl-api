@@ -36,10 +36,6 @@ public interface DialogHandler {
             query.add(new FuzzyQuery(new Term(SearchConstants.BOOK_CHARACTER_LN, dto.getCharLastName().toLowerCase()),
                     SearchConstants.EDIT_DISTANCE, SearchConstants.PREFIX_LENGTH), BooleanClause.Occur.MUST);
         }
-//        if (dto.getAuthor() != null && (NullFieldParser.isNull(dto.getAuthor().getFirstName()) ||
-//            NullFieldParser.isNull(dto.getAuthor().getLastName()))) {
-//            AuthorFilter.filterAuthor(dto, query);
-//        }
         return query.build();
     }
 }
