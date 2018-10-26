@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * User-to-user and system-to-user message object.
+ * User-to-user and system-to-user message POJO.
  *
  * @author Josh Harkema
  */

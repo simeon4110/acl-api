@@ -54,16 +54,13 @@ public class DialogController {
     /**
      * Delete a single dialog object.
      *
-     * @param sectionId the parent section of the dialog (for cache control).
      * @param dialogId  the id of the dialog to delete.
      * @return 200 if successful.
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @DeleteMapping(value = "/secure/annotations/dialog/delete/{sectionId}/{dialogId}")
-    public ResponseEntity<Void> delete(
-            @PathVariable("sectionId") Long sectionId,
-            @PathVariable("dialogId") Long dialogId) {
+    @DeleteMapping(value = "/secure/annotations/dialog/delete/{dialogId}")
+    public ResponseEntity<Void> delete(@PathVariable("dialogId") Long dialogId) {
         return dialogService.delete(dialogId);
     }
 

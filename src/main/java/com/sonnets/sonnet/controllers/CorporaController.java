@@ -52,19 +52,6 @@ public class CorporaController {
     }
 
     /**
-     * Get a single corpora's items
-     *
-     * @param id the db id of the corpora.
-     * @return a set of all the items.
-     */
-    @CrossOrigin(origins = "${allowed-origin}") //
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
-    @GetMapping(value = "/secure/corpora/get_items_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getItemsById(@PathVariable("id") String id) {
-        return corporaService.getCorporaItems(id);
-    }
-
-    /**
      * Get just the title, author, <<important fields>> of a single corpora's items.
      *
      * @param id the db id of the corpora.
