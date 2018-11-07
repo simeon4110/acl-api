@@ -66,7 +66,9 @@ public class PoemService {
         String[] textArr = text.split("\\r?\\n");
 
         for (String s : textArr) {
-            strings.add(s.trim());
+            if (!s.isEmpty()) {
+                strings.add(s.trim());
+            }
         }
         return strings;
     }
@@ -82,14 +84,18 @@ public class PoemService {
     private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
         poem.setAuthor(author);
         poem.setCategory("POEM");
-        poem.setTitle(dto.getTitle());
+        poem.setText(parseText(dto.getText()));
+        if (dto.getTitle().isEmpty() || dto.getTitle() == null) {
+            poem.setTitle(poem.getText().get(0));
+        } else {
+            poem.setTitle(dto.getTitle());
+        }
         poem.setConfirmation(new Confirmation());
         poem.setPublicationYear(dto.getPublicationYear());
         poem.setPublicationStmt(dto.getPublicationStmt());
         poem.setSourceDesc(dto.getSourceDesc());
         poem.setPeriod(dto.getPeriod());
         poem.setForm(dto.getForm());
-        poem.setText(parseText(dto.getText()));
         poem.setPageNumber(dto.getPageNumber());
 
         return poem;
@@ -252,8 +258,11 @@ public class PoemService {
         messageDto.setContent(rejectDto.getRejectMessage());
         messageService.sendAdminMessage(messageDto);
 
-        incrementUserCount(principal.getName());
-        lowerUserPoemCountByOne(poem.getCreatedBy());
+        if (poem.isTesting()) {
+            incrementUserCount(principal.getName());
+        } else {
+            lowerUserPoemCountByOne(poem.getCreatedBy());
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
