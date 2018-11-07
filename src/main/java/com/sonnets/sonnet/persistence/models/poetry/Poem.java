@@ -57,11 +57,11 @@ public class Poem extends Item implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @IndexedEmbedded
     private List<String> text;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Version> versions;
     @JsonIgnore
@@ -71,6 +71,10 @@ public class Poem extends Item implements Serializable {
     private TopicModel topicModel;
     @Column
     private Integer pageNumber;
+    @Column
+    private boolean hidden;
+    @Column
+    private boolean testing;
 
     public Poem() {
         super();
@@ -144,6 +148,26 @@ public class Poem extends Item implements Serializable {
         this.pageNumber = pageNumber;
     }
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    public boolean isTesting() {
+        return testing;
+    }
+
+    public void setTesting(boolean testing) {
+        this.testing = testing;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -151,6 +175,8 @@ public class Poem extends Item implements Serializable {
         if (!super.equals(o)) return false;
         Poem poem = (Poem) o;
         return processed == poem.processed &&
+                hidden == poem.hidden &&
+                testing == poem.testing &&
                 Objects.equals(form, poem.form) &&
                 Objects.equals(confirmation, poem.confirmation) &&
                 Objects.equals(text, poem.text) &&
@@ -163,7 +189,7 @@ public class Poem extends Item implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), form, confirmation, text, annotation, versions, processed, topicModel,
-                pageNumber);
+                pageNumber, hidden, testing);
     }
 
     @Override
@@ -177,6 +203,8 @@ public class Poem extends Item implements Serializable {
                 ", processed=" + processed +
                 ", topicModel=" + topicModel +
                 ", pageNumber=" + pageNumber +
+                ", hidden=" + hidden +
+                ", testing=" + testing +
                 "} " + super.toString();
     }
 }

@@ -198,8 +198,8 @@ public class PoemController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/poem/reject", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> rejectPoem(@RequestBody @Valid RejectDto rejectDto) {
-        return poemService.reject(rejectDto);
+    public ResponseEntity<Void> rejectPoem(@RequestBody @Valid RejectDto rejectDto, Principal principal) {
+        return poemService.reject(rejectDto, principal);
     }
 
     /**

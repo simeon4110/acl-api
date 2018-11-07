@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -92,6 +93,43 @@ public class PoemService {
         poem.setPageNumber(dto.getPageNumber());
 
         return poem;
+    }
+
+    private static List<Long> getTestingSonnets(final List<Poem> testingPoems) {
+        Random rand = new Random();
+        List<Long> testingSonnets = new ArrayList<>();
+        while (testingSonnets.size() < 6) {
+            Long sonnetId = testingPoems.get(rand.nextInt(testingPoems.size())).getId();
+            if (!testingSonnets.contains(sonnetId)) {
+                testingSonnets.add(sonnetId);
+            }
+        }
+        return testingSonnets;
+    }
+
+    private static List<Integer> getTestingIndexes() {
+        Random rand = new Random();
+        List<Integer> indexes = new ArrayList<>();
+        while (indexes.size() < 6) {
+            int index = rand.nextInt(30);
+            if (!indexes.contains(index)) {
+                indexes.add(index);
+            }
+
+        }
+        return indexes;
+    }
+
+    private void incrementUserCount(final String userName) {
+        User user = userRepository.findByUsername(userName);
+        user.setCurrentIndex(user.getCurrentIndex() + 1);
+        userRepository.saveAndFlush(user);
+    }
+
+    private void lowerUserPoemCountByOne(final String userName) {
+        User user = userRepository.findByUsername(userName);
+        user.setCanConfirm(false);
+        userRepository.saveAndFlush(user);
     }
 
     /**
@@ -189,6 +227,7 @@ public class PoemService {
         poem.getConfirmation().setConfirmedAt(new Timestamp(System.currentTimeMillis()));
         poem.getConfirmation().setPendingRevision(false);
         poemRepository.saveAndFlush(poem);
+        incrementUserCount(principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -198,7 +237,7 @@ public class PoemService {
      * @param rejectDto the dto with the rejection data.
      * @return OK if the poem is rejected.
      */
-    public ResponseEntity<Void> reject(RejectDto rejectDto) {
+    public ResponseEntity<Void> reject(RejectDto rejectDto, Principal principal) {
         LOGGER.debug("Rejecting poem: " + rejectDto.getId());
         Poem poem = getPoemOrThrowNotFound(rejectDto.getId());
         assert poem != null;
@@ -213,6 +252,8 @@ public class PoemService {
         messageDto.setContent(rejectDto.getRejectMessage());
         messageService.sendAdminMessage(messageDto);
 
+        incrementUserCount(principal.getName());
+        lowerUserPoemCountByOne(poem.getCreatedBy());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -224,10 +265,31 @@ public class PoemService {
      */
     public Poem getPoemToConfirm(Principal principal) {
         LOGGER.debug("Returning first unconfirmed poem not submitted by: " + principal.getName());
-        return poemRepository
-                .findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNot(
-                        false, false, principal.getName()
-                );
+        User user = userRepository.findByUsername(principal.getName());
+        Poem poem;
+
+        if (user.getCurrentIndex() == user.getRequiredSonnets() + 5) {
+            return null;
+        }
+
+        if (user.getTestingSonnets().size() == 0 || user.getTestingIndexes() == null) {
+            List<Poem> testingPoems = poemRepository.findAllByTesting(true);
+            user.setTestingSonnets(getTestingSonnets(testingPoems));
+            user.setTestingIndexes(getTestingIndexes());
+            user.setCurrentIndex(0);
+        }
+
+        if (user.getTestingIndexes().contains(user.getCurrentIndex())) {
+            poem = poemRepository.findById(user.getTestingSonnets().get(
+                    user.getTestingIndexes().indexOf(user.getCurrentIndex()))).orElseThrow(ItemNotFoundException::new);
+        } else {
+            poem = poemRepository
+                    .findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNotAndTesting(
+                            false, false, principal.getName(), false
+                    );
+        }
+        userRepository.saveAndFlush(user);
+        return poem;
     }
 
     /**
