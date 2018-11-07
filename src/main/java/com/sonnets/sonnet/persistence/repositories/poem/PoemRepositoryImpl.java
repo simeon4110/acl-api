@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.poem;
 
+import com.sonnets.sonnet.persistence.models.ModelConstants;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
@@ -29,7 +30,7 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public String getAllPoemsManual() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getAllPoemsManual");
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_ALL_POEMS);
         CompletableFuture.supplyAsync(query::execute);
         StringBuilder sb = new StringBuilder();
         for (Object o : query.getResultList()) {
@@ -41,7 +42,7 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
     @Override
     @Transactional(readOnly = true)
     public String getRandomPoem(String form) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getRandomPoem");
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_RANDOM_POEM);
         query.setParameter("form", form);
         CompletableFuture.supplyAsync(query::execute);
         return String.valueOf(query.getResultList());
@@ -52,7 +53,7 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public CompletableFuture<Optional<List<Poem>>> getPoemsByUser(String userName) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getPoemsByUser");
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_POEMS_BY_USER);
         query.setParameter("userName", userName);
         return CompletableFuture.completedFuture(Optional.of((List<Poem>) query.getResultList()));
     }

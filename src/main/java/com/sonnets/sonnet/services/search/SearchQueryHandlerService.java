@@ -13,10 +13,7 @@ import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
@@ -74,6 +71,7 @@ public class SearchQueryHandlerService {
                 results.put(ModelConstants.TYPE_SECTION, new JSONArray(
                         sectionGson.toJson(fullTextQuery.getResultList())));
             }
+
             LOGGER.debug("Found: " + results.length());
             return results;
         } catch (JSONException e) {
@@ -94,7 +92,17 @@ public class SearchQueryHandlerService {
         BooleanQuery.Builder query = new BooleanQuery.Builder();
         query.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME, dto.getAuthor().getLastName())),
                 BooleanClause.Occur.MUST);
-        query.add(new TermQuery(new Term(SearchConstants.TITLE, dto.getTitle())), BooleanClause.Occur.MUST);
+
+        // Build out a phrase query for the title search.
+        PhraseQuery.Builder phraseQuery = new PhraseQuery.Builder();
+        phraseQuery.setSlop(SearchConstants.SLOP);
+        int counter = 0;
+        for (String term : dto.getTitle().split(" ")) {
+            phraseQuery.add(new Term(SearchConstants.TITLE, term.toLowerCase()), counter);
+            counter++;
+        }
+        query.add(phraseQuery.build(), BooleanClause.Occur.MUST);
+
         FullTextQuery fullTextQuery = manager.createFullTextQuery(query.build(), Poem.class);
         if (fullTextQuery.getResultSize() != 0) {
             LOGGER.error("Found similar poems.");

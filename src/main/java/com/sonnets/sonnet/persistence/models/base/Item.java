@@ -40,9 +40,9 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     @Expose
     private String category;
-    @Field(name = SearchConstants.AUTHOR)
+    @Field(name = SearchConstants.AUTHOR, store = Store.YES)
     @FieldBridge(impl = AuthorBridge.class)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @Expose
     private Author author;
     @Field(name = SearchConstants.TITLE, store = Store.YES, analyze = Analyze.YES)
@@ -67,7 +67,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     @Expose
     private String period;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private UserAnnotation userAnnotation;
 
     public Item() {
