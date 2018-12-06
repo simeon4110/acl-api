@@ -30,7 +30,7 @@ public class ToolsService {
     private static final NLPTools pipeline = NLPTools.getInstance();
     private static final MalletTools malletTools = MalletTools.getInstance();
     private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
-    private static final Normalization normalizer = new Normalization();
+    private static final Normalization normalizer = Normalization.getInstance();
     private final CorporaRepository corporaRepository;
     private final CustomStopWordsService stopWords;
 
@@ -166,6 +166,10 @@ public class ToolsService {
                 .orTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
     }
 
+    /**
+     * @param text the text to normalize.
+     * @return normalized text.
+     */
     @Async
     public CompletableFuture<String> normalizeText(String text) {
         LOGGER.debug("Running normalizer (text) on: " + text);

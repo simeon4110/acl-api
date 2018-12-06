@@ -14,12 +14,10 @@ import java.io.IOException;
 public class Normalization {
     private static final Logger LOGGER = Logger.getLogger(Normalization.class);
     private static final String filePath = "setup/";
+    private static final Normalization thisInstance = new Normalization();
     private static VARD vard;
 
-    /**
-     * An instance of this class should be treated like a singleton.
-     */
-    public Normalization() {
+    private Normalization() {
         try {
             File setupFile = new File(filePath);
             vard = new VARD(setupFile, 50.0, 1.0, true);
@@ -28,16 +26,27 @@ public class Normalization {
         }
     }
 
+    public static Normalization getInstance() {
+        return thisInstance;
+    }
+
     /**
      * Runs text through the VARD normalizer.
      *
      * @param text the text to normalize.
-     * @return normalized text (Null is returned if the word cannot/should not be normalized.
+     * @return normalized text.
      */
-    public String normalizeText(final String text) {
+    public String normalizeText(String text) {
+        text = text.replaceAll("\\p{Punct}", "");
         StringBuilder sb = new StringBuilder();
         for (String w : text.split(" ")) {
-            sb.append(vard.normalise(w).getNormalised());
+            w = w.strip();
+            String word = vard.normalise(w).getNormalised();
+            if (word != null) {
+                sb.append(word);
+            } else {
+                sb.append(w);
+            }
             sb.append(" ");
         }
         return sb.toString();
