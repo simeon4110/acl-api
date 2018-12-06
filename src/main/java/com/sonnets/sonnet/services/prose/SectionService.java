@@ -110,14 +110,9 @@ public class SectionService {
      * @param id the db id of the section to get.
      * @return the section.
      */
-    public Section get(String id) {
-        LOGGER.debug("Getting section id: " + id);
-        return getSectionOrThrowNotFound(id);
-    }
-
     public Section get(Long id) {
         LOGGER.debug("Getting section id: " + id);
-        return getSectionOrThrowNotFound(id);
+        return sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
     /**
@@ -197,7 +192,7 @@ public class SectionService {
      */
     public ResponseEntity<Void> modify(SectionDto dto) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
-        Section section = getSectionOrThrowNotFound(dto.getId());
+        Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
@@ -213,7 +208,7 @@ public class SectionService {
      */
     public ResponseEntity<Void> modify(SectionDto dto, Principal principal) {
         LOGGER.debug("Modifying section (USER): " + dto.toString());
-        Section section = getSectionOrThrowNotFound(dto.getId());
+        Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         if (section.getConfirmation().isConfirmed()) {
             throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
         }
@@ -234,9 +229,9 @@ public class SectionService {
      * @param id the id of the book to delete.
      * @return OK if the book is deleted.
      */
-    public ResponseEntity<Void> deleteById(String id) {
+    public ResponseEntity<Void> deleteById(Long id) {
         LOGGER.debug("Deleting other with id (ADMIN): " + id);
-        Section section = getSectionOrThrowNotFound(id);
+        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemAlreadyConfirmedException::new);
         book.getSections().remove(section);
         CompletableFuture.runAsync(() -> bookRepository.save(book));
@@ -253,7 +248,7 @@ public class SectionService {
      */
     public ResponseEntity<Void> confirm(Long id, Principal principal) {
         LOGGER.debug(principal.getName() + " is confirming section: " + id);
-        Section section = getSectionOrThrowNotFound(id);
+        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         Confirmation confirmation = section.getConfirmation();
         confirmation.setConfirmedBy(principal.getName());
         confirmation.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
@@ -272,7 +267,7 @@ public class SectionService {
      */
     public ResponseEntity<Void> reject(RejectDto rejectDto) {
         LOGGER.debug("Rejecting section: " + rejectDto.toString());
-        Section section = getSectionOrThrowNotFound(rejectDto.getId());
+        Section section = sectionRepository.findById(rejectDto.getId()).orElseThrow(ItemNotFoundException::new);
         Confirmation confirmation = section.getConfirmation();
         confirmation.setConfirmedBy(null);
         confirmation.setConfirmedAt(null);
@@ -316,16 +311,7 @@ public class SectionService {
     public String getAnnotations(final Long id) {
         LOGGER.debug("Getting annotations for section: " + id);
         return annotationsParseService.parseSectionAnnotationOut(
-                getSectionOrThrowNotFound(id)
+                sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new)
         ).toString();
-    }
-
-    private Section getSectionOrThrowNotFound(String id) {
-        long parsedId = Long.parseLong(id);
-        return sectionRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
-    }
-
-    private Section getSectionOrThrowNotFound(Long id) {
-        return sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 }

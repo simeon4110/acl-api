@@ -47,7 +47,7 @@ public class PoemController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Poem getPoemById(@PathVariable("id") String id) {
+    public Poem getPoemById(@PathVariable("id") Long id) {
         return poemService.getById(id);
     }
 
@@ -57,7 +57,7 @@ public class PoemController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/by_ids/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Poem> getPoemsByIds(@PathVariable String[] ids) {
+    public List<Poem> getPoemsByIds(@PathVariable Long[] ids) {
         return poemService.getByIds(ids);
     }
 
@@ -225,10 +225,10 @@ public class PoemController {
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/txt/by_id/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
-    byte[] getByIdText(@PathVariable("ids") String[] ids) throws IOException {
+    byte[] getByIdText(@PathVariable("ids") Long[] ids) throws IOException {
         List<Poem> poems = new ArrayList<>();
-        for (String s : ids) {
-            poems.add(poemService.getById(s));
+        for (Long l : ids) {
+            poems.add(poemService.getById(l));
         }
 
         String poemTXT = PoemConverter.poemsToText(poems);
@@ -247,7 +247,7 @@ public class PoemController {
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/xml/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public @ResponseBody
-    byte[] getByIdXML(@PathVariable("id") String id) throws IOException {
+    byte[] getByIdXML(@PathVariable("id") Long id) throws IOException {
         Poem poem = poemService.getById(id);
 
         String poemXML = PoemConverter.poemToXML(poem);
@@ -266,7 +266,7 @@ public class PoemController {
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/tei/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public @ResponseBody
-    byte[] getByIdTEI(@PathVariable("id") String id) throws IOException {
+    byte[] getByIdTEI(@PathVariable("id") Long id) throws IOException {
         Poem poem = poemService.getById(id);
 
         String poemTEI = PoemConverter.poemToTEI(poem);
@@ -285,10 +285,10 @@ public class PoemController {
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/csv/by_ids/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
     public @ResponseBody
-    byte[] getByIdCSV(@PathVariable("ids") String[] ids) throws IOException {
+    byte[] getByIdCSV(@PathVariable("ids") Long[] ids) throws IOException {
         List<Poem> poems = new ArrayList<>();
-        for (String s : ids) {
-            poems.add(poemService.getById(s));
+        for (Long l : ids) {
+            poems.add(poemService.getById(l));
         }
 
         String poemCSV = PoemConverter.poemsToCSV(poems);

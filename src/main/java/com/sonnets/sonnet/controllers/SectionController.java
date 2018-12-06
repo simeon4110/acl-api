@@ -38,7 +38,7 @@ public class SectionController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Section get(@PathVariable("id") String id) {
+    public Section get(@PathVariable("id") Long id) {
         return sectionService.get(id);
     }
 
@@ -62,13 +62,13 @@ public class SectionController {
      * @return all sections in a book by the book's db id.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/get/from_book/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/section/from_book/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllFromBook(@PathVariable("id") String bookId) {
         return sectionService.getAllFromBook(bookId);
     }
 
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/get/from_book_simple/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/section/from_book_simple/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAllFromBookSimple(@PathVariable("id") String bookId) {
         return sectionService.getAllFromBookSimple(bookId);
     }
@@ -122,7 +122,7 @@ public class SectionController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/section/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         return sectionService.deleteById(id);
     }
 

@@ -43,16 +43,9 @@ public class User extends Auditable<String> implements Serializable {
     private List<UserPrivateText> privateTexts;
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "id")
     private List<CustomStopWords> customStopWords;
-    @ElementCollection
-    private List<Long> testingSonnets;
-    @ElementCollection
-    private List<Integer> testingIndexes;
-    @Column
-    private int currentIndex;
 
     public User() {
         super();
-        this.currentIndex = 0;
     }
 
     public Long getId() {
@@ -135,30 +128,6 @@ public class User extends Auditable<String> implements Serializable {
         this.customStopWords = customStopWords;
     }
 
-    public List<Long> getTestingSonnets() {
-        return testingSonnets;
-    }
-
-    public void setTestingSonnets(List<Long> testingSonnets) {
-        this.testingSonnets = testingSonnets;
-    }
-
-    public List<Integer> getTestingIndexes() {
-        return testingIndexes;
-    }
-
-    public void setTestingIndexes(List<Integer> testingIndexes) {
-        this.testingIndexes = testingIndexes;
-    }
-
-    public int getCurrentIndex() {
-        return currentIndex;
-    }
-
-    public void setCurrentIndex(int currentIndex) {
-        this.currentIndex = currentIndex;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -174,16 +143,13 @@ public class User extends Auditable<String> implements Serializable {
                 Objects.equals(canConfirm, user.canConfirm) &&
                 Objects.equals(privileges, user.privileges) &&
                 Objects.equals(privateTexts, user.privateTexts) &&
-                Objects.equals(customStopWords, user.customStopWords) &&
-                Objects.equals(testingSonnets, user.testingSonnets) &&
-                Objects.equals(testingIndexes, user.testingIndexes) &&
-                Objects.equals(currentIndex, user.currentIndex);
+                Objects.equals(customStopWords, user.customStopWords);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, username, password, email, isAdmin, requiredSonnets, canConfirm,
-                privileges, privateTexts, customStopWords, testingSonnets, testingIndexes, currentIndex);
+                privileges, privateTexts, customStopWords);
     }
 
     @Override
@@ -199,9 +165,6 @@ public class User extends Auditable<String> implements Serializable {
                 ", privileges=" + privileges +
                 ", privateTexts=" + privateTexts +
                 ", customStopWords=" + customStopWords +
-                ", testingSonnets=" + testingSonnets +
-                ", testingIndexes=" + testingIndexes +
-                ", currentIndex=" + currentIndex +
                 "} " + super.toString();
     }
 }

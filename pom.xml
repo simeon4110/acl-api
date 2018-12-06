@@ -179,7 +179,6 @@
             <artifactId>logback-core</artifactId>
             <version>1.1.9</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

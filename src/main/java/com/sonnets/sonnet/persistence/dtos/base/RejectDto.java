@@ -6,15 +6,15 @@ import javax.validation.constraints.NotEmpty;
  * @author Josh Harkema
  */
 public class RejectDto {
-    private String id;
+    private Long id;
     @NotEmpty
     private String rejectMessage;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
