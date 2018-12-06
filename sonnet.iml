@@ -231,6 +231,8 @@
     <orderEntry type="library" name="Maven: org.jdom:jdom:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.stanford.coreNLP:custom-build:0.1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.sonnet.vard:vard-wrapper:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.sonnet.vard:vard-model:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.23.1-GA" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-core:2.20.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.bytebuddy:byte-buddy-agent:1.9.3" level="project" />

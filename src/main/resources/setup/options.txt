@@ -1,0 +1,5 @@
+setup_name	eebo
+training_folder	/training
+encoding	UTF-8
+word_regex	(?:\p{L}\p{M}*|[\'\-\^~=•\{\}])+
+annotator_id	
