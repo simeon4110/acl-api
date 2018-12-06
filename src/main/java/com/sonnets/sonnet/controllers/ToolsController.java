@@ -137,4 +137,18 @@ public class ToolsController {
                                                   @RequestParam("number_topics") int numberTopics) {
         return toolsService.runMalletTopicModel(corporaId, numberTopics);
     }
+
+    /**
+     * Run the VARD normailzer engine on arbitrary text.
+     *
+     * @param textDto the dto with the text to normalize.
+     * @return normalized text.
+     */
+    @Async
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PostMapping(value = "tools/text/normalize_text", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<String> normalizeText(@RequestBody @Valid TextDto textDto) {
+        return toolsService.normalizeText(textDto.getText());
+    }
 }
