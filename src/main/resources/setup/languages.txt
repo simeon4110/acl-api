@@ -1,0 +1,9 @@
+Dutch	ignore
+French	ignore
+German	ignore
+Hebrew	ignore
+Italian	ignore
+Latin	ignore
+Portuguese	ignore
+Spanish	ignore
+Welsh	ignore
