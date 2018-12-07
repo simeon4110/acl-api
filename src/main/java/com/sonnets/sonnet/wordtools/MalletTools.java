@@ -10,6 +10,7 @@ import cc.mallet.topics.TopicInferencer;
 import cc.mallet.types.*;
 import com.sonnets.sonnet.services.exceptions.TopicModelException;
 import org.apache.log4j.Logger;
+import tools.FormatTools;
 
 import java.io.IOException;
 import java.util.*;
@@ -55,7 +56,7 @@ public class MalletTools {
         String cleanText = nlpTools.getLemmatizedWords(text);
 
         ArrayList<Pipe> pipeList = new ArrayList<>();
-        String[] strings = cleanText.toLowerCase().split(" "); // Split input into a String[].
+        String[] strings = FormatTools.tokenizeWords(cleanText, true, true, true);
 
         // Pipes added: tokenize, remove stop words, map to features.
         pipeList.add(new CharSequence2TokenSequence(Pattern.compile("[\\p{L}\\p{N}_]+")));

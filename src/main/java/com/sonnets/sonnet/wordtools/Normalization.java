@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.wordtools;
 
 import org.apache.log4j.Logger;
+import tools.FormatTools;
 import vardwrapper.VARD;
 
 import java.io.File;
@@ -17,6 +18,11 @@ public class Normalization {
     private static final Normalization thisInstance = new Normalization();
     private static VARD vard;
 
+    public static Normalization getInstance() {
+        return thisInstance;
+    }
+
+
     private Normalization() {
         try {
             File setupFile = new File(filePath);
@@ -26,10 +32,6 @@ public class Normalization {
         }
     }
 
-    public static Normalization getInstance() {
-        return thisInstance;
-    }
-
     /**
      * Runs text through the VARD normalizer.
      *
@@ -37,10 +39,8 @@ public class Normalization {
      * @return normalized text.
      */
     public String normalizeText(String text) {
-        text = text.replaceAll("\\p{Punct}", "");
         StringBuilder sb = new StringBuilder();
-        for (String w : text.split(" ")) {
-            w = w.strip();
+        for (String w : FormatTools.tokenizeWords(text, true, true, true)) {
             String word = vard.normalise(w).getNormalised();
             if (word != null) {
                 sb.append(word);
