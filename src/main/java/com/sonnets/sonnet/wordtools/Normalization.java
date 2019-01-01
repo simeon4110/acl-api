@@ -14,19 +14,12 @@ import java.io.IOException;
  */
 public class Normalization {
     private static final Logger LOGGER = Logger.getLogger(Normalization.class);
-    private static final String filePath = "setup/";
-    private static final Normalization thisInstance = new Normalization();
     private static VARD vard;
 
-    public static Normalization getInstance() {
-        return thisInstance;
-    }
-
-
-    private Normalization() {
+    public Normalization() {
+        LOGGER.debug("Initializing Normalizer");
         try {
-            File setupFile = new File(filePath);
-            vard = new VARD(setupFile, 50.0, 1.0, true);
+            vard = new VARD(new File("/var/vard/setup"), 50.0, 1.0, false);
         } catch (IOException e) {
             LOGGER.error(e);
         }

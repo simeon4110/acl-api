@@ -1,5 +1,7 @@
 package tools
 
+import java.net.URL
+
 import scala.io.Source
 
 /**
@@ -8,11 +10,11 @@ import scala.io.Source
   * @author Josh Harkema
   */
 object FormatTools {
-  val filename = "src/main/resources/STOPWORDS.txt"
+  val filename: URL = getClass.getResource("/STOPWORDS.txt")
   var STOPWORDS: Array[String] = _
 
   {
-    STOPWORDS = Source.fromFile(filename).getLines.toArray
+    STOPWORDS = Source.fromFile(filename.getPath).getLines.toArray
   }
 
   /**
@@ -20,11 +22,12 @@ object FormatTools {
     *
     * @param input the array of strings to convert.
     */
-  def arrayToString(input: Array[String]): Unit = {
+  def arrayToString(input: Array[String]): String = {
     var output: String = ""
     for (line <- input) {
       output += line + " "
     }
+    output
   }
 
   /**

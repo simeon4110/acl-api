@@ -30,7 +30,7 @@ public class ToolsService {
     private static final NLPTools pipeline = NLPTools.getInstance();
     private static final MalletTools malletTools = MalletTools.getInstance();
     private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
-    private static final Normalization normalizer = Normalization.getInstance();
+    private final Normalization normalization;
     private final CorporaRepository corporaRepository;
     private final CustomStopWordsService stopWords;
 
@@ -40,6 +40,7 @@ public class ToolsService {
     public ToolsService(CorporaRepository corporaRepository, CustomStopWordsService stopWords) {
         this.corporaRepository = corporaRepository;
         this.stopWords = stopWords;
+        this.normalization = new Normalization();
     }
 
     private String parseCorporaItems(final String items) {
@@ -172,7 +173,7 @@ public class ToolsService {
      */
     @Async
     public CompletableFuture<String> normalizeText(String text) {
-        LOGGER.debug("Running normalizer (text) on: " + text);
-        return CompletableFuture.completedFuture(normalizer.normalizeText(text));
+        LOGGER.debug("Running normalization (text) on: " + text);
+        return CompletableFuture.completedFuture(normalization.normalizeText(text));
     }
 }

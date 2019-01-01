@@ -1,6 +1,6 @@
 # Arts Criticism Lab Public Source
 
-This repository contains the currently deployed version of the code running at https://acriticismlab.org. Contributions to the code base are welcomed, anyone is free to create a merge request or fork the code to run on another site.
+This repository contains the currently deployed version of the code running at https://api.acriticismlab.org. Contributions to the code base are welcomed, anyone is free to create a merge request or fork the code to run on another site.
 
 The code is all Spring Boot (Security, Hibernate, JPA, MVC) based on the back end, and angular on the front end (the front-end code is not in this repo). There is very little deviation from the standard Spring MVC design pattern. 
 
