@@ -7,8 +7,8 @@ import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
+import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
@@ -82,7 +82,7 @@ public class PoemService {
      */
     private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
         poem.setAuthor(author);
-        poem.setCategory("POEM");
+        poem.setCategory(Item.Type.POEM.getStringValue());
         poem.setText(parseText(dto.getText()));
         if (dto.getTitle().isEmpty() || dto.getTitle() == null) {
             poem.setTitle(poem.getText().get(0));
@@ -121,7 +121,6 @@ public class PoemService {
                 .orElseThrow(ItemNotFoundException::new);
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
         poemRepository.saveAndFlush(poem);
-        this.getCountAndUpdate(principal.getName());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -368,17 +367,5 @@ public class PoemService {
         searchDto.setTitle(dto.getTitle());
         searchDto.setSearchPoems(true);
         searchQueryHandlerService.similarExistsPoem(searchDto);
-    }
-
-    /**
-     * Gets the total count of poems added by a user and updated the respective db object.
-     *
-     * @param username the username of the user to update.
-     */
-    private void getCountAndUpdate(String username) {
-        int count = poemRepository.countAllByCreatedBy(username);
-        User user = userRepository.findByUsername(username);
-        user.setCanConfirm(user.getRequiredSonnets() <= count);
-        userRepository.saveAndFlush(user);
     }
 }

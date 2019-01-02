@@ -7,6 +7,7 @@ import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
+import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
@@ -74,7 +75,7 @@ public class SectionService {
      * @return the Section with the new data copied.
      */
     private Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
-        section.setCategory("SECT");
+        section.setCategory(Item.Type.SECTION.getStringValue());
         section.setAuthor(author);
         section.setTitle(dto.getTitle());
         section.setDescription(dto.getDescription());
