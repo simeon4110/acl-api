@@ -3,6 +3,11 @@ package utils
 import scala.collection.JavaConverters.seqAsJavaList
 import scala.util.Random
 
+/**
+  * Object for easy generation of random string and ints.
+  *
+  * @author Josh Harkema
+  */
 object RandomDataGenerators {
   private val DEFAULT_STRING_LENGTH: Int = 10
   private val DEFAULT_INTEGER_LIMIT: Int = 20

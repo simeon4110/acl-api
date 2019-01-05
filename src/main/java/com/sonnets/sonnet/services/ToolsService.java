@@ -6,7 +6,6 @@ import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
 import com.sonnets.sonnet.wordtools.MalletTools;
 import com.sonnets.sonnet.wordtools.NLPTools;
-import com.sonnets.sonnet.wordtools.Normalization;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -30,7 +29,6 @@ public class ToolsService {
     private static final NLPTools pipeline = NLPTools.getInstance();
     private static final MalletTools malletTools = MalletTools.getInstance();
     private static final FrequencyDistribution freqDist = FrequencyDistribution.getInstance();
-    private final Normalization normalization;
     private final CorporaRepository corporaRepository;
     private final CustomStopWordsService stopWords;
 
@@ -40,7 +38,6 @@ public class ToolsService {
     public ToolsService(CorporaRepository corporaRepository, CustomStopWordsService stopWords) {
         this.corporaRepository = corporaRepository;
         this.stopWords = stopWords;
-        this.normalization = new Normalization();
     }
 
     private String parseCorporaItems(final String items) {
@@ -165,15 +162,5 @@ public class ToolsService {
         LOGGER.debug("Running topic model (corpora): " + corporaId);
         return malletTools.topicModel(parseCorporaItems(corporaRepository.getCorporaItems(corporaId)), numberOfTopics)
                 .orTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
-    }
-
-    /**
-     * @param text the text to normalize.
-     * @return normalized text.
-     */
-    @Async
-    public CompletableFuture<String> normalizeText(String text) {
-        LOGGER.debug("Running normalization (text) on: " + text);
-        return CompletableFuture.completedFuture(normalization.normalizeText(text));
     }
 }

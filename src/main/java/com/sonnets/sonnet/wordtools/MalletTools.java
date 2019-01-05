@@ -52,6 +52,7 @@ public class MalletTools {
     public CompletableFuture<Map<Integer, Map<Double, String>>> topicModel(final String text,
                                                                            final int numberOfTopics) {
         NLPTools nlpTools = NLPTools.getInstance();
+
         // Run the words through the lemmatizer and stop word filter.
         String cleanText = nlpTools.getLemmatizedWords(text);
 
@@ -71,61 +72,59 @@ public class MalletTools {
         model.addInstances(instances);
         model.setNumThreads(NUM_THREADS);
         model.setNumIterations(NUM_ITERATIONS);
+
         try {
             model.estimate();
         } catch (IOException e) {
             throw new TopicModelException(e);
         }
 
-        // Get the total number of words(and how many occurrences of each).
-        Alphabet alphabet = instances.getAlphabet();
+        Map<Integer, Map<Double, String>> resultMap = new HashMap<>();
 
-        // Log some stats I don't fully understand.
+        Alphabet dataAlphabet = instances.getDataAlphabet();
         FeatureSequence tokens = (FeatureSequence) model.getData().get(0).instance.getData();
         LabelSequence topics = model.getData().get(0).topicSequence;
 
-        try (Formatter out = new Formatter(new StringBuilder(), Locale.US)) {
-            for (int position = 0; position < tokens.getLength(); position++) {
-                out.format("%s-%d ", alphabet.lookupObject(tokens.getIndexAtPosition(position)),
-                        topics.getIndexAtPosition(position));
-            }
-        } catch (Exception e) {
-            LOGGER.error(e);
+        Formatter out = new Formatter(new StringBuilder(), Locale.US);
+        for (int position = 0; position < tokens.getLength(); position++) {
+            out.format("%s-%d ", dataAlphabet.lookupObject(tokens.getIndexAtPosition(position)), topics.getIndexAtPosition(position));
         }
 
+        // Estimate the topic distribution of the first instance,
+        //  given the current Gibbs state.
         double[] topicDistribution = model.getTopicProbabilities(0);
-        ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
-        Map<Integer, Map<Double, String>> resultMap = new HashMap<>();
 
-        Iterator iterator;
-        int rank;
-        IDSorter idCountPair;
-        try (Formatter out = new Formatter(new StringBuilder(), Locale.US);
-             Formatter outItem = new Formatter(new StringBuilder(), Locale.US)) {
-            // Log the sequence and probabilities after each 10 generations.
-            for (int i = 0; i < numberOfTopics; i++) {
-                iterator = topicSortedWords.get(i).iterator();
-                out.format("%.3f\t -- ", topicDistribution[i]);
-                for (rank = 0; iterator.hasNext() && rank < TOP_WORDS; ++rank) {
-                    idCountPair = (IDSorter) iterator.next();
-                    out.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
-                    outItem.format("%s (%.0f) ", alphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
-                }
-                Map<Double, String> item = new HashMap<>();
-                item.put(topicDistribution[i], outItem.toString());
-                resultMap.put(i, item);
+        // Get an array of sorted sets of word ID/count pairs
+        ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+
+        // Show top 5 words in topics with proportions for the first document
+        for (int topic = 0; topic < numberOfTopics; topic++) {
+            Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
+
+            out = new Formatter(new StringBuilder(), Locale.US);
+            out.format("%d\t%.3f\t", topic, topicDistribution[topic]);
+            int rank = 0;
+            while (iterator.hasNext() && rank < TOP_WORDS) {
+                IDSorter idCountPair = iterator.next();
+                out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+                rank++;
             }
-        } catch (Exception e) {
-            LOGGER.error(e);
+
+            Map<Double, String> item = new HashMap<>();
+            item.put(topicDistribution[topic], out.toString());
+            resultMap.put(topic, item);
         }
 
         // Create a new instance with high probability of topic 0
         StringBuilder topicZeroText = new StringBuilder();
-        iterator = topicSortedWords.get(0).iterator();
+        Iterator<IDSorter> iterator = topicSortedWords.get(0).iterator();
 
-        for (rank = 0; iterator.hasNext() && rank < TOP_WORDS; ++rank) {
-            idCountPair = (IDSorter) iterator.next();
-            topicZeroText.append(alphabet.lookupObject(idCountPair.getID()));
+        int rank = 0;
+        while (iterator.hasNext() && rank < TOP_WORDS) {
+            IDSorter idCountPair = iterator.next();
+            topicZeroText.append(dataAlphabet.lookupObject(idCountPair.getID()));
+            topicZeroText.append(" ");
+            rank++;
         }
 
         // Create a new instance named "test instance" with empty target and source fields.
@@ -134,13 +133,11 @@ public class MalletTools {
 
         TopicInferencer inferencer = model.getInferencer();
         double[] testProbabilities = inferencer.getSampledDistribution(
-                testing.get(0), FINAL_ITERATIONS, FINAL_THINNING, FINAL_BURN_IN
-        );
+                testing.get(0), FINAL_ITERATIONS, FINAL_THINNING, FINAL_BURN_IN);
+        Map<Double, String> zero = new HashMap<>();
+        zero.put(testProbabilities[0], topicZeroText.toString());
 
-        // Place the total prob of item 0 in the hash map at key -1 and print the results for debug.
-        Map<Double, String> itemZero = new HashMap<>();
-        itemZero.put(testProbabilities[0], "FINAL");
-        resultMap.put(-1, itemZero);
+        resultMap.put(-1, zero);
         return CompletableFuture.completedFuture(resultMap);
     }
 }

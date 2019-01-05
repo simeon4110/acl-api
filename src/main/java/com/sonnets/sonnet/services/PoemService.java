@@ -10,7 +10,6 @@ import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
-import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
@@ -41,16 +40,14 @@ public class PoemService {
     private final PoemRepository poemRepository;
     private final MessageService messageService;
     private final AuthorRepository authorRepository;
-    private final UserRepository userRepository;
     private final SearchQueryHandlerService searchQueryHandlerService;
 
     @Autowired
     public PoemService(PoemRepository poemRepository, MessageService messageService, AuthorRepository authorRepository,
-                       UserRepository userRepository, SearchQueryHandlerService searchQueryHandlerService) {
+                       SearchQueryHandlerService searchQueryHandlerService) {
         this.poemRepository = poemRepository;
         this.messageService = messageService;
         this.authorRepository = authorRepository;
-        this.userRepository = userRepository;
         this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
