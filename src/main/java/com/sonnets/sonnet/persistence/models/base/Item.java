@@ -2,6 +2,7 @@ package com.sonnets.sonnet.persistence.models.base;
 
 import com.google.gson.annotations.Expose;
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
+import com.sonnets.sonnet.persistence.bridges.SourceDetailsBridge;
 import com.sonnets.sonnet.persistence.models.ModelConstants;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.*;
@@ -69,6 +70,10 @@ public abstract class Item extends Auditable<String> implements Serializable {
     private String period;
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private UserAnnotation userAnnotation;
+    @Field(name = "sourceDetails", store = Store.YES)
+    @FieldBridge(impl = SourceDetailsBridge.class)
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private SourceDetails sourceDetails;
 
     public Item() {
         // Empty for spring data.
@@ -154,6 +159,14 @@ public abstract class Item extends Auditable<String> implements Serializable {
         this.userAnnotation = userAnnotation;
     }
 
+    public SourceDetails getSourceDetails() {
+        return sourceDetails;
+    }
+
+    public void setSourceDetails(SourceDetails sourceDetails) {
+        this.sourceDetails = sourceDetails;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -169,13 +182,14 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 Objects.equals(publicationStmt, item.publicationStmt) &&
                 Objects.equals(sourceDesc, item.sourceDesc) &&
                 Objects.equals(period, item.period) &&
-                Objects.equals(userAnnotation, item.userAnnotation);
+                Objects.equals(userAnnotation, item.userAnnotation) &&
+                Objects.equals(sourceDetails, item.sourceDetails);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, category, author, title, description, publicationYear,
-                publicationStmt, sourceDesc, period, userAnnotation);
+                publicationStmt, sourceDesc, period, userAnnotation, sourceDetails);
     }
 
     @Override
@@ -191,6 +205,27 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
                 ", userAnnotation=" + userAnnotation +
+                ", sourceDetails=" + sourceDetails +
                 "} " + super.toString();
+    }
+
+    /**
+     * Defines all available options for Item types.
+     */
+    public enum Type {
+        POEM("POEM"),
+        BOOK("BOOK"),
+        SECTION("SECT"),
+        OTHER("OTHR");
+
+        private final String stringValue;
+
+        Type(String stringValue) {
+            this.stringValue = stringValue;
+        }
+
+        public String getStringValue() {
+            return stringValue;
+        }
     }
 }

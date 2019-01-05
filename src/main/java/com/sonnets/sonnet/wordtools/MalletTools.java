@@ -7,9 +7,13 @@ import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.pipe.iterator.StringArrayIterator;
 import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.topics.TopicInferencer;
-import cc.mallet.types.*;
+import cc.mallet.types.Alphabet;
+import cc.mallet.types.IDSorter;
+import cc.mallet.types.Instance;
+import cc.mallet.types.InstanceList;
 import com.sonnets.sonnet.services.exceptions.TopicModelException;
 import org.apache.log4j.Logger;
+import org.springframework.scheduling.annotation.Async;
 import tools.FormatTools;
 
 import java.io.IOException;
@@ -34,6 +38,7 @@ public class MalletTools {
     private static final int FINAL_BURN_IN = 5;
 
     private static final MalletTools ourInstance = new MalletTools();
+    private static final NLPTools nlpTools = NLPTools.getInstance();
 
     public static MalletTools getInstance() {
         return ourInstance;
@@ -49,10 +54,9 @@ public class MalletTools {
      * @param numberOfTopics the number of topics to run.
      * @return an array of topics where item 0 is the most likely.
      */
+    @Async
     public CompletableFuture<Map<Integer, Map<Double, String>>> topicModel(final String text,
                                                                            final int numberOfTopics) {
-        NLPTools nlpTools = NLPTools.getInstance();
-
         // Run the words through the lemmatizer and stop word filter.
         String cleanText = nlpTools.getLemmatizedWords(text);
 
@@ -79,16 +83,11 @@ public class MalletTools {
             throw new TopicModelException(e);
         }
 
+        // Init a map for output data.
         Map<Integer, Map<Double, String>> resultMap = new HashMap<>();
 
+        // Acts as a lookup for result data.
         Alphabet dataAlphabet = instances.getDataAlphabet();
-        FeatureSequence tokens = (FeatureSequence) model.getData().get(0).instance.getData();
-        LabelSequence topics = model.getData().get(0).topicSequence;
-
-        Formatter out = new Formatter(new StringBuilder(), Locale.US);
-        for (int position = 0; position < tokens.getLength(); position++) {
-            out.format("%s-%d ", dataAlphabet.lookupObject(tokens.getIndexAtPosition(position)), topics.getIndexAtPosition(position));
-        }
 
         // Estimate the topic distribution of the first instance,
         //  given the current Gibbs state.
@@ -101,17 +100,17 @@ public class MalletTools {
         for (int topic = 0; topic < numberOfTopics; topic++) {
             Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
 
-            out = new Formatter(new StringBuilder(), Locale.US);
-            out.format("%d\t%.3f\t", topic, topicDistribution[topic]);
+            StringBuilder outString = new StringBuilder();
             int rank = 0;
             while (iterator.hasNext() && rank < TOP_WORDS) {
                 IDSorter idCountPair = iterator.next();
-                out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+                outString.append(String.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()),
+                        idCountPair.getWeight()));
                 rank++;
             }
 
             Map<Double, String> item = new HashMap<>();
-            item.put(topicDistribution[topic], out.toString());
+            item.put(topicDistribution[topic], outString.toString());
             resultMap.put(topic, item);
         }
 
@@ -138,6 +137,7 @@ public class MalletTools {
         zero.put(testProbabilities[0], topicZeroText.toString());
 
         resultMap.put(-1, zero);
+        LOGGER.debug(resultMap.toString());
         return CompletableFuture.completedFuture(resultMap);
     }
 }
