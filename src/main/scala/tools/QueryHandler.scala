@@ -5,7 +5,7 @@ import javax.persistence.StoredProcedureQuery
 import scala.collection.JavaConverters._
 
 /**
-  * Handles async loading of query results from stored procedures.
+  * Handles loading of query results from stored procedures.
   *
   * @author Josh Harkema
   */

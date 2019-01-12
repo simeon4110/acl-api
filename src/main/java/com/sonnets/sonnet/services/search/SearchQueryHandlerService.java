@@ -12,7 +12,10 @@ import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
@@ -36,11 +39,13 @@ import java.util.List;
 @Transactional
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
+    private final StandardAnalyzer standardAnalyzer;
     private final EntityManager entityManager;
 
     @Autowired
     public SearchQueryHandlerService(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.standardAnalyzer = new StandardAnalyzer();
     }
 
     public JSONObject doSearch(SearchDto dto) {
@@ -80,10 +85,12 @@ public class SearchQueryHandlerService {
         }
     }
 
-    public List searchAuthor(AuthorDto dto) {
+    public List searchAuthor(AuthorDto dto) throws ParseException {
         LOGGER.debug("Searching for author: " + dto.toString());
+        String queryString = "firstName: \"" + dto.getFirstName() + "\" AND lastName: \"" + dto.getLastName() + "\"";
+        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(AuthorHandler.getQuery(dto), Author.class);
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
         return fullTextQuery.getResultList();
     }
 

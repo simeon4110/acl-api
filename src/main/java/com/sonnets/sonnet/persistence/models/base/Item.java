@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * This is the master class, it holds all fields required for all works of literature in the database.
+ * This is the master POJO class, it holds all fields required for all works of literature in the database.
  *
  * @author Josh Harkema
  */
