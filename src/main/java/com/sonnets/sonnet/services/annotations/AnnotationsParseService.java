@@ -2,7 +2,7 @@ package com.sonnets.sonnet.services.annotations;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
+import com.sonnets.sonnet.persistence.models.annotations.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;

@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.bridges;
 
-import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
+import com.sonnets.sonnet.persistence.models.annotations.Dialog;
 import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;

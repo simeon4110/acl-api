@@ -2,8 +2,9 @@ package com.sonnets.sonnet.persistence.models.poetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.ModelConstants;
-import com.sonnets.sonnet.persistence.models.base.*;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Version;
+import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -28,14 +29,16 @@ import java.util.Objects;
                 name = ModelConstants.GET_RANDOM_POEM,
                 procedureName = ModelConstants.GET_RANDOM_POEM_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "form", mode = ParameterMode.IN, type = String.class)
+                        @StoredProcedureParameter(name = ModelConstants.FORM_PARAM,
+                                mode = ParameterMode.IN, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
                 name = ModelConstants.GET_POEMS_BY_USER,
                 procedureName = ModelConstants.GET_POEMS_BY_USER_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
+                        @StoredProcedureParameter(name = ModelConstants.USER_NAME_PARAM,
+                                mode = ParameterMode.IN, type = String.class)
                 },
                 resultClasses = {
                         Poem.class
@@ -44,7 +47,7 @@ import java.util.Objects;
 })
 @Indexed
 @Entity
-@DiscriminatorValue("POEM")
+@DiscriminatorValue(TypeConstants.POEM)
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
     @Field(name = SearchConstants.POEM_FORM, store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)

@@ -21,19 +21,19 @@ import java.util.Objects;
 @EntityListeners(AuditingEntityListener.class)
 public class Auditable<U> {
     @CreatedBy
-    @Column(name = "created_by")
+    @Column
     private U createdBy;
 
     @CreatedDate
-    @Column(name = "created_date")
+    @Column
     private Date createdDate;
 
     @LastModifiedBy
-    @Column(name = "last_modified_by")
+    @Column
     private U lastModifiedBy;
 
     @LastModifiedDate
-    @Column(name = "last_modified_date")
+    @Column
     private Date lastModifiedDate;
 
     public U getCreatedBy() {

@@ -1,8 +1,10 @@
 package com.sonnets.sonnet.persistence.dtos.prose;
 
+import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
+
 import javax.validation.constraints.NotEmpty;
 
-public class OtherDto {
+public class OtherDto extends SourceDetailsDto {
     private Long id;
     @NotEmpty
     private String authorId;
@@ -17,6 +19,10 @@ public class OtherDto {
     private String period;
     @NotEmpty
     private String text;
+
+    public OtherDto() {
+        super();
+    }
 
     public Long getId() {
         return id;

@@ -2,13 +2,13 @@ package com.sonnets.sonnet.persistence.models.base;
 
 import com.google.gson.annotations.Expose;
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
-import com.sonnets.sonnet.persistence.bridges.SourceDetailsBridge;
 import com.sonnets.sonnet.persistence.models.ModelConstants;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -21,7 +21,8 @@ import java.util.Objects;
                 name = ModelConstants.GET_USER_ITEMS,
                 procedureName = ModelConstants.GET_USER_ITEMS_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
+                        @StoredProcedureParameter(name = ModelConstants.USER_NAME_PARAM,
+                                mode = ParameterMode.IN, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
@@ -53,27 +54,61 @@ public abstract class Item extends Auditable<String> implements Serializable {
     private String title;
     @Column
     private String description;
-    @Field(name = SearchConstants.YEAR, store = Store.YES, analyze = Analyze.NO)
-    @Column
-    @Expose
-    private Integer publicationYear;
-    @Column
-    @Expose
-    private String publicationStmt;
-    @Field(name = SearchConstants.SOURCE, store = Store.YES, analyze = Analyze.NO)
-    @Column
-    @Expose
-    private String sourceDesc;
     @Field(name = SearchConstants.PERIOD, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String period;
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private UserAnnotation userAnnotation;
-    @Field(name = "sourceDetails", store = Store.YES)
-    @FieldBridge(impl = SourceDetailsBridge.class)
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private SourceDetails sourceDetails;
+    @Field(name = SearchConstants.EDITION, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private String edition;
+    @Field(name = SearchConstants.PLACE_OF_PUB, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private String placeOfPublication;
+    @Field(name = SearchConstants.PUBLISHER, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private String publisher;
+    @Field(name = SearchConstants.DATE_OF_PUB, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private Date dateOfPublication;
+    @Column
+    @Expose
+    private String shortTitle;
+    @Column
+    @Expose
+    private String url;
+    @Column
+    @Expose
+    private Date dateOfAccess;
+    @Field(name = SearchConstants.JOURNAL_NAME, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private String journalName;
+    @Field(name = SearchConstants.DOI, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private String DOI;
+    @Field(name = SearchConstants.JOURNAL_VOL, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private int journalVolume;
+    @Field(name = SearchConstants.JOURNAL_ISSUE, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private int journalIssue;
+    @Column
+    @Expose
+    private String journalPageRange;
+    @Column
+    @Expose
+    private String journalAbbr;
+    @Field(name = SearchConstants.LANGUAGE, store = Store.YES, analyze = Analyze.NO)
+    @Column
+    @Expose
+    private String language;
 
     public Item() {
         // Empty for spring data.
@@ -119,30 +154,6 @@ public abstract class Item extends Auditable<String> implements Serializable {
         this.description = description;
     }
 
-    public Integer getPublicationYear() {
-        return publicationYear;
-    }
-
-    public void setPublicationYear(Integer publicationYear) {
-        this.publicationYear = publicationYear;
-    }
-
-    public String getPublicationStmt() {
-        return publicationStmt;
-    }
-
-    public void setPublicationStmt(String publicationStmt) {
-        this.publicationStmt = publicationStmt;
-    }
-
-    public String getSourceDesc() {
-        return sourceDesc;
-    }
-
-    public void setSourceDesc(String sourceDesc) {
-        this.sourceDesc = sourceDesc;
-    }
-
     public String getPeriod() {
         return period;
     }
@@ -151,20 +162,116 @@ public abstract class Item extends Auditable<String> implements Serializable {
         this.period = period;
     }
 
-    public UserAnnotation getUserAnnotation() {
-        return userAnnotation;
+    public String getEdition() {
+        return edition;
     }
 
-    public void setUserAnnotation(UserAnnotation userAnnotation) {
-        this.userAnnotation = userAnnotation;
+    public void setEdition(String edition) {
+        this.edition = edition;
     }
 
-    public SourceDetails getSourceDetails() {
-        return sourceDetails;
+    public String getPlaceOfPublication() {
+        return placeOfPublication;
     }
 
-    public void setSourceDetails(SourceDetails sourceDetails) {
-        this.sourceDetails = sourceDetails;
+    public void setPlaceOfPublication(String placeOfPublication) {
+        this.placeOfPublication = placeOfPublication;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public Date getDateOfPublication() {
+        return dateOfPublication;
+    }
+
+    public void setDateOfPublication(Date dateOfPublication) {
+        this.dateOfPublication = dateOfPublication;
+    }
+
+    public String getShortTitle() {
+        return shortTitle;
+    }
+
+    public void setShortTitle(String shortTitle) {
+        this.shortTitle = shortTitle;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Date getDateOfAccess() {
+        return dateOfAccess;
+    }
+
+    public void setDateOfAccess(Date dateOfAccess) {
+        this.dateOfAccess = dateOfAccess;
+    }
+
+    public String getJournalName() {
+        return journalName;
+    }
+
+    public void setJournalName(String journalName) {
+        this.journalName = journalName;
+    }
+
+    public String getDOI() {
+        return DOI;
+    }
+
+    public void setDOI(String DOI) {
+        this.DOI = DOI;
+    }
+
+    public int getJournalVolume() {
+        return journalVolume;
+    }
+
+    public void setJournalVolume(int journalVolume) {
+        this.journalVolume = journalVolume;
+    }
+
+    public int getJournalIssue() {
+        return journalIssue;
+    }
+
+    public void setJournalIssue(int journalIssue) {
+        this.journalIssue = journalIssue;
+    }
+
+    public String getJournalPageRange() {
+        return journalPageRange;
+    }
+
+    public void setJournalPageRange(String journalPageRange) {
+        this.journalPageRange = journalPageRange;
+    }
+
+    public String getJournalAbbr() {
+        return journalAbbr;
+    }
+
+    public void setJournalAbbr(String journalAbbr) {
+        this.journalAbbr = journalAbbr;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     @Override
@@ -173,23 +280,33 @@ public abstract class Item extends Auditable<String> implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Item item = (Item) o;
-        return Objects.equals(id, item.id) &&
+        return journalVolume == item.journalVolume &&
+                journalIssue == item.journalIssue &&
+                Objects.equals(id, item.id) &&
                 Objects.equals(category, item.category) &&
                 Objects.equals(author, item.author) &&
                 Objects.equals(title, item.title) &&
                 Objects.equals(description, item.description) &&
-                Objects.equals(publicationYear, item.publicationYear) &&
-                Objects.equals(publicationStmt, item.publicationStmt) &&
-                Objects.equals(sourceDesc, item.sourceDesc) &&
                 Objects.equals(period, item.period) &&
-                Objects.equals(userAnnotation, item.userAnnotation) &&
-                Objects.equals(sourceDetails, item.sourceDetails);
+                Objects.equals(edition, item.edition) &&
+                Objects.equals(placeOfPublication, item.placeOfPublication) &&
+                Objects.equals(publisher, item.publisher) &&
+                Objects.equals(dateOfPublication, item.dateOfPublication) &&
+                Objects.equals(shortTitle, item.shortTitle) &&
+                Objects.equals(url, item.url) &&
+                Objects.equals(dateOfAccess, item.dateOfAccess) &&
+                Objects.equals(journalName, item.journalName) &&
+                Objects.equals(DOI, item.DOI) &&
+                Objects.equals(journalPageRange, item.journalPageRange) &&
+                Objects.equals(journalAbbr, item.journalAbbr) &&
+                Objects.equals(language, item.language);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, category, author, title, description, publicationYear,
-                publicationStmt, sourceDesc, period, userAnnotation, sourceDetails);
+        return Objects.hash(super.hashCode(), id, category, author, title, description, period, edition,
+                placeOfPublication, publisher, dateOfPublication, shortTitle, url, dateOfAccess, journalName, DOI,
+                journalVolume, journalIssue, journalPageRange, journalAbbr, language);
     }
 
     @Override
@@ -200,32 +317,21 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", author=" + author +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", publicationYear=" + publicationYear +
-                ", publicationStmt='" + publicationStmt + '\'' +
-                ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
-                ", userAnnotation=" + userAnnotation +
-                ", sourceDetails=" + sourceDetails +
+                ", edition='" + edition + '\'' +
+                ", placeOfPublication='" + placeOfPublication + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", dateOfPublication=" + dateOfPublication +
+                ", shortTitle='" + shortTitle + '\'' +
+                ", url='" + url + '\'' +
+                ", dateOfAccess=" + dateOfAccess +
+                ", journalName='" + journalName + '\'' +
+                ", DOI='" + DOI + '\'' +
+                ", journalVolume=" + journalVolume +
+                ", journalIssue=" + journalIssue +
+                ", journalPageRange='" + journalPageRange + '\'' +
+                ", journalAbbr='" + journalAbbr + '\'' +
+                ", language='" + language + '\'' +
                 "} " + super.toString();
-    }
-
-    /**
-     * Defines all available options for Item types.
-     */
-    public enum Type {
-        POEM("POEM"),
-        BOOK("BOOK"),
-        SECTION("SECT"),
-        OTHER("OTHR");
-
-        private final String stringValue;
-
-        Type(String stringValue) {
-            this.stringValue = stringValue;
-        }
-
-        public String getStringValue() {
-            return stringValue;
-        }
     }
 }

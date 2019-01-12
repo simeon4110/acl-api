@@ -2,21 +2,22 @@ package generators
 
 import com.sonnets.sonnet.constants.TestConstants
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto
-import com.sonnets.sonnet.persistence.models.base.{Author, Item}
+import com.sonnets.sonnet.persistence.models.TypeConstants
+import com.sonnets.sonnet.persistence.models.base.Author
 import com.sonnets.sonnet.persistence.models.poetry.Poem
 import utils.RandomDataGenerators
 
 object PoemGenerator {
+  val detailsGenerator: SourceDetailsGenerator[Poem] = new SourceDetailsGenerator[Poem]
   def generate(): Poem = {
     val a: Author = AuthorGenerator.generate()
     val p: Poem = new Poem
     p.setAuthor(a)
     p.setTitle(RandomDataGenerators.randomString())
-    p.setPublicationStmt(RandomDataGenerators.randomString())
-    p.setSourceDesc(RandomDataGenerators.randomString())
+    detailsGenerator.addToItem(p)
     p.setPeriod(TestConstants.DEFAULT_PERIOD.getStringValue)
     p.setText(RandomDataGenerators.randomJavaStringList())
-    p.setCategory(Item.Type.POEM.getStringValue)
+    p.setCategory(TypeConstants.POEM)
     p
   }
 
@@ -44,11 +45,10 @@ object PoemGenerator {
     val p: Poem = new Poem
     p.setAuthor(a)
     p.setTitle(RandomDataGenerators.randomString())
-    p.setPublicationStmt(RandomDataGenerators.randomString())
-    p.setSourceDesc(RandomDataGenerators.randomString())
+    detailsGenerator.addToItem(p)
     p.setPeriod(TestConstants.DEFAULT_PERIOD.getStringValue)
     p.setText(RandomDataGenerators.randomJavaStringList())
-    p.setCategory(Item.Type.POEM.getStringValue)
+    p.setCategory(TypeConstants.POEM)
     p
   }
 }

@@ -8,22 +8,28 @@ public abstract class ModelConstants {
         // To block implicit public constructor.
     }
 
-    public static final String TYPE_DIALOG = "DIAL";
-    public static final String TYPE_POEM = "POEM";
-    public static final String TYPE_BOOK = "BOOK";
-    public static final String TYPE_SECTION = "SECT";
-    public static final String TYPE_CHARACTER = "CHAR";
-
     // Named Queries
     // Section
     public static final String GET_ALL_SECTIONS = "getAllSections";
     public static final String GET_ALL_SECTIONS_PROCEDURE = "get_all_sections";
+    public static final String GET_SECTIONS_BY_USER = "getSectionsByUser";
+    public static final String GET_SECTIONS_BY_USER_PROCEDURE = "get_user_sections";
+    public static final String GET_BOOK_SECTIONS_SIMPLE = "getBookSectionsSimple";
+    public static final String GET_BOOK_SECTIONS_SIMPLE_PROCEDURE = "get_book_sections_simple";
 
     // Items
     public static final String GET_USER_ITEMS = "getUserItems";
     public static final String GET_USER_ITEMS_PROCEDURE = "get_user_items";
     public static final String GET_ALL_ITEMS = "getAllItems";
     public static final String GET_ALL_ITEMS_PROCEDURE = "get_all_items";
+
+    // Book
+    public static final String GET_BOOK_TITLE = "getBookTitle";
+    public static final String GET_BOOK_TITLE_PARAM = "get_book_title";
+    public static final String GET_BOOKS_SIMPLE = "getBooksSimple";
+    public static final String GET_BOOKS_SIMPLE_PARAM = "get_books_simple";
+    public static final String GET_BOOK_CHARACTERS = "getBookCharacters";
+    public static final String GET_BOOK_CHARACTERS_PARAM = "get_book_characters";
 
     // Poem
     public static final String GET_ALL_POEMS = "getAllPoemsManual";
@@ -52,8 +58,17 @@ public abstract class ModelConstants {
     public static final String ITEM_ID = "itemId";
     public static final String ITEM_TYPE = "itemType";
 
-
     // General Procedure Params
-    public static final String CREATED_BY = "createdBy";
+    public static final String CREATED_BY_PARAM = "createdBy";
+    public static final String USER_NAME_PARAM = "userName";
+    public static final String FORM_PARAM = "form";
+    public static final String OUTPUT_PARAM = "output";
+
+    // Book Procedure Params
+    public static final String BOOK_ID_PARAM = "bookId";
+    public static final String BOOK_TITLE_PARAM = "title";
+
+    // Column Definitions
+    public static final String BIG_STRING = "NVARCHAR(MAX)";
 
 }

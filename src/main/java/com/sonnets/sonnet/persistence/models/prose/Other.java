@@ -1,10 +1,13 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sonnets.sonnet.persistence.models.ModelConstants;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.base.Version;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Store;
@@ -23,16 +26,16 @@ import java.util.Objects;
 @Indexed
 @Entity
 @Table
-@DiscriminatorValue("OTHR")
+@DiscriminatorValue(TypeConstants.OTHER)
 public class Other extends Item implements Serializable {
     private static final long serialVersionUID = -1512828565413718191L;
-    @Field(name = "other_sub_type", store = Store.YES)
+    @Field(name = SearchConstants.OTHER_SUB_TYPE, store = Store.YES)
     @Column
     private String subType;
     @Embedded
     private Confirmation confirmation;
-    @Field(name = "other_text", store = Store.YES, termVector = TermVector.YES)
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Field(name = SearchConstants.OTHER_TEXT, store = Store.YES, termVector = TermVector.YES)
+    @Column(columnDefinition = ModelConstants.BIG_STRING)
     private String text;
     @Column
     private Annotation annotation;

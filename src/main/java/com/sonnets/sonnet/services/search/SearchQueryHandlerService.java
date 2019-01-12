@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
-import com.sonnets.sonnet.persistence.models.ModelConstants;
-import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
+import com.sonnets.sonnet.persistence.models.annotations.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
@@ -53,22 +53,22 @@ public class SearchQueryHandlerService {
             if (dto.isSearchBookCharacters()) {
                 Query query = CharacterHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, BookCharacter.class);
-                results.put(ModelConstants.TYPE_CHARACTER, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
+                results.put(TypeConstants.BOOK_CHARACTER, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
             }
             if (dto.isSearchDialog()) {
                 Query query = DialogHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Dialog.class);
-                results.put(ModelConstants.TYPE_DIALOG, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
+                results.put(TypeConstants.DIALOG, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
             }
             if (dto.isSearchPoems()) {
                 Query query = PoemHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Poem.class);
-                results.put(ModelConstants.TYPE_POEM, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
+                results.put(TypeConstants.POEM, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
             }
             if (dto.isSearchBooks()) { // :todo: fix this when you give a shit.
                 Query query = SectionHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Section.class);
-                results.put(ModelConstants.TYPE_SECTION, new JSONArray(
+                results.put(TypeConstants.SECTION, new JSONArray(
                         sectionGson.toJson(fullTextQuery.getResultList())));
             }
 

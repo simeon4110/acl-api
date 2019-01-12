@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.persistence.bridges;
 
 import com.sonnets.sonnet.persistence.models.prose.Section;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
@@ -18,8 +19,10 @@ public class SectionBridge implements FieldBridge {
         @SuppressWarnings("unchecked") Collection<Section> sections = (Collection<Section>) o;
 
         for (Section section : sections) {
-            luceneOptions.addFieldToDocument(section + ".section_title", section.getTitle(), document);
-            luceneOptions.addFieldToDocument(section + ".text", section.getText(), document);
+            luceneOptions.addFieldToDocument(section + SearchConstants.addDot(SearchConstants.TITLE),
+                    section.getTitle(), document);
+            luceneOptions.addFieldToDocument(section + SearchConstants.addDot(SearchConstants.TEXT),
+                    section.getText(), document);
         }
     }
 }

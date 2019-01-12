@@ -1,7 +1,8 @@
 package com.sonnets.sonnet.persistence.models.web;
 
 import com.sonnets.sonnet.persistence.models.ModelConstants;
-import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
+import com.sonnets.sonnet.persistence.models.annotations.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
@@ -9,13 +10,13 @@ import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Other;
 import com.sonnets.sonnet.persistence.models.prose.Section;
-import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.*;
 import org.hibernate.search.annotations.DocumentId;
 
-import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -74,7 +75,7 @@ import java.util.Set;
                 procedureName = ModelConstants.GET_CORPORA_USER_PROCEDURE,
                 parameters = {
                         @StoredProcedureParameter(
-                                name = ModelConstants.CREATED_BY, mode = ParameterMode.IN, type = String.class)
+                                name = ModelConstants.CREATED_BY_PARAM, mode = ParameterMode.IN, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
@@ -122,12 +123,12 @@ public class Corpora extends Auditable<String> implements Serializable {
     @AnyMetaDef(
             name = "itemMetaDef", metaType = "string", idType = "long",
             metaValues = {
-                    @MetaValue(targetEntity = Book.class, value = "BOOK"),
-                    @MetaValue(targetEntity = Poem.class, value = "POEM"),
-                    @MetaValue(targetEntity = Section.class, value = "SECT"),
-                    @MetaValue(targetEntity = Other.class, value = "OTHR"),
-                    @MetaValue(targetEntity = BookCharacter.class, value = "BKCR"),
-                    @MetaValue(targetEntity = Dialog.class, value = "DIAL")
+                    @MetaValue(targetEntity = Book.class, value = TypeConstants.BOOK),
+                    @MetaValue(targetEntity = Poem.class, value = TypeConstants.POEM),
+                    @MetaValue(targetEntity = Section.class, value = TypeConstants.SECTION),
+                    @MetaValue(targetEntity = Other.class, value = TypeConstants.OTHER),
+                    @MetaValue(targetEntity = BookCharacter.class, value = TypeConstants.BOOK_CHARACTER),
+                    @MetaValue(targetEntity = Dialog.class, value = TypeConstants.DIALOG)
             }
     )
     @JoinTable(

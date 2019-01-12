@@ -1,11 +1,13 @@
 package com.sonnets.sonnet.persistence.dtos.prose;
 
+import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
  * @author Josh Harkema
  */
-public class BookDto {
+public class BookDto extends SourceDetailsDto {
     private Long id;
     @NotEmpty
     private String authorId;
@@ -22,6 +24,10 @@ public class BookDto {
     private String category;
     @NotEmpty
     private String type;
+
+    public BookDto() {
+        super();
+    }
 
     public Long getId() {
         return id;
@@ -107,6 +113,6 @@ public class BookDto {
                 ", period='" + period + '\'' +
                 ", category='" + category + '\'' +
                 ", type='" + type + '\'' +
-                '}';
+                "} " + super.toString();
     }
 }

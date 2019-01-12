@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories;
 
-import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
+import com.sonnets.sonnet.persistence.models.annotations.Dialog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

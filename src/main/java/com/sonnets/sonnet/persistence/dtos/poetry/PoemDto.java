@@ -1,11 +1,13 @@
 package com.sonnets.sonnet.persistence.dtos.poetry;
 
+import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
  * @author Josh Harkema
  */
-public class PoemDto {
+public class PoemDto extends SourceDetailsDto {
     private Long id;
     @NotEmpty
     private String authorId;
@@ -21,6 +23,10 @@ public class PoemDto {
     @NotEmpty
     private String text;
     private Integer pageNumber;
+
+    public PoemDto() {
+        super();
+    }
 
     public Long getId() {
         return id;
@@ -115,6 +121,6 @@ public class PoemDto {
                 ", form='" + form + '\'' +
                 ", text='" + text + '\'' +
                 ", pageNumber=" + pageNumber +
-                '}';
+                "} " + super.toString();
     }
 }

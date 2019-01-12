@@ -4,10 +4,10 @@ import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
@@ -28,6 +28,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import tools.ParseSourceDetails;
 
 import java.security.Principal;
 import java.sql.Timestamp;
@@ -42,6 +43,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class SectionService {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
+    private static final ParseSourceDetails<Section, SectionDto> parseSourceDetails = new ParseSourceDetails<>();
     private final SectionRepositoryBase sectionRepository;
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
@@ -75,13 +77,11 @@ public class SectionService {
      * @return the Section with the new data copied.
      */
     private Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
-        section.setCategory(Item.Type.SECTION.getStringValue());
+        section.setCategory(TypeConstants.POEM);
         section.setAuthor(author);
         section.setTitle(dto.getTitle());
         section.setDescription(dto.getDescription());
-        section.setPublicationYear(book.getPublicationYear());
-        section.setPublicationStmt(book.getPublicationStmt());
-        section.setSourceDesc(book.getSourceDesc());
+        section = parseSourceDetails.parse(section, dto);
         section.setPeriod(book.getPeriod());
         section.setText(parseText(dto.getText()));
         section.setParentId(dto.getBookId());

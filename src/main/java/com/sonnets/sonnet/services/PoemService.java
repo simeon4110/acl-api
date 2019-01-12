@@ -5,9 +5,9 @@ import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import tools.ParseSourceDetails;
 
 import java.security.Principal;
 import java.sql.Timestamp;
@@ -37,6 +38,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class PoemService {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
+    private static final ParseSourceDetails<Poem, PoemDto> parseSourceDetails = new ParseSourceDetails<>();
     private final PoemRepository poemRepository;
     private final MessageService messageService;
     private final AuthorRepository authorRepository;
@@ -79,7 +81,7 @@ public class PoemService {
      */
     private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
         poem.setAuthor(author);
-        poem.setCategory(Item.Type.POEM.getStringValue());
+        poem.setCategory(TypeConstants.POEM);
         poem.setText(parseText(dto.getText()));
         if (dto.getTitle().isEmpty() || dto.getTitle() == null) {
             poem.setTitle(poem.getText().get(0));
@@ -87,9 +89,7 @@ public class PoemService {
             poem.setTitle(dto.getTitle());
         }
         poem.setConfirmation(new Confirmation());
-        poem.setPublicationYear(dto.getPublicationYear());
-        poem.setPublicationStmt(dto.getPublicationStmt());
-        poem.setSourceDesc(dto.getSourceDesc());
+        poem = parseSourceDetails.parse(poem, dto);
         poem.setPeriod(dto.getPeriod());
         poem.setForm(dto.getForm());
         poem.setPageNumber(dto.getPageNumber());

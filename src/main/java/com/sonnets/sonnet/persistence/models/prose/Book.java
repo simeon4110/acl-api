@@ -2,7 +2,10 @@ package com.sonnets.sonnet.persistence.models.prose;
 
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
+import com.sonnets.sonnet.persistence.models.ModelConstants;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -18,41 +21,45 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = "getBookTitle",
-                procedureName = "get_book_title",
+                name = ModelConstants.GET_BOOK_TITLE,
+                procedureName = ModelConstants.GET_BOOK_TITLE_PARAM,
                 parameters = {
-                        @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(name = "title", mode = ParameterMode.INOUT, type = String.class)
+                        @StoredProcedureParameter(name = ModelConstants.BOOK_ID_PARAM,
+                                mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = ModelConstants.BOOK_TITLE_PARAM,
+                                mode = ParameterMode.INOUT, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "getBooksSimple",
-                procedureName = "get_books_simple",
+                name = ModelConstants.GET_BOOKS_SIMPLE,
+                procedureName = ModelConstants.GET_BOOKS_SIMPLE_PARAM,
                 parameters = {
-                        @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
+                        @StoredProcedureParameter(name = ModelConstants.OUTPUT_PARAM,
+                                mode = ParameterMode.OUT, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "getBookCharacters",
-                procedureName = "get_book_characters",
+                name = ModelConstants.GET_BOOK_CHARACTERS,
+                procedureName = ModelConstants.GET_BOOK_CHARACTERS_PARAM,
                 parameters = {
-                        @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class)
+                        @StoredProcedureParameter(name = ModelConstants.BOOK_ID_PARAM,
+                                mode = ParameterMode.IN, type = Long.class)
                 }
         )
 })
 @Indexed
 @Entity
-@DiscriminatorValue("BOOK")
+@DiscriminatorValue(TypeConstants.BOOK)
 public class Book extends Item implements Serializable {
     private static final long serialVersionUID = -5579725087589223758L;
-    @Field(name = "book_type", store = Store.YES, termVector = TermVector.NO)
+    @Field(name = SearchConstants.BOOK_TYPE, store = Store.YES, termVector = TermVector.NO)
     @Column
     private String type;
-    @Field(name = "book_section", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = SearchConstants.BOOK_SECTION, store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Section> sections;
-    @Field(name = "book_character", store = Store.YES, termVector = TermVector.YES)
+    @Field(name = SearchConstants.BOOK_CHARACTER, store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterListBridge.class)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "book_characters", joinColumns = {

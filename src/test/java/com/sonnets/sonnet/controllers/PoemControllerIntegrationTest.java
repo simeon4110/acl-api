@@ -3,7 +3,7 @@ package com.sonnets.sonnet.controllers;
 import com.google.gson.Gson;
 import com.sonnets.sonnet.constants.TestConstants;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
-import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.PoemService;
 import generators.PoemGenerator;
@@ -51,20 +51,23 @@ public class PoemControllerIntegrationTest {
     }
 
     @Test
+    public void add() throws Exception {
+
+    }
+
+    @Test
     public void getPoemById() throws Exception {
         Poem testPoem = poemService.getById(1L);
         mvc.perform(get(TestConstants.BASE_URL.getStringValue() + "poems/by_id/1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(TestConstants.JSON_ID.getStringValue(), is(testPoem.getId().intValue())))
-                .andExpect(jsonPath(TestConstants.JSON_CATEGORY.getStringValue(), is(Item.Type.POEM.getStringValue())))
+                .andExpect(jsonPath(TestConstants.JSON_CATEGORY.getStringValue(), is(TypeConstants.POEM)))
                 .andExpect(jsonPath(TestConstants.JSON_AUTHOR_ID.getStringValue(), is(testPoem.getAuthor().getId().intValue())))
                 .andExpect(jsonPath(TestConstants.JSON_AUTHOR_FIRST_NAME.getStringValue(), is(testPoem.getAuthor().getFirstName())))
                 .andExpect(jsonPath(TestConstants.JSON_AUTHOR_LAST_NAME.getStringValue(), is(testPoem.getAuthor().getLastName())))
                 .andExpect(jsonPath(TestConstants.JSON_TITLE.getStringValue(), is(testPoem.getTitle())))
-                .andExpect(jsonPath(TestConstants.JSON_PUBLICATION_YEAR.getStringValue(), is(testPoem.getPublicationYear())))
-                .andExpect(jsonPath(TestConstants.JSON_PUBLICATION_STMT.getStringValue(), is(testPoem.getPublicationStmt())))
-                .andExpect(jsonPath(TestConstants.JSON_SOURCE_DESC.getStringValue(), is(testPoem.getSourceDesc())))
+                .andExpect(jsonPath(TestConstants.JSON_PUBLICATION_YEAR.getStringValue(), is(testPoem.getDateOfPublication())))
                 .andExpect(jsonPath(TestConstants.JSON_PERIOD.getStringValue(), is(testPoem.getPeriod())))
                 .andExpect(jsonPath(TestConstants.JSON_POEM_FORM.getStringValue(), is(testPoem.getForm())))
                 .andExpect(jsonPath(TestConstants.JSON_TEXT.getStringValue(), is(testPoem.getText())));

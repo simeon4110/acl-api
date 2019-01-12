@@ -3,12 +3,12 @@ package com.sonnets.sonnet.persistence.repositories.items;
 import com.sonnets.sonnet.persistence.models.ModelConstants;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import tools.QueryHandler;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Concrete class for handling stored procedures.
@@ -24,27 +24,16 @@ public class ItemRepositoryImpl implements ItemRepositoryStoredProcedures {
 
     @Override
     @Transactional(readOnly = true)
-    @SuppressWarnings("unchecked")
     public String getItemsByUser(String userName) {
-        StringBuilder sb = new StringBuilder();
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_USER_ITEMS);
-        query.setParameter("userName", userName);
-        CompletableFuture.supplyAsync(query::execute);
-        for (Object o : query.getResultList()) {
-            sb.append(o.toString());
-        }
-        return sb.toString();
+        query.setParameter(ModelConstants.USER_NAME_PARAM, userName);
+        return QueryHandler.queryToString(query);
     }
 
     @Override
     @Transactional(readOnly = true)
     public String getAllItems() {
-        StringBuilder sb = new StringBuilder();
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_ALL_ITEMS);
-        CompletableFuture.supplyAsync(query::execute);
-        for (Object o : query.getResultList()) {
-            sb.append(o.toString());
-        }
-        return sb.toString();
+        return QueryHandler.queryToString(query);
     }
 }

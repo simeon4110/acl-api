@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.persistence.models.web;
 
 
+import com.sonnets.sonnet.persistence.models.ModelConstants;
 import com.sonnets.sonnet.persistence.models.base.Item;
 
 import javax.persistence.Column;
@@ -16,7 +17,7 @@ import java.util.Objects;
 @Entity
 public class UserPrivateText extends Item implements Serializable {
     private static final long serialVersionUID = -5398920714584686611L;
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = ModelConstants.BIG_STRING)
     private String text;
 
     public UserPrivateText() {

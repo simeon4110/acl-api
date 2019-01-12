@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import tools.ParseSourceDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class BookService {
     private static final Logger LOGGER = Logger.getLogger(BookService.class);
+    private static final ParseSourceDetails<Book, BookDto> parseSourceDetails = new ParseSourceDetails<>();
     private final BookRepository bookRepository;
     private final AuthorService authorService;
 
@@ -48,9 +50,7 @@ public class BookService {
     private static Book createOrCopyBook(Book book, Author author, BookDto dto) {
         book.setAuthor(author);
         book.setTitle(dto.getTitle());
-        book.setPublicationYear(dto.getPublicationYear());
-        book.setPublicationStmt(dto.getPublicationStmt());
-        book.setSourceDesc(dto.getSourceDesc());
+        book = parseSourceDetails.parse(book, dto);
         book.setPeriod(dto.getPeriod());
         book.setCategory(dto.getCategory());
         book.setType(dto.getType());

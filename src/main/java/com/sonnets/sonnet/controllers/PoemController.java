@@ -5,8 +5,6 @@ import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.PoemService;
 import com.sonnets.sonnet.tools.ParseParam;
-import com.sonnets.sonnet.tools.PoemConverter;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -17,12 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -212,88 +205,4 @@ public class PoemController {
         return poemService.getPoemToConfirm(principal);
     }
 
-    //####################### These are all file return endpoints. #############################//
-    // I've included all the logic in the controller because it is a simple search and attach.
-
-    /**
-     * Get selected poems as txt (lines of poetry only).
-     *
-     * @param ids the poems to return.
-     * @return an output stream of the text.
-     * @throws IOException if InputStream is broken.
-     */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/txt/by_id/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public @ResponseBody
-    byte[] getByIdText(@PathVariable("ids") Long[] ids) throws IOException {
-        List<Poem> poems = new ArrayList<>();
-        for (Long l : ids) {
-            poems.add(poemService.getById(l));
-        }
-
-        String poemTXT = PoemConverter.poemsToText(poems);
-        InputStream poemsOut = new ByteArrayInputStream(poemTXT.getBytes(StandardCharsets.UTF_8));
-
-        return IOUtils.toByteArray(poemsOut);
-    }
-
-    /**
-     * Return poem as XML.
-     *
-     * @param id the poem ID to return.
-     * @return a output stream of the text.
-     * @throws IOException if InputStream is broken.
-     */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/xml/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
-    public @ResponseBody
-    byte[] getByIdXML(@PathVariable("id") Long id) throws IOException {
-        Poem poem = poemService.getById(id);
-
-        String poemXML = PoemConverter.poemToXML(poem);
-        InputStream poemOut = new ByteArrayInputStream(poemXML.getBytes(StandardCharsets.UTF_8));
-
-        return IOUtils.toByteArray(poemOut);
-    }
-
-    /**
-     * Return poem as TEI.
-     *
-     * @param id the poem ID ot return.
-     * @return an output stream of the text.
-     * @throws IOException if InputStream is broken.
-     */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/tei/by_id/{id}", produces = MediaType.APPLICATION_XML_VALUE)
-    public @ResponseBody
-    byte[] getByIdTEI(@PathVariable("id") Long id) throws IOException {
-        Poem poem = poemService.getById(id);
-
-        String poemTEI = PoemConverter.poemToTEI(poem);
-        InputStream poemOut = new ByteArrayInputStream(poemTEI.getBytes(StandardCharsets.UTF_8));
-
-        return IOUtils.toByteArray(poemOut);
-    }
-
-    /**
-     * Return any number of poems as csv.
-     *
-     * @param ids a comma separated list of poem ids (i.e. "1,2,3,4")
-     * @return an output stream of the csv file.
-     * @throws IOException if InputStream is broken.
-     */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/csv/by_ids/{ids}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public @ResponseBody
-    byte[] getByIdCSV(@PathVariable("ids") Long[] ids) throws IOException {
-        List<Poem> poems = new ArrayList<>();
-        for (Long l : ids) {
-            poems.add(poemService.getById(l));
-        }
-
-        String poemCSV = PoemConverter.poemsToCSV(poems);
-        InputStream poemOut = new ByteArrayInputStream(poemCSV.getBytes(StandardCharsets.UTF_8));
-
-        return IOUtils.toByteArray(poemOut);
-    }
 }

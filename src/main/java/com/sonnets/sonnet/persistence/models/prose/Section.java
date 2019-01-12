@@ -2,16 +2,17 @@ package com.sonnets.sonnet.persistence.models.prose;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.Expose;
-import com.sonnets.sonnet.persistence.bridges.NarratorBridge;
+import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.models.ModelConstants;
-import com.sonnets.sonnet.persistence.models.base.*;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Version;
+import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
-import org.hibernate.search.annotations.*;
 import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,27 +31,30 @@ import java.util.Objects;
                 procedureName = ModelConstants.GET_ALL_SECTIONS_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
-                name = "getSectionsByUser",
-                procedureName = "get_user_sections",
+                name = ModelConstants.GET_SECTIONS_BY_USER,
+                procedureName = ModelConstants.GET_SECTIONS_BY_USER_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "userName", mode = ParameterMode.IN, type = String.class)
+                        @StoredProcedureParameter(name = ModelConstants.USER_NAME_PARAM,
+                                mode = ParameterMode.IN, type = String.class)
                 },
                 resultClasses = {
                         Section.class
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = "getBookSectionsSimple",
-                procedureName = "get_book_sections_simple",
+                name = ModelConstants.GET_BOOK_SECTIONS_SIMPLE,
+                procedureName = ModelConstants.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = "bookId", mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(name = "output", mode = ParameterMode.OUT, type = String.class)
+                        @StoredProcedureParameter(name = ModelConstants.BOOK_ID_PARAM,
+                                mode = ParameterMode.IN, type = Long.class),
+                        @StoredProcedureParameter(name = ModelConstants.OUTPUT_PARAM,
+                                mode = ParameterMode.OUT, type = String.class)
                 }
         )
 })
 @Indexed
 @Entity
-@DiscriminatorValue(ModelConstants.TYPE_SECTION)
+@DiscriminatorValue(TypeConstants.SECTION)
 @AnalyzerDef(name = SearchConstants.TEXT_ANALYZER,
         tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
         filters = {
@@ -65,7 +69,7 @@ public class Section extends Item implements Serializable {
     private Confirmation confirmation;
     @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = ModelConstants.BIG_STRING)
     @Expose
     private String text;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -83,7 +87,7 @@ public class Section extends Item implements Serializable {
     @Embedded
     private TopicModel topicModel;
     @Field(name = SearchConstants.NARRATOR, store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
-    @FieldBridge(impl = NarratorBridge.class)
+    @FieldBridge(impl = CharacterListBridge.class)
     @ManyToOne(fetch = FetchType.EAGER)
     private BookCharacter narrator;
 
