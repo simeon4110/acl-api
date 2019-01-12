@@ -109,6 +109,12 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     @Expose
     private String language;
+    @Column
+    @Expose
+    private Boolean isPublicDomain;
+    @Column
+    @Expose
+    private String pageRange;
 
     public Item() {
         // Empty for spring data.
@@ -274,6 +280,22 @@ public abstract class Item extends Auditable<String> implements Serializable {
         this.language = language;
     }
 
+    public Boolean getPublicDomain() {
+        return isPublicDomain;
+    }
+
+    public void setPublicDomain(Boolean publicDomain) {
+        isPublicDomain = publicDomain;
+    }
+
+    public String getPageRange() {
+        return pageRange;
+    }
+
+    public void setPageRange(String pageRange) {
+        this.pageRange = pageRange;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -299,16 +321,19 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 Objects.equals(DOI, item.DOI) &&
                 Objects.equals(journalPageRange, item.journalPageRange) &&
                 Objects.equals(journalAbbr, item.journalAbbr) &&
-                Objects.equals(language, item.language);
+                Objects.equals(language, item.language) &&
+                Objects.equals(isPublicDomain, item.isPublicDomain) &&
+                Objects.equals(pageRange, item.pageRange);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, category, author, title, description, period, edition,
                 placeOfPublication, publisher, dateOfPublication, shortTitle, url, dateOfAccess, journalName, DOI,
-                journalVolume, journalIssue, journalPageRange, journalAbbr, language);
+                journalVolume, journalIssue, journalPageRange, journalAbbr, language, isPublicDomain, pageRange);
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public String toString() {
         return "Item{" +
@@ -332,6 +357,8 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", journalPageRange='" + journalPageRange + '\'' +
                 ", journalAbbr='" + journalAbbr + '\'' +
                 ", language='" + language + '\'' +
+                ", isPublicDomain=" + isPublicDomain +
+                ", pageRange='" + pageRange + '\'' +
                 "} " + super.toString();
     }
 }

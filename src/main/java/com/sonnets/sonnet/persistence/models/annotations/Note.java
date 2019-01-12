@@ -1,9 +1,11 @@
 package com.sonnets.sonnet.persistence.models.annotations;
 
 import com.sonnets.sonnet.persistence.models.ModelConstants;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Objects;
@@ -16,6 +18,7 @@ import java.util.Objects;
 @Indexed
 @Entity
 @Table
+@DiscriminatorValue(TypeConstants.NOTE)
 public class Note extends AnnotationBase {
     private static final long serialVersionUID = 8127083181575765535L;
     @Column

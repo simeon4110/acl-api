@@ -73,8 +73,6 @@ public class Poem extends Item implements Serializable {
     @Embedded
     private TopicModel topicModel;
     @Column
-    private Integer pageNumber;
-    @Column
     private boolean hidden;
     @Column
     private boolean testing;
@@ -143,14 +141,6 @@ public class Poem extends Item implements Serializable {
         this.topicModel = topicModel;
     }
 
-    public Integer getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(Integer pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
@@ -185,14 +175,13 @@ public class Poem extends Item implements Serializable {
                 Objects.equals(text, poem.text) &&
                 Objects.equals(annotation, poem.annotation) &&
                 Objects.equals(versions, poem.versions) &&
-                Objects.equals(topicModel, poem.topicModel) &&
-                Objects.equals(pageNumber, poem.pageNumber);
+                Objects.equals(topicModel, poem.topicModel);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), form, confirmation, text, annotation, versions, processed, topicModel,
-                pageNumber, hidden, testing);
+                hidden, testing);
     }
 
     @Override
@@ -205,7 +194,6 @@ public class Poem extends Item implements Serializable {
                 ", versions=" + versions +
                 ", processed=" + processed +
                 ", topicModel=" + topicModel +
-                ", pageNumber=" + pageNumber +
                 ", hidden=" + hidden +
                 ", testing=" + testing +
                 "} " + super.toString();

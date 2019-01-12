@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.persistence.dtos.base;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 public abstract class SourceDetailsDto {
@@ -10,7 +11,7 @@ public abstract class SourceDetailsDto {
     private String placeOfPublication;
     @NotEmpty
     private String publisher;
-    @NotEmpty
+    @NotNull
     private Date dateOfPublication;
     private String shortTitle;
     private String url;
@@ -22,6 +23,8 @@ public abstract class SourceDetailsDto {
     private String journalPageRange;
     private String journalAbbr;
     private String language;
+    private Boolean isPublicDomain;
+    private String pageRange;
 
     public Long getId() {
         return id;
@@ -143,6 +146,22 @@ public abstract class SourceDetailsDto {
         this.language = language;
     }
 
+    public Boolean getPublicDomain() {
+        return isPublicDomain;
+    }
+
+    public void setPublicDomain(Boolean publicDomain) {
+        isPublicDomain = publicDomain;
+    }
+
+    public String getPageRange() {
+        return pageRange;
+    }
+
+    public void setPageRange(String pageRange) {
+        this.pageRange = pageRange;
+    }
+
     @SuppressWarnings("Duplicates")
     @Override
     public String toString() {
@@ -162,6 +181,8 @@ public abstract class SourceDetailsDto {
                 ", journalPageRange='" + journalPageRange + '\'' +
                 ", journalAbbr='" + journalAbbr + '\'' +
                 ", language='" + language + '\'' +
+                ", isPublicDomain=" + isPublicDomain +
+                ", pageRange='" + pageRange + '\'' +
                 '}';
     }
 }

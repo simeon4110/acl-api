@@ -12,17 +12,11 @@ public class PoemDto extends SourceDetailsDto {
     @NotEmpty
     private String authorId;
     private String title;
-    private Integer publicationYear;
-    @NotEmpty
-    private String publicationStmt;
-    @NotEmpty
-    private String sourceDesc;
     @NotEmpty
     private String period;
     private String form;
     @NotEmpty
     private String text;
-    private Integer pageNumber;
 
     public PoemDto() {
         super();
@@ -52,30 +46,6 @@ public class PoemDto extends SourceDetailsDto {
         this.title = title;
     }
 
-    public Integer getPublicationYear() {
-        return publicationYear;
-    }
-
-    public void setPublicationYear(Integer publicationYear) {
-        this.publicationYear = publicationYear;
-    }
-
-    public String getPublicationStmt() {
-        return publicationStmt;
-    }
-
-    public void setPublicationStmt(String publicationStmt) {
-        this.publicationStmt = publicationStmt;
-    }
-
-    public String getSourceDesc() {
-        return sourceDesc;
-    }
-
-    public void setSourceDesc(String sourceDesc) {
-        this.sourceDesc = sourceDesc;
-    }
-
     public String getPeriod() {
         return period;
     }
@@ -100,27 +70,15 @@ public class PoemDto extends SourceDetailsDto {
         this.text = text;
     }
 
-    public Integer getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(Integer pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
     @Override
     public String toString() {
         return "PoemDto{" +
                 "id=" + id +
                 ", authorId='" + authorId + '\'' +
                 ", title='" + title + '\'' +
-                ", publicationYear=" + publicationYear +
-                ", publicationStmt='" + publicationStmt + '\'' +
-                ", sourceDesc='" + sourceDesc + '\'' +
                 ", period='" + period + '\'' +
                 ", form='" + form + '\'' +
                 ", text='" + text + '\'' +
-                ", pageNumber=" + pageNumber +
                 "} " + super.toString();
     }
 }

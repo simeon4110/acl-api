@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @author Josh Harkema
  */
 public abstract class TypeConstants implements Serializable {
+    public static final String NOTE = "NOTE";
     public static final String POEM = "POEM";
     public static final String BOOK = "BOOK";
     public static final String SECTION = "SECT";

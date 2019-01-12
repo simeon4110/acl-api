@@ -8,7 +8,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Model for storing annotations. Annotations are not standalone, poems and sections have them.
+ * Model for storing annotations. Annotations are not standalone, poems and sections have them. This is used to store
+ * raw json strings.
  *
  * @author Josh Harkema
  */

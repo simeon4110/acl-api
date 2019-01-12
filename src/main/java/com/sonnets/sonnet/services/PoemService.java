@@ -92,7 +92,6 @@ public class PoemService {
         poem = parseSourceDetails.parse(poem, dto);
         poem.setPeriod(dto.getPeriod());
         poem.setForm(dto.getForm());
-        poem.setPageNumber(dto.getPageNumber());
         if (poem.getConfirmation().isPendingRevision()) { // Check to see if the poem is pending revision.
             poem.getConfirmation().setPendingRevision(false);
         }
