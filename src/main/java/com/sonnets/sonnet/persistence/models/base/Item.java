@@ -2,7 +2,7 @@ package com.sonnets.sonnet.persistence.models.base;
 
 import com.google.gson.annotations.Expose;
 import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
-import com.sonnets.sonnet.persistence.models.ModelConstants;
+import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.*;
 
@@ -18,16 +18,16 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_USER_ITEMS,
-                procedureName = ModelConstants.GET_USER_ITEMS_PROCEDURE,
+                name = StoredProcedures.GET_ALL_USER_ITEMS,
+                procedureName = StoredProcedures.GET_ALL_USER_ITEMS_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = ModelConstants.USER_NAME_PARAM,
+                        @StoredProcedureParameter(name = StoredProcedures.USER_NAME_PARAM,
                                 mode = ParameterMode.IN, type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_ALL_ITEMS,
-                procedureName = ModelConstants.GET_ALL_ITEMS_PROCEDURE
+                name = StoredProcedures.GET_ALL_ITEMS,
+                procedureName = StoredProcedures.GET_ALL_ITEMS_PROCEDURE
         )
 })
 @MappedSuperclass

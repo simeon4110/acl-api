@@ -57,19 +57,25 @@ public class PoemController {
     /**
      * @return two random sonnets.
      */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poems/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getTwoRandomSonnets() {
-        return poemService.getTwoRandomSonnets();
-    }
+//    @CrossOrigin(origins = "${allowed-origin}")
+//    @GetMapping(value = "/poems/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public String getTwoRandomSonnets() {
+//        return poemService.getTwoRandomSonnets();
+//    }
 
     /**
      * @return all poems in the database.
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poems/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllPoems() {
+    public List<Poem> getAllPoems() {
         return poemService.getAll();
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/poems/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllPoemsSimple() {
+        return poemService.getAllPoemsSimple();
     }
 
     /**

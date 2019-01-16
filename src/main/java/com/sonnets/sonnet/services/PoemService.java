@@ -12,6 +12,7 @@ import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,19 +261,23 @@ public class PoemService {
     /**
      * @return two random sonnets.
      */
-    public String getTwoRandomSonnets() {
-        LOGGER.debug("Returning two random sonnets.");
-        return poemRepository.getRandomPoem("SONNET");
+//    public String getTwoRandomSonnets() {
+//        LOGGER.debug("Returning two random sonnets.");
+//        return poemRepository.getRandomPoem("SONNET");
+//    }
+
+    /**
+     * @return all poems as a list.
+     */
+    public List<Poem> getAll() {
+        return poemRepository.findAll();
     }
 
     /**
-     * This query is for getting all poems via an SQL query rather than a slow ass db crawl. It places a \n
-     * after each line in a poem. Runs async.
-     *
-     * @return all poems as a list.
+     * @return a list of only the most basic details of all poems.
      */
-    public String getAll() {
-        return poemRepository.getAllPoemsManual();
+    public String getAllPoemsSimple() {
+        return poemRepository.getAllPoemsSimple().orElseThrow(StoredProcedureQueryException::new);
     }
 
     /**
@@ -318,8 +323,7 @@ public class PoemService {
     @Async
     public CompletableFuture<List> getAllByUser(Principal principal) {
         LOGGER.debug("Returning all sonnets added by user: " + principal.getName());
-        return poemRepository.getPoemsByUser(principal.getName()).thenApply(poems ->
-                poems.orElseThrow(ItemNotFoundException::new));
+        return CompletableFuture.completedFuture(poemRepository.findAllByCreatedBy(principal.getName()));
     }
 
     /**

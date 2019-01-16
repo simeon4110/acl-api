@@ -1,8 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.poem;
 
-import com.sonnets.sonnet.persistence.models.ModelConstants;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import org.springframework.scheduling.annotation.Async;
+import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tools.QueryHandler;
@@ -11,12 +9,10 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /**
- * Concrete class for handling stored procedures.
+ * Concrete class for stored procedures.
  *
  * @author Josh Harkema
  */
@@ -28,30 +24,10 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
     EntityManager em;
 
     @Override
-    @Transactional(readOnly = true)
-    @SuppressWarnings("unchecked")
-    public String getAllPoemsManual() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_ALL_POEMS);
-        CompletableFuture.supplyAsync(query::execute);
-        return QueryHandler.queryToString(query);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public String getRandomPoem(String form) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_RANDOM_POEM);
-        query.setParameter(ModelConstants.FORM_PARAM, form);
-        CompletableFuture.supplyAsync(query::execute);
-        return String.valueOf(query.getResultList());
-    }
-
-    @Override
-    @Async
-    @Transactional(readOnly = true)
-    @SuppressWarnings("unchecked")
-    public CompletableFuture<Optional<List<Poem>>> getPoemsByUser(String userName) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(ModelConstants.GET_POEMS_BY_USER);
-        query.setParameter(ModelConstants.USER_NAME_PARAM, userName);
-        return CompletableFuture.completedFuture(Optional.of((List<Poem>) query.getResultList()));
+    @Transactional
+    public Optional<String> getAllPoemsSimple() {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_POEMS_SIMPLE);
+        query.execute();
+        return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 }

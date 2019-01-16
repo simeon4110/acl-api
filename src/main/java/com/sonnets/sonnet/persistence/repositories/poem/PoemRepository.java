@@ -22,18 +22,5 @@ public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositor
 
     List<Poem> findAllByCreatedBy(final String createdBy);
 
-    Integer countAllByCreatedBy(final String createdBy);
-
     Optional<List<Poem>> findAllByAuthor_LastName(final String lastName);
-
-    Poem findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNotAndTesting(
-            final boolean confirmed,
-            final boolean pendingRevision,
-            final String createdBy,
-            final boolean testing
-    );
-
-    List<Poem> findAllByTesting(final boolean testing);
-
-    Poem findFirstByProcessed(final boolean processed);
 }

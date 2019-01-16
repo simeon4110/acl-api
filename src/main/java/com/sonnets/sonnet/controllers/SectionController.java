@@ -42,19 +42,22 @@ public class SectionController {
         return sectionService.get(id);
     }
 
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/get_title/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getTitle(@PathVariable("id") String id) {
-        return sectionService.getTitle(id);
-    }
-
     /**
      * @return All sections in the db.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/get_all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAll() {
+    @GetMapping(value = "/section/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Section> getAll() {
         return sectionService.getAll();
+    }
+
+    /**
+     * @return only the most basic details of every section in the db.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/section/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getAllSimple() {
+        return sectionService.getAllSimple();
     }
 
     /**

@@ -1,8 +1,6 @@
 package com.sonnets.sonnet.persistence.dtos.base;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 public abstract class SourceDetailsDto {
     private Long id;
@@ -11,11 +9,10 @@ public abstract class SourceDetailsDto {
     private String placeOfPublication;
     @NotEmpty
     private String publisher;
-    @NotNull
-    private Date dateOfPublication;
+    private String dateOfPublication;
     private String shortTitle;
     private String url;
-    private Date dateOfAccess;
+    private String dateOfAccess;
     private String journalName;
     private String DOI;
     private int journalVolume;
@@ -58,11 +55,11 @@ public abstract class SourceDetailsDto {
         this.publisher = publisher;
     }
 
-    public Date getDateOfPublication() {
+    public String getDateOfPublication() {
         return dateOfPublication;
     }
 
-    public void setDateOfPublication(Date dateOfPublication) {
+    public void setDateOfPublication(String dateOfPublication) {
         this.dateOfPublication = dateOfPublication;
     }
 
@@ -82,11 +79,11 @@ public abstract class SourceDetailsDto {
         this.url = url;
     }
 
-    public Date getDateOfAccess() {
+    public String getDateOfAccess() {
         return dateOfAccess;
     }
 
-    public void setDateOfAccess(Date dateOfAccess) {
+    public void setDateOfAccess(String dateOfAccess) {
         this.dateOfAccess = dateOfAccess;
     }
 

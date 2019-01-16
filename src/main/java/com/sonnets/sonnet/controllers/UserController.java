@@ -3,7 +3,6 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.user.*;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
-import com.sonnets.sonnet.services.UserItemsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +22,10 @@ import java.util.List;
 public class UserController {
     private static final String ALLOWED_ORIGIN = "*";
     private final UserDetailsServiceImpl userDetailsService;
-    private final UserItemsService userItemsService;
 
     @Autowired
-    public UserController(UserDetailsServiceImpl userDetailsService, UserItemsService userItemsService) {
+    public UserController(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.userItemsService = userItemsService;
     }
 
     /**
@@ -144,25 +141,5 @@ public class UserController {
     public ResponseEntity<Void> changeEmail(@RequestBody @Valid EmailChangeDto emailChangeDto,
                                             Principal principal) {
         return userDetailsService.userUpdateEmail(principal, emailChangeDto);
-    }
-
-    /**
-     * Gets all items added by a user.
-     *
-     * @param principal the request principal.
-     * @return a list of all items added by a user.
-     */
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
-    @GetMapping(value = "/secure/user/get_items", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getUserItems(Principal principal) {
-        return userItemsService.getUserItems(principal);
-    }
-
-    @CrossOrigin(origins = ALLOWED_ORIGIN)
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping(value = "/secure/admin/get_all_items", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllItems() {
-        return userItemsService.getAllItems();
     }
 }

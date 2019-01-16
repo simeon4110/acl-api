@@ -17,13 +17,15 @@ public class CharacterListBridge implements FieldBridge {
     @Override
     public void set(String s, Object o, Document document, LuceneOptions luceneOptions) {
         Collection<BookCharacter> bookCharacters = (Collection<BookCharacter>) o;
-        for (BookCharacter bookCharacter : bookCharacters) {
-            luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.BOOK_CHARACTER_FN),
-                    bookCharacter.getFirstName(), document);
-            luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.BOOK_CHARACTER_LN),
-                    bookCharacter.getLastName(), document);
-            luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.BOOK_CHARACTER_SEX),
-                    bookCharacter.getGender(), document);
+        if (bookCharacters != null) {
+            for (BookCharacter bookCharacter : bookCharacters) {
+                luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.BOOK_CHARACTER_FN),
+                        bookCharacter.getFirstName(), document);
+                luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.BOOK_CHARACTER_LN),
+                        bookCharacter.getLastName(), document);
+                luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.BOOK_CHARACTER_SEX),
+                        bookCharacter.getGender(), document);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.persistence.models.poetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.models.ModelConstants;
+import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import com.sonnets.sonnet.persistence.models.base.*;
@@ -22,27 +22,8 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_ALL_POEMS,
-                procedureName = ModelConstants.GET_ALL_POEMS_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_RANDOM_POEM,
-                procedureName = ModelConstants.GET_RANDOM_POEM_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(name = ModelConstants.FORM_PARAM,
-                                mode = ParameterMode.IN, type = String.class)
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_POEMS_BY_USER,
-                procedureName = ModelConstants.GET_POEMS_BY_USER_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(name = ModelConstants.USER_NAME_PARAM,
-                                mode = ParameterMode.IN, type = String.class)
-                },
-                resultClasses = {
-                        Poem.class
-                }
+                name = StoredProcedures.GET_ALL_POEMS_SIMPLE,
+                procedureName = StoredProcedures.GET_ALL_POEMS_SIMPLE_PROCEDURE
         )
 })
 @Indexed
@@ -60,6 +41,7 @@ public class Poem extends Item implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @IndexedEmbedded
     private List<String> text;
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
@@ -70,10 +52,13 @@ public class Poem extends Item implements Serializable {
     @JsonIgnore
     @Column
     private boolean processed;
+    @JsonIgnore
     @Embedded
     private TopicModel topicModel;
+    @JsonIgnore
     @Column
     private boolean hidden;
+    @JsonIgnore
     @Column
     private boolean testing;
 

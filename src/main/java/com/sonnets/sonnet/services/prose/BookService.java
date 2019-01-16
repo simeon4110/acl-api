@@ -1,16 +1,15 @@
 package com.sonnets.sonnet.services.prose;
 
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.services.AuthorService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.exceptions.NoResultsException;
+import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -52,7 +51,7 @@ public class BookService {
         book.setTitle(dto.getTitle());
         book = parseSourceDetails.parse(book, dto);
         book.setPeriod(dto.getPeriod());
-        book.setCategory(dto.getCategory());
+        book.setCategory(TypeConstants.BOOK);
         book.setType(dto.getType());
         book.setSections(new ArrayList<>());
         book.setBookCharacters(new ArrayList<>());
@@ -76,22 +75,6 @@ public class BookService {
     }
 
     /**
-     * Get a book's title on the quick.
-     *
-     * @param id the db id of the book to get the title of.
-     * @return the book's title.
-     */
-    public String getTitle(String id) {
-        String title = bookRepository.getBookTitle(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
-        try {
-            return new JSONObject().put("title", title).toString();
-        } catch (JSONException e) {
-            LOGGER.error(e);
-            return null;
-        }
-    }
-
-    /**
      * @return all books in the db.
      */
     public List<Book> getAll() {
@@ -99,14 +82,8 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    /**
-     * Returns the title, author.first_name AS first_name, and author.last_name AS last_name as a JSON string.
-     *
-     * @return a JSON formatted string.
-     */
-    public String getBooksSimple() {
-        LOGGER.debug("Returning all books as JSON.");
-        return bookRepository.getBooksSimple().orElseThrow(NoResultsException::new);
+    public String getAllSimple() {
+        return bookRepository.getAllBooksSimple().orElseThrow(StoredProcedureQueryException::new);
     }
 
     /**
@@ -152,11 +129,6 @@ public class BookService {
         Book book = getBookOrThrowNotFound(id);
         bookRepository.delete(book);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    public String getBookCharacters(String id) {
-        LOGGER.debug("Getting book chars for: " + id);
-        return bookRepository.getBookCharactersSimple(Long.parseLong(id));
     }
 
     private Book getBookOrThrowNotFound(Long id) {

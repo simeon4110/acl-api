@@ -39,6 +39,10 @@ public class BookController {
         return bookService.get(id);
     }
 
+    /**
+     * @param title of the book to find.
+     * @return the book with a matching title.
+     */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/get_by_title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Book getByTitle(@PathVariable("title") String title) {
@@ -47,21 +51,10 @@ public class BookController {
     }
 
     /**
-     * Returns the title of a book from its ide.
-     *
-     * @param id the db id of the book to get the title for.
-     * @return the book's title.
-     */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/book/get_title/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getTitle(@PathVariable("id") String id) {
-        return bookService.getTitle(id);
-    }
-    /**
      * @return a list of all books in the db.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/book/get_all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/book/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Book> getAll() {
         return bookService.getAll();
     }
@@ -70,9 +63,9 @@ public class BookController {
      * @return a JSON formatted string of just the basic details of all books in the db.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/book/get_all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/book/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAllSimple() {
-        return bookService.getBooksSimple();
+        return bookService.getAllSimple();
     }
 
     /**
@@ -105,9 +98,4 @@ public class BookController {
         return bookService.delete(id);
     }
 
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/book/get_characters/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getBookCharacters(@PathVariable("id") String id) {
-        return bookService.getBookCharacters(id);
-    }
 }

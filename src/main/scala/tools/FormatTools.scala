@@ -27,7 +27,7 @@ object FormatTools {
     for (line <- input) {
       output += line + " "
     }
-    output
+    output.trim
   }
 
   /**

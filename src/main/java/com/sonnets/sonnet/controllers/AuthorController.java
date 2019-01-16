@@ -89,7 +89,7 @@ public class AuthorController {
      * @return the result's of the search.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @PostMapping(value = "/author/search", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(value = "/author/search", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List search(@RequestBody AuthorDto authorDto) throws ParseException {
         return searchQueryHandlerService.searchAuthor(authorDto);

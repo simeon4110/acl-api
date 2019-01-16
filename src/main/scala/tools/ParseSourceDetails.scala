@@ -15,10 +15,10 @@ class ParseSourceDetails[T <: Item, D <: SourceDetailsDto] {
     obj.setEdition(dto.getEdition)
     obj.setPlaceOfPublication(dto.getPlaceOfPublication)
     obj.setPublisher(dto.getPublisher)
-    obj.setDateOfPublication(dto.getDateOfPublication)
+    obj.setDateOfPublication(convertDate(dto.getDateOfPublication))
     obj.setShortTitle(dto.getShortTitle)
     obj.setUrl(dto.getUrl)
-    obj.setDateOfAccess(dto.getDateOfAccess)
+    obj.setDateOfAccess(convertDate(dto.getDateOfAccess))
     obj.setJournalName(dto.getJournalName)
     obj.setDOI(dto.getDOI)
     obj.setJournalVolume(dto.getJournalVolume)
@@ -29,5 +29,23 @@ class ParseSourceDetails[T <: Item, D <: SourceDetailsDto] {
     obj.setPublicDomain(dto.getPublicDomain)
     obj.setPageRange(dto.getPageRange)
     obj
+  }
+
+  def convertDate(dateStr: String): java.util.Date = {
+    if (dateStr == null) {
+      return null
+    }
+
+    var pattern: String = ""
+    if (dateStr.length == 10) {
+      pattern = "yyyy-MM-dd"
+    }
+    if (dateStr.length == 8) {
+      pattern = "yyyyMMdd"
+    } else {
+      pattern = "yyyy"
+    }
+
+    new java.text.SimpleDateFormat(pattern).parse(dateStr)
   }
 }

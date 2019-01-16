@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.models.annotations;
 
-import com.sonnets.sonnet.persistence.models.ModelConstants;
+import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.*;
@@ -28,11 +28,10 @@ public class Dialog extends AnnotationBase {
     private String itemFriendly;
     @Column
     private Long sectionId;
-    @Column(columnDefinition = ModelConstants.BIG_STRING)
+    @Column(columnDefinition = StoredProcedures.BIG_STRING)
     @Field(name = SearchConstants.DIALOG_BODY, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     private String body;
-
 
     public Dialog() {
         super();

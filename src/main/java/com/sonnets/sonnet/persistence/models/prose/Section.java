@@ -1,9 +1,8 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.gson.annotations.Expose;
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
-import com.sonnets.sonnet.persistence.models.ModelConstants;
+import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Version;
 import com.sonnets.sonnet.persistence.models.base.*;
@@ -27,29 +26,16 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_ALL_SECTIONS,
-                procedureName = ModelConstants.GET_ALL_SECTIONS_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_SECTIONS_BY_USER,
-                procedureName = ModelConstants.GET_SECTIONS_BY_USER_PROCEDURE,
+                name = StoredProcedures.GET_BOOK_SECTIONS_SIMPLE,
+                procedureName = StoredProcedures.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = ModelConstants.USER_NAME_PARAM,
-                                mode = ParameterMode.IN, type = String.class)
-                },
-                resultClasses = {
-                        Section.class
+                        @StoredProcedureParameter(name = StoredProcedures.BOOK_ID_PARAM,
+                                mode = ParameterMode.IN, type = Long.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = ModelConstants.GET_BOOK_SECTIONS_SIMPLE,
-                procedureName = ModelConstants.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(name = ModelConstants.BOOK_ID_PARAM,
-                                mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(name = ModelConstants.OUTPUT_PARAM,
-                                mode = ParameterMode.OUT, type = String.class)
-                }
+                name = StoredProcedures.GET_ALL_SECTIONS_SIMPLE,
+                procedureName = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PROCEDURE
         )
 })
 @Indexed
@@ -69,8 +55,7 @@ public class Section extends Item implements Serializable {
     private Confirmation confirmation;
     @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
-    @Column(columnDefinition = ModelConstants.BIG_STRING)
-    @Expose
+    @Column(columnDefinition = StoredProcedures.BIG_STRING)
     private String text;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
@@ -82,7 +67,6 @@ public class Section extends Item implements Serializable {
     @Column
     private boolean processed;
     @Column
-    @Expose
     private Long parentId;
     @Embedded
     private TopicModel topicModel;

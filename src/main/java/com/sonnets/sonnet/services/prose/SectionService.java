@@ -21,10 +21,9 @@ import com.sonnets.sonnet.services.annotations.AnnotationsParseService;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -77,7 +76,7 @@ public class SectionService {
      * @return the Section with the new data copied.
      */
     private Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
-        section.setCategory(TypeConstants.POEM);
+        section.setCategory(TypeConstants.SECTION);
         section.setAuthor(author);
         section.setTitle(dto.getTitle());
         section.setDescription(dto.getDescription());
@@ -120,24 +119,12 @@ public class SectionService {
      * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
      * It takes 20 seconds to return all the data. This way takes 200ms.
      */
-    public String getAll() {
-        return sectionRepository.getAllSections();
+    public List<Section> getAll() {
+        return sectionRepository.findAll();
     }
 
-    /**
-     * Get a section's title as well as it's parent title on the quick.
-     *
-     * @param id the db id of the book to get the title of.
-     * @return the book's title. (title = section title, bookTitle = parent title}
-     */
-    public String getTitle(String id) {
-        String title = bookRepository.getBookTitle(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
-        try {
-            return new JSONObject().put("title", title).toString();
-        } catch (JSONException e) {
-            LOGGER.error(e);
-            return null;
-        }
+    public String getAllSimple() {
+        return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
     }
 
     /**

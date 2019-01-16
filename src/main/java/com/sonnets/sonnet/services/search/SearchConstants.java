@@ -14,7 +14,6 @@ public abstract class SearchConstants {
     // General field names.
     public static final String CATEGORY = "category";
     public static final int PRECISION_STEP = 2;
-    public static final String SOURCE_DETAILS = "sourceDetails";
     public static final String TOPIC_MODEL = "topic_model";
     public static final String VERSION_TEXT = "version_text";
 
@@ -31,7 +30,6 @@ public abstract class SearchConstants {
     public static final String YEAR = "publicationYear";
     public static final String TITLE = "title";
     public static final String PERIOD = "period";
-    public static final String SOURCE = "source";
 
     // Item specific field names.
     public static final String POEM_FORM = "poem_form";
