@@ -3,7 +3,7 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
-import com.sonnets.sonnet.services.CorporaService;
+import com.sonnets.sonnet.services.web.CorporaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;

@@ -1,6 +1,6 @@
-package com.sonnets.sonnet.services;
+package com.sonnets.sonnet.services.base;
 
-import com.sonnets.sonnet.persistence.repositories.items.ItemRepository;
+import com.sonnets.sonnet.persistence.repositories.item.ItemRepository;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

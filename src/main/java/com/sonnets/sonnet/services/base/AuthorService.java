@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services;
+package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;

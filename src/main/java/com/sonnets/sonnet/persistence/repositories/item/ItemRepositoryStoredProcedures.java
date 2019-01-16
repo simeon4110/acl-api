@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.repositories.items;
+package com.sonnets.sonnet.persistence.repositories.item;
 
 import java.util.Optional;
 

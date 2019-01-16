@@ -3,7 +3,7 @@ package com.sonnets.sonnet.controllers;
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.services.PoemService;
+import com.sonnets.sonnet.services.poem.PoemService;
 import com.sonnets.sonnet.tools.ParseParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;

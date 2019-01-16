@@ -2,7 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.web.CustomStopWordsDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
-import com.sonnets.sonnet.services.CustomStopWordsService;
+import com.sonnets.sonnet.services.web.CustomStopWordsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;

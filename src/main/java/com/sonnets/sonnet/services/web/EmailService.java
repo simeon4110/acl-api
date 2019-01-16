@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services;
+package com.sonnets.sonnet.services.web;
 
 import org.springframework.mail.SimpleMailMessage;
 

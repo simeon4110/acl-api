@@ -5,7 +5,7 @@ import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
-import com.sonnets.sonnet.services.AuthorService;
+import com.sonnets.sonnet.services.base.AuthorService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;

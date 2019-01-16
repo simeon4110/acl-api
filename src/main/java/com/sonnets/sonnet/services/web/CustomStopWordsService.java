@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services;
+package com.sonnets.sonnet.services.web;
 
 import com.sonnets.sonnet.persistence.dtos.web.CustomStopWordsDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
@@ -114,7 +114,7 @@ public class CustomStopWordsService {
      * @param id the id of the list to find.
      * @return the list or null.
      */
-    CustomStopWords getWordsListOrThrowNotFound(String id) {
+    public CustomStopWords getWordsListOrThrowNotFound(String id) {
         long parsedId;
         try {
             parsedId = Long.parseLong(id);

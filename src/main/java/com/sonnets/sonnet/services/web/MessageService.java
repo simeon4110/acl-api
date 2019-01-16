@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services;
+package com.sonnets.sonnet.services.web;
 
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.models.web.Message;

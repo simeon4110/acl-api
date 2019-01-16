@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services;
+package com.sonnets.sonnet.services.web;
 
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;

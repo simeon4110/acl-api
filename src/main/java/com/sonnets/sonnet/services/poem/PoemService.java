@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services;
+package com.sonnets.sonnet.services.poem;
 
 import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
@@ -14,6 +14,7 @@ import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
+import com.sonnets.sonnet.services.web.MessageService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

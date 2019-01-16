@@ -2,7 +2,7 @@ package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.services.AuthorService;
+import com.sonnets.sonnet.services.base.AuthorService;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;

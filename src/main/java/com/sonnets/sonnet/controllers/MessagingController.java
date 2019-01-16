@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
-import com.sonnets.sonnet.services.MessageService;
+import com.sonnets.sonnet.services.web.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;

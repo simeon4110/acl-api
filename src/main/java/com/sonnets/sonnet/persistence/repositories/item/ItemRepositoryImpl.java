@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.repositories.items;
+package com.sonnets.sonnet.persistence.repositories.item;
 
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import org.springframework.stereotype.Repository;
