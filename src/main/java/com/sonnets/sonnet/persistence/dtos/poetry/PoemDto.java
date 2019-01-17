@@ -3,13 +3,15 @@ package com.sonnets.sonnet.persistence.dtos.poetry;
 import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Josh Harkema
  */
 public class PoemDto extends SourceDetailsDto {
     private Long id;
-    private @NotEmpty Long authorId;
+    @NotNull
+    private Long authorId;
     private String title;
     @NotEmpty
     private String period;
@@ -29,11 +31,11 @@ public class PoemDto extends SourceDetailsDto {
         this.id = id;
     }
 
-    public @NotEmpty Long getAuthorId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(@NotEmpty Long authorId) {
+    public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 

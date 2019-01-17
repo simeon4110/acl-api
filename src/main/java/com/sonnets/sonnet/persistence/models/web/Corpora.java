@@ -3,6 +3,7 @@ package com.sonnets.sonnet.persistence.models.web;
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Dialog;
+import com.sonnets.sonnet.persistence.models.annotation.WordTranslation;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
@@ -128,7 +129,8 @@ public class Corpora extends Auditable<String> implements Serializable {
                     @MetaValue(targetEntity = Section.class, value = TypeConstants.SECTION),
                     @MetaValue(targetEntity = Other.class, value = TypeConstants.OTHER),
                     @MetaValue(targetEntity = BookCharacter.class, value = TypeConstants.BOOK_CHARACTER),
-                    @MetaValue(targetEntity = Dialog.class, value = TypeConstants.DIALOG)
+                    @MetaValue(targetEntity = Dialog.class, value = TypeConstants.DIALOG),
+                    @MetaValue(targetEntity = WordTranslation.class, value = TypeConstants.WORD_TRANSLATION)
             }
     )
     @JoinTable(

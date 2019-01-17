@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
  *
  * @author Josh Harkema
  */
-@SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
 @Repository
 public interface CorporaRepository extends CrudRepository<Corpora, Long>, CorporaRepositoryStoredProcedures {
 }

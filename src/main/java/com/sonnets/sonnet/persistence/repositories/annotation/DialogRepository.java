@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.repositories;
+package com.sonnets.sonnet.persistence.repositories.annotation;
 
 import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import org.springframework.data.jpa.repository.JpaRepository;

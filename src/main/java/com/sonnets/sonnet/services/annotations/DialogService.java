@@ -3,7 +3,7 @@ package com.sonnets.sonnet.services.annotations;
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
-import com.sonnets.sonnet.persistence.repositories.DialogRepository;
+import com.sonnets.sonnet.persistence.repositories.annotation.DialogRepository;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.prose.CharacterService;
