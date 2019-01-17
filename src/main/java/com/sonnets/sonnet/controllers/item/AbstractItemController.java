@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers;
+package com.sonnets.sonnet.controllers.item;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * Defines the methods all item controllers require.
  *
- * @param <T> the item type.
- * @param <S> the item's dto type.
+ * @param <T> the object type.
+ * @param <S> the object's dto type.
  */
 public interface AbstractItemController<T, S> {
     ResponseEntity<Void> add(S dto);

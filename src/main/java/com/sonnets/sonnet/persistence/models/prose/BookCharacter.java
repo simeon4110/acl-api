@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
 import com.sonnets.sonnet.persistence.bridges.DialogBridge;
-import com.sonnets.sonnet.persistence.models.annotations.Dialog;
+import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;

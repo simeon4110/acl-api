@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers;
+package com.sonnets.sonnet.controllers.tools;
 
 import com.sonnets.sonnet.persistence.dtos.web.CustomStopWordsDto;
 import com.sonnets.sonnet.persistence.models.web.CustomStopWords;

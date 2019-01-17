@@ -66,7 +66,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param dto the new book's info.
      * @return OK if the book is added, BAD_REQUEST if the book already exists.
      */
-    @Override
     public ResponseEntity<Void> add(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
         Book book = new Book();
@@ -83,7 +82,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param id the id of the book to remove.
      * @return OK if the book is removed.
      */
-    @Override
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting book: " + id);
         Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -96,7 +94,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param principal the user making the request.
      * @return OK if removed, NOT_AUTHORIZED if user does not own book.
      */
-    @Override
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
         LOGGER.debug("Deleting book (USER): " + id);
         Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -112,7 +109,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param id the db id of the book.
      * @return the book.
      */
-    @Override
     @Transactional(readOnly = true)
     public Book getById(Long id) {
         LOGGER.debug("Getting book: " + id);
@@ -123,7 +119,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param ids the db ids of the books to get.
      * @return a list of books.
      */
-    @Override
     @Transactional(readOnly = true)
     public List<Book> getByIds(Long[] ids) {
         LOGGER.debug("Getting books by ids: " + Arrays.toString(ids));
@@ -138,7 +133,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     /**
      * @return all books in the db.
      */
-    @Override
     @Transactional(readOnly = true)
     public List<Book> getAll() {
         LOGGER.debug("Returning all books.");
@@ -148,7 +142,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     /**
      * @return a JSON array of only the most basic details of every book in the db.
      */
-    @Override
     public String getAllSimple() {
         return bookRepository.getAllBooksSimple().orElseThrow(StoredProcedureQueryException::new);
     }
@@ -157,7 +150,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param pageable from the request.
      * @return a page of all books in the database.
      */
-    @Override
     @Transactional(readOnly = true)
     public Page<Book> getAllPaged(Pageable pageable) {
         return bookRepository.findAll(pageable);
@@ -167,7 +159,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param principal of the user making the request.
      * @return all books added by the user.
      */
-    @Override
     @Transactional(readOnly = true)
     public List<Book> getAllByUser(Principal principal) {
         return bookRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
@@ -177,7 +168,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param dto the dto with the new info.
      * @return OK if the book is modified.
      */
-    @Override
     public ResponseEntity<Void> modify(BookDto dto) {
         LOGGER.debug("Modifying book: " + dto.toString());
         Book book = bookRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -186,7 +176,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Override
     public ResponseEntity<Void> modifyUser(BookDto dtoType, Principal principal) {
         return null;
     }

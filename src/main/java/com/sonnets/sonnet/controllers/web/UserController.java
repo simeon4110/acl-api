@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers;
+package com.sonnets.sonnet.controllers.web;
 
 import com.sonnets.sonnet.persistence.dtos.user.*;
 import com.sonnets.sonnet.persistence.models.web.User;

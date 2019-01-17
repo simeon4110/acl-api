@@ -1,7 +1,7 @@
-package com.sonnets.sonnet.controllers;
+package com.sonnets.sonnet.controllers.annotation;
 
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
-import com.sonnets.sonnet.persistence.models.annotations.Dialog;
+import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import com.sonnets.sonnet.services.annotations.DialogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;

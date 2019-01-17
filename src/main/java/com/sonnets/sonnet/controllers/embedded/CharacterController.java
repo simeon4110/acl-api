@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers;
+package com.sonnets.sonnet.controllers.embedded;
 
 import com.sonnets.sonnet.persistence.dtos.prose.CharacterDto;
 import com.sonnets.sonnet.services.prose.CharacterService;

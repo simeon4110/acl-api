@@ -23,4 +23,7 @@ public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositor
     Optional<List<Poem>> findAllByCreatedBy(final String createdBy);
 
     Optional<List<Poem>> findAllByAuthor_LastName(final String lastName);
+
+    Optional<Poem> getDistinctFirstByConfirmation_ConfirmedAndCreatedByNot(final boolean confirmed,
+                                                                           final String createdBy);
 }

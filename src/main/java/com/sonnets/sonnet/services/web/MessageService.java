@@ -137,4 +137,8 @@ public class MessageService {
         LOGGER.debug("Get inbox for user: " + principal.getName());
         return messageRepository.findAllByUserTo(principal.getName());
     }
+
+    public void sendRejectMessage(String userFrom, String userTo, String message) {
+
+    }
 }

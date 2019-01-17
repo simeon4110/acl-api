@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.controllers.item;
 
-import com.sonnets.sonnet.controllers.AbstractItemController;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.services.poem.PoemService;

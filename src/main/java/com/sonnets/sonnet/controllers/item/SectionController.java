@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.controllers.item;
 
-import com.sonnets.sonnet.controllers.AbstractItemController;
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.prose.Section;

@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.models.annotations;
+package com.sonnets.sonnet.persistence.models.annotation;
 
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
