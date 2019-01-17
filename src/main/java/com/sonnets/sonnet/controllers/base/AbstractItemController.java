@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers.item;
+package com.sonnets.sonnet.controllers.base;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.tools;
+package com.sonnets.sonnet.helpers;
 
 /**
  * Tool interface for parsing request params into query strings.

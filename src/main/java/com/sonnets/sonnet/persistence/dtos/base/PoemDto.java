@@ -1,6 +1,4 @@
-package com.sonnets.sonnet.persistence.dtos.poetry;
-
-import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
+package com.sonnets.sonnet.persistence.dtos.base;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

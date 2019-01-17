@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers.embedded;
+package com.sonnets.sonnet.controllers.base;
 
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -58,7 +58,7 @@ public class AuthorController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/author/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         return authorService.delete(id);
     }
 
@@ -68,7 +68,7 @@ public class AuthorController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/author/get_by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Author getById(@PathVariable("id") String id) {
+    public Author getById(@PathVariable("id") Long id) {
         return authorService.get(id);
     }
 

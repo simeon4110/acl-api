@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers.item;
+package com.sonnets.sonnet.controllers.base;
 
 import com.sonnets.sonnet.services.base.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;

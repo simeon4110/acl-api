@@ -1,12 +1,12 @@
-package com.sonnets.sonnet.services.poem;
+package com.sonnets.sonnet.services.base;
 
+import com.sonnets.sonnet.persistence.dtos.base.PoemDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;

@@ -1,12 +1,12 @@
 package com.sonnets.sonnet.services.base;
 
+import com.sonnets.sonnet.helpers.ParseParam;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.NoResultsException;
-import com.sonnets.sonnet.tools.ParseParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -68,7 +68,7 @@ public class AuthorService {
      */
     public ResponseEntity<Void> modify(AuthorDto authorDto) {
         LOGGER.debug("Modifying author: " + authorDto.toString());
-        Author author = getAuthorOrThrowNotFound(authorDto.getId());
+        Author author = authorRepository.findById(authorDto.getId()).orElseThrow(ItemNotFoundException::new);
         authorRepository.saveAndFlush(createOrCopyAuthor(author, authorDto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -79,9 +79,9 @@ public class AuthorService {
      * @param id the id of the author to delete.
      * @return OK if the author is removed.
      */
-    public ResponseEntity<Void> delete(String id) {
+    public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting author with id: " + id);
-        Author author = getAuthorOrThrowNotFound(id);
+        Author author = authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         authorRepository.delete(author);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -92,9 +92,9 @@ public class AuthorService {
      * @param id the db id of the author to get.
      * @return the author.
      */
-    public Author get(String id) {
+    public Author get(Long id) {
         LOGGER.debug("Looking for author with id: " + id);
-        return getAuthorOrThrowNotFound(id);
+        return authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
     /**
@@ -107,14 +107,5 @@ public class AuthorService {
         LOGGER.debug("Looking for author with last name: " + lastName);
         lastName = ParseParam.parse(lastName);
         return authorRepository.findByLastName(lastName).orElseThrow(NoResultsException::new);
-    }
-
-    public Author getAuthorOrThrowNotFound(String id) {
-        long parsedId = Long.parseLong(id);
-        return authorRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
-    }
-
-    public Author getAuthorOrThrowNotFound(Long id) {
-        return authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 }

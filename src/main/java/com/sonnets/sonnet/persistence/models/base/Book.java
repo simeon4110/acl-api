@@ -1,10 +1,10 @@
-package com.sonnets.sonnet.persistence.models.prose;
+package com.sonnets.sonnet.persistence.models.base;
 
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;

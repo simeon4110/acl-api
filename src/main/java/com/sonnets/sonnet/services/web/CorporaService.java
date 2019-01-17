@@ -1,12 +1,12 @@
 package com.sonnets.sonnet.services.web;
 
+import com.sonnets.sonnet.helpers.ItemKeyValuePair;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
 import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.NoResultsException;
-import com.sonnets.sonnet.tools.ItemKeyValuePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,11 +1,11 @@
-package com.sonnets.sonnet.services.annotations;
+package com.sonnets.sonnet.services.annotation;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.persistence.models.annotation.Dialog;
-import com.sonnets.sonnet.persistence.models.base.Annotation;
+import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
-import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.annotation.DialogRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.prose.CharacterService;
@@ -28,8 +28,8 @@ import java.util.Set;
  */
 @Service
 @PropertySource("classpath:global.properties")
-public class AnnotationsParseService {
-    private static final Logger LOGGER = Logger.getLogger(AnnotationsParseService.class);
+public class AnnotationParseService {
+    private static final Logger LOGGER = Logger.getLogger(AnnotationParseService.class);
     private static final String SENTENCES = "sentences";
     private static final String ANNOTATIONS = "annotations";
     private final CharacterService characterService;
@@ -37,8 +37,8 @@ public class AnnotationsParseService {
     private final Environment env;
 
     @Autowired
-    public AnnotationsParseService(CharacterService characterService, DialogRepository dialogRepository,
-                                   Environment env) {
+    public AnnotationParseService(CharacterService characterService, DialogRepository dialogRepository,
+                                  Environment env) {
         this.characterService = characterService;
         this.dialogRepository = dialogRepository;
         this.env = env;

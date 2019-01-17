@@ -1,9 +1,9 @@
-package com.sonnets.sonnet.controllers.item;
+package com.sonnets.sonnet.controllers.base;
 
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.services.poem.PoemService;
-import com.sonnets.sonnet.tools.ParseParam;
+import com.sonnets.sonnet.helpers.ParseParam;
+import com.sonnets.sonnet.persistence.dtos.base.PoemDto;
+import com.sonnets.sonnet.persistence.models.base.Poem;
+import com.sonnets.sonnet.services.base.PoemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;

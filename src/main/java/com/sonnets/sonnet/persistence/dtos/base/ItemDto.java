@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.dtos.base;
 
-import com.sonnets.sonnet.tools.ItemKeyValuePair;
+import com.sonnets.sonnet.helpers.ItemKeyValuePair;
 
 import java.util.List;
 

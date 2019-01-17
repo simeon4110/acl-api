@@ -1,10 +1,9 @@
-package com.sonnets.sonnet.persistence.models.poetry;
+package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.base.Version;
-import com.sonnets.sonnet.persistence.models.base.*;
+import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;

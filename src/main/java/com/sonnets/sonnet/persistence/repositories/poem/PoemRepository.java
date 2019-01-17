@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.poem;
 
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.base.Poem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

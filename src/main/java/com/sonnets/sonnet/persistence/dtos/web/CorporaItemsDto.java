@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.dtos.web;
 
-import com.sonnets.sonnet.tools.ItemKeyValuePair;
+import com.sonnets.sonnet.helpers.ItemKeyValuePair;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;

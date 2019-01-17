@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.bridges;
 
-import com.sonnets.sonnet.persistence.models.prose.Section;
+import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;

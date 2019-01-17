@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services.annotations;
+package com.sonnets.sonnet.services.annotation;
 
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.models.annotation.Dialog;

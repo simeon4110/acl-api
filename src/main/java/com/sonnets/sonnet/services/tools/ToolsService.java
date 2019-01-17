@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.services.tools;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
-import com.sonnets.sonnet.persistence.models.web.CustomStopWords;
+import com.sonnets.sonnet.persistence.models.tools.CustomStopWords;
 import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
 import com.sonnets.sonnet.services.web.CustomStopWordsService;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;

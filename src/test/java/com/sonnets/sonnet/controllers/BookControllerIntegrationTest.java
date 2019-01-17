@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.services.prose.BookService;
+import com.sonnets.sonnet.services.base.BookService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.models.web;
+package com.sonnets.sonnet.persistence.models.tools;
 
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 

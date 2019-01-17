@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.services.embedded;
+package com.sonnets.sonnet.services.base;
 
 import org.springframework.stereotype.Service;
 

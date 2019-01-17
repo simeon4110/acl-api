@@ -1,8 +1,8 @@
-package com.sonnets.sonnet.controllers.embedded;
+package com.sonnets.sonnet.controllers.base;
 
 import com.sonnets.sonnet.persistence.dtos.base.ConfirmationDto;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.services.embedded.ConfirmationService;
+import com.sonnets.sonnet.persistence.models.base.Poem;
+import com.sonnets.sonnet.services.base.ConfirmationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;

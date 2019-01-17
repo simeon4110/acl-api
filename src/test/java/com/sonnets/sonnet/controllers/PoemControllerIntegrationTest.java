@@ -2,10 +2,10 @@ package com.sonnets.sonnet.controllers;
 
 import com.google.gson.Gson;
 import com.sonnets.sonnet.constants.TestConstants;
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
+import com.sonnets.sonnet.persistence.dtos.base.PoemDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
-import com.sonnets.sonnet.services.poem.PoemService;
+import com.sonnets.sonnet.persistence.models.base.Poem;
+import com.sonnets.sonnet.services.base.PoemService;
 import generators.PoemGenerator;
 import org.junit.BeforeClass;
 import org.junit.Test;

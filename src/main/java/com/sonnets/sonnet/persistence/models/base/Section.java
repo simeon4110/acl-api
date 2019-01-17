@@ -1,11 +1,11 @@
-package com.sonnets.sonnet.persistence.models.prose;
+package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.base.Version;
-import com.sonnets.sonnet.persistence.models.base.*;
+import com.sonnets.sonnet.persistence.models.annotation.Annotation;
+import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;

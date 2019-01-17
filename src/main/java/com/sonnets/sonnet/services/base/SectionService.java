@@ -1,12 +1,12 @@
-package com.sonnets.sonnet.services.prose;
+package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.base.Book;
+import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
-import com.sonnets.sonnet.persistence.models.prose.Section;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;

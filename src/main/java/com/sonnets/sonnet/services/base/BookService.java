@@ -1,12 +1,12 @@
-package com.sonnets.sonnet.services.prose;
+package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.base.Book;
+import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
-import com.sonnets.sonnet.services.base.AuthorService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
@@ -34,12 +34,12 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     private static final Logger LOGGER = Logger.getLogger(BookService.class);
     private static final ParseSourceDetails<Book, BookDto> parseSourceDetails = new ParseSourceDetails<>();
     private final BookRepository bookRepository;
-    private final AuthorService authorService;
+    private final AuthorRepository authorRepository;
 
     @Autowired
-    public BookService(BookRepository bookRepository, AuthorService authorService) {
+    public BookService(BookRepository bookRepository, AuthorRepository authorRepository) {
         this.bookRepository = bookRepository;
-        this.authorService = authorService;
+        this.authorRepository = authorRepository;
     }
 
     /**
@@ -69,7 +69,7 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     public ResponseEntity<Void> add(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
         Book book = new Book();
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         // Check if book does not exist exists.
         if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()).isEmpty()) {
             bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
@@ -171,7 +171,7 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     public ResponseEntity<Void> modify(BookDto dto) {
         LOGGER.debug("Modifying book: " + dto.toString());
         Book book = bookRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        Author author = authorService.getAuthorOrThrowNotFound(dto.getAuthorId());
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
         return new ResponseEntity<>(HttpStatus.OK);
     }

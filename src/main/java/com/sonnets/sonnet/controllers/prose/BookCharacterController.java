@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.controllers.embedded;
+package com.sonnets.sonnet.controllers.prose;
 
 import com.sonnets.sonnet.persistence.dtos.prose.CharacterDto;
 import com.sonnets.sonnet.services.prose.CharacterService;
@@ -18,11 +18,11 @@ import javax.validation.Valid;
  */
 @RestController
 @PropertySource("classpath:global.properties")
-public class CharacterController {
+public class BookCharacterController {
     private final CharacterService characterService;
 
     @Autowired
-    public CharacterController(CharacterService characterService) {
+    public BookCharacterController(CharacterService characterService) {
         this.characterService = characterService;
     }
 

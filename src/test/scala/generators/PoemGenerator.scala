@@ -1,10 +1,9 @@
 package generators
 
 import com.sonnets.sonnet.constants.TestConstants
-import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto
+import com.sonnets.sonnet.persistence.dtos.base.PoemDto
 import com.sonnets.sonnet.persistence.models.TypeConstants
-import com.sonnets.sonnet.persistence.models.base.Author
-import com.sonnets.sonnet.persistence.models.poetry.Poem
+import com.sonnets.sonnet.persistence.models.base.{Author, Poem}
 import utils.RandomDataGenerators
 
 object PoemGenerator {

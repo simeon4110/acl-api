@@ -14,7 +14,7 @@ import java.util.List;
  * @param <S> the dto the service uses.
  */
 public interface AbstractItemService<T, S> {
-    ResponseEntity<Void> add(S dtoType);
+    ResponseEntity<Void> add(S dto);
 
     ResponseEntity<Void> delete(Long id);
 
@@ -32,8 +32,8 @@ public interface AbstractItemService<T, S> {
 
     List<T> getAllByUser(Principal principal);
 
-    ResponseEntity<Void> modify(S dtoType);
+    ResponseEntity<Void> modify(S dto);
 
-    ResponseEntity<Void> modifyUser(S dtoType, Principal principal);
+    ResponseEntity<Void> modifyUser(S dto, Principal principal);
 
 }

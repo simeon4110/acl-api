@@ -2,6 +2,7 @@ package com.sonnets.sonnet.persistence.models.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
+import com.sonnets.sonnet.persistence.models.tools.CustomStopWords;
 
 import javax.persistence.*;
 import java.io.Serializable;

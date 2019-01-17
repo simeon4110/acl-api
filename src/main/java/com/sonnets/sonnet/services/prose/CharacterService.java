@@ -2,7 +2,7 @@ package com.sonnets.sonnet.services.prose;
 
 import com.sonnets.sonnet.persistence.dtos.prose.CharacterDto;
 import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
-import com.sonnets.sonnet.persistence.models.prose.Book;
+import com.sonnets.sonnet.persistence.models.base.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;

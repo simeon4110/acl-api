@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.configuration;
 
 import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import generators.AuthorGenerator;

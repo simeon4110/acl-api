@@ -1,10 +1,10 @@
-package com.sonnets.sonnet.controllers.item;
+package com.sonnets.sonnet.controllers.base;
 
+import com.sonnets.sonnet.helpers.ParseParam;
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
-import com.sonnets.sonnet.persistence.models.prose.Section;
-import com.sonnets.sonnet.services.prose.SectionService;
-import com.sonnets.sonnet.tools.ParseParam;
+import com.sonnets.sonnet.persistence.models.base.Section;
+import com.sonnets.sonnet.services.base.SectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;

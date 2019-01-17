@@ -1,12 +1,9 @@
-package com.sonnets.sonnet.persistence.models.prose;
+package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.base.Annotation;
-import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.base.Item;
-import com.sonnets.sonnet.persistence.models.base.Version;
+import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;

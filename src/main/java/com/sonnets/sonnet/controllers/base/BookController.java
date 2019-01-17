@@ -1,9 +1,9 @@
-package com.sonnets.sonnet.controllers.item;
+package com.sonnets.sonnet.controllers.base;
 
+import com.sonnets.sonnet.helpers.ParseParam;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
-import com.sonnets.sonnet.persistence.models.prose.Book;
-import com.sonnets.sonnet.services.prose.BookService;
-import com.sonnets.sonnet.tools.ParseParam;
+import com.sonnets.sonnet.persistence.models.base.Book;
+import com.sonnets.sonnet.services.base.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -60,7 +60,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping(value = "/secure/book/user_delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
+    public ResponseEntity<Void> userDelete(@PathVariable("id") Long id, Principal principal) {
         return bookService.userDelete(id, principal);
     }
 

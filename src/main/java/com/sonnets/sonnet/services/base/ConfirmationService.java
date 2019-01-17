@@ -1,8 +1,8 @@
-package com.sonnets.sonnet.services.embedded;
+package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.persistence.dtos.base.ConfirmationDto;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
