@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.sonnets.sonnet.persistence.models.poetry",
         "com.sonnets.sonnet.persistence.models.prose",
         "com.sonnets.sonnet.persistence.models.web",
-        "com.sonnets.sonnet.persistence.models.annotations"
+        "com.sonnets.sonnet.persistence.models.annotation"
 })
 @EnableScheduling
 public class SonnetApplication extends SpringBootServletInitializer {

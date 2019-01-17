@@ -3,6 +3,8 @@ package com.sonnets.sonnet.services.embedded;
 import com.sonnets.sonnet.persistence.dtos.base.ConfirmationDto;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.web.User;
+import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.NothingToConfirmException;
@@ -26,11 +28,14 @@ public class ConfirmationService {
     private static final Logger LOGGER = Logger.getLogger(ConfirmationService.class);
     private final PoemRepository poemRepository;
     private final MessageService messageService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ConfirmationService(PoemRepository poemRepository, MessageService messageService) {
+    public ConfirmationService(PoemRepository poemRepository, MessageService messageService,
+                               UserRepository userRepository) {
         this.poemRepository = poemRepository;
         this.messageService = messageService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -60,7 +65,7 @@ public class ConfirmationService {
         confirmation.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
         confirmation.setPendingRevision(false);
         poem.setConfirmation(confirmation);
-        poemRepository.save(poem);
+        poemRepository.saveAndFlush(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -77,6 +82,9 @@ public class ConfirmationService {
         poem.setConfirmation(confirmation);
         poemRepository.save(poem);
         messageService.sendRejectMessage("admin", poem.getCreatedBy(), dto.getMessage());
+        User user = userRepository.findByUsername(poem.getCreatedBy());
+        user.setCanConfirm(false);
+        userRepository.saveAndFlush(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

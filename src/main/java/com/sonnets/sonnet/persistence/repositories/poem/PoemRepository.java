@@ -26,4 +26,6 @@ public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositor
 
     Optional<Poem> getDistinctFirstByConfirmation_ConfirmedAndCreatedByNot(final boolean confirmed,
                                                                            final String createdBy);
+
+    Long countAllByCreatedByAndConfirmation_PendingRevision(final String createdBy, final Boolean pendingRevision);
 }

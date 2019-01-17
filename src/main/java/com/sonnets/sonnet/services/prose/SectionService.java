@@ -78,7 +78,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param dto the data for the new section.
      * @return OK if the section is added.
      */
-    @Override
     public ResponseEntity<Void> add(SectionDto dto) {
         LOGGER.debug("Adding new section: " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
@@ -94,7 +93,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param id the id of the section to delete.
      * @return OK if the book is deleted.
      */
-    @Override
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting other with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -110,7 +108,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param principal of the user making the request.
      * @return OK if accepted UNAUTHORIZED if user does not own section.
      */
-    @Override
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (section.getCreatedBy().equals(principal.getName())) {
@@ -136,7 +133,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param ids a list of the db ids for the sections.
      * @return a list of results.
      */
-    @Override
     @Transactional(readOnly = true)
     public List<Section> getByIds(Long[] ids) {
         return null;
@@ -146,7 +142,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
      * It takes 20 seconds to return all the data. This way takes 200ms.
      */
-    @Override
     @Transactional(readOnly = true)
     public List<Section> getAll() {
         return sectionRepository.findAll();
@@ -155,18 +150,15 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     /**
      * @return a JSON array of only the most basic details for all sections in the db.
      */
-    @Override
     public String getAllSimple() {
         return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public Page<Section> getAllPaged(Pageable pageable) {
         return sectionRepository.findAll(pageable);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public List<Section> getAllByUser(Principal principal) {
         return sectionRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
@@ -176,7 +168,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param dto the new information.
      * @return OK if the section is modified.
      */
-    @Override
     public ResponseEntity<Void> modify(SectionDto dto) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -191,7 +182,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param principal the user making the request.
      * @return OK if the section is modified.
      */
-    @Override
     public ResponseEntity<Void> modifyUser(SectionDto dto, Principal principal) {
         LOGGER.debug("Modifying section (USER): " + dto.toString());
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -215,7 +205,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param bookId the id of the book to get the sections from.
      * @return a list of sections.
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Section> getAllFromBook(Long bookId) {
         LOGGER.debug("Getting all sections of: " + bookId);
         Book book = bookRepository.findById(bookId).orElseThrow(ItemNotFoundException::new);
