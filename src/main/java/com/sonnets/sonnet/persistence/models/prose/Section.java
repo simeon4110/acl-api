@@ -68,6 +68,7 @@ public class Section extends Item implements Serializable {
     private boolean processed;
     @Column
     private Long parentId;
+    @JsonIgnore
     @Embedded
     private TopicModel topicModel;
     @Field(name = SearchConstants.NARRATOR, store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)

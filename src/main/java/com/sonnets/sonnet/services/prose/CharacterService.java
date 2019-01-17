@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
+import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,12 @@ import java.util.concurrent.CompletableFuture;
 public class CharacterService {
     private static final Logger LOGGER = Logger.getLogger(CharacterService.class);
     private final BookCharacterRepository bookCharacterRepository;
-    private final BookService bookService;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public CharacterService(BookCharacterRepository bookCharacterRepository, BookService bookService) {
+    public CharacterService(BookCharacterRepository bookCharacterRepository, BookRepository bookRepository) {
         this.bookCharacterRepository = bookCharacterRepository;
-        this.bookService = bookService;
+        this.bookRepository = bookRepository;
     }
 
     /**
@@ -76,7 +77,7 @@ public class CharacterService {
      */
     public ResponseEntity<Void> add(CharacterDto dto) {
         LOGGER.debug("Adding character: " + dto.toString());
-        Book book = bookService.getBookOrThrowNotFound(dto.getBookId());
+        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemNotFoundException::new);
         if (characterAlreadyExists(book, dto.getFirstName(), dto.getLastName())) {
             throw new AuthorAlreadyExistsException(
                     String.format("Author: %s %s already exists", dto.getFirstName(), dto.getLastName())
@@ -85,7 +86,7 @@ public class CharacterService {
         BookCharacter bookCharacter = new BookCharacter();
         book.getBookCharacters().add(createOrCopyCharacter(bookCharacter, dto));
         bookCharacterRepository.saveAndFlush(bookCharacter);
-        CompletableFuture.runAsync(() -> bookService.save(book));
+        bookRepository.save(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -87,11 +87,11 @@ public class PoemControllerIntegrationTest {
     public void getUserPoems_userHasPoems() throws Exception {
         PoemDto testPoemDto = new PoemDto();
         PoemGenerator.generateDto(testPoemDto);
-        testPoemDto.setAuthorId("1");
+        testPoemDto.setAuthorId(1L);
 
         PoemDto testPoemDto2 = new PoemDto();
         PoemGenerator.generateDto(testPoemDto2);
-        testPoemDto2.setAuthorId("1");
+        testPoemDto2.setAuthorId(1L);
 
         mvc.perform(post(TestConstants.BASE_URL.getStringValue() + "secure/poem/add")
                 .content(gson.toJson(testPoemDto))
@@ -114,7 +114,7 @@ public class PoemControllerIntegrationTest {
     public void addPoem_goodAuth() throws Exception {
         PoemDto testPoemDto = new PoemDto();
         PoemGenerator.generateDto(testPoemDto);
-        testPoemDto.setAuthorId("1");
+        testPoemDto.setAuthorId(1L);
 
         mvc.perform(post(TestConstants.BASE_URL.getStringValue() + "secure/poem/add")
                 .content(gson.toJson(testPoemDto))

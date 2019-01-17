@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 public class BookDto extends SourceDetailsDto {
     private Long id;
     @NotEmpty
-    private String authorId;
+    private Long authorId;
     @NotEmpty
     private String title;
     @NotEmpty
@@ -30,11 +30,11 @@ public class BookDto extends SourceDetailsDto {
         this.id = id;
     }
 
-    public String getAuthorId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(String authorId) {
+    public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 

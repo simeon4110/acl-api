@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * This is the model object for automatic db auditing. Do not modify.
+ * This is the model object for automatic db auditing. Do not modifyUser.
  *
  * @author Josh Harkema
  */

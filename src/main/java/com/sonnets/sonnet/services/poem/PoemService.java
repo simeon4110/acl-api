@@ -1,9 +1,7 @@
 package com.sonnets.sonnet.services.poem;
 
-import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.poetry.PoemDto;
-import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -11,26 +9,24 @@ import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.poetry.Poem;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
-import com.sonnets.sonnet.services.web.MessageService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import tools.FormatTools;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Handles all CRUD for the poem repository.
@@ -38,43 +34,23 @@ import java.util.concurrent.CompletableFuture;
  * @author Josh Harkema
  */
 @Service
-public class PoemService {
+public class PoemService implements AbstractItemService<Poem, PoemDto> {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
     private static final ParseSourceDetails<Poem, PoemDto> parseSourceDetails = new ParseSourceDetails<>();
     private final PoemRepository poemRepository;
-    private final MessageService messageService;
     private final AuthorRepository authorRepository;
     private final SearchQueryHandlerService searchQueryHandlerService;
 
     @Autowired
-    public PoemService(PoemRepository poemRepository, MessageService messageService, AuthorRepository authorRepository,
+    public PoemService(PoemRepository poemRepository, AuthorRepository authorRepository,
                        SearchQueryHandlerService searchQueryHandlerService) {
         this.poemRepository = poemRepository;
-        this.messageService = messageService;
         this.authorRepository = authorRepository;
         this.searchQueryHandlerService = searchQueryHandlerService;
     }
 
     /**
-     * Parses text input into an Array for database storage.
-     *
-     * @param text a string[] of the text.
-     * @return an ArrayList of the string[].
-     */
-    private static List<String> parseText(String text) {
-        List<String> strings = new ArrayList<>();
-        String[] textArr = text.split("\\r?\\n");
-
-        for (String s : textArr) {
-            if (!s.isEmpty()) {
-                strings.add(s.trim());
-            }
-        }
-        return strings;
-    }
-
-    /**
-     * Copy data from a dto to a poem object.
+     * Helper copies data from a dto to a poem object.
      *
      * @param poem   the poem to copy the data onto.
      * @param dto    the dto to copy the data from.
@@ -84,7 +60,7 @@ public class PoemService {
     private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
         poem.setAuthor(author);
         poem.setCategory(TypeConstants.POEM);
-        poem.setText(parseText(dto.getText()));
+        poem.setText(Arrays.asList(FormatTools.parsePoemText(dto.getText())));
         if (dto.getTitle().isEmpty() || dto.getTitle() == null) {
             poem.setTitle(poem.getText().get(0));
         } else {
@@ -101,12 +77,11 @@ public class PoemService {
     }
 
     /**
-     * Add a poem to the db, checks to see if poem already exists.
-     *
      * @param dto the new poem's data.
      * @return OK if the poem is added, CONFLICT if the poem exists.
      */
-    public ResponseEntity<Void> add(PoemDto dto, Principal principal) {
+    @Override
+    public ResponseEntity<Void> add(PoemDto dto) {
         LOGGER.debug("Adding poem: " + dto.toString());
         // Check if poem already exists.
         try {
@@ -115,61 +90,21 @@ public class PoemService {
             LOGGER.error(e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
-                .orElseThrow(ItemNotFoundException::new);
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
         poemRepository.saveAndFlush(poem);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     /**
-     * Modify a poem. (ADMIN ONLY).
-     *
-     * @param dto the new data for the poem.
-     * @return OK if the poem is modified; BAD_REQUEST if the poem / author doesn't exist.
-     */
-    public ResponseEntity<Void> modify(PoemDto dto) {
-        LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
-        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
-                .orElseThrow(ItemNotFoundException::new);
-        Poem poem = createOrUpdateFromDto(
-                poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new), dto, author);
-        poemRepository.saveAndFlush(poem);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Modify a poem. (OWNER ONLY).
-     *
-     * @param dto       the new data for the poem.
-     * @param principal the user making the mods.
-     * @return OK if the poem is modified; BAD_REQUEST if the poem / author doesn't exist or the user making the
-     * request doesn't own the poem.
-     */
-    public ResponseEntity<Void> modify(PoemDto dto, Principal principal) {
-        LOGGER.debug("Modifying poem (USER): " + dto.toString());
-        Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        if (poem.getConfirmation().isConfirmed()) {
-            return new ResponseEntity<>(HttpStatus.LOCKED);
-        }
-        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
-                .orElseThrow(ItemNotFoundException::new);
-        assert principal.getName().equals(poem.getCreatedBy());
-        poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Delete a poem. (ADMIN ONLY).
-     *
      * @param id the id of the poem to delete.
      * @return OK if the poem is deleted.
      */
-    public ResponseEntity<Void> deleteById(String id) {
+    @Override
+    public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting poem with id (ADMIN): " + id);
-        Poem poem = poemRepository.findById(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
+        Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (poem.getConfirmation().isConfirmed()) {
             return new ResponseEntity<>(HttpStatus.LOCKED);
         }
@@ -178,75 +113,36 @@ public class PoemService {
     }
 
     /**
-     * Confirm a poem.
-     *
-     * @param id        the id of the poem to confirm.
-     * @param principal the user making the request.
-     * @return OK if the poem is confirmed.
+     * @param id        the db id of the poem to delete.
+     * @param principal the principal of the user making the request.
+     * @return OK if successful.
      */
-    public ResponseEntity<Void> confirm(String id, Principal principal) {
-        LOGGER.debug("Confirming sonnet: " + id);
-        Poem poem = poemRepository.findById(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
-        poem.getConfirmation().setConfirmed(true);
-        poem.getConfirmation().setConfirmedBy(principal.getName());
-        poem.getConfirmation().setConfirmedAt(new Timestamp(System.currentTimeMillis()));
-        poem.getConfirmation().setPendingRevision(false);
-        poemRepository.saveAndFlush(poem);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @Override
+    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
+        LOGGER.debug("Deleting poem with id (USER): " + id);
+        Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if (poem.getCreatedBy().equals(principal.getName())) {
+            poemRepository.delete(poem);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
-     * Reject a poem.
-     *
-     * @param rejectDto the dto with the rejection data.
-     * @return OK if the poem is rejected.
-     */
-    public ResponseEntity<Void> reject(RejectDto rejectDto, Principal principal) {
-        LOGGER.debug("Rejecting poem: " + rejectDto.getId());
-        Poem poem = poemRepository.findById(rejectDto.getId()).orElseThrow(ItemNotFoundException::new);
-        poem.getConfirmation().setConfirmed(false);
-        poem.getConfirmation().setPendingRevision(true);
-        poemRepository.saveAndFlush(poem);
-
-        MessageDto messageDto = new MessageDto();
-        messageDto.setUserFrom("Administrator");
-        messageDto.setUserTo(poem.getCreatedBy());
-        messageDto.setSubject("One of your sonnets has been rejected.");
-        messageDto.setContent(rejectDto.getRejectMessage());
-        messageService.sendAdminMessage(messageDto);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * THIS IS A STOPPER, IT ALWAYS RETURNS NULL.
-     *
-     * @param principal the user doing the confirmation.
-     * @return an unconfirmed poem or nothing if there aren't any.
-     */
-    public Poem getPoemToConfirm(Principal principal) {
-        LOGGER.debug("Returning first unconfirmed poem not submitted by: " + principal.getName());
-
-        return null;
-    }
-
-    /**
-     * Get a poem by id.
-     *
      * @param id the id of the poem to get.
      * @return the poem or null if it isn't found.
      */
+    @Override
     public Poem getById(Long id) {
         LOGGER.debug("Getting poem with id: " + id);
         return poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
     /**
-     * Get a list of poems by a list of ids.
-     *
      * @param ids the ids of the poems to get.
      * @return a list of poems or null if the poems aren't found.
      */
+    @Override
     public List<Poem> getByIds(Long[] ids) {
         LOGGER.debug("Getting poems with ids: " + Arrays.toString(ids));
         List<Poem> poems = new ArrayList<>();
@@ -260,71 +156,84 @@ public class PoemService {
     }
 
     /**
-     * @return two random sonnets.
-     */
-//    public String getTwoRandomSonnets() {
-//        LOGGER.debug("Returning two random sonnets.");
-//        return poemRepository.getRandomPoem("SONNET");
-//    }
-
-    /**
      * @return all poems as a list.
      */
+    @Override
     public List<Poem> getAll() {
         return poemRepository.findAll();
     }
 
     /**
-     * @return a list of only the most basic details of all poems.
+     * @return a JSON array of only the most basic details of all poems in the db.
      */
-    public String getAllPoemsSimple() {
+    @Override
+    public String getAllSimple() {
         return poemRepository.getAllPoemsSimple().orElseThrow(StoredProcedureQueryException::new);
     }
 
     /**
-     * This gets all poems in a paged format. Is not currently used.
-     *
      * @param pageable the pageable object from the request.
      * @return a page of poems.
      */
+    @Override
     public Page<Poem> getAllPaged(Pageable pageable) {
         LOGGER.debug("Returning all poems paged.");
         return poemRepository.findAll(pageable);
     }
 
     /**
-     * Gets all poems by their form.
+     * @param principal the principal object from the request.
+     * @return a list of all poems by a user.
+     */
+    @Override
+    public List<Poem> getAllByUser(Principal principal) {
+        LOGGER.debug("Returning all sonnets added by user: " + principal.getName());
+        return poemRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
+    }
+
+    /**
+     * @param dto the new data for the poem.
+     * @return OK if the poem is modified; BAD_REQUEST if the poem / author doesn't exist.
+     */
+    @Override
+    public ResponseEntity<Void> modify(PoemDto dto) {
+        LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        Poem poem = createOrUpdateFromDto(
+                poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new), dto, author);
+        poemRepository.saveAndFlush(poem);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * @param dto       the new data for the poem.
+     * @param principal the user making the mods.
+     * @return OK if the poem is modified; BAD_REQUEST if the poem / author doesn't exist or the user making the
+     * request doesn't own the poem.
+     */
+    @Override
+    public ResponseEntity<Void> modifyUser(PoemDto dto, Principal principal) {
+        LOGGER.debug("Modifying poem (USER): " + dto.toString());
+        Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        if (poem.getConfirmation().isConfirmed()) {
+            return new ResponseEntity<>(HttpStatus.LOCKED);
+        }
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        assert principal.getName().equals(poem.getCreatedBy());
+        poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Gets all poems by their form (i.e. 'sonnet').
+     * *
      *
      * @param form the form to return.
      * @return a list of poems by form.
      */
     public List<Poem> getAllByForm(final String form) {
         LOGGER.debug("Returning all sonnets with form: " + form);
-        return poemRepository.findAllByForm(form);
-    }
-
-    /**
-     * Gets all poems by form in a paged format.
-     *
-     * @param form     the form to return.
-     * @param pageable the pageable object from the request.
-     * @return a page of poems by form.
-     */
-    public Page<Poem> getAllByFormPaged(final String form, Pageable pageable) {
-        LOGGER.debug("Returning all sonnets in category paged: " + form);
-        return poemRepository.findAllByForm(form, pageable);
-    }
-
-    /**
-     * Get all poems created_by a given user.
-     *
-     * @param principal the principal object from the request.
-     * @return a list of all poems by a user.
-     */
-    @Async
-    public CompletableFuture<List> getAllByUser(Principal principal) {
-        LOGGER.debug("Returning all sonnets added by user: " + principal.getName());
-        return CompletableFuture.completedFuture(poemRepository.findAllByCreatedBy(principal.getName()));
+        return poemRepository.findAllByForm(form).orElseThrow(ItemNotFoundException::new);
     }
 
     /**
@@ -339,30 +248,23 @@ public class PoemService {
     }
 
     /**
-     * Deletes a poem from the database.
+     * Gets all poems by form in a paged format.
      *
-     * @param id        the db id of the poem to delete.
-     * @param principal the principal of the user making the request.
-     * @return OK if successful.
+     * @param form     the form to return.
+     * @param pageable the pageable object from the request.
+     * @return a page of poems by form.
      */
-    public ResponseEntity<Void> deleteById(String id, Principal principal) {
-        LOGGER.debug("Deleting poem with id (USER): " + id);
-        Poem poem = poemRepository.findById(Long.parseLong(id)).orElseThrow(ItemNotFoundException::new);
-        if (poem.getCreatedBy().equals(principal.getName())) {
-            poemRepository.delete(poem);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public Page<Poem> getAllByFormPaged(final String form, Pageable pageable) {
+        LOGGER.debug("Returning all sonnets in category paged: " + form);
+        return poemRepository.findAllByForm(form, pageable).orElseThrow(ItemNotFoundException::new);
     }
 
     /**
-     * Checks if a similar poem already exists in the database.
-     *
      * @param dto the dto of the poem with all its details.
      */
     private void similarPoemExists(PoemDto dto) {
         SearchDto searchDto = new SearchDto();
-        Author author = authorRepository.findById(Long.parseLong(dto.getAuthorId()))
+        Author author = authorRepository.findById(dto.getAuthorId())
                 .orElseThrow(ItemNotFoundException::new);
         searchDto.setAuthor(author);
         searchDto.setTitle(dto.getTitle());

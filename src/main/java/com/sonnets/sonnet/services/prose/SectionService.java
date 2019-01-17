@@ -1,13 +1,9 @@
 package com.sonnets.sonnet.services.prose;
 
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
-import com.sonnets.sonnet.persistence.dtos.base.RejectDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
-import com.sonnets.sonnet.persistence.dtos.web.MessageDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.base.Annotation;
 import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.persistence.models.base.Confirmation;
 import com.sonnets.sonnet.persistence.models.prose.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.models.prose.Section;
@@ -15,22 +11,22 @@ import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
-import com.sonnets.sonnet.services.annotations.AnnotationsParseService;
+import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
-import com.sonnets.sonnet.services.tools.ToolsService;
-import com.sonnets.sonnet.services.web.MessageService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Josh Harkema
  */
 @Service
-public class SectionService {
+public class SectionService implements AbstractItemService<Section, SectionDto> {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
     private static final ParseSourceDetails<Section, SectionDto> parseSourceDetails = new ParseSourceDetails<>();
     private final SectionRepositoryBase sectionRepository;
@@ -48,22 +44,13 @@ public class SectionService {
     private final AuthorRepository authorRepository;
     private final BookCharacterRepository bookCharacterRepository;
 
-    private final MessageService messageService;
-    private final ToolsService toolsService;
-    private final AnnotationsParseService annotationsParseService;
-
     @Autowired
     public SectionService(SectionRepositoryBase sectionRepository, BookRepository bookRepository,
-                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository,
-                          MessageService messageService, ToolsService toolsService,
-                          AnnotationsParseService annotationsParseService) {
+                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository) {
         this.sectionRepository = sectionRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.bookCharacterRepository = bookCharacterRepository;
-        this.messageService = messageService;
-        this.toolsService = toolsService;
-        this.annotationsParseService = annotationsParseService;
     }
 
     /**
@@ -75,92 +62,23 @@ public class SectionService {
      * @param dto     the dto with the new data.
      * @return the Section with the new data copied.
      */
-    private Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
+    private static Section createOrCopySection(Section section, Author author, Book book, SectionDto dto) {
         section.setCategory(TypeConstants.SECTION);
         section.setAuthor(author);
         section.setTitle(dto.getTitle());
         section.setDescription(dto.getDescription());
         section = parseSourceDetails.parse(section, dto);
         section.setPeriod(book.getPeriod());
-        section.setText(parseText(dto.getText()));
+        section.setText(dto.getText());
         section.setParentId(dto.getBookId());
-        if (section.getAnnotation() == null) { // null check to prevent overwriting a section's annotation.
-            Annotation annotation = new Annotation();
-            CompletableFuture<String> taggedText = toolsService.tagTextSimple(dto.getText());
-            taggedText.thenAccept(annotation::setAnnotationBody);
-            section.setAnnotation(annotation);
-        }
         return section;
     }
 
-    private static String parseText(String text) {
-        StringBuilder sb = new StringBuilder();
-        for (String line : text.split("\n")) {
-            if (!line.equals("")) {
-                sb.append(line.trim());
-                sb.append('\n');
-            }
-        }
-        return sb.toString();
-    }
-
     /**
-     * Get a section.
-     *
-     * @param id the db id of the section to get.
-     * @return the section.
-     */
-    public Section get(Long id) {
-        LOGGER.debug("Getting section id: " + id);
-        return sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-    }
-
-    /**
-     * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
-     * It takes 20 seconds to return all the data. This way takes 200ms.
-     */
-    public List<Section> getAll() {
-        return sectionRepository.findAll();
-    }
-
-    public String getAllSimple() {
-        return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
-    }
-
-    /**
-     * Get all sections from a book.
-     *
-     * @param bookId the id of the book to get the sections from.
-     * @return a list of sections.
-     */
-    public List<Section> getAllFromBook(String bookId) {
-        LOGGER.debug("Getting all sections of: " + bookId);
-        Book book = bookRepository.findById(Long.parseLong(bookId)).orElseThrow(ItemNotFoundException::new);
-        return book.getSections();
-    }
-
-    public List<Section> getAllByAuthorLastName(String lastName) {
-        LOGGER.debug("Returning all sections by author: " + lastName);
-        return sectionRepository.findAllByAuthor_LastName(lastName).orElseThrow(ItemNotFoundException::new);
-    }
-
-    /**
-     * Returns the section title and id as a JSON string.
-     *
-     * @param bookId the book to get the sections of.
-     * @return a JSON string of all the sections.
-     */
-    public String getAllFromBookSimple(String bookId) {
-        LOGGER.debug(String.format("Returning all sections from book id '%s' as JSON.", bookId));
-        return sectionRepository.getBookSectionsSimple(Long.parseLong(bookId)).orElseThrow(ItemNotFoundException::new);
-    }
-
-    /**
-     * Add a section to the db.
-     *
      * @param dto the data for the new section.
      * @return OK if the section is added.
      */
+    @Override
     public ResponseEntity<Void> add(SectionDto dto) {
         LOGGER.debug("Adding new section: " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
@@ -173,11 +91,92 @@ public class SectionService {
     }
 
     /**
-     * Modify a section. No user-checking.
+     * @param id the id of the section to delete.
+     * @return OK if the book is deleted.
+     */
+    @Override
+    public ResponseEntity<Void> delete(Long id) {
+        LOGGER.debug("Deleting other with id (ADMIN): " + id);
+        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemAlreadyConfirmedException::new);
+        book.getSections().remove(section);
+        CompletableFuture.runAsync(() -> bookRepository.save(book));
+        sectionRepository.delete(section);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * @param id        of the section to delete.
+     * @param principal of the user making the request.
+     * @return OK if accepted UNAUTHORIZED if user does not own section.
+     */
+    @Override
+    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
+        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if (section.getCreatedBy().equals(principal.getName())) {
+            sectionRepository.delete(section);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Get a section.
      *
+     * @param id the db id of the section to get.
+     * @return the section.
+     */
+    @Transactional(readOnly = true)
+    public Section getById(Long id) {
+        LOGGER.debug("Getting section id: " + id);
+        return sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+    }
+
+    /**
+     * @param ids a list of the db ids for the sections.
+     * @return a list of results.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Section> getByIds(Long[] ids) {
+        return null;
+    }
+
+    /**
+     * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
+     * It takes 20 seconds to return all the data. This way takes 200ms.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Section> getAll() {
+        return sectionRepository.findAll();
+    }
+
+    /**
+     * @return a JSON array of only the most basic details for all sections in the db.
+     */
+    @Override
+    public String getAllSimple() {
+        return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Section> getAllPaged(Pageable pageable) {
+        return sectionRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Section> getAllByUser(Principal principal) {
+        return sectionRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
+    }
+
+    /**
      * @param dto the new information.
      * @return OK if the section is modified.
      */
+    @Override
     public ResponseEntity<Void> modify(SectionDto dto) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -188,13 +187,12 @@ public class SectionService {
     }
 
     /**
-     * Modify a section with user checking.
-     *
      * @param dto       the new information.
      * @param principal the user making the request.
      * @return OK if the section is modified.
      */
-    public ResponseEntity<Void> modify(SectionDto dto, Principal principal) {
+    @Override
+    public ResponseEntity<Void> modifyUser(SectionDto dto, Principal principal) {
         LOGGER.debug("Modifying section (USER): " + dto.toString());
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         if (section.getConfirmation().isConfirmed()) {
@@ -212,66 +210,26 @@ public class SectionService {
     }
 
     /**
-     * Delete a section from the database.
+     * :todo: this is wrong.
      *
-     * @param id the id of the book to delete.
-     * @return OK if the book is deleted.
+     * @param bookId the id of the book to get the sections from.
+     * @return a list of sections.
      */
-    public ResponseEntity<Void> deleteById(Long id) {
-        LOGGER.debug("Deleting other with id (ADMIN): " + id);
-        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemAlreadyConfirmedException::new);
-        book.getSections().remove(section);
-        CompletableFuture.runAsync(() -> bookRepository.save(book));
-        sectionRepository.delete(section);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @Transactional
+    public List<Section> getAllFromBook(Long bookId) {
+        LOGGER.debug("Getting all sections of: " + bookId);
+        Book book = bookRepository.findById(bookId).orElseThrow(ItemNotFoundException::new);
+        return book.getSections();
     }
 
     /**
-     * Confirm a section.
-     *
-     * @param id        the id of the section to confirm.
-     * @param principal the user doing the confirming.
-     * @return 200 if the book is confirmed.
+     * @param lastName an author's last name.
+     * @return a list of results or null.
      */
-    public ResponseEntity<Void> confirm(Long id, Principal principal) {
-        LOGGER.debug(principal.getName() + " is confirming section: " + id);
-        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        Confirmation confirmation = section.getConfirmation();
-        confirmation.setConfirmedBy(principal.getName());
-        confirmation.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
-        confirmation.setConfirmed(true);
-        confirmation.setPendingRevision(false);
-        section.setConfirmation(confirmation);
-        sectionRepository.saveAndFlush(section);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Reject a section.
-     *
-     * @param rejectDto a valid rejection dto.
-     * @return OK if the section is rejected.
-     */
-    public ResponseEntity<Void> reject(RejectDto rejectDto) {
-        LOGGER.debug("Rejecting section: " + rejectDto.toString());
-        Section section = sectionRepository.findById(rejectDto.getId()).orElseThrow(ItemNotFoundException::new);
-        Confirmation confirmation = section.getConfirmation();
-        confirmation.setConfirmedBy(null);
-        confirmation.setConfirmedAt(null);
-        confirmation.setConfirmed(false);
-        confirmation.setPendingRevision(true);
-        section.setConfirmation(confirmation);
-        sectionRepository.saveAndFlush(section);
-
-        MessageDto messageDto = new MessageDto();
-        messageDto.setUserFrom("Administrator");
-        messageDto.setUserTo(section.getCreatedBy());
-        messageDto.setSubject("One of your Sections has been rejected.");
-        messageDto.setContent(rejectDto.getRejectMessage());
-        messageService.sendAdminMessage(messageDto);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    @Transactional(readOnly = true)
+    public List<Section> getAllByAuthorLastName(String lastName) {
+        LOGGER.debug("Returning all sections by author: " + lastName);
+        return sectionRepository.findAllByAuthor_LastName(lastName).orElseThrow(ItemNotFoundException::new);
     }
 
     public Section setNarrator(AnnotationDto dto) {
@@ -296,10 +254,12 @@ public class SectionService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public String getAnnotations(final Long id) {
-        LOGGER.debug("Getting annotations for section: " + id);
-        return annotationsParseService.parseSectionAnnotationOut(
-                sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new)
-        ).toString();
+    /**
+     * @param bookId the book to get the sections from.
+     * @return a JSON string of all the sections.
+     */
+    public String getAllFromBookSimple(Long bookId) {
+        LOGGER.debug(String.format("Returning all sections from book id '%s' as JSON.", bookId));
+        return sectionRepository.getBookSectionsSimple(bookId).orElseThrow(ItemNotFoundException::new);
     }
 }

@@ -16,11 +16,11 @@ import java.util.Optional;
 @Repository
 public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositoryStoredProcedures {
 
-    List<Poem> findAllByForm(final String form);
+    Optional<List<Poem>> findAllByForm(final String form);
 
-    Page<Poem> findAllByForm(final String form, final Pageable pageable);
+    Optional<Page<Poem>> findAllByForm(final String form, final Pageable pageable);
 
-    List<Poem> findAllByCreatedBy(final String createdBy);
+    Optional<List<Poem>> findAllByCreatedBy(final String createdBy);
 
     Optional<List<Poem>> findAllByAuthor_LastName(final String lastName);
 }

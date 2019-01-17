@@ -9,8 +9,7 @@ import javax.validation.constraints.NotEmpty;
  */
 public class PoemDto extends SourceDetailsDto {
     private Long id;
-    @NotEmpty
-    private String authorId;
+    private @NotEmpty Long authorId;
     private String title;
     @NotEmpty
     private String period;
@@ -30,11 +29,11 @@ public class PoemDto extends SourceDetailsDto {
         this.id = id;
     }
 
-    public String getAuthorId() {
+    public @NotEmpty Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(String authorId) {
+    public void setAuthorId(@NotEmpty Long authorId) {
         this.authorId = authorId;
     }
 

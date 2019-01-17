@@ -23,7 +23,7 @@ object PoemGenerator {
 
   def generateDto(dto: PoemDto): PoemDto = {
     val a: Author = AuthorGenerator.generateWithId(RandomDataGenerators.randomInteger(100))
-    dto.setAuthorId(a.getId.toString)
+    dto.setAuthorId(a.getId)
     dto.setTitle(RandomDataGenerators.randomString())
     //    dto.setPublicationYear(RandomDataGenerators.randomInteger(2000))
     //    dto.setPublicationStmt(RandomDataGenerators.randomString())

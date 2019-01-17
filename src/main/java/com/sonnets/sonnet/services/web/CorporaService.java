@@ -108,7 +108,7 @@ public class CorporaService {
     /**
      * Modify an existing corpora.
      *
-     * @param corporaId   the id of the corpora to modify.
+     * @param corporaId   the id of the corpora to modifyUser.
      * @param name        the new/old name of the corpora.
      * @param description the new/old description of the corpora.
      * @return OK if the corpora is modified.
