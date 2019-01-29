@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.controllers.web;
 
 import com.sonnets.sonnet.persistence.dtos.user.*;
+import com.sonnets.sonnet.persistence.dtos.web.UserDetailsDto;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,17 @@ public class UserController {
     }
 
     /**
-     * Handles PUT requests to reset a user's password.
-     *
+     * @param principal of the user making the request.
+     * @return the user's basic details (username, email, admin rights, etc.)
+     */
+    @CrossOrigin(origins = ALLOWED_ORIGIN)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/user/user_details", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDetailsDto getUserDetails(Principal principal) {
+        return userDetailsService.getUserDetails(principal);
+    }
+
+    /**
      * @param resetDto a valid dto with the new password.
      * @return HttpStatus.ACCEPTED on success; HttpStatus.NOT_ACCEPTABLE on failure.
      */
@@ -53,8 +63,6 @@ public class UserController {
     }
 
     /**
-     * Handles put requests to update a user's admin status.
-     *
      * @param modifyUserDto the dto valid dto with the new user data.
      * @return HttpStatus.NOT_ACCEPTABLE if username does not exist; HttpStatus.ACCEPTED if successful.
      */

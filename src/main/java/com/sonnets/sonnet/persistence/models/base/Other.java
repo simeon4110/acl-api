@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.services.search.SearchConstants;
@@ -32,7 +31,7 @@ public class Other extends Item implements Serializable {
     @Embedded
     private Confirmation confirmation;
     @Field(name = SearchConstants.OTHER_TEXT, store = Store.YES, termVector = TermVector.YES)
-    @Column(columnDefinition = StoredProcedures.BIG_STRING)
+    @Column(columnDefinition = "TEXT")
     private String text;
     @Column
     private Annotation annotation;

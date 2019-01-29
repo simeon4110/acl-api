@@ -87,14 +87,14 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Poem> getAll() {
-        return poemService.getAll();
+    public List<Poem> getAll(Principal principal) {
+        return poemService.getAll(principal);
     }
 
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return poemService.getAllSimple();
+    public String getAllSimple(Principal principal) {
+        return poemService.getAllSimple(principal);
     }
 
     /**
@@ -102,8 +102,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<Poem> getAllPaged(Pageable pageable) {
-        return poemService.getAllPaged(pageable);
+    public Page<Poem> getAllPaged(Principal principal, Pageable pageable) {
+        return poemService.getAllPaged(principal, pageable);
     }
 
     /**

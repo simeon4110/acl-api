@@ -17,6 +17,7 @@ class ParseSourceDetails[T <: Item, D <: SourceDetailsDto] {
     obj.setPublisher(dto.getPublisher)
     obj.setDateOfPublication(convertDate(dto.getDateOfPublication))
     obj.setShortTitle(dto.getShortTitle)
+    obj.setSourceTitle(dto.getSourceTitle)
     obj.setUrl(dto.getUrl)
     obj.setDateOfAccess(convertDate(dto.getDateOfAccess))
     obj.setJournalName(dto.getJournalName)
@@ -32,7 +33,7 @@ class ParseSourceDetails[T <: Item, D <: SourceDetailsDto] {
   }
 
   def convertDate(dateStr: String): java.util.Date = {
-    if (dateStr == null) {
+    if (dateStr == null || dateStr == "") { // Prevent null strings from causing parse error.
       return null
     }
 

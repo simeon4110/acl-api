@@ -1,0 +1,3 @@
+artifacts:
+  reports:
+    codequality: code_quality.json

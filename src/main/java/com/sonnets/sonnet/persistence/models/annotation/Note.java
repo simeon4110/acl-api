@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.models.annotation;
 
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import org.hibernate.search.annotations.Indexed;
 
@@ -25,7 +24,7 @@ public class Note extends AnnotationBase {
     private String itemType;
     @Column
     private Long itemId;
-    @Column(columnDefinition = StoredProcedures.BIG_STRING)
+    @Column(columnDefinition = "TEXT")
     private String body;
 
     public Note() {

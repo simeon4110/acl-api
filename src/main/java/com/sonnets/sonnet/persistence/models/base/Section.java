@@ -55,7 +55,7 @@ public class Section extends Item implements Serializable {
     private Confirmation confirmation;
     @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
-    @Column(columnDefinition = StoredProcedures.BIG_STRING)
+    @Column(columnDefinition = "TEXT")
     private String text;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")

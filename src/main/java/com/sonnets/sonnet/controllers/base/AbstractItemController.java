@@ -24,11 +24,11 @@ public interface AbstractItemController<T, S> {
 
     List<T> getByIds(Long[] ids);
 
-    List<T> getAll();
+    List<T> getAll(Principal principal);
 
-    String getAllSimple();
+    String getAllSimple(Principal principal);
 
-    Page<T> getAllPaged(Pageable pageable);
+    Page<T> getAllPaged(Principal principal, Pageable pageable);
 
     List<T> getAllByUser(Principal principal);
 

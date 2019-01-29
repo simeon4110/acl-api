@@ -18,10 +18,14 @@ public abstract class StoredProcedures {
     public static final String GET_ALL_ITEMS = "getAllItems";
     public static final String GET_ALL_ITEMS_PROCEDURE = "get_all_items";
     public static final String GET_ALL_BOOKS_SIMPLE_PROCEDURE = "get_all_books_simple";
+    public static final String GET_ALL_BOOKS_SIMPLE_PDO = "getAllBooksSimplePDO";
+    public static final String GET_ALL_BOOKS_SIMPLE_PDO_PROCEDURE = "get_all_books_simple_PDO";
     //
     // # Poem
     public static final String GET_ALL_POEMS_SIMPLE = "getAllPoemsSimple";
     public static final String GET_ALL_POEMS_SIMPLE_PROCEDURE = "get_all_poems_simple";
+    public static final String GET_ALL_POEMS_SIMPLE_PDO = "getAllPoemsSimplePDO";
+    public static final String GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE = "get_all_poems_simple_PDO";
     //
     // # Section
     public static final String GET_ALL_SECTIONS_SIMPLE = "getAllSectionsSimple";
@@ -53,9 +57,6 @@ public abstract class StoredProcedures {
     // # Book Procedure Params
     public static final String BOOK_ID_PARAM = "bookId";
     public static final String USER_NAME_PARAM = "userName";
-    //
-    // # Column Definitions
-    public static final String BIG_STRING = "LONGTEXT";
 
     private StoredProcedures() {
         // To block implicit public constructor.

@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.EmailChangeDto;
 import com.sonnets.sonnet.persistence.dtos.user.GuestUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
+import com.sonnets.sonnet.persistence.dtos.web.UserDetailsDto;
 import com.sonnets.sonnet.persistence.models.web.Privilege;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
@@ -99,6 +100,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public UserDetailsDto getUserDetails(Principal principal) {
+        return new UserDetailsDto(userRepository.findByUsername(principal.getName()));
     }
 
     /**

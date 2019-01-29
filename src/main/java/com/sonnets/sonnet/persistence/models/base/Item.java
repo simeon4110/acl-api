@@ -53,6 +53,9 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Expose
     private String title;
     @Column
+    @Expose
+    private String sourceTitle;
+    @Column
     private String description;
     @Field(name = SearchConstants.PERIOD, store = Store.YES, analyze = Analyze.NO)
     @Column
@@ -150,6 +153,14 @@ public abstract class Item extends Auditable<String> implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getSourceTitle() {
+        return sourceTitle;
+    }
+
+    public void setSourceTitle(String sourceTitle) {
+        this.sourceTitle = sourceTitle;
     }
 
     public String getDescription() {
@@ -308,6 +319,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 Objects.equals(category, item.category) &&
                 Objects.equals(author, item.author) &&
                 Objects.equals(title, item.title) &&
+                Objects.equals(sourceTitle, item.sourceTitle) &&
                 Objects.equals(description, item.description) &&
                 Objects.equals(period, item.period) &&
                 Objects.equals(edition, item.edition) &&
@@ -328,12 +340,11 @@ public abstract class Item extends Auditable<String> implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, category, author, title, description, period, edition,
+        return Objects.hash(super.hashCode(), id, category, author, title, sourceTitle, description, period, edition,
                 placeOfPublication, publisher, dateOfPublication, shortTitle, url, dateOfAccess, journalName, DOI,
                 journalVolume, journalIssue, journalPageRange, journalAbbr, language, isPublicDomain, pageRange);
     }
 
-    @SuppressWarnings("Duplicates")
     @Override
     public String toString() {
         return "Item{" +
@@ -341,6 +352,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
                 ", category='" + category + '\'' +
                 ", author=" + author +
                 ", title='" + title + '\'' +
+                ", sourceTitle='" + sourceTitle + '\'' +
                 ", description='" + description + '\'' +
                 ", period='" + period + '\'' +
                 ", edition='" + edition + '\'' +

@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.models.annotation;
 
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
 import org.hibernate.search.annotations.DocumentId;
 
@@ -21,7 +20,7 @@ public class Annotation extends Auditable<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
     private Long id;
-    @Column(columnDefinition = StoredProcedures.BIG_STRING)
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String annotationBody;
 
     public Annotation() {

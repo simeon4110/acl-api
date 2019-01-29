@@ -29,4 +29,11 @@ public class BookRepositoryImpl implements BookRepositoryStoredProcedures {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_BOOKS_SIMPLE);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
+
+    @Override
+    @Transactional
+    public Optional<String> getAllBooksSimplePDO() {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_BOOKS_SIMPLE_PDO);
+        return Optional.ofNullable(QueryHandler.queryToString(query, true));
+    }
 }

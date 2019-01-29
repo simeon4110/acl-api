@@ -18,6 +18,8 @@ import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -28,7 +30,6 @@ import tools.ParseSourceDetails;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Deals with everything related to sections.
@@ -43,14 +44,17 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final BookCharacterRepository bookCharacterRepository;
+    private final TaskExecutor executor;
 
     @Autowired
     public SectionService(SectionRepositoryBase sectionRepository, BookRepository bookRepository,
-                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository) {
+                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository,
+                          @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
         this.sectionRepository = sectionRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.bookCharacterRepository = bookCharacterRepository;
+        this.executor = executor;
     }
 
     /**
@@ -75,6 +79,18 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     }
 
     /**
+     * @param book    the book to add the section to.
+     * @param section the section to add.
+     * @return the book with the section added.
+     */
+    private static Book addBookSection(Book book, Section section) {
+        List<Section> sections = book.getSections();
+        sections.add(section);
+        book.setSections(sections);
+        return book;
+    }
+
+    /**
      * @param dto the data for the new section.
      * @return OK if the section is added.
      */
@@ -83,9 +99,11 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         Section section = createOrCopySection(new Section(), author, book, dto);
-        sectionRepository.saveAndFlush(section);
-        book.getSections().add(section);
-        CompletableFuture.runAsync(() -> bookRepository.save(book));
+        executor.execute(() -> {
+            var out = sectionRepository.save(section);
+            bookRepository.save(addBookSection(book, out));
+        });
+        bookRepository.save(addBookSection(book, section));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -96,25 +114,9 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting other with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemAlreadyConfirmedException::new);
-        book.getSections().remove(section);
-        CompletableFuture.runAsync(() -> bookRepository.save(book));
-        sectionRepository.delete(section);
+        removeBookSection(section);
+        executor.execute(() -> sectionRepository.delete(section));
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * @param id        of the section to delete.
-     * @param principal of the user making the request.
-     * @return OK if accepted UNAUTHORIZED if user does not own section.
-     */
-    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
-        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        if (section.getCreatedBy().equals(principal.getName())) {
-            sectionRepository.delete(section);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -139,29 +141,44 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     }
 
     /**
+     * @param id        of the section to delete.
+     * @param principal of the user making the request.
+     * @return OK if accepted UNAUTHORIZED if user does not own section.
+     */
+    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
+        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if (section.getCreatedBy().equals(principal.getName())) {
+            removeBookSection(section);
+            executor.execute(() -> sectionRepository.delete(section));
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
      * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
      * It takes 20 seconds to return all the data. This way takes 200ms.
      */
     @Transactional(readOnly = true)
-    public List<Section> getAll() {
+    public List<Section> getAll(Principal principal) {
         return sectionRepository.findAll();
     }
 
     /**
      * @return a JSON array of only the most basic details for all sections in the db.
      */
-    public String getAllSimple() {
+    public String getAllSimple(Principal principal) {
         return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<Section> getAllPaged(Pageable pageable) {
-        return sectionRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
     public List<Section> getAllByUser(Principal principal) {
         return sectionRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Section> getAllPaged(Principal principal, Pageable pageable) {
+        return sectionRepository.findAll(pageable);
     }
 
     /**
@@ -173,30 +190,9 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
-        sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
+        executor.execute(() -> sectionRepository.save(createOrCopySection(section, author, book, dto)));
+        executor.execute(() -> bookRepository.save(book));
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * @param dto       the new information.
-     * @param principal the user making the request.
-     * @return OK if the section is modified.
-     */
-    public ResponseEntity<Void> modifyUser(SectionDto dto, Principal principal) {
-        LOGGER.debug("Modifying section (USER): " + dto.toString());
-        Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        if (section.getConfirmation().isConfirmed()) {
-            throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
-        }
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
-
-        // Ensure the user making the request is also the owner of the section.
-        if (section.getCreatedBy().equals(principal.getName())) {
-            sectionRepository.saveAndFlush(createOrCopySection(section, author, book, dto));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -237,11 +233,26 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return sectionRepository.save(section);
     }
 
-    public ResponseEntity<Void> deleteNarrator(Long sectionId) {
-        Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
-        section.setNarrator(null);
-        sectionRepository.saveAndFlush(section);
-        return new ResponseEntity<>(HttpStatus.OK);
+    /**
+     * @param dto       the new information.
+     * @param principal the user making the request.
+     * @return OK if the section is modified.
+     */
+    public ResponseEntity<Void> modifyUser(SectionDto dto, Principal principal) {
+        LOGGER.debug("Modifying section (USER): " + dto.toString());
+        Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        if (section.getConfirmation().isConfirmed()) {
+            throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
+        }
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
+
+        // Ensure the user making the request is also the owner of the section.
+        if (section.getCreatedBy().equals(principal.getName())) {
+            executor.execute(() -> sectionRepository.save(createOrCopySection(section, author, book, dto)));
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -251,5 +262,25 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     public String getAllFromBookSimple(Long bookId) {
         LOGGER.debug(String.format("Returning all sections from book id '%s' as JSON.", bookId));
         return sectionRepository.getBookSectionsSimple(bookId).orElseThrow(ItemNotFoundException::new);
+    }
+
+    public ResponseEntity<Void> deleteNarrator(Long sectionId) {
+        Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
+        section.setNarrator(null);
+        executor.execute(() -> sectionRepository.save(section));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Removes a section from a book AND saves the book.
+     *
+     * @param section the section to remove.
+     */
+    private void removeBookSection(Section section) {
+        Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemNotFoundException::new);
+        List<Section> sections = book.getSections();
+        sections.remove(section);
+        book.setSections(sections);
+        executor.execute(() -> bookRepository.save(book));
     }
 }

@@ -11,6 +11,7 @@ public abstract class SourceDetailsDto {
     private String publisher;
     private String dateOfPublication;
     private String shortTitle;
+    private String sourceTitle;
     private String url;
     private String dateOfAccess;
     private String journalName;
@@ -69,6 +70,14 @@ public abstract class SourceDetailsDto {
 
     public void setShortTitle(String shortTitle) {
         this.shortTitle = shortTitle;
+    }
+
+    public String getSourceTitle() {
+        return sourceTitle;
+    }
+
+    public void setSourceTitle(String sourceTitle) {
+        this.sourceTitle = sourceTitle;
     }
 
     public String getUrl() {
@@ -167,10 +176,11 @@ public abstract class SourceDetailsDto {
                 ", edition='" + edition + '\'' +
                 ", placeOfPublication='" + placeOfPublication + '\'' +
                 ", publisher='" + publisher + '\'' +
-                ", dateOfPublication=" + dateOfPublication +
+                ", dateOfPublication='" + dateOfPublication + '\'' +
                 ", shortTitle='" + shortTitle + '\'' +
+                ", sourceTitle='" + sourceTitle + '\'' +
                 ", url='" + url + '\'' +
-                ", dateOfAccess=" + dateOfAccess +
+                ", dateOfAccess='" + dateOfAccess + '\'' +
                 ", journalName='" + journalName + '\'' +
                 ", DOI='" + DOI + '\'' +
                 ", journalVolume=" + journalVolume +

@@ -119,7 +119,7 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @param ids the db ids of the books to get.
      * @return a list of books.
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Book> getByIds(Long[] ids) {
         LOGGER.debug("Getting books by ids: " + Arrays.toString(ids));
         List<Book> output = new ArrayList<>();
@@ -133,17 +133,25 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     /**
      * @return all books in the db.
      */
-    @Transactional(readOnly = true)
-    public List<Book> getAll() {
+    @Transactional
+    public List<Book> getAll(Principal principal) {
         LOGGER.debug("Returning all books.");
-        return bookRepository.findAll();
+        if (principal != null) {
+            return bookRepository.findAll();
+        } else {
+            return bookRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        }
     }
 
     /**
      * @return a JSON array of only the most basic details of every book in the db.
      */
-    public String getAllSimple() {
-        return bookRepository.getAllBooksSimple().orElseThrow(StoredProcedureQueryException::new);
+    public String getAllSimple(Principal principal) {
+        if (principal != null) {
+            return bookRepository.getAllBooksSimple().orElseThrow(StoredProcedureQueryException::new);
+        } else {
+            return bookRepository.getAllBooksSimplePDO().orElseThrow(StoredProcedureQueryException::new);
+        }
     }
 
     /**
@@ -151,8 +159,13 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      * @return a page of all books in the database.
      */
     @Transactional(readOnly = true)
-    public Page<Book> getAllPaged(Pageable pageable) {
-        return bookRepository.findAll(pageable);
+    public Page<Book> getAllPaged(Principal principal, Pageable pageable) {
+        if (principal != null) {
+            return bookRepository.findAll(pageable);
+        } else {
+            return bookRepository.findAllByIsPublicDomain(true, pageable)
+                    .orElseThrow(ItemNotFoundException::new);
+        }
     }
 
     /**

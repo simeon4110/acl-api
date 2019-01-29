@@ -3,13 +3,14 @@ package com.sonnets.sonnet.persistence.dtos.prose;
 import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Josh Harkema
  */
 public class BookDto extends SourceDetailsDto {
     private Long id;
-    @NotEmpty
+    @NotNull
     private Long authorId;
     @NotEmpty
     private String title;

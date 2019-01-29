@@ -90,8 +90,8 @@ public class SectionController implements AbstractItemController<Section, Sectio
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Section> getAll() {
-        return sectionService.getAll();
+    public List<Section> getAll(Principal principal) {
+        return sectionService.getAll(principal);
     }
 
     /**
@@ -99,14 +99,14 @@ public class SectionController implements AbstractItemController<Section, Sectio
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return sectionService.getAllSimple();
+    public String getAllSimple(Principal principal) {
+        return sectionService.getAllSimple(principal);
     }
 
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<Section> getAllPaged(Pageable pageable) {
-        return sectionService.getAllPaged(pageable);
+    public Page<Section> getAllPaged(Principal principal, Pageable pageable) {
+        return sectionService.getAllPaged(principal, pageable);
     }
 
     @CrossOrigin(origins = "${allowed-origin}")

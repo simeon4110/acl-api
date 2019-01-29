@@ -89,8 +89,8 @@ public class BookController implements AbstractItemController<Book, BookDto> {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Book> getAll() {
-        return bookService.getAll();
+    public List<Book> getAll(Principal principal) {
+        return bookService.getAll(principal);
     }
 
     /**
@@ -98,8 +98,8 @@ public class BookController implements AbstractItemController<Book, BookDto> {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return bookService.getAllSimple();
+    public String getAllSimple(Principal principal) {
+        return bookService.getAllSimple(principal);
     }
 
     /**
@@ -108,8 +108,8 @@ public class BookController implements AbstractItemController<Book, BookDto> {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<Book> getAllPaged(Pageable pageable) {
-        return bookService.getAllPaged(pageable);
+    public Page<Book> getAllPaged(Principal principal, Pageable pageable) {
+        return bookService.getAllPaged(principal, pageable);
     }
 
     /**

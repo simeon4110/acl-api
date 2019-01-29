@@ -165,27 +165,41 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
      * @return all poems as a list.
      */
     @Transactional(readOnly = true)
-    public List<Poem> getAll() {
+    public List<Poem> getAll(final Principal principal) {
         LOGGER.debug("Returning all poems.");
-        return poemRepository.findAll();
+        if (principal != null) {
+            return poemRepository.findAll();
+        } else {
+            return poemRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        }
     }
 
     /**
      * @return a JSON array of only the most basic details of all poems in the db.
      */
-    public String getAllSimple() {
+    @Transactional
+    public String getAllSimple(final Principal principal) {
         LOGGER.debug("Returning all poems as JSON.");
-        return poemRepository.getAllPoemsSimple().orElseThrow(StoredProcedureQueryException::new);
+        if (principal != null) {
+            return poemRepository.getAllPoemsSimple().orElseThrow(StoredProcedureQueryException::new);
+        } else {
+            return poemRepository.getAllPoemsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
+        }
     }
 
     /**
      * @param pageable the pageable object from the request.
      * @return a page of poems.
      */
-    @Transactional(readOnly = true)
-    public Page<Poem> getAllPaged(Pageable pageable) {
+    @Transactional
+    public Page<Poem> getAllPaged(final Principal principal, Pageable pageable) {
         LOGGER.debug("Returning all poems paged.");
-        return poemRepository.findAll(pageable);
+        if (principal != null) {
+            return poemRepository.findAll(pageable);
+        } else {
+            return poemRepository.findAllByIsPublicDomain(true, pageable)
+                    .orElseThrow(ItemNotFoundException::new);
+        }
     }
 
     /**
