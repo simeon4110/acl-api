@@ -14,5 +14,4 @@ check_code:
       --volume /var/run/docker.sock:/var/run/docker.sock
       "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
   artifacts:
-    reports:
-      codequality: gl-code-quality-report.json
+    paths: [gl-code-quality-report.json]
