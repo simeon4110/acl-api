@@ -1,5 +1,6 @@
+image: docker:stable
+
 code_quality:
-  image: alpine:3
   variables:
     DOCKER_DRIVER: overlay2
   allow_failure: true
