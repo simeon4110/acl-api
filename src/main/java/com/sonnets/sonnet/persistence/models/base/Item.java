@@ -52,6 +52,8 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     @Expose
     private String title;
+    @Field(name = SearchConstants.SOURCE_TITLE, store = Store.YES, analyze = Analyze.YES)
+    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column
     @Expose
     private String sourceTitle;

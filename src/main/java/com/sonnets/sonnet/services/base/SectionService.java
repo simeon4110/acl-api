@@ -145,6 +145,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param principal of the user making the request.
      * @return OK if accepted UNAUTHORIZED if user does not own section.
      */
+    @Transactional
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (section.getCreatedBy().equals(principal.getName())) {
@@ -159,26 +160,40 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
      * It takes 20 seconds to return all the data. This way takes 200ms.
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Section> getAll(Principal principal) {
-        return sectionRepository.findAll();
+        if (principal != null) {
+            return sectionRepository.findAll();
+        } else {
+            return sectionRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        }
     }
 
     /**
      * @return a JSON array of only the most basic details for all sections in the db.
      */
+    @Transactional
     public String getAllSimple(Principal principal) {
-        return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
+        if (principal != null) {
+            return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
+        } else {
+            return sectionRepository.getAllSectionsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
+        }
+    }
+
+    @Transactional
+    public Page<Section> getAllPaged(Principal principal, Pageable pageable) {
+        if (principal != null) {
+            return sectionRepository.findAll(pageable);
+        } else {
+            return sectionRepository.findAllByIsPublicDomain(true, pageable)
+                    .orElseThrow(ItemNotFoundException::new);
+        }
     }
 
     @Transactional(readOnly = true)
     public List<Section> getAllByUser(Principal principal) {
         return sectionRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<Section> getAllPaged(Principal principal, Pageable pageable) {
-        return sectionRepository.findAll(pageable);
     }
 
     /**

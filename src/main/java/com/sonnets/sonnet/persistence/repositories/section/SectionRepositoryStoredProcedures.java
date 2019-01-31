@@ -11,4 +11,6 @@ public interface SectionRepositoryStoredProcedures {
     Optional<String> getBookSectionsSimple(final Long bookId);
 
     Optional<String> getAllSectionsSimple();
+
+    Optional<String> getAllSectionsSimplePDO();
 }

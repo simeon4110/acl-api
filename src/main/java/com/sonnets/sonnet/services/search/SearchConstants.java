@@ -3,6 +3,7 @@ package com.sonnets.sonnet.services.search;
 /**
  * Stores all search related content (i.e. field names.)
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class SearchConstants {
     private SearchConstants() {
         // Private to block default constructor.
@@ -46,6 +47,7 @@ public abstract class SearchConstants {
     public static final String NARRATOR = "narrator";
     public static final String OTHER_SUB_TYPE = "other_sub_type";
     public static final String OTHER_TEXT = "other_text";
+    public static final String SOURCE_TITLE = "source_title";
 
     // Analyzer Names
     public static final String TEXT_ANALYZER = "textAnalyzer";
