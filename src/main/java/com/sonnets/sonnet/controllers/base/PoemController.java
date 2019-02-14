@@ -32,9 +32,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
         this.poemService = poemService;
     }
 
-    /**
-     * Add a poem to the db.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/poem/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -42,9 +40,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
         return poemService.add(dto);
     }
 
-    /**
-     * Delete a poem (ADMIN ONLY).
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/poem/delete/{id}")
@@ -52,9 +48,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
         return poemService.delete(id);
     }
 
-    /**
-     * Delete a poem (OWNER ONLY).
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping(value = "/secure/poem/user_delete/{id}")
@@ -62,62 +56,65 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
         return poemService.userDelete(id, principal);
     }
 
-    /**
-     * @param id the id of the poem to get.
-     * @return a poem.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Poem getById(@PathVariable("id") Long id) {
         return poemService.getById(id);
     }
 
-    /**
-     * @param ids the list of poem ids to get.
-     * @return a list of poems.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/by_ids/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getByIds(@PathVariable Long[] ids) {
         return poemService.getByIds(ids);
     }
 
-    /**
-     * @return all poems in the database.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Poem> getAll(Principal principal) {
-        return poemService.getAll(principal);
+    public List<Poem> getAll() {
+        return poemService.getAll();
     }
 
+    @Override
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/poem/all")
+    public List<Poem> authedUserGetAll() {
+        return poemService.authedUserGetAll();
+    }
+
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple(Principal principal) {
-        return poemService.getAllSimple(principal);
+    public String getAllSimple() {
+        return poemService.getAllSimple();
     }
 
-    /**
-     * @return all poems in the database paged.
-     */
+    @Override
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/poem/all_simple")
+    public String authedUserGetAllSimple() {
+        return poemService.authedUserGetAllSimple();
+    }
+
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<Poem> getAllPaged(Principal principal, Pageable pageable) {
-        return poemService.getAllPaged(principal, pageable);
+    public Page<Poem> getAllPaged(Pageable pageable) {
+        return poemService.getAllPaged(pageable);
     }
 
-    /**
-     * @return all poems added by a user.
-     */
+    @Override
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/all_user", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getAllByUser(Principal principal) {
         return poemService.getAllByUser(principal);
     }
 
-    /**
-     * Edit a poem (ADMIN ONLY).
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping(value = "/secure/poem/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -125,9 +122,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
         return poemService.modify(dto);
     }
 
-    /**
-     * Edit a poem (OWNER ONLY).
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/poem/modify_user", consumes = MediaType.APPLICATION_JSON_VALUE)

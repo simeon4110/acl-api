@@ -62,10 +62,8 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         return book;
     }
 
-    /**
-     * @param dto the new book's info.
-     * @return OK if the book is added, BAD_REQUEST if the book already exists.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> add(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
         Book book = new Book();
@@ -78,10 +76,8 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
-    /**
-     * @param id the id of the book to remove.
-     * @return OK if the book is removed.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting book: " + id);
         Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -89,11 +85,8 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * @param id        the id of the book to remove.
-     * @param principal the user making the request.
-     * @return OK if removed, NOT_AUTHORIZED if user does not own book.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
         LOGGER.debug("Deleting book (USER): " + id);
         Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -105,21 +98,15 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         }
     }
 
-    /**
-     * @param id the db id of the book.
-     * @return the book.
-     */
+    @Override
     @Transactional(readOnly = true)
     public Book getById(Long id) {
         LOGGER.debug("Getting book: " + id);
         return bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
-    /**
-     * @param ids the db ids of the books to get.
-     * @return a list of books.
-     */
-    @Transactional
+    @Override
+    @Transactional(readOnly = true)
     public List<Book> getByIds(Long[] ids) {
         LOGGER.debug("Getting books by ids: " + Arrays.toString(ids));
         List<Book> output = new ArrayList<>();
@@ -130,57 +117,51 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         return output;
     }
 
-    /**
-     * @return all books in the db.
-     */
-    @Transactional
-    public List<Book> getAll(Principal principal) {
-        LOGGER.debug("Returning all books.");
-        if (principal != null) {
-            return bookRepository.findAll();
-        } else {
-            return bookRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
-        }
-    }
-
-    /**
-     * @return a JSON array of only the most basic details of every book in the db.
-     */
-    public String getAllSimple(Principal principal) {
-        if (principal != null) {
-            return bookRepository.getAllBooksSimple().orElseThrow(StoredProcedureQueryException::new);
-        } else {
-            return bookRepository.getAllBooksSimplePDO().orElseThrow(StoredProcedureQueryException::new);
-        }
-    }
-
-    /**
-     * @param pageable from the request.
-     * @return a page of all books in the database.
-     */
+    @Override
     @Transactional(readOnly = true)
-    public Page<Book> getAllPaged(Principal principal, Pageable pageable) {
-        if (principal != null) {
-            return bookRepository.findAll(pageable);
-        } else {
-            return bookRepository.findAllByIsPublicDomain(true, pageable)
-                    .orElseThrow(ItemNotFoundException::new);
-        }
+    public List<Book> getAll() {
+        LOGGER.debug("Returning all books. NOAUTH");
+        return bookRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
     }
 
-    /**
-     * @param principal of the user making the request.
-     * @return all books added by the user.
-     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Book> authedUserGetAll() {
+        LOGGER.debug("Returning all books. AUTH");
+        return bookRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public String getAllSimple() {
+        LOGGER.debug("Returning all books simple. NOAUTH.");
+        return bookRepository.getAllBooksSimplePDO().orElseThrow(StoredProcedureQueryException::new);
+    }
+
+    @Override
+    @Transactional
+    public String authedUserGetAllSimple() {
+        LOGGER.debug("Returning all books simple. AUTH.");
+        return bookRepository.getAllBooksSimple().orElseThrow(StoredProcedureQueryException::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Book> getAllPaged(Pageable pageable) {
+        LOGGER.debug("Returning all books paged.");
+        return bookRepository.findAllByIsPublicDomain(true, pageable)
+                .orElseThrow(ItemNotFoundException::new);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Book> getAllByUser(Principal principal) {
+        LOGGER.debug("Returning all books added by user: " + principal.getName());
         return bookRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
     }
 
-    /**
-     * @param dto the dto with the new info.
-     * @return OK if the book is modified.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> modify(BookDto dto) {
         LOGGER.debug("Modifying book: " + dto.toString());
         Book book = bookRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -189,10 +170,17 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Override
+    @Transactional
     public ResponseEntity<Void> modifyUser(BookDto dtoType, Principal principal) {
+        // :todo: Implement this.
         return null;
     }
 
+    /**
+     * @param title title of the book to get.
+     * @return the book, if found, throws ItemNotFoundException otherwise.
+     */
     public Book getBookByTitle(String title) {
         LOGGER.debug("Getting book by title: " + title);
         return bookRepository.findByTitle(title).orElseThrow(ItemNotFoundException::new);

@@ -1,16 +1,12 @@
 package com.sonnets.sonnet.services.search;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
-import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Author;
+import com.sonnets.sonnet.persistence.models.base.Book;
 import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.models.base.Section;
-import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
@@ -21,13 +17,11 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,40 +42,16 @@ public class SearchQueryHandlerService {
         this.standardAnalyzer = new StandardAnalyzer();
     }
 
-    public JSONObject doSearch(SearchDto dto) {
-        LOGGER.debug("Parsing dto into search: " + dto.toString());
-        Gson gson = new Gson();
-        Gson sectionGson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    public List doSearch(String queryString) {
+        LOGGER.debug("Parsing query string: " + queryString);
         try {
+            Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
             FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-            JSONObject results = new JSONObject();
-            if (dto.isSearchBookCharacters()) {
-                Query query = CharacterHandler.getQuery(dto);
-                FullTextQuery fullTextQuery = manager.createFullTextQuery(query, BookCharacter.class);
-                results.put(TypeConstants.BOOK_CHARACTER, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
-            }
-            if (dto.isSearchDialog()) {
-                Query query = DialogHandler.getQuery(dto);
-                FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Dialog.class);
-                results.put(TypeConstants.DIALOG, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
-            }
-            if (dto.isSearchPoems()) {
-                Query query = PoemHandler.getQuery(dto);
-                FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Poem.class);
-                results.put(TypeConstants.POEM, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
-            }
-            if (dto.isSearchBooks()) { // :todo: fix this when you give a shit.
-                Query query = SectionHandler.getQuery(dto);
-                FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Section.class);
-                results.put(TypeConstants.SECTION, new JSONArray(
-                        sectionGson.toJson(fullTextQuery.getResultList())));
-            }
-
-            LOGGER.debug("Found: " + results.length());
-            return results;
-        } catch (JSONException e) {
+            FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class);
+            return fullTextQuery.getResultList();
+        } catch (ParseException e) {
             LOGGER.error(e);
-            return null;
+            return Collections.emptyList();
         }
     }
 

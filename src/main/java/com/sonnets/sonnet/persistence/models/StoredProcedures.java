@@ -30,6 +30,8 @@ public abstract class StoredProcedures {
     // # Section
     public static final String GET_ALL_SECTIONS_SIMPLE = "getAllSectionsSimple";
     public static final String GET_ALL_SECTIONS_SIMPLE_PROCEDURE = "get_all_sections_simple";
+    public static final String GET_ALL_SECTIONS_SIMPLE_PDO = "getAllSectionsSimplePDO";
+    public static final String GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE = "get_all_sections_simple_pdo";
     //
     // # Corpora
     public static final String ADD_CORPORA_ITEM = "addCorporaItem";

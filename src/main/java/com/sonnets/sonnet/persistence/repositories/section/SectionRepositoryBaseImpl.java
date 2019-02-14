@@ -37,4 +37,11 @@ public class SectionRepositoryBaseImpl implements SectionRepositoryStoredProcedu
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_SECTIONS_SIMPLE);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
+
+    @Override
+    @Transactional
+    public Optional<String> getAllSectionsSimplePDO() {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO);
+        return Optional.ofNullable(QueryHandler.queryToString(query, true));
+    }
 }

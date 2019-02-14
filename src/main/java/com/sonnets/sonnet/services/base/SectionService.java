@@ -90,10 +90,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return book;
     }
 
-    /**
-     * @param dto the data for the new section.
-     * @return OK if the section is added.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> add(SectionDto dto) {
         LOGGER.debug("Adding new section: " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
@@ -107,10 +105,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * @param id the id of the section to delete.
-     * @return OK if the book is deleted.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting other with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -119,33 +115,24 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * Get a section.
-     *
-     * @param id the db id of the section to get.
-     * @return the section.
-     */
+    @Override
     @Transactional(readOnly = true)
     public Section getById(Long id) {
         LOGGER.debug("Getting section id: " + id);
         return sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
-    /**
-     * @param ids a list of the db ids for the sections.
-     * @return a list of results.
-     */
+    @Override
     @Transactional(readOnly = true)
     public List<Section> getByIds(Long[] ids) {
+        // :todo: implement this.
         return null;
     }
 
-    /**
-     * @param id        of the section to delete.
-     * @param principal of the user making the request.
-     * @return OK if accepted UNAUTHORIZED if user does not own section.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
+        LOGGER.debug("Deleting section (user): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (section.getCreatedBy().equals(principal.getName())) {
             removeBookSection(section);
@@ -155,29 +142,45 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    /**
-     * @return all the sections. A custom query is used because hibernate stock generates a query for each record.
-     * It takes 20 seconds to return all the data. This way takes 200ms.
-     */
+    @Override
     @Transactional(readOnly = true)
-    public List<Section> getAll(Principal principal) {
+    public List<Section> getAll() {
+        LOGGER.debug("Returning all sections. NOAUTH.");
+        return sectionRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Section> authedUserGetAll() {
+        LOGGER.debug("Returning all sections. AUTH.");
         return sectionRepository.findAll();
     }
 
-    /**
-     * @return a JSON array of only the most basic details for all sections in the db.
-     */
-    public String getAllSimple(Principal principal) {
+    @Override
+    @Transactional
+    public String getAllSimple() {
+        LOGGER.debug("Returning all sections simple. NOAUTH.");
+        return sectionRepository.getAllSectionsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
+    }
+
+    @Override
+    @Transactional
+    public String authedUserGetAllSimple() {
+        LOGGER.debug("Returning all sections simple. AUTH.");
         return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<Section> getAllByUser(Principal principal) {
+        LOGGER.debug("Returning all sections added by user: " + principal.getName());
         return sectionRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
     }
 
+    @Override
     @Transactional(readOnly = true)
-    public Page<Section> getAllPaged(Principal principal, Pageable pageable) {
+    public Page<Section> getAllPaged(Pageable pageable) {
+        LOGGER.debug("Returning all sections paged.");
         return sectionRepository.findAll(pageable);
     }
 
@@ -185,6 +188,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      * @param dto the new information.
      * @return OK if the section is modified.
      */
+    @Override
+    @Transactional
     public ResponseEntity<Void> modify(SectionDto dto) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -193,6 +198,30 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         executor.execute(() -> sectionRepository.save(createOrCopySection(section, author, book, dto)));
         executor.execute(() -> bookRepository.save(book));
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * @param dto       the new information.
+     * @param principal the user making the request.
+     * @return OK if the section is modified.
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<Void> modifyUser(SectionDto dto, Principal principal) {
+        LOGGER.debug("Modifying section (USER): " + dto.toString());
+        Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        if (section.getConfirmation().isConfirmed()) {
+            throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
+        }
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
+
+        // Ensure the user making the request is also the owner of the section.
+        if (section.getCreatedBy().equals(principal.getName())) {
+            executor.execute(() -> sectionRepository.save(createOrCopySection(section, author, book, dto)));
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -231,28 +260,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
                 .orElseThrow(ItemNotFoundException::new);
         section.setNarrator(character);
         return sectionRepository.save(section);
-    }
-
-    /**
-     * @param dto       the new information.
-     * @param principal the user making the request.
-     * @return OK if the section is modified.
-     */
-    public ResponseEntity<Void> modifyUser(SectionDto dto, Principal principal) {
-        LOGGER.debug("Modifying section (USER): " + dto.toString());
-        Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        if (section.getConfirmation().isConfirmed()) {
-            throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
-        }
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
-
-        // Ensure the user making the request is also the owner of the section.
-        if (section.getCreatedBy().equals(principal.getName())) {
-            executor.execute(() -> sectionRepository.save(createOrCopySection(section, author, book, dto)));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**

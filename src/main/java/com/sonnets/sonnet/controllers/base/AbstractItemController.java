@@ -8,7 +8,7 @@ import java.security.Principal;
 import java.util.List;
 
 /**
- * Defines the methods all item controllers require.
+ * Defines the methods all item objects (Object that extend the Item class) controllers require.
  *
  * @param <T> the object type.
  * @param <S> the object's dto type.
@@ -24,11 +24,15 @@ public interface AbstractItemController<T, S> {
 
     List<T> getByIds(Long[] ids);
 
-    List<T> getAll(Principal principal);
+    List<T> getAll();
 
-    String getAllSimple(Principal principal);
+    List<T> authedUserGetAll();
 
-    Page<T> getAllPaged(Principal principal, Pageable pageable);
+    String getAllSimple();
+
+    String authedUserGetAllSimple();
+
+    Page<T> getAllPaged(Pageable pageable);
 
     List<T> getAllByUser(Principal principal);
 
