@@ -8,9 +8,13 @@ import java.util.Optional;
  * @author Josh Harkema
  */
 public interface BookRepositoryStoredProcedures {
-    Optional<String> getBookTitle(final Long bookId);
+    /**
+     * @return the basic details of every book in the database.
+     */
+    Optional<String> getAllBooksSimple();
 
-    Optional<String> getBooksSimple();
-
-    String getBookCharactersSimple(final Long bookId);
+    /**
+     * @return the basic details of every public domain book in the database.
+     */
+    Optional<String> getAllBooksSimplePDO();
 }

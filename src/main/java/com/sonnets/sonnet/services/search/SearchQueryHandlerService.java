@@ -5,15 +5,20 @@ import com.google.gson.GsonBuilder;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
-import com.sonnets.sonnet.persistence.models.ModelConstants;
-import com.sonnets.sonnet.persistence.models.annotation_types.Dialog;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
+import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.base.Book;
+import com.sonnets.sonnet.persistence.models.base.Poem;
+import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
-import com.sonnets.sonnet.persistence.models.prose.Section;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.Query;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
@@ -36,11 +41,13 @@ import java.util.List;
 @Transactional
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
+    private final StandardAnalyzer standardAnalyzer;
     private final EntityManager entityManager;
 
     @Autowired
     public SearchQueryHandlerService(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.standardAnalyzer = new StandardAnalyzer();
     }
 
     public JSONObject doSearch(SearchDto dto) {
@@ -53,22 +60,22 @@ public class SearchQueryHandlerService {
             if (dto.isSearchBookCharacters()) {
                 Query query = CharacterHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, BookCharacter.class);
-                results.put(ModelConstants.TYPE_CHARACTER, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
+                results.put(TypeConstants.BOOK_CHARACTER, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
             }
             if (dto.isSearchDialog()) {
                 Query query = DialogHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Dialog.class);
-                results.put(ModelConstants.TYPE_DIALOG, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
+                results.put(TypeConstants.DIALOG, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
             }
             if (dto.isSearchPoems()) {
                 Query query = PoemHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Poem.class);
-                results.put(ModelConstants.TYPE_POEM, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
+                results.put(TypeConstants.POEM, new JSONArray(gson.toJson(fullTextQuery.getResultList())));
             }
             if (dto.isSearchBooks()) { // :todo: fix this when you give a shit.
                 Query query = SectionHandler.getQuery(dto);
                 FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Section.class);
-                results.put(ModelConstants.TYPE_SECTION, new JSONArray(
+                results.put(TypeConstants.SECTION, new JSONArray(
                         sectionGson.toJson(fullTextQuery.getResultList())));
             }
 
@@ -80,33 +87,54 @@ public class SearchQueryHandlerService {
         }
     }
 
-    public List searchAuthor(AuthorDto dto) {
+    /**
+     * Search for an exact match on an author by first and last name.
+     *
+     * @param dto an AuthorDto with the first and last name.
+     * @return the list of results (an empty array if there are not results.)
+     * @throws ParseException if the query doesn't parse.
+     */
+    public List searchAuthor(AuthorDto dto) throws ParseException {
         LOGGER.debug("Searching for author: " + dto.toString());
+        String queryString = "firstName: \"" + dto.getFirstName() + "\" AND lastName: \"" + dto.getLastName() + "\"";
+        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(AuthorHandler.getQuery(dto), Author.class);
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
         return fullTextQuery.getResultList();
     }
 
-    public void similarExistsPoem(SearchDto dto) {
+    /**
+     * Searches for matched poems with the same author first/last name and title.
+     *
+     * @param dto a SearchDto containing the information to search for.
+     * @throws ParseException if the query doesn't parse.
+     */
+    public void similarExistsPoem(SearchDto dto) throws ParseException {
+        LOGGER.debug("Searching form poems similar to: " + dto.toString());
+        String queryString =
+                "author.firstName: \"" + dto.getAuthor().getFirstName() +
+                        "\" AND author.lastName: \"" + dto.getAuthor().getLastName() +
+                        "\" AND title: \"" + dto.getTitle() + "\"";
+        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        BooleanQuery.Builder query = new BooleanQuery.Builder();
-        query.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME, dto.getAuthor().getLastName())),
-                BooleanClause.Occur.MUST);
-
-        // Build out a phrase query for the title search.
-        PhraseQuery.Builder phraseQuery = new PhraseQuery.Builder();
-        phraseQuery.setSlop(SearchConstants.SLOP);
-        int counter = 0;
-        for (String term : dto.getTitle().split(" ")) {
-            phraseQuery.add(new Term(SearchConstants.TITLE, term.toLowerCase()), counter);
-            counter++;
-        }
-        query.add(phraseQuery.build(), BooleanClause.Occur.MUST);
-
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(query.build(), Poem.class);
-        if (fullTextQuery.getResultSize() != 0) {
-            LOGGER.error("Found similar poems.");
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
+        if (fullTextQuery.getResultSize() > 0) {
+            LOGGER.error("Found a similar poem!!");
             throw new ItemAlreadyExistsException("Item: '" + dto.toString() + "' already exists.");
         }
+    }
+
+    public List findBookByTitle(final String title) {
+        LOGGER.debug("Searching for books similar to: " + title);
+        PhraseQuery.Builder builder = new PhraseQuery.Builder();
+        int counter = 0;
+        for (String s : title.split(" ")) {
+            builder.add(new Term("title", s), counter);
+            counter++;
+        }
+        PhraseQuery query = builder.build();
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Book.class);
+        return fullTextQuery.getResultList();
     }
 }

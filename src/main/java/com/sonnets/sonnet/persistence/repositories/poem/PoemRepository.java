@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.poem;
 
-import com.sonnets.sonnet.persistence.models.poetry.Poem;
+import com.sonnets.sonnet.persistence.models.base.Poem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,24 +16,20 @@ import java.util.Optional;
 @Repository
 public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositoryStoredProcedures {
 
-    List<Poem> findAllByForm(final String form);
+    Optional<List<Poem>> findAllByForm(final String form);
 
-    Page<Poem> findAllByForm(final String form, final Pageable pageable);
+    Optional<Page<Poem>> findAllByForm(final String form, final Pageable pageable);
 
-    List<Poem> findAllByCreatedBy(final String createdBy);
-
-    Integer countAllByCreatedBy(final String createdBy);
+    Optional<List<Poem>> findAllByCreatedBy(final String createdBy);
 
     Optional<List<Poem>> findAllByAuthor_LastName(final String lastName);
 
-    Poem findFirstByConfirmation_ConfirmedAndConfirmation_PendingRevisionAndCreatedByNotAndTesting(
-            final boolean confirmed,
-            final boolean pendingRevision,
-            final String createdBy,
-            final boolean testing
-    );
+    Optional<List<Poem>> findAllByIsPublicDomain(final Boolean isPublicDomain);
 
-    List<Poem> findAllByTesting(final boolean testing);
+    Optional<Page<Poem>> findAllByIsPublicDomain(final Boolean isPublicDomain, Pageable pageable);
 
-    Poem findFirstByProcessed(final boolean processed);
+    Optional<Poem> getDistinctFirstByConfirmation_ConfirmedAndCreatedByNot(final boolean confirmed,
+                                                                           final String createdBy);
+
+    Long countAllByCreatedByAndConfirmation_PendingRevision(final String createdBy, final Boolean pendingRevision);
 }

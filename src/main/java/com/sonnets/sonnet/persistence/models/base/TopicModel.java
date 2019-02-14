@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.base;
 
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -20,10 +21,10 @@ import java.util.Objects;
 @Embeddable
 public class TopicModel implements Serializable {
     private static final long serialVersionUID = -8369936995631566616L;
-    @Field(name = "topic_model", store = Store.YES, analyze = Analyze.NO)
+    @Field(name = SearchConstants.TOPIC_MODEL, store = Store.YES, analyze = Analyze.NO)
     @ElementCollection(targetClass = HashMap.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "topic_model", joinColumns = @JoinColumn(name = "topic_model_id"))
-    @Column(name = "model")
+    @Column
     private Map<Integer, Map<Double, String>> model;
 
     public Map<Integer, Map<Double, String>> getModel() {

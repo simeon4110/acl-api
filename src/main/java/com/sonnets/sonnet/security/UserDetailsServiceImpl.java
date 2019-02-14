@@ -4,11 +4,12 @@ import com.sonnets.sonnet.persistence.dtos.user.AdminUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.EmailChangeDto;
 import com.sonnets.sonnet.persistence.dtos.user.GuestUserAddDto;
 import com.sonnets.sonnet.persistence.dtos.user.PasswordChangeDto;
+import com.sonnets.sonnet.persistence.dtos.web.UserDetailsDto;
 import com.sonnets.sonnet.persistence.models.web.Privilege;
 import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.PrivilegeRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
-import com.sonnets.sonnet.services.EmailServiceImpl;
+import com.sonnets.sonnet.services.web.EmailServiceImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -99,6 +100,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public UserDetailsDto getUserDetails(Principal principal) {
+        return new UserDetailsDto(userRepository.findByUsername(principal.getName()));
     }
 
     /**

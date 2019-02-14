@@ -16,7 +16,7 @@ import java.util.Objects;
 @Entity
 public class UserPrivateText extends Item implements Serializable {
     private static final long serialVersionUID = -5398920714584686611L;
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     public UserPrivateText() {

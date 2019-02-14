@@ -6,27 +6,27 @@ import javax.validation.constraints.NotNull;
  * @author Josh Harkema
  */
 public class CharacterDto {
-    private String id;
+    private Long id;
     @NotNull
-    private String bookId;
+    private Long bookId;
     private String firstName;
     private String lastName;
     private String gender;
     private String description;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public @NotNull String getBookId() {
+    public @NotNull Long getBookId() {
         return bookId;
     }
 
-    public void setBookId(@NotNull String bookId) {
+    public void setBookId(@NotNull Long bookId) {
         this.bookId = bookId;
     }
 

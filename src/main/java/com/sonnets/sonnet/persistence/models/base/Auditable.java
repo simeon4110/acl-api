@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * This is the model object for automatic db auditing. Do not modify.
+ * This is the model object for automatic db auditing. Do not modifyUser.
  *
  * @author Josh Harkema
  */
@@ -21,19 +21,19 @@ import java.util.Objects;
 @EntityListeners(AuditingEntityListener.class)
 public class Auditable<U> {
     @CreatedBy
-    @Column(name = "created_by")
+    @Column
     private U createdBy;
 
     @CreatedDate
-    @Column(name = "created_date")
+    @Column
     private Date createdDate;
 
     @LastModifiedBy
-    @Column(name = "last_modified_by")
+    @Column
     private U lastModifiedBy;
 
     @LastModifiedDate
-    @Column(name = "last_modified_date")
+    @Column
     private Date lastModifiedDate;
 
     public U getCreatedBy() {

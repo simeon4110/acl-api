@@ -1,14 +1,15 @@
 package com.sonnets.sonnet.persistence.repositories.book;
 
+import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import tools.QueryHandler;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Concrete class for handling stored procedures.
@@ -23,31 +24,16 @@ public class BookRepositoryImpl implements BookRepositoryStoredProcedures {
     EntityManager em;
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<String> getBookTitle(Long bookId) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getBookTitle");
-        query.setParameter("bookId", bookId);
-        query.execute();
-        return Optional.of((String) query.getOutputParameterValue("title"));
+    @Transactional
+    public Optional<String> getAllBooksSimple() {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_BOOKS_SIMPLE);
+        return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<String> getBooksSimple() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getBooksSimple");
-        return Optional.of((String) query.getOutputParameterValue("output"));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public String getBookCharactersSimple(Long bookId) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery("getBookCharacters");
-        query.setParameter("bookId", bookId);
-        CompletableFuture.supplyAsync(query::execute);
-        StringBuilder sb = new StringBuilder();
-        for (Object o : query.getResultList()) {
-            sb.append(o.toString());
-        }
-        return sb.toString();
+    @Transactional
+    public Optional<String> getAllBooksSimplePDO() {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_BOOKS_SIMPLE_PDO);
+        return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 }

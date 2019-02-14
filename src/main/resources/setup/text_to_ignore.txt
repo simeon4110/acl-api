@@ -1,6 +1,0 @@
-<vardsample:before>.+?</vardsample:before>
-<vardsample:after>.+?</vardsample:after>
-(?s)<(document|DIV[1-6]|LETTER|L)[^>]*?LANG='(?:(?!eng).)+'[^>]*>.+?</\1>
-<[^>]*>
-\[[^\]]*\]
-\u3008[^\u3009]*\u3009

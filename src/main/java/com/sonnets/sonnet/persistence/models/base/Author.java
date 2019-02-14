@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.google.gson.annotations.Expose;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -25,15 +26,15 @@ public class Author extends Auditable<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Expose
     private Long id;
-    @Field(name = "firstName", store = Store.YES)
+    @Field(name = SearchConstants.AUTHOR_FIRST_NAME_RAW, store = Store.YES)
     @Column
     @Expose
     private String firstName;
-    @Field(name = "middleName", store = Store.YES)
+    @Field(name = SearchConstants.AUTHOR_MIDDLE_NAME_RAW, store = Store.YES)
     @Column
     @Expose
     private String middleName;
-    @Field(name = "lastName", store = Store.YES)
+    @Field(name = SearchConstants.AUTHOR_LAST_NAME_RAW, store = Store.YES)
     @Column
     @Expose
     private String lastName;

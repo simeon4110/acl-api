@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.persistence.models.base;
 
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Store;
@@ -20,8 +21,8 @@ import java.util.Objects;
 @Entity
 public class Version extends Item implements Serializable {
     private static final long serialVersionUID = 5008563910579946114L;
-    @Field(name = "version_text", store = Store.YES, termVector = TermVector.YES)
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Field(name = SearchConstants.VERSION_TEXT, store = Store.YES, termVector = TermVector.YES)
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     public Version() {

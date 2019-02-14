@@ -34,7 +34,7 @@ public interface CharacterHandler {
             phraseQuery.setSlop(SearchConstants.SLOP);
             int counter = 0;
             for (String term : dto.getText().split(" ")) {
-                phraseQuery.add(new Term(SearchConstants.CHARACTER_DIALOG, term.toLowerCase()), counter);
+                phraseQuery.add(new Term(SearchConstants.CHARACTER_DIALOG_BODY, term.toLowerCase()), counter);
                 counter++;
             }
             query.add(phraseQuery.build(), BooleanClause.Occur.MUST);
