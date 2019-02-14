@@ -9,6 +9,7 @@ import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
+import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,11 +36,14 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     private static final ParseSourceDetails<Book, BookDto> parseSourceDetails = new ParseSourceDetails<>();
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
+    private final SearchQueryHandlerService queryHandlerService;
 
     @Autowired
-    public BookService(BookRepository bookRepository, AuthorRepository authorRepository) {
+    public BookService(BookRepository bookRepository, AuthorRepository authorRepository,
+                       SearchQueryHandlerService queryHandlerService) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
+        this.queryHandlerService = queryHandlerService;
     }
 
     /**
@@ -136,11 +140,7 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     @Transactional
     public List<Book> getAll(Principal principal) {
         LOGGER.debug("Returning all books.");
-        if (principal != null) {
-            return bookRepository.findAll();
-        } else {
-            return bookRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
-        }
+        return bookRepository.findAll();
     }
 
     /**
@@ -193,8 +193,8 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         return null;
     }
 
-    public Book getBookByTitle(String title) {
+    public List getBookByTitle(String title) {
         LOGGER.debug("Getting book by title: " + title);
-        return bookRepository.findByTitle(title).orElseThrow(ItemNotFoundException::new);
+        return queryHandlerService.findBookByTitle(title);
     }
 }

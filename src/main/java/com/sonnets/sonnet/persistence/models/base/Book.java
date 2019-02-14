@@ -1,13 +1,12 @@
 package com.sonnets.sonnet.persistence.models.base;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.StoredProcedures;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.services.search.SearchConstants;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
@@ -41,16 +40,16 @@ public class Book extends Item implements Serializable {
     private String type;
     @Field(name = SearchConstants.BOOK_SECTION, store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Section> sections;
     @Field(name = SearchConstants.BOOK_CHARACTER, store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterListBridge.class)
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "book_characters", joinColumns = {
             @JoinColumn(name = "book_id", referencedColumnName = "id"),
             @JoinColumn(name = "character_id", referencedColumnName = "id")
     })
+    @JsonIgnore
     private List<BookCharacter> bookCharacters;
 
     public Book() {

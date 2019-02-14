@@ -171,11 +171,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     @Transactional(readOnly = true)
     public List<Poem> getAll(final Principal principal) {
         LOGGER.debug("Returning all poems.");
-        if (principal != null) {
-            return poemRepository.findAll();
-        } else {
-            return poemRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
-        }
+        return poemRepository.findAll();
     }
 
     /**
