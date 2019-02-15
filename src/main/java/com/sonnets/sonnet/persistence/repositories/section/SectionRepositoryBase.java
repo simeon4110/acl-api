@@ -1,6 +1,8 @@
 package com.sonnets.sonnet.persistence.repositories.section;
 
 import com.sonnets.sonnet.persistence.models.base.Section;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +22,8 @@ public interface SectionRepositoryBase extends JpaRepository<Section, Long>, Sec
     Optional<List<Section>> findAllByIsPublicDomain(final Boolean isPublicDomain);
 
     Optional<List<Section>> findAllByCreatedBy(final String username);
+
+    Optional<List<Section>> findAllByIsPublicDomain(final Boolean publicDomain);
+
+    Optional<Page<Section>> findAllByIsPublicDomain(final Boolean publicDomain, Pageable pageable);
 }

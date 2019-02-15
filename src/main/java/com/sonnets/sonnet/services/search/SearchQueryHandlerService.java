@@ -12,7 +12,8 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.Query;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
@@ -55,6 +56,13 @@ public class SearchQueryHandlerService {
         }
     }
 
+    /**
+     * Search for an exact match on an author by first and last name.
+     *
+     * @param dto an AuthorDto with the first and last name.
+     * @return the list of results (an empty array if there are not results.)
+     * @throws ParseException if the query doesn't parse.
+     */
     public List searchAuthor(AuthorDto dto) throws ParseException {
         LOGGER.debug("Searching for author: " + dto.toString());
         String queryString = "firstName: \"" + dto.getFirstName() + "\" AND lastName: \"" + dto.getLastName() + "\"";
@@ -64,26 +72,38 @@ public class SearchQueryHandlerService {
         return fullTextQuery.getResultList();
     }
 
-    public void similarExistsPoem(SearchDto dto) {
+    /**
+     * Searches for matched poems with the same author first/last name and title.
+     *
+     * @param dto a SearchDto containing the information to search for.
+     * @throws ParseException if the query doesn't parse.
+     */
+    public void similarExistsPoem(SearchDto dto) throws ParseException {
+        LOGGER.debug("Searching form poems similar to: " + dto.toString());
+        String queryString =
+                "author.firstName: \"" + dto.getAuthor().getFirstName() +
+                        "\" AND author.lastName: \"" + dto.getAuthor().getLastName() +
+                        "\" AND title: \"" + dto.getTitle() + "\"";
+        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        BooleanQuery.Builder query = new BooleanQuery.Builder();
-        query.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME, dto.getAuthor().getLastName())),
-                BooleanClause.Occur.MUST);
-
-        // Build out a phrase query for the title search.
-        PhraseQuery.Builder phraseQuery = new PhraseQuery.Builder();
-        phraseQuery.setSlop(SearchConstants.SLOP);
-        int counter = 0;
-        for (String term : dto.getTitle().split(" ")) {
-            phraseQuery.add(new Term(SearchConstants.TITLE, term.toLowerCase()), counter);
-            counter++;
-        }
-        query.add(phraseQuery.build(), BooleanClause.Occur.MUST);
-
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(query.build(), Poem.class);
-        if (fullTextQuery.getResultSize() != 0) {
-            LOGGER.error("Found similar poems.");
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
+        if (fullTextQuery.getResultSize() > 0) {
+            LOGGER.error("Found a similar poem!!");
             throw new ItemAlreadyExistsException("Item: '" + dto.toString() + "' already exists.");
         }
+    }
+
+    public List findBookByTitle(final String title) {
+        LOGGER.debug("Searching for books similar to: " + title);
+        PhraseQuery.Builder builder = new PhraseQuery.Builder();
+        int counter = 0;
+        for (String s : title.split(" ")) {
+            builder.add(new Term("title", s), counter);
+            counter++;
+        }
+        PhraseQuery query = builder.build();
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Book.class);
+        return fullTextQuery.getResultList();
     }
 }
