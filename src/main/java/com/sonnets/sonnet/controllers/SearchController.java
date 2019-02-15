@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.controllers;
 
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,7 +32,7 @@ public class SearchController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List doSearch(@RequestParam("query_string") String queryString) {
+    public List doSearch(@RequestParam("query_string") String queryString) throws ParseException {
         return searchQueryHandlerService.doSearch(queryString);
     }
 }

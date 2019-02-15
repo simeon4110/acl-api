@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/short_story/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> add(ShortStoryDto dto) {
+    public ResponseEntity<Void> add(@RequestBody @Valid ShortStoryDto dto) {
         return shortStoryService.add(dto);
     }
 
@@ -78,7 +79,7 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/short_story/all")
+    @GetMapping(value = "/secure/short_story/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ShortStory> authedUserGetAll() {
         return shortStoryService.authedUserGetAll();
     }
@@ -93,7 +94,7 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/short_story/all_simple")
+    @GetMapping(value = "/secure/short_story/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
     public String authedUserGetAllSimple() {
         return shortStoryService.authedUserGetAllSimple();
     }
@@ -117,7 +118,7 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping(value = "/secure/short_story/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modify(ShortStoryDto dto) {
+    public ResponseEntity<Void> modify(@RequestBody @Valid ShortStoryDto dto) {
         return shortStoryService.modify(dto);
     }
 
@@ -125,7 +126,7 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/short_story/modify_user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modifyUser(ShortStoryDto dto, Principal principal) {
+    public ResponseEntity<Void> modifyUser(@RequestBody @Valid ShortStoryDto dto, Principal principal) {
         return shortStoryService.modifyUser(dto, principal);
     }
 }

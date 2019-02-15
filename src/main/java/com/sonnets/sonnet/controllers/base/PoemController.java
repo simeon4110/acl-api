@@ -80,7 +80,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/poem/all")
+    @GetMapping(value = "/secure/poem/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> authedUserGetAll() {
         return poemService.authedUserGetAll();
     }
@@ -95,7 +95,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/poem/all_simple")
+    @GetMapping(value = "/secure/poem/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
     public String authedUserGetAllSimple() {
         return poemService.authedUserGetAllSimple();
     }

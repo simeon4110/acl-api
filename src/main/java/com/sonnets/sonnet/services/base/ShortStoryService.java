@@ -61,7 +61,7 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         LOGGER.debug("Adding new short story: " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         ShortStory shortStory = createOrCopyShortStory(new ShortStory(), author, dto);
-        executor.execute(() -> shortStoryRepository.save(shortStory));
+        shortStoryRepository.save(shortStory);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -148,7 +148,7 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         LOGGER.debug("Modifying short story (ADMIN): " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         ShortStory shortStory = shortStoryRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        executor.execute(() -> shortStoryRepository.save(createOrCopyShortStory(shortStory, author, dto)));
+        shortStoryRepository.save(createOrCopyShortStory(shortStory, author, dto));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

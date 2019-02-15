@@ -80,7 +80,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/book/all", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/secure/book/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Book> authedUserGetAll() {
         return bookService.authedUserGetAll();
     }
@@ -95,7 +95,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/book/all_simple", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/secure/book/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
     public String authedUserGetAllSimple() {
         return bookService.authedUserGetAllSimple();
     }

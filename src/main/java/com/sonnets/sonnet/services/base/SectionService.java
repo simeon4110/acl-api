@@ -97,10 +97,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         Section section = createOrCopySection(new Section(), author, book, dto);
-        executor.execute(() -> {
-            var out = sectionRepository.save(section);
-            bookRepository.save(addBookSection(book, out));
-        });
+        var out = sectionRepository.save(section);
+        bookRepository.save(addBookSection(book, out));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -194,8 +192,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
-        executor.execute(() -> sectionRepository.save(createOrCopySection(section, author, book, dto)));
-        executor.execute(() -> bookRepository.save(book));
+        sectionRepository.save(createOrCopySection(section, author, book, dto));
+        bookRepository.save(book);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -217,7 +215,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
 
         // Ensure the user making the request is also the owner of the section.
         if (section.getCreatedBy().equals(principal.getName())) {
-            executor.execute(() -> sectionRepository.save(createOrCopySection(section, author, book, dto)));
+            sectionRepository.save(createOrCopySection(section, author, book, dto));
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -273,7 +271,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     public ResponseEntity<Void> deleteNarrator(Long sectionId) {
         Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
         section.setNarrator(null);
-        executor.execute(() -> sectionRepository.save(section));
+        sectionRepository.save(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -287,6 +285,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         List<Section> sections = book.getSections();
         sections.remove(section);
         book.setSections(sections);
-        executor.execute(() -> bookRepository.save(book));
+        bookRepository.save(book);
     }
 }

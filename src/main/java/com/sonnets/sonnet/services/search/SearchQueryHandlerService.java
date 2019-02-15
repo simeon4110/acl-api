@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,17 +40,18 @@ public class SearchQueryHandlerService {
         this.standardAnalyzer = new StandardAnalyzer();
     }
 
-    public List doSearch(String queryString) {
+    /**
+     * Parses a Lucene query string and returns the results.
+     *
+     * @param queryString the query string to parse.
+     * @return a list of results.
+     */
+    public List doSearch(String queryString) throws ParseException {
         LOGGER.debug("Parsing query string: " + queryString);
-        try {
-            Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
-            FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-            FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class);
-            return fullTextQuery.getResultList();
-        } catch (ParseException e) {
-            LOGGER.error(e);
-            return Collections.emptyList();
-        }
+        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
+        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
+        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class);
+        return fullTextQuery.getResultList();
     }
 
     /**
