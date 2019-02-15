@@ -136,7 +136,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/get_by_title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getByTitle(@PathVariable("title") String title) {
+    public Book getByTitle(@PathVariable("title") String title) {
         title = ParseParam.parse(title);
         return bookService.getBookByTitle(title);
     }

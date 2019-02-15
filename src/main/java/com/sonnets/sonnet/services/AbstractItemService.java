@@ -33,7 +33,7 @@ public interface AbstractItemService<T, S> {
     /**
      * Delete an item from the database. (Item owner only).
      *
-     * @param id        the id of the item to delte.
+     * @param id        the id of the item to delete.
      * @param principal the principal of the user making the request.
      * @return 200 if successful.
      */

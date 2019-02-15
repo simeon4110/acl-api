@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,8 +30,8 @@ public class SearchController {
      * @return search results or an empty list.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/search/{query_string}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List doSearch(@PathVariable("query_string") String queryString) {
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List doSearch(@RequestParam("query_string") String queryString) {
         return searchQueryHandlerService.doSearch(queryString);
     }
 }

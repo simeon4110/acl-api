@@ -16,6 +16,7 @@ import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -87,7 +88,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         LOGGER.debug("Adding poem: " + dto.toString());
         try { // Check if poem already exists.
             similarPoemExists(dto);
-        } catch (ItemAlreadyExistsException e) {
+        } catch (ItemAlreadyExistsException | ParseException e) {
             LOGGER.error(e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -260,7 +261,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
      *
      * @param dto the dto of the poem with all its details.
      */
-    private void similarPoemExists(PoemDto dto) {
+    private void similarPoemExists(PoemDto dto) throws ParseException {
         LOGGER.debug("Checking if similar poem exists: " + dto.toString());
         SearchDto searchDto = new SearchDto();
         Author author = authorRepository.findById(dto.getAuthorId())

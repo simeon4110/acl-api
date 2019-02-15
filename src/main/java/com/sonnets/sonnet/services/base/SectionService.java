@@ -101,14 +101,13 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
             var out = sectionRepository.save(section);
             bookRepository.save(addBookSection(book, out));
         });
-        bookRepository.save(addBookSection(book, section));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
     @Transactional
     public ResponseEntity<Void> delete(Long id) {
-        LOGGER.debug("Deleting other with id (ADMIN): " + id);
+        LOGGER.debug("Deleting section with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         removeBookSection(section);
         executor.execute(() -> sectionRepository.delete(section));

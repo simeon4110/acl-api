@@ -9,10 +9,8 @@ import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.models.base.Section;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
@@ -91,19 +89,5 @@ public class SearchQueryHandlerService {
             LOGGER.error("Found a similar poem!!");
             throw new ItemAlreadyExistsException("Item: '" + dto.toString() + "' already exists.");
         }
-    }
-
-    public List findBookByTitle(final String title) {
-        LOGGER.debug("Searching for books similar to: " + title);
-        PhraseQuery.Builder builder = new PhraseQuery.Builder();
-        int counter = 0;
-        for (String s : title.split(" ")) {
-            builder.add(new Term("title", s), counter);
-            counter++;
-        }
-        PhraseQuery query = builder.build();
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(query, Book.class);
-        return fullTextQuery.getResultList();
     }
 }
