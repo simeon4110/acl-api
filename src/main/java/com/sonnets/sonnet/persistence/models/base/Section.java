@@ -40,7 +40,7 @@ import java.util.Objects;
         @NamedStoredProcedureQuery(
                 name = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO,
                 procedureName = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE
-        )
+        ),
 })
 @Indexed
 @Entity

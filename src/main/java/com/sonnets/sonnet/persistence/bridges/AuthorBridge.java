@@ -7,7 +7,7 @@ import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
 
 /**
- * Bridge for indexing (lucene) embedded author objects.
+ * Bridge for indexing (lucene) embedded author objects. Stores author details as author.firstName and author.lastName.
  *
  * @author Josh Harkema
  */
@@ -15,9 +15,7 @@ public class AuthorBridge implements FieldBridge {
     @Override
     public void set(String s, Object o, Document document, LuceneOptions luceneOptions) {
         Author author = (Author) o;
-        luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.AUTHOR_FIRST_NAME_RAW),
-                author.getFirstName(), document);
-        luceneOptions.addFieldToDocument(s + SearchConstants.addDot(SearchConstants.AUTHOR_LAST_NAME_RAW),
-                author.getLastName(), document);
+        luceneOptions.addFieldToDocument(SearchConstants.AUTHOR_FIRST_NAME, author.getFirstName(), document);
+        luceneOptions.addFieldToDocument(SearchConstants.AUTHOR_LAST_NAME, author.getLastName(), document);
     }
 }

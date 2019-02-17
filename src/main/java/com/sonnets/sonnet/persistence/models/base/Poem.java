@@ -27,6 +27,10 @@ import java.util.Objects;
         @NamedStoredProcedureQuery(
                 name = StoredProcedures.GET_ALL_POEMS_SIMPLE_PDO,
                 procedureName = StoredProcedures.GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE
+        ),
+        @NamedStoredProcedureQuery(
+                name = StoredProcedures.GET_TWO_RANDOM_POEMS,
+                procedureName = StoredProcedures.GET_TWO_RANDOM_POEMS_PROCEDURE
         )
 })
 @Indexed

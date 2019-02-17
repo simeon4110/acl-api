@@ -33,9 +33,7 @@ public class SectionController implements AbstractItemController<Section, Sectio
         this.sectionService = sectionService;
     }
 
-    /**
-     * Add a section to the db.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/section/add", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -43,9 +41,7 @@ public class SectionController implements AbstractItemController<Section, Sectio
         return sectionService.add(dto);
     }
 
-    /**
-     * @param id the id of the section to delete.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/section/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,11 +49,7 @@ public class SectionController implements AbstractItemController<Section, Sectio
         return sectionService.delete(id);
     }
 
-    /**
-     * @param id        of the section to delete.
-     * @param principal of the user making the request.
-     * @return OK if good, UNAUTHORIZED if user does not own section.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping(value = "/secure/section/user_delete/{id}")
@@ -65,59 +57,66 @@ public class SectionController implements AbstractItemController<Section, Sectio
         return sectionService.userDelete(id, principal);
     }
 
-    /**
-     * @param id the id of the section to get.
-     * @return section by db id.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Section getById(@PathVariable("id") Long id) {
         return sectionService.getById(id);
     }
 
-    /**
-     * @param ids a list of database ids.
-     * @return a list of results.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/by_ids/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getByIds(@PathVariable("ids") Long[] ids) {
         return sectionService.getByIds(ids);
     }
 
-    /**
-     * @return All sections in the db.
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Section> getAll(Principal principal) {
-        return sectionService.getAll(principal);
+    public List<Section> getAll() {
+        return sectionService.getAll();
     }
 
-    /**
-     * @return only the most basic details of every section in the db.
-     */
+    @Override
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/section/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Section> authedUserGetAll() {
+        return sectionService.authedUserGetAll();
+    }
+
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple(Principal principal) {
-        return sectionService.getAllSimple(principal);
+    public String getAllSimple() {
+        return sectionService.getAllSimple();
     }
 
+    @Override
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/section/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String authedUserGetAllSimple() {
+        return sectionService.authedUserGetAllSimple();
+    }
+
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<Section> getAllPaged(Principal principal, Pageable pageable) {
-        return sectionService.getAllPaged(principal, pageable);
+    public Page<Section> getAllPaged(Pageable pageable) {
+        return sectionService.getAllPaged(pageable);
     }
 
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/section/all_user", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllByUser(Principal principal) {
         return sectionService.getAllByUser(principal);
     }
 
-    /**
-     * Modify a section in the db (ADMIN ONLY).
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/secure/section/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -125,9 +124,7 @@ public class SectionController implements AbstractItemController<Section, Sectio
         return sectionService.modify(dto);
     }
 
-    /**
-     * Modify a section in the db (OWNER ONLY).
-     */
+    @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/section/user_modify", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -166,6 +163,12 @@ public class SectionController implements AbstractItemController<Section, Sectio
         return sectionService.getAllByAuthorLastName(lastName);
     }
 
+    /**
+     * Add a narrator (BookCharacter) to a given section.
+     *
+     * @param dto the dto with the details.
+     * @return 200 if successful.
+     */
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping(value = "/secure/section/add_narrator", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -173,6 +176,12 @@ public class SectionController implements AbstractItemController<Section, Sectio
         return sectionService.setNarrator(dto);
     }
 
+    /**
+     * Remove a narrator (BookCharacter) from a given section.
+     *
+     * @param sectionId the id of the section to remove the narrator from.
+     * @return 200 if successful.
+     */
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping(value = "/secure/section/remove_narrator/{sectionId}")

@@ -1,13 +1,15 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Handles all general-purpose search related endpoints.
@@ -24,14 +26,13 @@ public class SearchController {
     }
 
     /**
-     * Execute a search.
+     * Execute a search via a raw Lucene query string.
      *
      * @return search results or an empty list.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @PostMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public String doSearch(@RequestBody SearchDto dto) {
-        return searchQueryHandlerService.doSearch(dto).toString();
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List doSearch(@RequestParam("query_string") String queryString) throws ParseException {
+        return searchQueryHandlerService.doSearch(queryString);
     }
 }

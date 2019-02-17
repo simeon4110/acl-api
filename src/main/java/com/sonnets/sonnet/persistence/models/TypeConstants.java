@@ -16,6 +16,7 @@ public abstract class TypeConstants implements Serializable {
     public static final String BOOK_CHARACTER = "BKCR";
     public static final String DIALOG = "DIAL";
     public static final String WORD_TRANSLATION = "WTRA";
+    public static final String SHORT_STORY = "SHST";
     private static final long serialVersionUID = 7429821152492460382L;
 
     private TypeConstants() {

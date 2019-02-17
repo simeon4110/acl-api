@@ -26,12 +26,14 @@ public abstract class StoredProcedures {
     public static final String GET_ALL_POEMS_SIMPLE_PROCEDURE = "get_all_poems_simple";
     public static final String GET_ALL_POEMS_SIMPLE_PDO = "getAllPoemsSimplePDO";
     public static final String GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE = "get_all_poems_simple_PDO";
+    public static final String GET_TWO_RANDOM_POEMS = "getTwoRandomPoems";
+    public static final String GET_TWO_RANDOM_POEMS_PROCEDURE = "get_two_random_poems";
     //
     // # Section
     public static final String GET_ALL_SECTIONS_SIMPLE = "getAllSectionsSimple";
     public static final String GET_ALL_SECTIONS_SIMPLE_PROCEDURE = "get_all_sections_simple";
     public static final String GET_ALL_SECTIONS_SIMPLE_PDO = "getAllSectionsSimplePDO";
-    public static final String GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE = "get_all_sections_simple_PDO";
+    public static final String GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE = "get_all_sections_simple_pdo";
     //
     // # Corpora
     public static final String ADD_CORPORA_ITEM = "addCorporaItem";

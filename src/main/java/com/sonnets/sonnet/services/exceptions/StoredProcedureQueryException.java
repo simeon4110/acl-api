@@ -1,6 +1,8 @@
 package com.sonnets.sonnet.services.exceptions;
 
 public class StoredProcedureQueryException extends RuntimeException {
+    private static final long serialVersionUID = 2276831440171971285L;
+
     public StoredProcedureQueryException() {
         super();
     }

@@ -82,20 +82,15 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         return poem;
     }
 
-    /**
-     * @param dto the new poem's data.
-     * @return OK if the poem is added, CONFLICT if the poem exists.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> add(PoemDto dto) {
         LOGGER.debug("Adding poem: " + dto.toString());
         try { // Check if poem already exists.
             similarPoemExists(dto);
-        } catch (ItemAlreadyExistsException e) {
+        } catch (ItemAlreadyExistsException | ParseException e) {
             LOGGER.error(e);
             return new ResponseEntity<>(HttpStatus.CONFLICT);
-        } catch (ParseException e) {
-            LOGGER.error(e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
@@ -106,10 +101,8 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * @param id the id of the poem to delete.
-     * @return OK if the poem is deleted.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting poem with id (ADMIN): " + id);
         Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -121,11 +114,8 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * @param id        the db id of the poem to delete.
-     * @param principal the principal of the user making the request.
-     * @return OK if successful.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
         LOGGER.debug("Deleting poem with id (USER): " + id);
         Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -137,20 +127,14 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * @param id the id of the poem to get.
-     * @return the poem or null if it isn't found.
-     */
+    @Override
     @Transactional(readOnly = true)
     public Poem getById(Long id) {
         LOGGER.debug("Getting poem with id: " + id);
         return poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
-    /**
-     * @param ids the ids of the poems to get.
-     * @return a list of poems or null if the poems aren't found.
-     */
+    @Override
     @Transactional(readOnly = true)
     public List<Poem> getByIds(Long[] ids) {
         LOGGER.debug("Getting poems with ids: " + Arrays.toString(ids));
@@ -161,61 +145,54 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
                 poems.add(poem);
             }
         }
-
         return poems;
     }
 
-    /**
-     * @return all poems as a list.
-     */
+    @Override
     @Transactional(readOnly = true)
-    public List<Poem> getAll(final Principal principal) {
-        LOGGER.debug("Returning all poems.");
+    public List<Poem> getAll() {
+        LOGGER.debug("Returning all poems. NOAUTH");
+        return poemRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Poem> authedUserGetAll() {
+        LOGGER.debug("Returning all poems. AUTH");
         return poemRepository.findAll();
     }
 
-    /**
-     * @return a JSON array of only the most basic details of all poems in the db.
-     */
+    @Override
     @Transactional
-    public String getAllSimple(final Principal principal) {
-        LOGGER.debug("Returning all poems as JSON.");
-        if (principal != null) {
-            return poemRepository.getAllPoemsSimple().orElseThrow(StoredProcedureQueryException::new);
-        } else {
-            return poemRepository.getAllPoemsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
-        }
+    public String getAllSimple() {
+        LOGGER.debug("Returning all poems as JSON. NOAUTH");
+        return poemRepository.getAllPoemsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
     }
 
-    /**
-     * @param pageable the pageable object from the request.
-     * @return a page of poems.
-     */
+    @Override
     @Transactional
-    public Page<Poem> getAllPaged(final Principal principal, Pageable pageable) {
+    public String authedUserGetAllSimple() {
+        LOGGER.debug("Returning all poems as JSON. AUTH");
+        return poemRepository.getAllPoemsSimple().orElseThrow(StoredProcedureQueryException::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Poem> getAllPaged(Pageable pageable) {
         LOGGER.debug("Returning all poems paged.");
-        if (principal != null) {
-            return poemRepository.findAll(pageable);
-        } else {
-            return poemRepository.findAllByIsPublicDomain(true, pageable)
-                    .orElseThrow(ItemNotFoundException::new);
-        }
+        return poemRepository.findAllByIsPublicDomain(true, pageable)
+                .orElseThrow(ItemNotFoundException::new);
     }
 
-    /**
-     * @param principal the principal object from the request.
-     * @return a list of all poems by a user.
-     */
+    @Override
     @Transactional(readOnly = true)
     public List<Poem> getAllByUser(Principal principal) {
         LOGGER.debug("Returning all sonnets added by user: " + principal.getName());
         return poemRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
     }
 
-    /**
-     * @param dto the new data for the poem.
-     * @return OK if the poem is modified; BAD_REQUEST if the poem / author doesn't exist.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
@@ -225,12 +202,8 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * @param dto       the new data for the poem.
-     * @param principal the user making the mods.
-     * @return OK if the poem is modified; BAD_REQUEST if the poem / author doesn't exist or the user making the
-     * request doesn't own the poem.
-     */
+    @Override
+    @Transactional
     public ResponseEntity<Void> modifyUser(PoemDto dto, Principal principal) {
         LOGGER.debug("Modifying poem (USER): " + dto.toString());
         Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -284,11 +257,21 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     }
 
     /**
+     * @return two poems selected at random.
+     */
+    @Transactional
+    public String getTwoRandomPoems() {
+        LOGGER.debug("Returning two random poems.");
+        return poemRepository.getTwoRandomPoems().orElseThrow(StoredProcedureQueryException::new);
+    }
+
+    /**
      * :todo: fix this.
      *
      * @param dto the dto of the poem with all its details.
      */
     private void similarPoemExists(PoemDto dto) throws ParseException {
+        LOGGER.debug("Checking if similar poem exists: " + dto.toString());
         SearchDto searchDto = new SearchDto();
         Author author = authorRepository.findById(dto.getAuthorId())
                 .orElseThrow(ItemNotFoundException::new);

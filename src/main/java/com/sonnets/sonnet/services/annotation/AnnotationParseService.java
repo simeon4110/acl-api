@@ -220,7 +220,7 @@ public class AnnotationParseService {
     }
 
     /**
-     * Searches the database for an exising dialog with the same id, if one is found it is returned, if nothing is
+     * Searches the database for an existing dialog with the same id, if one is found it is returned, if nothing is
      * found a new dialog is returned.
      *
      * @param o the raw annotation object.

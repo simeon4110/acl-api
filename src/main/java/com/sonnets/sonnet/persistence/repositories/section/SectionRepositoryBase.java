@@ -19,9 +19,9 @@ public interface SectionRepositoryBase extends JpaRepository<Section, Long>, Sec
 
     Optional<Section> findById(final Long id);
 
-    Optional<List<Section>> findAllByCreatedBy(final String username);
+    Optional<List<Section>> findAllByIsPublicDomain(final Boolean isPublicDomain);
 
-    Optional<List<Section>> findAllByIsPublicDomain(final Boolean publicDomain);
+    Optional<List<Section>> findAllByCreatedBy(final String username);
 
     Optional<Page<Section>> findAllByIsPublicDomain(final Boolean publicDomain, Pageable pageable);
 }
