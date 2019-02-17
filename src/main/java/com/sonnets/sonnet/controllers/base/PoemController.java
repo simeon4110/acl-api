@@ -160,4 +160,13 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
         lastName = ParseParam.parse(lastName);
         return poemService.getAllByAuthorLastName(lastName);
     }
+
+    /**
+     * @return two poems selected at random.
+     */
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/poem/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getTwoRandomPoems() {
+        return poemService.getTwoRandomPoems();
+    }
 }

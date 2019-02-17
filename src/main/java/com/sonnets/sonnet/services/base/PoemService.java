@@ -257,6 +257,15 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     }
 
     /**
+     * @return two poems selected at random.
+     */
+    @Transactional
+    public String getTwoRandomPoems() {
+        LOGGER.debug("Returning two random poems.");
+        return poemRepository.getTwoRandomPoems().orElseThrow(StoredProcedureQueryException::new);
+    }
+
+    /**
      * :todo: fix this.
      *
      * @param dto the dto of the poem with all its details.

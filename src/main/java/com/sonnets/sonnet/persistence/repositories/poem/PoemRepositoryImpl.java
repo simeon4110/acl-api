@@ -36,4 +36,11 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_POEMS_SIMPLE_PDO);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
+
+    @Override
+    @Transactional
+    public Optional<String> getTwoRandomPoems() {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_TWO_RANDOM_POEMS);
+        return Optional.ofNullable(QueryHandler.queryToString(query, true));
+    }
 }
