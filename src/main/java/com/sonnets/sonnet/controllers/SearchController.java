@@ -28,11 +28,16 @@ public class SearchController {
     /**
      * Execute a search via a raw Lucene query string.
      *
+     * @param queryString the raw lucene style query string to execute.
+     * @param itemTypes   the object classes to search.
      * @return search results or an empty list.
+     * @throws ParseException when the lucene query string is invalid.
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List doSearch(@RequestParam("query_string") String queryString) throws ParseException {
-        return searchQueryHandlerService.doSearch(queryString);
+    public List doSearch(@RequestParam("query_string") String queryString,
+                         @RequestParam(value = "item_types", required = false) String[] itemTypes)
+            throws ParseException {
+        return searchQueryHandlerService.doSearch(queryString, itemTypes);
     }
 }
