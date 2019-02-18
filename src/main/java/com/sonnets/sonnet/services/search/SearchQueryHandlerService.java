@@ -3,10 +3,8 @@ package com.sonnets.sonnet.services.search;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
-import com.sonnets.sonnet.persistence.models.base.Author;
-import com.sonnets.sonnet.persistence.models.base.Book;
-import com.sonnets.sonnet.persistence.models.base.Poem;
-import com.sonnets.sonnet.persistence.models.base.Section;
+import com.sonnets.sonnet.persistence.models.base.*;
+import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -20,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Routes a SearchDto into queries based on boolean flags set in the dto.
@@ -44,14 +45,46 @@ public class SearchQueryHandlerService {
      * Parses a Lucene query string and returns the results.
      *
      * @param queryString the query string to parse.
+     * @param itemTypes   a list of class names to search.
      * @return a list of results.
+     * @throws ParseException if the query string is invalid.
      */
-    public List doSearch(String queryString) throws ParseException {
-        LOGGER.debug("Parsing query string: " + queryString);
+    public List doSearch(String queryString, String[] itemTypes) throws ParseException {
+        LOGGER.debug("Parsing query string: " + queryString + " on fields " + Arrays.toString(itemTypes));
         Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class);
-        return fullTextQuery.getResultList();
+        FullTextQuery fullTextQuery;
+
+        // Catch empty itemTypes definition.
+        if (itemTypes == null || itemTypes.length == 0) {
+            fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class, ShortStory.class);
+        } else { // Otherwise, parse the list into a list of classes and use the list to build a fullTextQuery.
+            ArrayList<Class<?>> parsedClasses = new ArrayList<>();
+            for (String s : itemTypes) {
+                switch (s.toLowerCase()) {
+                    case "book":
+                        parsedClasses.add(Book.class);
+                        break;
+                    case "poem":
+                        parsedClasses.add(Poem.class);
+                        break;
+                    case "section":
+                        parsedClasses.add(Section.class);
+                        break;
+                    case "short story":
+                        parsedClasses.add(ShortStory.class);
+                        break;
+                    default:
+                        parsedClasses.add(Book.class);
+                        parsedClasses.add(Poem.class);
+                        parsedClasses.add(Section.class);
+                        parsedClasses.add(ShortStory.class);
+                        break;
+                }
+            }
+            fullTextQuery = manager.createFullTextQuery(q, parsedClasses.toArray(Class[]::new));
+        }
+        return Optional.ofNullable(fullTextQuery.getResultList()).orElseThrow(NoResultsException::new);
     }
 
     /**
