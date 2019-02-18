@@ -74,7 +74,7 @@ public class SearchQueryHandlerService {
                     case "short story":
                         parsedClasses.add(ShortStory.class);
                         break;
-                    default:
+                    case "any":
                         parsedClasses.add(Book.class);
                         parsedClasses.add(Poem.class);
                         parsedClasses.add(Section.class);
