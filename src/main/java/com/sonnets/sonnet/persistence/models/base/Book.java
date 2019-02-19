@@ -3,7 +3,7 @@ package com.sonnets.sonnet.persistence.models.base;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.bridges.SectionBridge;
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.services.search.SearchConstants;
@@ -22,12 +22,12 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_BOOKS_SIMPLE,
-                procedureName = StoredProcedures.GET_ALL_BOOKS_SIMPLE_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE,
+                procedureName = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_BOOKS_SIMPLE_PDO,
-                procedureName = StoredProcedures.GET_ALL_BOOKS_SIMPLE_PDO_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PDO,
+                procedureName = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PDO_PROCEDURE
         )
 })
 @Indexed

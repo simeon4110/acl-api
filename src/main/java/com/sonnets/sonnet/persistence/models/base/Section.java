@@ -2,7 +2,7 @@ package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
@@ -26,20 +26,20 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_BOOK_SECTIONS_SIMPLE,
-                procedureName = StoredProcedures.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
+                name = StoredProcedureConstants.GET_BOOK_SECTIONS_SIMPLE,
+                procedureName = StoredProcedureConstants.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = StoredProcedures.BOOK_ID_PARAM,
+                        @StoredProcedureParameter(name = StoredProcedureConstants.BOOK_ID_PARAM,
                                 mode = ParameterMode.IN, type = Long.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_SECTIONS_SIMPLE,
-                procedureName = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE,
+                procedureName = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO,
-                procedureName = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO,
+                procedureName = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE
         ),
 })
 @Indexed

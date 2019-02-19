@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.book;
 
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tools.QueryHandler;
@@ -26,14 +26,14 @@ public class BookRepositoryImpl implements BookRepositoryStoredProcedures {
     @Override
     @Transactional
     public Optional<String> getAllBooksSimple() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_BOOKS_SIMPLE);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 
     @Override
     @Transactional
     public Optional<String> getAllBooksSimplePDO() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_BOOKS_SIMPLE_PDO);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PDO);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 }

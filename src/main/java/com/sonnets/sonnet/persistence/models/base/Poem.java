@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.services.search.SearchConstants;
@@ -21,16 +21,16 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_POEMS_SIMPLE,
-                procedureName = StoredProcedures.GET_ALL_POEMS_SIMPLE_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE,
+                procedureName = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_POEMS_SIMPLE_PDO,
-                procedureName = StoredProcedures.GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PDO,
+                procedureName = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_TWO_RANDOM_POEMS,
-                procedureName = StoredProcedures.GET_TWO_RANDOM_POEMS_PROCEDURE
+                name = StoredProcedureConstants.GET_TWO_RANDOM_POEMS,
+                procedureName = StoredProcedureConstants.GET_TWO_RANDOM_POEMS_PROCEDURE
         )
 })
 @Indexed

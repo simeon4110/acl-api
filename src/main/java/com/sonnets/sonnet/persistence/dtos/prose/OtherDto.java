@@ -5,7 +5,6 @@ import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
 import javax.validation.constraints.NotEmpty;
 
 public class OtherDto extends SourceDetailsDto {
-    private Long id;
     @NotEmpty
     private String authorId;
     private String category;
@@ -22,14 +21,6 @@ public class OtherDto extends SourceDetailsDto {
 
     public OtherDto() {
         super();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getAuthorId() {
@@ -99,7 +90,6 @@ public class OtherDto extends SourceDetailsDto {
     @Override
     public String toString() {
         return "OtherDto{" +
-                "id=" + id +
                 ", authorId='" + authorId + '\'' +
                 ", category='" + category + '\'' +
                 ", title='" + title + '\'' +

@@ -163,7 +163,7 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     @Override
     @Transactional
     public ResponseEntity<Void> modify(BookDto dto) {
-        LOGGER.debug("Modifying book: " + dto.toString());
+        LOGGER.debug("Modifying book (ADMIN): " + dto.toString());
         Book book = bookRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
@@ -172,9 +172,16 @@ public class BookService implements AbstractItemService<Book, BookDto> {
 
     @Override
     @Transactional
-    public ResponseEntity<Void> modifyUser(BookDto dtoType, Principal principal) {
-        // :todo: Implement this.
-        return null;
+    public ResponseEntity<Void> modifyUser(BookDto dto, Principal principal) {
+        LOGGER.debug("Modifying book (USER):" + dto.toString());
+        Book book = bookRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        if (!book.getCreatedBy().equals(principal.getName())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } else {
+            Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+            bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

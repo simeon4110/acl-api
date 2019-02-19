@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.item;
 
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tools.QueryHandler;
@@ -26,15 +26,15 @@ public class ItemRepositoryImpl implements ItemRepositoryStoredProcedures {
     @Override
     @Transactional
     public Optional<String> getAllUserItems(String userName) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_USER_ITEMS);
-        query.setParameter(StoredProcedures.USER_NAME_PARAM, userName);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_USER_ITEMS);
+        query.setParameter(StoredProcedureConstants.USER_NAME_PARAM, userName);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 
     @Override
     @Transactional
     public Optional<String> getAllItems() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_ITEMS);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_ITEMS);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 }

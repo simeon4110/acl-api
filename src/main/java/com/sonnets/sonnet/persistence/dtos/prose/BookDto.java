@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
  * @author Josh Harkema
  */
 public class BookDto extends SourceDetailsDto {
-    private Long id;
     @NotNull
     private Long authorId;
     @NotEmpty
@@ -21,14 +20,6 @@ public class BookDto extends SourceDetailsDto {
 
     public BookDto() {
         super();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getAuthorId() {
@@ -66,7 +57,6 @@ public class BookDto extends SourceDetailsDto {
     @Override
     public String toString() {
         return "BookDto{" +
-                "id=" + id +
                 ", authorId='" + authorId + '\'' +
                 ", title='" + title + '\'' +
                 ", period='" + period + '\'' +

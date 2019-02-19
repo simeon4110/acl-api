@@ -29,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -122,8 +124,11 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     @Override
     @Transactional(readOnly = true)
     public List<Section> getByIds(Long[] ids) {
-        // :todo: implement this.
-        return null;
+        LOGGER.debug("Getting sections by ids: " + Arrays.toString(ids));
+        List<Section> results = new ArrayList<>();
+        for (Long l : ids)
+            results.add(sectionRepository.findById(l).orElseThrow(ItemNotFoundException::new));
+        return results;
     }
 
     @Override
@@ -222,7 +227,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     }
 
     /**
-     * :todo: this is wrong.
+     * Returns all sections from a given book.
      *
      * @param bookId the id of the book to get the sections from.
      * @return a list of sections.
