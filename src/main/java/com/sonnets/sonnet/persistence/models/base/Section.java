@@ -72,6 +72,9 @@ public class Section extends Item implements Serializable {
     private boolean processed;
     @Column
     private Long parentId;
+    @Field(name = SearchConstants.PARENT_TITLE, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Column
+    private String parentTitle;
     @JsonIgnore
     @Embedded
     private TopicModel topicModel;
@@ -137,6 +140,14 @@ public class Section extends Item implements Serializable {
         this.parentId = parentId;
     }
 
+    public String getParentTitle() {
+        return parentTitle;
+    }
+
+    public void setParentTitle(String parentTitle) {
+        this.parentTitle = parentTitle;
+    }
+
     public TopicModel getTopicModel() {
         return topicModel;
     }
@@ -165,14 +176,15 @@ public class Section extends Item implements Serializable {
                 Objects.equals(annotation, section.annotation) &&
                 Objects.equals(versions, section.versions) &&
                 Objects.equals(parentId, section.parentId) &&
+                Objects.equals(parentTitle, section.parentTitle) &&
                 Objects.equals(topicModel, section.topicModel) &&
                 Objects.equals(narrator, section.narrator);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), confirmation, text, annotation, versions, processed, parentId, topicModel,
-                narrator);
+        return Objects.hash(super.hashCode(), confirmation, text, annotation, versions, processed, parentId,
+                parentTitle, topicModel, narrator);
     }
 
     @Override
@@ -184,6 +196,7 @@ public class Section extends Item implements Serializable {
                 ", versions=" + versions +
                 ", processed=" + processed +
                 ", parentId=" + parentId +
+                ", parentTitle='" + parentTitle + '\'' +
                 ", topicModel=" + topicModel +
                 ", narrator=" + narrator +
                 "} " + super.toString();

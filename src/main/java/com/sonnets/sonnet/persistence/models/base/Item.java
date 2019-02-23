@@ -42,7 +42,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     @Expose
     private String category;
-    @Field(name = SearchConstants.AUTHOR, store = Store.YES)
+    @Field(name = SearchConstants.AUTHOR, store = Store.YES, analyze = Analyze.YES)
     @FieldBridge(impl = AuthorBridge.class)
     @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @Expose

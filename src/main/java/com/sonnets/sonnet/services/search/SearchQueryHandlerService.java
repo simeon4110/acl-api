@@ -59,6 +59,7 @@ public class SearchQueryHandlerService {
         if (itemTypes == null || itemTypes.length == 0) {
             fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class, ShortStory.class);
         } else { // Otherwise, parse the list into a list of classes and use the list to build a fullTextQuery.
+            LOGGER.debug("Item types length: " + itemTypes.length);
             ArrayList<Class<?>> parsedClasses = new ArrayList<>();
             for (String s : itemTypes) {
                 switch (s.toLowerCase()) {
@@ -83,6 +84,7 @@ public class SearchQueryHandlerService {
                 }
             }
             fullTextQuery = manager.createFullTextQuery(q, parsedClasses.toArray(Class[]::new));
+            LOGGER.debug(fullTextQuery.toString());
         }
         return Optional.ofNullable(fullTextQuery.getResultList()).orElseThrow(NoResultsException::new);
     }

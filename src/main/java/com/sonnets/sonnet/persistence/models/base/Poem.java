@@ -38,7 +38,7 @@ import java.util.Objects;
 @DiscriminatorValue(TypeConstants.POEM)
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
-    @Field(name = SearchConstants.POEM_FORM, store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
+    @Field(name = SearchConstants.POEM_FORM, store = Store.YES, analyze = Analyze.YES)
     @Column
     private String form; // The form of genre of the poem.
     @Embedded
