@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.poem;
 
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tools.QueryHandler;
@@ -26,21 +26,21 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
     @Override
     @Transactional
     public Optional<String> getAllPoemsSimple() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_POEMS_SIMPLE);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_POEMS_SIMPLE);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 
     @Override
     @Transactional
     public Optional<String> getAllPoemsSimplePDO() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_POEMS_SIMPLE_PDO);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PDO);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 
     @Override
     @Transactional
     public Optional<String> getTwoRandomPoems() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_TWO_RANDOM_POEMS);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_TWO_RANDOM_POEMS);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 }

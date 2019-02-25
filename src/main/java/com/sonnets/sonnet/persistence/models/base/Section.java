@@ -2,7 +2,7 @@ package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
@@ -26,20 +26,20 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_BOOK_SECTIONS_SIMPLE,
-                procedureName = StoredProcedures.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
+                name = StoredProcedureConstants.GET_BOOK_SECTIONS_SIMPLE,
+                procedureName = StoredProcedureConstants.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
                 parameters = {
-                        @StoredProcedureParameter(name = StoredProcedures.BOOK_ID_PARAM,
+                        @StoredProcedureParameter(name = StoredProcedureConstants.BOOK_ID_PARAM,
                                 mode = ParameterMode.IN, type = Long.class)
                 }
         ),
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_SECTIONS_SIMPLE,
-                procedureName = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE,
+                procedureName = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PROCEDURE
         ),
         @NamedStoredProcedureQuery(
-                name = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO,
-                procedureName = StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE
+                name = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO,
+                procedureName = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE
         ),
 })
 @Indexed
@@ -72,6 +72,9 @@ public class Section extends Item implements Serializable {
     private boolean processed;
     @Column
     private Long parentId;
+    @Field(name = SearchConstants.PARENT_TITLE, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
+    @Column
+    private String parentTitle;
     @JsonIgnore
     @Embedded
     private TopicModel topicModel;
@@ -137,6 +140,14 @@ public class Section extends Item implements Serializable {
         this.parentId = parentId;
     }
 
+    public String getParentTitle() {
+        return parentTitle;
+    }
+
+    public void setParentTitle(String parentTitle) {
+        this.parentTitle = parentTitle;
+    }
+
     public TopicModel getTopicModel() {
         return topicModel;
     }
@@ -165,14 +176,15 @@ public class Section extends Item implements Serializable {
                 Objects.equals(annotation, section.annotation) &&
                 Objects.equals(versions, section.versions) &&
                 Objects.equals(parentId, section.parentId) &&
+                Objects.equals(parentTitle, section.parentTitle) &&
                 Objects.equals(topicModel, section.topicModel) &&
                 Objects.equals(narrator, section.narrator);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), confirmation, text, annotation, versions, processed, parentId, topicModel,
-                narrator);
+        return Objects.hash(super.hashCode(), confirmation, text, annotation, versions, processed, parentId,
+                parentTitle, topicModel, narrator);
     }
 
     @Override
@@ -184,6 +196,7 @@ public class Section extends Item implements Serializable {
                 ", versions=" + versions +
                 ", processed=" + processed +
                 ", parentId=" + parentId +
+                ", parentTitle='" + parentTitle + '\'' +
                 ", topicModel=" + topicModel +
                 ", narrator=" + narrator +
                 "} " + super.toString();

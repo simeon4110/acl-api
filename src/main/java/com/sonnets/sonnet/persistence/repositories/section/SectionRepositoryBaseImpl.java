@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.persistence.repositories.section;
 
-import com.sonnets.sonnet.persistence.models.StoredProcedures;
+import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tools.QueryHandler;
@@ -26,22 +26,22 @@ public class SectionRepositoryBaseImpl implements SectionRepositoryStoredProcedu
     @Override
     @Transactional
     public Optional<String> getBookSectionsSimple(Long bookId) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_BOOK_SECTIONS_SIMPLE);
-        query.setParameter(StoredProcedures.BOOK_ID_PARAM, bookId);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_BOOK_SECTIONS_SIMPLE);
+        query.setParameter(StoredProcedureConstants.BOOK_ID_PARAM, bookId);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 
     @Override
     @Transactional
     public Optional<String> getAllSectionsSimple() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_SECTIONS_SIMPLE);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 
     @Override
     @Transactional
     public Optional<String> getAllSectionsSimplePDO() {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedures.GET_ALL_SECTIONS_SIMPLE_PDO);
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
 }

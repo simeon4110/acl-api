@@ -45,6 +45,8 @@ public abstract class SearchConstants {
     public static final String CHARACTER_DIALOG_BODY = "character_dialog.body";
     public static final String DIALOG_BODY = "dialog_body";
     public static final String NARRATOR = "narrator";
+    public static final String PARENT_TITLE = "parent_title";
+    public static final String CHAPTER_TITLE = "chapter_title";
     public static final String OTHER_SUB_TYPE = "other_sub_type";
     public static final String OTHER_TEXT = "other_text";
     public static final String SOURCE_TITLE = "source_title";

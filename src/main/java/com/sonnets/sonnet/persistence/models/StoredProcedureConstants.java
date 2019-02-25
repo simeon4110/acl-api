@@ -3,7 +3,7 @@ package com.sonnets.sonnet.persistence.models;
 /**
  * Contains constants for stored procedures.
  */
-public abstract class StoredProcedures {
+public abstract class StoredProcedureConstants {
     // ## Stored Procedures
     // # Section
     public static final String GET_BOOK_SECTIONS_SIMPLE = "getBookSectionsSimple";
@@ -62,7 +62,7 @@ public abstract class StoredProcedures {
     public static final String BOOK_ID_PARAM = "bookId";
     public static final String USER_NAME_PARAM = "userName";
 
-    private StoredProcedures() {
+    private StoredProcedureConstants() {
         // To block implicit public constructor.
     }
 
