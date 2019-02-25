@@ -50,7 +50,7 @@ public class SearchQueryHandlerService {
      * @throws ParseException if the query string is invalid.
      */
     public List doSearch(String queryString, String[] itemTypes) throws ParseException {
-        LOGGER.debug("Parsing query string: " + queryString + " on fields " + Arrays.toString(itemTypes));
+        LOGGER.debug("Parsing query string: " + queryString + " on object types " + Arrays.toString(itemTypes));
         Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         FullTextQuery fullTextQuery;
@@ -98,7 +98,8 @@ public class SearchQueryHandlerService {
      */
     public List searchAuthor(AuthorDto dto) throws ParseException {
         LOGGER.debug("Searching for author: " + dto.toString());
-        String queryString = "firstName: \"" + dto.getFirstName() + "\" AND lastName: \"" + dto.getLastName() + "\"";
+        String queryString = "firstName: \"" + dto.getFirstName().toLowerCase() +
+                "\" AND lastName: \"" + dto.getLastName().toLowerCase() + "\"";
         Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
         FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
