@@ -81,6 +81,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     public ResponseEntity<Void> sendAboutMessage(ContactDto contactDto) {
+        LOGGER.debug("Sending about message: " + contactDto.toString());
         try {
             String message = "\nMessage from: " + contactDto.getName() +
                     "\nEmail address: " + contactDto.getEmail() +
@@ -89,6 +90,7 @@ public class EmailServiceImpl implements EmailService {
 
             // Add user to mailing list if required.
             if (contactDto.isMailingList()) {
+                LOGGER.debug("Adding to mailing list!!!!");
                 mailingListRepository.saveAndFlush(new MailingList(contactDto.getName(), contactDto.getEmail()));
             }
 

@@ -48,4 +48,14 @@ public class ContactDto {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return "ContactDto{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", mailingList=" + mailingList +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }
