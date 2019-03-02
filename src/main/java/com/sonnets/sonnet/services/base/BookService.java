@@ -67,22 +67,33 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     public ResponseEntity<Void> add(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
         Book book = new Book();
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        // Check if book does not exist exists.
-        if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()).isEmpty()) {
-            bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
-            return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+            // Check if book does not exist exists.
+            if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()).isEmpty()) {
+                bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+        } catch (ItemNotFoundException e) {
+            LOGGER.error(e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @Override
     @Transactional
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting book: " + id);
-        Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        bookRepository.delete(book);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+            bookRepository.delete(book);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (ItemNotFoundException e) {
+            LOGGER.error(e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
