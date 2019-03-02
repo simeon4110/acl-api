@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -112,7 +113,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/book/all_user", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Book> getAllByUser(Principal principal) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
