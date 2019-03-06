@@ -3,7 +3,9 @@ package com.sonnets.sonnet.controllers.base;
 import com.sonnets.sonnet.helpers.JsonHelper;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
+import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Book;
+import com.sonnets.sonnet.services.base.AuthorService;
 import com.sonnets.sonnet.services.base.BookService;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -17,11 +19,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -41,14 +44,19 @@ public class BookControllerTest {
     private static final String BOOK_TYPE = "test-type";
     private static final String BOOK_PLACE_OF_PUB = "test-place";
     private static final String BOOK_PUBLISHER = "test-publisher";
+    private static final String AUTHOR_LAST_NAME = "author-last-name";
     @Autowired
     private MockMvc mvc;
     @Autowired
     private BookService bookService;
+    @Autowired
+    private AuthorService authorService;
 
-    private static BookDto getBookDto() {
+    private Author author;
+
+    private BookDto getBookDto() {
         BookDto dto = new BookDto();
-        dto.setAuthorId(1L);
+        dto.setAuthorId(this.author.getId());
         dto.setTitle(BOOK_TITLE);
         dto.setPeriod(BOOK_PERIOD);
         dto.setType(BOOK_TYPE);
@@ -58,21 +66,24 @@ public class BookControllerTest {
     }
 
     @Before
-    public void setUp() throws Exception {
-        // Add an author for all book tests (books need authors).
-        AuthorDto dto = new AuthorDto();
-        dto.setFirstName("test-author-first");
-        dto.setLastName("test-author-last");
-        mvc.perform(post("/secure/author/add")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(JsonHelper.toJson(dto)));
+    public void setUp() {
+        Author author = new Author();
+        author.setId(1L);
+        author.setFirstName("test-first-name");
+        author.setLastName(AUTHOR_LAST_NAME);
+
+        AuthorDto authorDto = new AuthorDto();
+        authorDto.setFirstName("test-first-name");
+        authorDto.setLastName(AUTHOR_LAST_NAME);
+        authorService.add(authorDto);
+
+        this.author = authorService.get(1L);
     }
 
     @Test
     @WithMockUser(authorities = {"USER"})
-    public void addBook() throws Exception {
-        BookDto dto = getBookDto();
-        add(dto).andExpect(status().isOk());
+    public void add() throws Exception {
+        add(getBookDto()).andExpect(status().isOk());
 
         Book book = bookService.getBookByTitle(BOOK_TITLE);
         assertEquals(BOOK_TITLE, book.getTitle());
@@ -82,6 +93,23 @@ public class BookControllerTest {
         assertEquals(BOOK_PUBLISHER, book.getPublisher());
 
         LOGGER.debug("add() result: " + book.toString());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void getBookById() throws Exception {
+        add(getBookDto()).andExpect(status().isOk());
+
+        MvcResult result = mvc.perform(get("/book/by_id/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Book book = JsonHelper.fromJsonResult(result, Book.class);
+        assertEquals(BOOK_TITLE, book.getTitle());
+        assertEquals(BOOK_PERIOD, book.getPeriod());
+        assertEquals(BOOK_TYPE, book.getType());
+        assertEquals(BOOK_PLACE_OF_PUB, book.getPlaceOfPublication());
+        assertEquals(BOOK_PUBLISHER, book.getPublisher());
     }
 
     @Test
@@ -98,6 +126,53 @@ public class BookControllerTest {
         BookDto dto = getBookDto();
         dto.setAuthorId(5L);
         add(dto).andExpect(status().isNotFound());
+    }
+
+//    @Test
+//    @WithMockUser(authorities = {"USER"})
+//    public void addDuplicate() throws Exception {
+//        BookDto dto = getBookDto();
+//        add(dto).andExpect(status().isOk());
+//
+//        BookDto duplicateDto = getBookDto();
+//        add(duplicateDto).andExpect(status().isConflict());
+//    }
+
+
+    @Test
+    @WithMockUser(authorities = {"USER", "ADMIN"})
+    public void modify() throws Exception {
+        add(getBookDto()).andExpect(status().isOk());
+        Book book = bookService.getBookByTitle(BOOK_TITLE);
+
+        BookDto modifyDto = getBookDto();
+        modifyDto.setId(book.getId());
+        modifyDto.setTitle(BOOK_TITLE + "-modified");
+
+        mvc.perform(put("/secure/book/modify")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(JsonHelper.toJson(modifyDto)))
+                .andExpect(status().isOk());
+
+        Book bookToVerify = bookService.getById(book.getId());
+        assertEquals(modifyDto.getTitle(), bookToVerify.getTitle());
+        LOGGER.debug("Modify Result: " + bookToVerify.toString());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    public void modifyNotAuthorized() throws Exception {
+        add(getBookDto()).andExpect(status().isOk());
+        Book book = bookService.getBookByTitle(BOOK_TITLE);
+
+        BookDto modifyDto = getBookDto();
+        modifyDto.setId(book.getId());
+        modifyDto.setTitle(BOOK_TITLE + "-modified");
+
+        mvc.perform(put("/secure/book/modify")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(JsonHelper.toJson(modifyDto)))
+                .andExpect(status().isUnauthorized());
     }
 
     private ResultActions add(final BookDto bookDto) throws Exception {
