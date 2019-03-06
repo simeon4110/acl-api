@@ -66,16 +66,6 @@ object FormatTools {
       .replace("\\n", " ")
   }
 
-  /**
-    * @param input a string separated with \n or \r
-    * @return a string array split by \n or \r.
-    */
-  def parsePoemText(input: String): Array[String] = {
-    val strings = input.split("\\r?\\n")
-    strings.foreach(_.trim)
-    strings.filter(_.nonEmpty)
-  }
-
   def containsStopWords(s: String): Boolean = {
     STOPWORDS contains s
   }

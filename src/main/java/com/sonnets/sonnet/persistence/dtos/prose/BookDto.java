@@ -57,7 +57,7 @@ public class BookDto extends SourceDetailsDto {
     @Override
     public String toString() {
         return "BookDto{" +
-                ", authorId='" + authorId + '\'' +
+                "authorId=" + authorId +
                 ", title='" + title + '\'' +
                 ", period='" + period + '\'' +
                 ", type='" + type + '\'' +

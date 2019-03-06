@@ -24,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.FormatTools;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
@@ -64,9 +63,11 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
      * @return the poem with the new data copied.
      */
     private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
-        poem.setAuthor(author);
+        if (poem.getAuthor() == null) {
+            poem.setAuthor(author);
+        }
         poem.setCategory(TypeConstants.POEM);
-        poem.setText(Arrays.asList(FormatTools.parsePoemText(dto.getText())));
+        poem.setText(parsePoemText(dto.getText()));
         if (dto.getTitle().isEmpty() || dto.getTitle() == null) {
             poem.setTitle(poem.getText().get(0));
         } else {
@@ -79,7 +80,24 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         if (poem.getConfirmation().isPendingRevision()) { // Check to see if the poem is pending revision.
             poem.getConfirmation().setPendingRevision(false);
         }
+        LOGGER.debug(poem);
         return poem;
+    }
+
+    /**
+     * Converts a string split up with \n or \\n into a clean array of strings.
+     *
+     * @param input the input string to parse.
+     * @return a parsed ArrayList.
+     */
+    private static ArrayList<String> parsePoemText(final String input) {
+        ArrayList<String> arrayOut = new ArrayList<>();
+        for (String s : input.split("\n|\\n")) {
+            if (!s.equals("")) {
+                arrayOut.add(s.trim());
+            }
+        }
+        return arrayOut;
     }
 
     @Override
@@ -94,10 +112,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         }
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
-        poem = poemRepository.saveAndFlush(poem);
-
-        updateCanConfirm(poem);
-
+        poemRepository.saveAndFlush(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -196,8 +211,8 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        Poem poem = createOrUpdateFromDto(
-                poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new), dto, author);
+        Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        poem = createOrUpdateFromDto(poem, dto, author);
         poemRepository.saveAndFlush(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -211,11 +226,10 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
             return new ResponseEntity<>(HttpStatus.LOCKED);
         }
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        assert principal.getName().equals(poem.getCreatedBy());
+        if (!principal.getName().equals(poem.getCreatedBy())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
-
-        updateCanConfirm(poem);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

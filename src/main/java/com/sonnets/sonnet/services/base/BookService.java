@@ -67,7 +67,7 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     public ResponseEntity<Void> add(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
         Book book = new Book();
-        try {
+        try { // :todo: duplicate detection is not working as it should be.
             Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
             // Check if book does not exist exists.
             if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()).isEmpty()) {
