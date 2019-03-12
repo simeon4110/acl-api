@@ -44,7 +44,7 @@ public abstract class Item extends Auditable<String> implements Serializable {
     private String category;
     @Field(name = SearchConstants.AUTHOR, store = Store.YES, analyze = Analyze.YES)
     @FieldBridge(impl = AuthorBridge.class)
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Expose
     private Author author;
     @Field(name = SearchConstants.TITLE, store = Store.YES, analyze = Analyze.YES)
