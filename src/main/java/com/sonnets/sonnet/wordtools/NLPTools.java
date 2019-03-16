@@ -70,14 +70,13 @@ public class NLPTools {
     }
 
     String getLemmatizedWords(String textToLemmatize) {
-        textToLemmatize = FormatTools.removePunctuation(textToLemmatize);
         Document document = new Document(textToLemmatize);
         StringBuilder result = new StringBuilder();
 
         for (Sentence sentence : document.sentences()) {
             for (int i = 0; i < sentence.length() - 1; i++) {
-                if (!FormatTools.containsStopWords(sentence.word(i).toLowerCase())) {
-                    result.append(sentence.word(i));
+                if (!FormatTools.containsStopWords(sentence.lemma(i).toLowerCase().trim())) {
+                    result.append(sentence.lemma(i));
                     result.append(" ");
                 }
             }
