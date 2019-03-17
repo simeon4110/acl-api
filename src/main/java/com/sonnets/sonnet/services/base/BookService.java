@@ -201,6 +201,6 @@ public class BookService implements AbstractItemService<Book, BookDto> {
      */
     public Book getBookByTitle(String title) {
         LOGGER.debug("Getting book by title: " + title);
-        return bookRepository.findByTitle(title).orElseThrow(ItemNotFoundException::new);
+        return bookRepository.findByTitle(title).orElse(null);
     }
 }

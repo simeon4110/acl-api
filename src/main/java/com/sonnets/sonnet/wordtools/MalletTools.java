@@ -56,7 +56,6 @@ public class MalletTools {
     @Async
     public CompletableFuture<Map<Integer, Map<Double, String>>> topicModel(final String text,
                                                                            final int numberOfTopics) {
-        LOGGER.debug("TEXT: " + text);
         // Run the words through the lemmatizer and stop word filter.
         String cleanText = nlpTools.getLemmatizedWords(text);
 
