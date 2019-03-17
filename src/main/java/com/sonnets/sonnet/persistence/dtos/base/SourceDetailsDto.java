@@ -21,7 +21,7 @@ public abstract class SourceDetailsDto {
     private String journalPageRange;
     private String journalAbbr;
     private String language;
-    private Boolean isPublicDomain;
+    private String publicDomain;
     private String pageRange;
 
     public Long getId() {
@@ -152,12 +152,12 @@ public abstract class SourceDetailsDto {
         this.language = language;
     }
 
-    public Boolean getPublicDomain() {
-        return isPublicDomain;
+    public String getPublicDomain() {
+        return publicDomain;
     }
 
-    public void setPublicDomain(Boolean publicDomain) {
-        isPublicDomain = publicDomain;
+    public void setPublicDomain(String publicDomain) {
+        this.publicDomain = publicDomain;
     }
 
     public String getPageRange() {
@@ -188,7 +188,7 @@ public abstract class SourceDetailsDto {
                 ", journalPageRange='" + journalPageRange + '\'' +
                 ", journalAbbr='" + journalAbbr + '\'' +
                 ", language='" + language + '\'' +
-                ", isPublicDomain=" + isPublicDomain +
+                ", publicDomain=" + publicDomain +
                 ", pageRange='" + pageRange + '\'' +
                 '}';
     }

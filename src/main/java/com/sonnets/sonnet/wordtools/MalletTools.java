@@ -14,7 +14,6 @@ import cc.mallet.types.InstanceList;
 import com.sonnets.sonnet.services.exceptions.TopicModelException;
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
-import tools.FormatTools;
 
 import java.io.IOException;
 import java.util.*;
@@ -61,7 +60,9 @@ public class MalletTools {
         String cleanText = nlpTools.getLemmatizedWords(text);
 
         ArrayList<Pipe> pipeList = new ArrayList<>();
-        String[] strings = FormatTools.tokenizeWords(cleanText, true, true, true);
+        String[] strings = cleanText.split(" ");
+        strings = Arrays.stream(strings).map(String::toLowerCase).toArray(String[]::new);
+        strings = Arrays.stream(strings).filter(x -> x.length() > 1).toArray(String[]::new);
 
         // Pipes added: tokenize, remove stop words, map to features.
         pipeList.add(new CharSequence2TokenSequence(Pattern.compile("[\\p{L}\\p{N}_]+")));

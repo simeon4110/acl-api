@@ -15,6 +15,8 @@ object FormatTools {
 
   {
     STOPWORDS = Source.fromFile(filename.getPath).getLines.toArray
+    STOPWORDS.map(_.toLowerCase)
+    STOPWORDS.map(_.trim)
   }
 
   /**
@@ -59,7 +61,6 @@ object FormatTools {
     */
   def removePunctuation(input: String): String = {
     input
-      .replace("-", " ")
       .replaceAll("""[\p{Punct}&&[^.]]""", "")
       .replaceAll("""[0-9]""", "")
       .replace("\n", " ")
@@ -68,5 +69,9 @@ object FormatTools {
 
   def containsStopWords(s: String): Boolean = {
     STOPWORDS contains s
+  }
+
+  def getStopWords: Array[String] = {
+    STOPWORDS
   }
 }

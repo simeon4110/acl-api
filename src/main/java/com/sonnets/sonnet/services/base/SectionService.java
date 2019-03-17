@@ -77,6 +77,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         section.setPeriod(book.getPeriod());
         section.setText(dto.getText());
         section.setParentId(dto.getBookId());
+        section.setParentTitle(book.getTitle());
         return section;
     }
 

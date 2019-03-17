@@ -27,7 +27,7 @@ class ParseSourceDetails[T <: Item, D <: SourceDetailsDto] {
     obj.setJournalPageRange(dto.getJournalPageRange)
     obj.setJournalAbbr(dto.getJournalAbbr)
     obj.setLanguage(dto.getLanguage)
-    obj.setPublicDomain(dto.getPublicDomain)
+    obj.setPublicDomain(dto.getPublicDomain.toBoolean)
     obj.setPageRange(dto.getPageRange)
     obj
   }
