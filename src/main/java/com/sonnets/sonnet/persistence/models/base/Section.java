@@ -61,11 +61,11 @@ public class Section extends Item implements Serializable {
     @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column(columnDefinition = "TEXT")
     private String text;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Version> versions;
     @JsonIgnore
     @Column

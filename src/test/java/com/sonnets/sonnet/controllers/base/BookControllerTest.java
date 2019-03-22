@@ -5,7 +5,7 @@ import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Book;
-import com.sonnets.sonnet.services.base.AuthorService;
+import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.services.base.BookService;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -44,13 +46,13 @@ public class BookControllerTest {
     private static final String BOOK_TYPE = "test-type";
     private static final String BOOK_PLACE_OF_PUB = "test-place";
     private static final String BOOK_PUBLISHER = "test-publisher";
-    private static final String AUTHOR_LAST_NAME = "author-last-name";
+    private static final String AUTHOR_LAST_NAME = UUID.randomUUID().toString();
     @Autowired
     private MockMvc mvc;
     @Autowired
     private BookService bookService;
     @Autowired
-    private AuthorService authorService;
+    private AuthorRepository authorRepository;
 
     private Author author;
 
@@ -60,6 +62,7 @@ public class BookControllerTest {
         dto.setTitle(BOOK_TITLE);
         dto.setPeriod(BOOK_PERIOD);
         dto.setType(BOOK_TYPE);
+        dto.setPublicDomain("true");
         dto.setPlaceOfPublication(BOOK_PLACE_OF_PUB);
         dto.setPublisher(BOOK_PUBLISHER);
         return dto;
@@ -68,16 +71,15 @@ public class BookControllerTest {
     @Before
     public void setUp() {
         Author author = new Author();
-        author.setId(1L);
         author.setFirstName("test-first-name");
         author.setLastName(AUTHOR_LAST_NAME);
+        author = this.authorRepository.saveAndFlush(author);
 
         AuthorDto authorDto = new AuthorDto();
         authorDto.setFirstName("test-first-name");
         authorDto.setLastName(AUTHOR_LAST_NAME);
-        authorService.add(authorDto);
 
-        this.author = authorService.get(1L);
+        this.author = author;
     }
 
     @Test
@@ -176,6 +178,7 @@ public class BookControllerTest {
     }
 
     private ResultActions add(final BookDto bookDto) throws Exception {
+        LOGGER.debug("BOOK DTO: " + bookDto);
         return mvc.perform(post("/secure/book/add")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(JsonHelper.toJson(bookDto)));

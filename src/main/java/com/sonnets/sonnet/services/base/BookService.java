@@ -4,8 +4,10 @@ import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Book;
+import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
@@ -34,11 +36,13 @@ public class BookService implements AbstractItemService<Book, BookDto> {
     private static final Logger LOGGER = Logger.getLogger(BookService.class);
     private static final ParseSourceDetails<Book, BookDto> parseSourceDetails = new ParseSourceDetails<>();
     private final BookRepository bookRepository;
+    private final SectionRepositoryBase sectionRepositoryBase;
     private final AuthorRepository authorRepository;
 
     @Autowired
-    public BookService(BookRepository bookRepository, AuthorRepository authorRepository) {
+    public BookService(BookRepository bookRepository, SectionRepositoryBase sectionRepositoryBase, AuthorRepository authorRepository) {
         this.bookRepository = bookRepository;
+        this.sectionRepositoryBase = sectionRepositoryBase;
         this.authorRepository = authorRepository;
     }
 
@@ -57,7 +61,9 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         book.setPeriod(dto.getPeriod());
         book.setCategory(TypeConstants.BOOK);
         book.setType(dto.getType());
-        book.setSections(new ArrayList<>());
+        if (book.getSections().size() != 0) {
+            book.setSections(new ArrayList<>());
+        }
         book.setBookCharacters(new ArrayList<>());
         return book;
     }
@@ -192,6 +198,16 @@ public class BookService implements AbstractItemService<Book, BookDto> {
             Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
             bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<Void> addSection(long bookId, long sectionId) {
+        LOGGER.debug("Adding section to book: " + bookId);
+        Book book = bookRepository.findById(bookId).orElseThrow(ItemNotFoundException::new);
+        Section section = sectionRepositoryBase.findById(sectionId).orElseThrow(ItemNotFoundException::new);
+        List<Section> sections = book.getSections();
+        sections.add(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

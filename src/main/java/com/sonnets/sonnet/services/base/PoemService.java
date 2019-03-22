@@ -230,6 +230,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
+        this.updateCanConfirm(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -302,8 +303,8 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
      */
     private void updateCanConfirm(Poem poem) {
         User user = userRepository.findByUsername(poem.getCreatedBy());
-        if (poemRepository.countAllByCreatedByAndConfirmation_PendingRevision(user.getUsername(), false)
-                >= user.getRequiredSonnets()) {
+        if (poemRepository.countAllByCreatedByAndConfirmation_PendingRevision(
+                user.getUsername(), false) == 0) {
             user.setCanConfirm(true);
             userRepository.saveAndFlush(user);
         }

@@ -34,6 +34,8 @@ public class User extends Auditable<String> implements Serializable {
     @Column
     private int requiredSonnets;
     @Column
+    private int confirmedSonnets;
+    @Column
     private Boolean canConfirm;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -97,6 +99,14 @@ public class User extends Auditable<String> implements Serializable {
         this.requiredSonnets = requiredSonnets;
     }
 
+    public int getConfirmedSonnets() {
+        return confirmedSonnets;
+    }
+
+    public void setConfirmedSonnets(int confirmedSonnets) {
+        this.confirmedSonnets = confirmedSonnets;
+    }
+
     public Boolean getCanConfirm() {
         return canConfirm;
     }
@@ -136,6 +146,7 @@ public class User extends Auditable<String> implements Serializable {
         if (!super.equals(o)) return false;
         User user = (User) o;
         return requiredSonnets == user.requiredSonnets &&
+                confirmedSonnets == user.confirmedSonnets &&
                 Objects.equals(id, user.id) &&
                 Objects.equals(username, user.username) &&
                 Objects.equals(password, user.password) &&
@@ -149,8 +160,8 @@ public class User extends Auditable<String> implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, username, password, email, isAdmin, requiredSonnets, canConfirm,
-                privileges, privateTexts, customStopWords);
+        return Objects.hash(super.hashCode(), id, username, password, email, isAdmin, requiredSonnets, confirmedSonnets,
+                canConfirm, privileges, privateTexts, customStopWords);
     }
 
     @Override
@@ -162,6 +173,7 @@ public class User extends Auditable<String> implements Serializable {
                 ", email='" + email + '\'' +
                 ", isAdmin=" + isAdmin +
                 ", requiredSonnets=" + requiredSonnets +
+                ", confirmedSonnets=" + confirmedSonnets +
                 ", canConfirm=" + canConfirm +
                 ", privileges=" + privileges +
                 ", privateTexts=" + privateTexts +
