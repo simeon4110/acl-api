@@ -40,11 +40,11 @@ public class Book extends Item implements Serializable {
     private String type;
     @Field(name = SearchConstants.BOOK_SECTION, store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = SectionBridge.class)
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Section> sections;
     @Field(name = SearchConstants.BOOK_CHARACTER, store = Store.YES, termVector = TermVector.YES)
     @FieldBridge(impl = CharacterListBridge.class)
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "book_characters", joinColumns = {
             @JoinColumn(name = "book_id", referencedColumnName = "id"),
             @JoinColumn(name = "character_id", referencedColumnName = "id")

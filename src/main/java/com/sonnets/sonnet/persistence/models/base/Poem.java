@@ -31,6 +31,14 @@ import java.util.Objects;
         @NamedStoredProcedureQuery(
                 name = StoredProcedureConstants.GET_TWO_RANDOM_POEMS,
                 procedureName = StoredProcedureConstants.GET_TWO_RANDOM_POEMS_PROCEDURE
+        ),
+        @NamedStoredProcedureQuery(
+                name = StoredProcedureConstants.GET_POEM_TO_CONFIRM,
+                procedureName = StoredProcedureConstants.GET_POEM_TO_CONFIRM_PROCEDURE,
+                parameters = {
+                        @StoredProcedureParameter(name = StoredProcedureConstants.USER_NAME_PARAM,
+                                mode = ParameterMode.IN, type = String.class)
+                }
         )
 })
 @Indexed

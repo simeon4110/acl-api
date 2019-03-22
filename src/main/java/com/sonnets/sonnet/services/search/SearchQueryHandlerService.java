@@ -1,10 +1,10 @@
 package com.sonnets.sonnet.services.search;
 
+import com.google.gson.Gson;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.*;
-import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -21,7 +21,6 @@ import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Routes a SearchDto into queries based on boolean flags set in the dto.
@@ -32,6 +31,7 @@ import java.util.Optional;
 @Transactional
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
+    private static final Gson gson = new Gson();
     private final StandardAnalyzer standardAnalyzer;
     private final EntityManager entityManager;
 
@@ -49,7 +49,7 @@ public class SearchQueryHandlerService {
      * @return a list of results.
      * @throws ParseException if the query string is invalid.
      */
-    public List doSearch(String queryString, String[] itemTypes) throws ParseException {
+    public String doSearch(String queryString, String[] itemTypes) throws ParseException {
         LOGGER.debug("Parsing query string: " + queryString + " on object types " + Arrays.toString(itemTypes));
         Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
         FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
@@ -64,7 +64,7 @@ public class SearchQueryHandlerService {
             for (String s : itemTypes) {
                 switch (s.toLowerCase()) {
                     case "book":
-                        parsedClasses.add(Book.class);
+                        parsedClasses.add(Section.class);
                         break;
                     case "poem":
                         parsedClasses.add(Poem.class);
@@ -76,17 +76,20 @@ public class SearchQueryHandlerService {
                         parsedClasses.add(ShortStory.class);
                         break;
                     case "any":
-                        parsedClasses.add(Book.class);
                         parsedClasses.add(Poem.class);
                         parsedClasses.add(Section.class);
                         parsedClasses.add(ShortStory.class);
                         break;
                 }
             }
-            fullTextQuery = manager.createFullTextQuery(q, parsedClasses.toArray(Class[]::new));
-            LOGGER.debug(fullTextQuery.toString());
+
+            // This is very expensive, I will probably optimize it at some point.
+            fullTextQuery = manager.createFullTextQuery(q, parsedClasses.toArray(Class[]::new))
+                    .setProjection(FullTextQuery.DOCUMENT_ID, FullTextQuery.EXPLANATION, FullTextQuery.THIS);
+
+            return gson.toJson(fullTextQuery.getResultList());
         }
-        return Optional.ofNullable(fullTextQuery.getResultList()).orElseThrow(NoResultsException::new);
+        return gson.toJson(fullTextQuery.getResultList());
     }
 
     /**

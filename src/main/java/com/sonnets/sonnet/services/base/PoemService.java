@@ -134,6 +134,10 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
         LOGGER.debug("Deleting poem with id (USER): " + id);
         Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if (poem.getConfirmation().isConfirmed()) {
+            return new ResponseEntity<>(HttpStatus.LOCKED);
+        }
+
         if (poem.getCreatedBy().equals(principal.getName())) {
             poemRepository.delete(poem);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -230,6 +234,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
+        this.updateCanConfirm(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -302,8 +307,8 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
      */
     private void updateCanConfirm(Poem poem) {
         User user = userRepository.findByUsername(poem.getCreatedBy());
-        if (poemRepository.countAllByCreatedByAndConfirmation_PendingRevision(user.getUsername(), false)
-                >= user.getRequiredSonnets()) {
+        if (poemRepository.countAllByCreatedByAndConfirmation_PendingRevision(
+                user.getUsername(), false) == 0) {
             user.setCanConfirm(true);
             userRepository.saveAndFlush(user);
         }

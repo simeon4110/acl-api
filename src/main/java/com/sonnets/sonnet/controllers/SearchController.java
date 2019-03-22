@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * Handles all general-purpose search related endpoints.
  *
@@ -35,8 +33,8 @@ public class SearchController {
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List doSearch(@RequestParam("query_string") String queryString,
-                         @RequestParam(value = "item_types", required = false) String[] itemTypes)
+    public String doSearch(@RequestParam("query_string") String queryString,
+                           @RequestParam(value = "item_types", required = false) String[] itemTypes)
             throws ParseException {
         return searchQueryHandlerService.doSearch(queryString, itemTypes);
     }

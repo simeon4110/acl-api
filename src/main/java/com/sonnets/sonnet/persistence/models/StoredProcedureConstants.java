@@ -28,6 +28,8 @@ public abstract class StoredProcedureConstants {
     public static final String GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE = "get_all_poems_simple_PDO";
     public static final String GET_TWO_RANDOM_POEMS = "getTwoRandomPoems";
     public static final String GET_TWO_RANDOM_POEMS_PROCEDURE = "get_two_random_poems";
+    public static final String GET_POEM_TO_CONFIRM = "getPoemToConfirm";
+    public static final String GET_POEM_TO_CONFIRM_PROCEDURE = "get_poem_to_confirm";
     //
     // # Section
     public static final String GET_ALL_SECTIONS_SIMPLE = "getAllSectionsSimple";

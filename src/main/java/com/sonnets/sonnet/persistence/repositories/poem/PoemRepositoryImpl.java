@@ -43,4 +43,12 @@ public class PoemRepositoryImpl implements PoemRepositoryStoredProcedures {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_TWO_RANDOM_POEMS);
         return Optional.ofNullable(QueryHandler.queryToString(query, true));
     }
+
+    @Override
+    @Transactional
+    public Optional<String> getPoemToConfirm(String username) {
+        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_POEM_TO_CONFIRM);
+        query.setParameter(StoredProcedureConstants.USER_NAME_PARAM, username);
+        return Optional.ofNullable(QueryHandler.queryToString(query, true));
+    }
 }

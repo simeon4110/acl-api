@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.controllers.base;
 
 import com.sonnets.sonnet.persistence.dtos.base.ConfirmationDto;
-import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.services.base.ConfirmationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -31,21 +30,21 @@ public class ConfirmationController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/confirmation/get_poem", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Poem getPoemToConfirm(Principal principal) {
+    public String getPoemToConfirm(Principal principal) {
         return confirmationService.getPoemToConfirm(principal);
     }
 
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secure/confirmation/confirm_poem")
+    @PutMapping(value = "/secure/confirmation/confirm_poem")
     public ResponseEntity<Void> confirmPoem(@RequestBody @Valid ConfirmationDto dto, Principal principal) {
         return confirmationService.confirmPoem(dto, principal);
     }
 
     @CrossOrigin
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secure/confirmation/reject_poem")
-    public ResponseEntity<Void> rejectPoem(@RequestBody @Valid ConfirmationDto dto) {
-        return confirmationService.rejectPoem(dto);
+    @PutMapping(value = "/secure/confirmation/reject_poem")
+    public ResponseEntity<Void> rejectPoem(@RequestBody @Valid ConfirmationDto dto, Principal principal) {
+        return confirmationService.rejectPoem(dto, principal);
     }
 }
