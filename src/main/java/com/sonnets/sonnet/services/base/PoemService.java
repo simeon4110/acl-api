@@ -134,6 +134,10 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     public ResponseEntity<Void> userDelete(Long id, Principal principal) {
         LOGGER.debug("Deleting poem with id (USER): " + id);
         Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if (poem.getConfirmation().isConfirmed()) {
+            return new ResponseEntity<>(HttpStatus.LOCKED);
+        }
+
         if (poem.getCreatedBy().equals(principal.getName())) {
             poemRepository.delete(poem);
             return new ResponseEntity<>(HttpStatus.OK);
