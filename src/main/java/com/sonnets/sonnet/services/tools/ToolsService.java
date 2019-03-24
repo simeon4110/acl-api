@@ -95,26 +95,14 @@ public class ToolsService {
         return CompletableFuture.completedFuture(result);
     }
 
-    /**
-     * @param text the text to tag.
-     * @return a JSON index of all the tags.
-     */
-    @Async
-    public CompletableFuture<String> tagTextSimple(String text) {
-        LOGGER.debug("Running simple tagger on raw text.");
-        String result = NLPTools.tagTextSimple(text);
-        return CompletableFuture.completedFuture(result);
-    }
 
     /**
      * @param textDto a textDto with the text to lemmatize and optional custom stop words.
      * @return a sorted freqdist of the top 20 results.
      */
-    @Async
-    public CompletableFuture<Map<String, Integer>> frequencyDistribution(TextDto textDto) {
+    public Map<String, Object> frequencyDistribution(TextDto textDto) {
         LOGGER.debug("Running frequency distribution (raw text.)");
-        CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(textDto);
-        return strings.thenApply(freqDist::getFrequency);
+        return tools.FrequencyDistribution.getFrequencyDistribution(textDto.getText(), textDto.getNumberOfTerms());
     }
 
     /**

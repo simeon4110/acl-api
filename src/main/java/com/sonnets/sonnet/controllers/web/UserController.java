@@ -150,4 +150,11 @@ public class UserController {
                                             Principal principal) {
         return userDetailsService.userUpdateEmail(principal, emailChangeDto);
     }
+
+    @CrossOrigin
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping(value = "/secure/user/get_confirmation_progress", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int[] getConfirmationProgress(Principal principal) {
+        return userDetailsService.getConfirmationProgress(principal);
+    }
 }

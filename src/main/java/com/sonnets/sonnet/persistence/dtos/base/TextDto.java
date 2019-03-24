@@ -11,6 +11,7 @@ public class TextDto {
     private String text;
     private String[] customStopWords;
     private int numberOfTopics;
+    private int numberOfTerms;
 
     public String getText() {
         return text;
@@ -36,12 +37,21 @@ public class TextDto {
         this.numberOfTopics = numberOfTopics;
     }
 
+    public int getNumberOfTerms() {
+        return numberOfTerms;
+    }
+
+    public void setNumberOfTerms(int numberOfTerms) {
+        this.numberOfTerms = numberOfTerms;
+    }
+
     @Override
     public String toString() {
         return "TextDto{" +
                 "text='" + text + '\'' +
                 ", customStopWords=" + Arrays.toString(customStopWords) +
                 ", numberOfTopics=" + numberOfTopics +
+                ", numberOfTerms=" + numberOfTerms +
                 '}';
     }
 }

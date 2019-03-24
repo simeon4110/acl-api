@@ -78,11 +78,10 @@ public class ToolsController {
      * @param textDto a textDto with the text and optional custom stop words.
      * @return a Map of where key = word and value = frequency of key.
      */
-    @Async
     @CrossOrigin(origins = "${allowed-origin}")
     @PostMapping(value = "/tools/text/freqdist", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<Map<String, Integer>> getFrequencyDistribution(@RequestBody @Valid TextDto textDto) {
+    public Map<String, Object> getFrequencyDistribution(@RequestBody @Valid TextDto textDto) {
         return toolsService.frequencyDistribution(textDto);
     }
 
