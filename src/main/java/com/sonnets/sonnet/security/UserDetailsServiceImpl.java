@@ -321,4 +321,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    public int[] getConfirmationProgress(Principal principal) {
+        LOGGER.debug("Returning confirmation progress for user: " + principal.getName());
+        User user = userRepository.findByUsername(principal.getName());
+        int[] result = new int[2];
+        result[0] = user.getRequiredSonnets();
+        result[1] = user.getConfirmedSonnets();
+        return result;
+    }
 }

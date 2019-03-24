@@ -36,17 +36,6 @@ public class NLPTools {
     }
 
     /**
-     * Runs without the need for a DTO.
-     *
-     * @param string the text to tag.
-     * @return tagged text.
-     */
-    public static String tagTextSimple(String string) {
-        Document document = new Document(string);
-        return document.json(Sentence::lemmas);
-    }
-
-    /**
      * This method is a fast way to lemmatize a large volume of text.
      *
      * @param textDto the text and optional list of custom stop words.
@@ -67,6 +56,20 @@ public class NLPTools {
             }
         }
         return CompletableFuture.completedFuture(result);
+    }
+
+    public String[] getListOfLemmatizedWords(String input) {
+        Document document = new Document(input);
+        ArrayList<String> result = new ArrayList<>();
+
+        for (Sentence sentence : document.sentences()) {
+            for (int i = 0; i < sentence.length() - 1; i++) {
+                if (!FormatTools.containsStopWords(sentence.lemma(i).toLowerCase().trim())) {
+                    result.add(sentence.lemma(i));
+                }
+            }
+        }
+        return result.toArray(new String[0]);
     }
 
     String getLemmatizedWords(String textToLemmatize) {
