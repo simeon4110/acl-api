@@ -73,15 +73,20 @@ public class ToolsService {
     @Async
     public CompletableFuture<List<String>> lemmatizeText(Long corporaId, String stopWordsId) {
         LOGGER.debug("Running text lemmatizer (corpora): " + corporaId);
+        TextDto dto = parseCorporaToTextDto(stopWordsId);
+        String items = corporaRepository.getCorporaItems(corporaId);
+        dto.setText(parseCorporaItems(items));
+        return pipeline.getListOfLemmatizedWords(dto);
+    }
+
+    private TextDto parseCorporaToTextDto(String stopWordsId) {
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
         if (Integer.parseInt(stopWordsId) != 0) {
             customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
             dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
         }
-        String items = corporaRepository.getCorporaItems(corporaId);
-        dto.setText(parseCorporaItems(items));
-        return pipeline.getListOfLemmatizedWords(dto);
+        return dto;
     }
 
     /**
@@ -113,12 +118,7 @@ public class ToolsService {
     @Async
     public CompletableFuture<Map<String, Integer>> frequencyDistribution(Long corporaId, String stopWordsId) {
         LOGGER.debug("Running frequency distribution (corpora): " + corporaId);
-        TextDto dto = new TextDto();
-        CustomStopWords customStopWords;
-        if (Integer.parseInt(stopWordsId) != 0) {
-            customStopWords = stopWords.getWordsListOrThrowNotFound(stopWordsId);
-            dto.setCustomStopWords(customStopWords.getWords().toArray(new String[0]));
-        }
+        TextDto dto = parseCorporaToTextDto(stopWordsId);
         dto.setText(parseCorporaItems(corporaRepository.getCorporaItems(corporaId)));
         CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(dto);
         return strings.thenApply(freqDist::getFrequency);

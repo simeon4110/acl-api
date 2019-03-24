@@ -62,6 +62,7 @@ object FormatTools {
   def removePunctuation(input: String): String = {
     input
       .replaceAll("""[\p{Punct}&&[^.]]""", "")
+      .replaceAll("'", "")
       .replaceAll("""[0-9]""", "")
       .replace("\n", " ")
       .replace("\\n", " ")

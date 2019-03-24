@@ -5,6 +5,7 @@ import java.util
 import com.sonnets.sonnet.wordtools.NLPTools
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable.ListMap
 
 /**
   * Functional frequency distribution.
@@ -22,13 +23,13 @@ object FrequencyDistribution {
     * @return a java Map of the words.
     */
   def getFrequencyDistribution(input: String, numberOfTerms: Int): util.Map[String, Int] = {
-    val lemmas: Array[String] = pipeline.getListOfLemmatizedWords(input)
+    val lemmas: Array[String] = pipeline.getListOfLemmatizedWords(FormatTools.removePunctuation(input))
     lemmas.map(_.toLowerCase)
     lemmas.map(_.trim)
 
-    // Remove all list items that are only punctuation.
-    val clean: Array[String] = lemmas.filterNot(x => x.contains("""[\p{Punct}&&[^.]]"""))
+    // Remove list items that consist of a "'" or ".".
+    val clean: Array[String] = lemmas.filterNot(x => x.equals("'") || x.equals("."))
     val out: Map[String, Int] = clean.groupBy(identity).map(x => (x._1, x._2.length))
-    mapAsJavaMap(out.slice(0, numberOfTerms))
+    mapAsJavaMap(ListMap(out.toSeq.sortWith(_._2 > _._2): _*).slice(0, numberOfTerms))
   }
 }
