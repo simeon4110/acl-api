@@ -45,7 +45,7 @@ public class MessageService {
         LOGGER.debug("Sending admin message: " + messageDto.toString());
         Message message = new Message();
 
-        message.setUserFrom(messageDto.getUserFrom());
+        message.setUserFrom("ADMIN");
         message.setUserTo(messageDto.getUserTo());
         message.setSubject(messageDto.getSubject());
         message.setContent(messageDto.getContent());
@@ -53,7 +53,7 @@ public class MessageService {
 
         User user = userDetailsService.loadUserObjectByUsername(messageDto.getUserTo());
         emailService.sendSimpleMessage(
-                user.getEmail(), "One of your poems has been rejected.", messageDto.getContent());
+                user.getEmail(), messageDto.getSubject(), messageDto.getContent());
 
         messageRepository.saveAndFlush(message);
     }
@@ -136,9 +136,5 @@ public class MessageService {
     public List<Message> getInbox(Principal principal) {
         LOGGER.debug("Get inbox for user: " + principal.getName());
         return messageRepository.findAllByUserTo(principal.getName());
-    }
-
-    public void sendRejectMessage(String userFrom, String userTo, String message) {
-
     }
 }

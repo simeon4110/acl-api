@@ -168,7 +168,12 @@ public class ConfirmationService {
         poem.setConfirmation(confirmation);
         poemRepository.save(poem);
 
-        messageService.sendRejectMessage("admin", poem.getCreatedBy(), dto.getMessage());
+        MessageDto messageDto = new MessageDto();
+        messageDto.setUserTo(poem.getCreatedBy());
+        messageDto.setSubject("One of your sonnets has been rejected");
+        messageDto.setContent(dto.getMessage());
+        messageService.sendAdminMessage(messageDto);
+
         User user = userRepository.findByUsername(poem.getCreatedBy());
         user.setCanConfirm(false);
         userRepository.saveAndFlush(user);
