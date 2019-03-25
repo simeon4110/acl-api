@@ -109,6 +109,7 @@ public class ConfirmationService {
         if (poem.isTesting()) { // Catch incorrect testing confirmations.
             MessageDto messageDto = new MessageDto();
             messageDto.setUserTo("jharkema");
+            messageDto.setSubject("INCORRECT - testing sonnet");
             messageDto.setUserFrom(principal.getName());
             messageDto.setContent(principal.getName() + " has NOT identified a testing sonnet correctly: "
                     + poem.getTitle());
@@ -151,6 +152,7 @@ public class ConfirmationService {
 
             MessageDto messageDto = new MessageDto();
             messageDto.setUserTo("jharkema");
+            messageDto.setSubject("CORRECT - testing sonnet");
             messageDto.setUserFrom(principal.getName());
             messageDto.setContent(principal.getName() + " has correctly identified a testing sonnet: "
                     + poem.getTitle() + "\nWith message: " + dto.getMessage());
@@ -171,7 +173,7 @@ public class ConfirmationService {
         MessageDto messageDto = new MessageDto();
         messageDto.setUserTo(poem.getCreatedBy());
         messageDto.setSubject("One of your sonnets has been rejected");
-        messageDto.setContent(dto.getMessage());
+        messageDto.setContent("Title: " + poem.getTitle() + "\n" + dto.getMessage());
         messageService.sendAdminMessage(messageDto);
 
         User user = userRepository.findByUsername(poem.getCreatedBy());
