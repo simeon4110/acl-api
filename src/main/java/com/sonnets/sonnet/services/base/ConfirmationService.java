@@ -173,7 +173,7 @@ public class ConfirmationService {
         MessageDto messageDto = new MessageDto();
         messageDto.setUserTo(poem.getCreatedBy());
         messageDto.setSubject("One of your sonnets has been rejected");
-        messageDto.setContent(dto.getMessage());
+        messageDto.setContent("Title: " + poem.getTitle() + "\n" + dto.getMessage());
         messageService.sendAdminMessage(messageDto);
 
         User user = userRepository.findByUsername(poem.getCreatedBy());
