@@ -63,24 +63,30 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
      * @return the poem with the new data copied.
      */
     private static Poem createOrUpdateFromDto(Poem poem, PoemDto dto, Author author) {
-        if (poem.getAuthor() == null) {
-            poem.setAuthor(author);
-        }
-        poem.setCategory(TypeConstants.POEM);
-        poem.setText(parsePoemText(dto.getText()));
-        if (dto.getTitle().isEmpty() || dto.getTitle() == null) {
-            poem.setTitle(poem.getText().get(0));
-        } else {
+        LOGGER.debug("PROCESSING POEM: " + dto.toString());
+        if (poem.getId() != null) {
+            poem.setText(parsePoemText(dto.getText()));
             poem.setTitle(dto.getTitle());
+            poem = parseSourceDetails.parse(poem, dto);
+            poem.setPeriod(dto.getPeriod());
+            poem.setForm(dto.getForm());
+            if (poem.getConfirmation().isPendingRevision()) { // Check to see if the poem is pending revision.
+                poem.getConfirmation().setPendingRevision(false);
+            }
+        } else {
+            poem.setAuthor(author);
+            poem.setCategory(TypeConstants.POEM);
+            poem.setText(parsePoemText(dto.getText()));
+            poem = parseSourceDetails.parse(poem, dto);
+            poem.setPeriod(dto.getPeriod());
+            poem.setForm(dto.getForm());
+            poem.setConfirmation(new Confirmation());
+            if (dto.getTitle().isEmpty() || dto.getTitle() == null) {
+                poem.setTitle(poem.getText().get(0));
+            } else {
+                poem.setTitle(dto.getTitle());
+            }
         }
-        poem.setConfirmation(new Confirmation());
-        poem = parseSourceDetails.parse(poem, dto);
-        poem.setPeriod(dto.getPeriod());
-        poem.setForm(dto.getForm());
-        if (poem.getConfirmation().isPendingRevision()) { // Check to see if the poem is pending revision.
-            poem.getConfirmation().setPendingRevision(false);
-        }
-        LOGGER.debug(poem);
         return poem;
     }
 
@@ -218,6 +224,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         poem = createOrUpdateFromDto(poem, dto, author);
         poemRepository.saveAndFlush(poem);
+        this.updateCanConfirm(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -226,13 +233,16 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     public ResponseEntity<Void> modifyUser(PoemDto dto, Principal principal) {
         LOGGER.debug("Modifying poem (USER): " + dto.toString());
         Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+
         if (poem.getConfirmation().isConfirmed()) {
             return new ResponseEntity<>(HttpStatus.LOCKED);
         }
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+
         if (!principal.getName().equals(poem.getCreatedBy())) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
         poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
         this.updateCanConfirm(poem);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -308,7 +318,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     private void updateCanConfirm(Poem poem) {
         User user = userRepository.findByUsername(poem.getCreatedBy());
         if (poemRepository.countAllByCreatedByAndConfirmation_PendingRevision(
-                user.getUsername(), false) == 0) {
+                user.getUsername(), true) == 0) {
             user.setCanConfirm(true);
             userRepository.saveAndFlush(user);
         }
