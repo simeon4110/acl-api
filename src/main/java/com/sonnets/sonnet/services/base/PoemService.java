@@ -98,7 +98,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
      */
     private static ArrayList<String> parsePoemText(final String input) {
         ArrayList<String> arrayOut = new ArrayList<>();
-        for (String s : input.split("\n|\\n")) {
+        for (String s : input.split("\n")) {
             if (!s.equals("")) {
                 arrayOut.add(s.trim());
             }
