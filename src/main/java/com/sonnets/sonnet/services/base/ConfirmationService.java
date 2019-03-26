@@ -42,6 +42,12 @@ public class ConfirmationService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Converts testing poems into JSON so they appear the same as regular poems.
+     *
+     * @param poem the poem to parse into a json object.
+     * @return the poem as a JsonArray.
+     */
     private static JsonArray parseToJson(Poem poem) {
         JsonObject out = new JsonObject();
         JsonObject author = new JsonObject();
@@ -64,6 +70,9 @@ public class ConfirmationService {
     }
 
     /**
+     * Gives a user a poem to confirm. If the user cannot confirm, or has confirmed the required
+     * number of poems, null is returned.
+     *
      * @param principal of the user making the request.
      * @return an unconfirmed poem if one not added by the user making the request exists. Returns null
      * when a user has confirmed all their assigned poems.
@@ -97,6 +106,8 @@ public class ConfirmationService {
     }
 
     /**
+     * Confirms a poem, notifies admin of correctly identified testing poems.
+     *
      * @param dto       a valid ConfirmationDto.
      * @param principal of the user making the request.
      * @return OK if the poem is confirmed, UNAUTHORIZED if the user is attempting to confirm their own poem.
@@ -124,15 +135,16 @@ public class ConfirmationService {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
+        // Set poem to confirmed.
         Confirmation confirmation = poem.getConfirmation();
         confirmation.setConfirmed(true);
         confirmation.setConfirmedBy(principal.getName());
         confirmation.setConfirmedAt(new Timestamp(System.currentTimeMillis()));
         confirmation.setPendingRevision(false);
-
         poem.setConfirmation(confirmation);
         poemRepository.saveAndFlush(poem);
 
+        // Update confirming users number of confirmed poems +1.
         user.setConfirmedSonnets(user.getConfirmedSonnets() + 1);
         userRepository.saveAndFlush(user);
 
@@ -140,6 +152,10 @@ public class ConfirmationService {
     }
 
     /**
+     * This is a bit of a mess, but it gets the job done. Handles the logic for poem rejections.
+     * All rejections count, and each rejection adds 1 to the user who created the poems required
+     * confirmations.
+     *
      * @param dto a valid ConfirmationDto.
      * @return OK if successful.
      */
@@ -150,6 +166,7 @@ public class ConfirmationService {
         if (poem.isTesting()) { // Catch correct testing rejections.
             User user = userRepository.findByUsername(principal.getName());
 
+            // Send a message to admin with the correct identification of a testing sonnet.
             MessageDto messageDto = new MessageDto();
             messageDto.setUserTo("jharkema");
             messageDto.setSubject("CORRECT - testing sonnet");
@@ -158,18 +175,21 @@ public class ConfirmationService {
                     + poem.getTitle() + "\nWith message: " + dto.getMessage());
             messageService.sendMessage(messageDto, principal);
 
+            // Update the user's confirmed sonnets + 1
             user.setConfirmedSonnets(user.getConfirmedSonnets() + 1);
             userRepository.saveAndFlush(user);
 
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
+        // Set confirmation to false and pending revision to true.
         Confirmation confirmation = poem.getConfirmation();
         confirmation.setConfirmed(false);
         confirmation.setPendingRevision(true);
         poem.setConfirmation(confirmation);
         poemRepository.save(poem);
 
+        // Notify the poems owner of the rejection.
         MessageDto messageDto = new MessageDto();
         messageDto.setUserTo(poem.getCreatedBy());
         messageDto.setSubject("One of your sonnets has been rejected");
