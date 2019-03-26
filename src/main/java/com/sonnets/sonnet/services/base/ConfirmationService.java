@@ -73,7 +73,7 @@ public class ConfirmationService {
         User user = userRepository.findByUsername(principal.getName());
 
         // Catch user's who are finished confirming and return null.
-        if (user.getRequiredSonnets() == user.getConfirmedSonnets() || !user.getCanConfirm()) {
+        if (user.getRequiredSonnets() <= user.getConfirmedSonnets() || !user.getCanConfirm()) {
             return null;
         }
 
