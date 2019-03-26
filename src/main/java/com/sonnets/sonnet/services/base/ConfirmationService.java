@@ -176,9 +176,16 @@ public class ConfirmationService {
         messageDto.setContent("Title: " + poem.getTitle() + "\n" + dto.getMessage());
         messageService.sendAdminMessage(messageDto);
 
+        // Update the user's who's poem is rejected.
         User user = userRepository.findByUsername(poem.getCreatedBy());
+        user.setRequiredSonnets(user.getRequiredSonnets() + 1);
         user.setCanConfirm(false);
         userRepository.saveAndFlush(user);
+
+        // Update the user who did the rejecting.
+        User rejectingUser = userRepository.findByUsername(principal.getName());
+        rejectingUser.setConfirmedSonnets(rejectingUser.getConfirmedSonnets() + 1);
+        userRepository.saveAndFlush(rejectingUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
