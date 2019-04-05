@@ -1,5 +1,8 @@
 package com.sonnets.sonnet.services.search;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * Stores all search related content (i.e. field names.)
  */
@@ -9,8 +12,13 @@ public abstract class SearchConstants {
         // Private to block default constructor.
     }
 
+    public static final Path DOCS_PATH = Paths.get("/var/lucene/indexes");
+
     // Numeric range query settings.
     public static final int INT_DISTANCE = 20;
+
+    // Result constants
+    public static final int MAX_RESULT_SIZE = 100;
 
     // General field names.
     public static final String CATEGORY = "category";

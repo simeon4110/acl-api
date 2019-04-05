@@ -3,21 +3,27 @@ package com.sonnets.sonnet.services.search;
 import com.google.gson.Gson;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
-import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
-import com.sonnets.sonnet.persistence.models.base.*;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.jpa.Search;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
+import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
+import org.apache.lucene.util.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,65 +37,106 @@ import java.util.List;
 @Transactional
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
+    private static final StandardAnalyzer standardAnalyzer = new StandardAnalyzer();
     private static final Gson gson = new Gson();
-    private final StandardAnalyzer standardAnalyzer;
+
     private final EntityManager entityManager;
 
     @Autowired
     public SearchQueryHandlerService(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.standardAnalyzer = new StandardAnalyzer();
     }
 
-    /**
-     * Parses a Lucene query string and returns the results.
-     *
-     * @param queryString the query string to parse.
-     * @param itemTypes   a list of class names to search.
-     * @return a list of results.
-     * @throws ParseException if the query string is invalid.
-     */
-    public String doSearch(String queryString, String[] itemTypes) throws ParseException {
-        LOGGER.debug("Parsing query string: " + queryString + " on object types " + Arrays.toString(itemTypes));
-        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery;
+    private static Query getQuery(SearchParam param) {
+        if (param.getSearchString().split(" ").length == 1) {
+            return new TermQuery(new Term(param.getFieldName(), param.getSearchString()));
+        }
+        return new QueryBuilder(standardAnalyzer).createPhraseQuery(param.getFieldName(),
+                param.getSearchString());
+    }
 
-        // Catch empty itemTypes definition.
-        if (itemTypes == null || itemTypes.length == 0) {
-            fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class, ShortStory.class);
+    private static String highlightText(Query query, Analyzer analyzer, String fieldName, String text) {
+        QueryScorer queryScorer = new QueryScorer(query);
+        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<span>", "</span>");
+        Highlighter highlighter = new Highlighter(formatter, queryScorer);
+        try {
+            return highlighter.getBestFragment(analyzer, fieldName, text);
+        } catch (IOException | InvalidTokenOffsetsException e) {
+            LOGGER.error(e.getMessage());
+            return null;
+        }
+    }
+
+    private static List<String> parseClasses(final String[] toParse) {
+        if (toParse == null || toParse.length == 0) {
+            return Arrays.asList(
+                    "Book",
+                    "Poem",
+                    "Section",
+                    "ShortStory"
+            );
         } else { // Otherwise, parse the list into a list of classes and use the list to build a fullTextQuery.
-            LOGGER.debug("Item types length: " + itemTypes.length);
-            ArrayList<Class<?>> parsedClasses = new ArrayList<>();
-            for (String s : itemTypes) {
+            ArrayList<String> parsedClasses = new ArrayList<>();
+            for (String s : toParse) {
                 switch (s.toLowerCase()) {
                     case "book":
-                        parsedClasses.add(Section.class);
+                        parsedClasses.add("Book");
                         break;
                     case "poem":
-                        parsedClasses.add(Poem.class);
+                        parsedClasses.add("Poem");
                         break;
                     case "section":
-                        parsedClasses.add(Section.class);
+                        parsedClasses.add("Section");
                         break;
                     case "short story":
-                        parsedClasses.add(ShortStory.class);
+                        parsedClasses.add("ShortStory");
                         break;
                     case "any":
-                        parsedClasses.add(Poem.class);
-                        parsedClasses.add(Section.class);
-                        parsedClasses.add(ShortStory.class);
+                        parsedClasses.add("Poem");
+                        parsedClasses.add("Section");
+                        parsedClasses.add("ShortStory");
                         break;
                 }
             }
-
-            // This is very expensive, I will probably optimize it at some point.
-            fullTextQuery = manager.createFullTextQuery(q, parsedClasses.toArray(Class[]::new))
-                    .setProjection(FullTextQuery.DOCUMENT_ID, FullTextQuery.EXPLANATION, FullTextQuery.THIS);
-
-            return gson.toJson(fullTextQuery.getResultList());
+            return parsedClasses;
         }
-        return gson.toJson(fullTextQuery.getResultList());
+    }
+
+    private String executeSearch(Query query, String[] itemTypes) throws JSONException {
+        return null;
+    }
+
+    public String parseSearch(List<SearchParam> params, String[] itemTypes) {
+        LOGGER.debug("Parsing query string: " + params + " on object types " + Arrays.toString(itemTypes));
+        try {
+            // Catch single field queries.
+            if (params.size() == 1) {
+                return executeSearch(getQuery(params.get(0)), itemTypes);
+            }
+
+            // Deal with multi-field query.
+            final BooleanQuery.Builder builder = new BooleanQuery.Builder();
+            for (SearchParam param : params) {
+                BooleanClause.Occur clause;
+                switch (param.getJoinType()) {
+                    case "OR":
+                        clause = BooleanClause.Occur.SHOULD;
+                        break;
+                    case "NOT":
+                        clause = BooleanClause.Occur.MUST_NOT;
+                        break;
+                    default:
+                        clause = BooleanClause.Occur.MUST;
+                }
+                builder.add(getQuery(param), clause);
+            }
+
+            return executeSearch(builder.build(), itemTypes);
+
+        } catch (JSONException e) {
+            LOGGER.error(e);
+            return gson.toJson(e);
+        }
     }
 
     /**

@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
-import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -49,8 +47,6 @@ public class Poem extends Item implements Serializable {
     private String form; // The form of genre of the poem.
     @Embedded
     private Confirmation confirmation;
-    @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> text;
     @JsonIgnore
