@@ -100,13 +100,7 @@ public class SearchQueryHandlerService {
      * @throws ParseException if the query doesn't parse.
      */
     public List searchAuthor(AuthorDto dto) throws ParseException {
-        LOGGER.debug("Searching for author: " + dto.toString());
-        String queryString = "firstName: \"" + dto.getFirstName().toLowerCase() +
-                "\" AND lastName: \"" + dto.getLastName().toLowerCase() + "\"";
-        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
-        return fullTextQuery.getResultList();
+        return null;
     }
 
     /**
@@ -117,16 +111,5 @@ public class SearchQueryHandlerService {
      */
     public void similarExistsPoem(SearchDto dto) throws ParseException {
         LOGGER.debug("Searching form poems similar to: " + dto.toString());
-        String queryString =
-                "author.firstName: \"" + dto.getAuthor().getFirstName() +
-                        "\" AND author.lastName: \"" + dto.getAuthor().getLastName() +
-                        "\" AND title: \"" + dto.getTitle() + "\"";
-        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
-        if (fullTextQuery.getResultSize() > 0) {
-            LOGGER.error("Found a similar poem!!");
-            throw new ItemAlreadyExistsException("Item: '" + dto.toString() + "' already exists.");
-        }
     }
 }

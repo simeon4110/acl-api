@@ -1,13 +1,9 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
-import com.sonnets.sonnet.persistence.bridges.SectionBridge;
 import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
-import com.sonnets.sonnet.services.search.SearchConstants;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,20 +26,14 @@ import java.util.Objects;
                 procedureName = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PDO_PROCEDURE
         )
 })
-@Indexed
 @Entity
 @DiscriminatorValue(TypeConstants.BOOK)
 public class Book extends Item implements Serializable {
     private static final long serialVersionUID = -5579725087589223758L;
-    @Field(name = SearchConstants.BOOK_TYPE, store = Store.YES, termVector = TermVector.NO)
     @Column
     private String type;
-    @Field(name = SearchConstants.BOOK_SECTION, store = Store.YES, termVector = TermVector.YES)
-    @FieldBridge(impl = SectionBridge.class)
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Section> sections;
-    @Field(name = SearchConstants.BOOK_CHARACTER, store = Store.YES, termVector = TermVector.YES)
-    @FieldBridge(impl = CharacterListBridge.class)
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "book_characters", joinColumns = {
             @JoinColumn(name = "book_id", referencedColumnName = "id"),

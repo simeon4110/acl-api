@@ -1,8 +1,6 @@
 package com.sonnets.sonnet.persistence.models.annotation;
 
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.services.search.SearchConstants;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -15,7 +13,6 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@Indexed
 @Entity
 @Table
 @DiscriminatorValue(TypeConstants.DIALOG)
@@ -28,8 +25,6 @@ public class Dialog extends AnnotationBase {
     @Column
     private Long sectionId;
     @Column(columnDefinition = "TEXT")
-    @Field(name = SearchConstants.DIALOG_BODY, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     private String body;
 
     public Dialog() {

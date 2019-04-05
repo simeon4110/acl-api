@@ -8,7 +8,6 @@ import com.sonnets.sonnet.persistence.models.base.*;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.*;
-import org.hibernate.search.annotations.DocumentId;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -109,7 +108,6 @@ public class Corpora extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -3561569564692824043L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @DocumentId
     private Long id;
     @Column
     private String name;

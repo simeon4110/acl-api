@@ -1,10 +1,7 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.google.gson.annotations.Expose;
-import com.sonnets.sonnet.persistence.bridges.AuthorBridge;
 import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
-import com.sonnets.sonnet.services.search.SearchConstants;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,47 +32,34 @@ public abstract class Item extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -5596854181341354264L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @DocumentId
     @Expose
     private Long id;
-    @Field(name = SearchConstants.CATEGORY, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String category;
-    @Field(name = SearchConstants.AUTHOR, store = Store.YES, analyze = Analyze.YES)
-    @FieldBridge(impl = AuthorBridge.class)
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @Expose
     private Author author;
-    @Field(name = SearchConstants.TITLE, store = Store.YES, analyze = Analyze.YES)
-    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column
     @Expose
     private String title;
-    @Field(name = SearchConstants.SOURCE_TITLE, store = Store.YES, analyze = Analyze.YES)
-    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column
     @Expose
     private String sourceTitle;
     @Column
     private String description;
-    @Field(name = SearchConstants.PERIOD, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String period;
-    @Field(name = SearchConstants.EDITION, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String edition;
-    @Field(name = SearchConstants.PLACE_OF_PUB, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String placeOfPublication;
-    @Field(name = SearchConstants.PUBLISHER, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String publisher;
-    @Field(name = SearchConstants.DATE_OF_PUB, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private Date dateOfPublication;
@@ -88,19 +72,15 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     @Expose
     private Date dateOfAccess;
-    @Field(name = SearchConstants.JOURNAL_NAME, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String journalName;
-    @Field(name = SearchConstants.DOI, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String DOI;
-    @Field(name = SearchConstants.JOURNAL_VOL, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private int journalVolume;
-    @Field(name = SearchConstants.JOURNAL_ISSUE, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private int journalIssue;
@@ -110,7 +90,6 @@ public abstract class Item extends Auditable<String> implements Serializable {
     @Column
     @Expose
     private String journalAbbr;
-    @Field(name = SearchConstants.LANGUAGE, store = Store.YES, analyze = Analyze.NO)
     @Column
     @Expose
     private String language;
