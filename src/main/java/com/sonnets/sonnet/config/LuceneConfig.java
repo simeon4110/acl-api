@@ -52,7 +52,7 @@ public class LuceneConfig {
     private void indexPoems() {
         LOGGER.debug("[SEARCH] :::::: Starting to write poem index...");
         List<Poem> poems = poemRepository.findAllByHidden(false).orElseThrow(RepositoryException::new);
-        LOGGER.debug(String.format("[SEARCH] :::::: Poems to index: %s", poems.size()));
+        LOGGER.debug(String.format("[SEARCH] :::::: Poems to index: %s.", poems.size()));
 
         try (IndexWriter writer = createWriter(TypeConstants.POEM)) {
             for (Poem p : poems) {
@@ -83,7 +83,8 @@ public class LuceneConfig {
 
                 // add poem doc to writer.
                 writer.addDocument(document);
-                LOGGER.debug(String.format("[SEARCH] :::::: id: %s |'%s' added to document index.", p.getId(), p.getTitle()));
+                LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", p.getId(),
+                        p.getTitle()));
             }
 
             writer.commit();

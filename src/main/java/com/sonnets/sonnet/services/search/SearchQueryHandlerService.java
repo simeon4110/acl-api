@@ -76,7 +76,8 @@ public class SearchQueryHandlerService {
      * @param searcher the IndexSearcher used to execute the query.
      * @return a JSONArray with the relevant fragment.
      */
-    private List<Map<String, String>> highlightResults(final Query query, final TopDocs topDocs, final IndexSearcher searcher) {
+    private List<Map<String, String>> highlightResults(final Query query, final TopDocs topDocs,
+                                                       final IndexSearcher searcher) {
         Formatter formatter = new SimpleHTMLFormatter();
         QueryScorer scorer = new QueryScorer(query);
         Highlighter highlighter = new Highlighter(formatter, scorer);
@@ -137,14 +138,19 @@ public class SearchQueryHandlerService {
                 TopDocs hits = searcher.search(query, SearchConstants.MAX_RESULT_SIZE);
                 out.addAll(highlightResults(query, hits, searcher));
             } catch (IOException e) {
-                LOGGER.error(String.format("[SEARCH] :::::: Error opening %s index", i));
-                return gson.toJson(e.getMessage());
+                LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", i));
+                Map<String, String> errorOut = new HashMap<>();
+                errorOut.put("error", e.getMessage());
+                return gson.toJson(errorOut);
             } catch (ParseException e) {
-                LOGGER.error("[SEARCH] :::::: Error parsing query / json");
-                return gson.toJson(e.getMessage());
+                LOGGER.error("[SEARCH] :::::: Error parsing query.");
+                Map<String, String> errorOut = new HashMap<>();
+                errorOut.put("error", e.getMessage());
+                return gson.toJson(errorOut);
             }
         }
 
+        LOGGER.debug("[SEARCH] :::::: Total results: " + out.size());
         return gson.toJson(out);
     }
 
