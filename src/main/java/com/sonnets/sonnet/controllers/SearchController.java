@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers;
 
-import com.sonnets.sonnet.services.search.SearchParam;
+import com.sonnets.sonnet.persistence.dtos.web.SearchParamDto;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -24,8 +24,8 @@ public class SearchController {
 
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String doSearch(@RequestBody List<SearchParam> searchParams,
+    public String doSearch(@RequestBody List<SearchParamDto> searchParams,
                            @RequestParam(value = "item_types", required = false) String[] itemTypes) {
-        return searchQueryHandlerService.parseSearch(searchParams, itemTypes);
+        return searchQueryHandlerService.search(searchParams, itemTypes);
     }
 }

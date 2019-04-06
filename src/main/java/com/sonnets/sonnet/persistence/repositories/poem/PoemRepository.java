@@ -18,6 +18,8 @@ public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositor
 
     Optional<List<Poem>> findAllByForm(final String form);
 
+    Optional<List<Poem>> findAllByHidden(final boolean hidden);
+
     Optional<Page<Poem>> findAllByForm(final String form, final Pageable pageable);
 
     Optional<List<Poem>> findAllByCreatedBy(final String createdBy);

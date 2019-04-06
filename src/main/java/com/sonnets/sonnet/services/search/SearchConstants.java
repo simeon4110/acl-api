@@ -19,26 +19,27 @@ public abstract class SearchConstants {
 
     // Result constants
     public static final int MAX_RESULT_SIZE = 100;
+    public static final int FRAGMENT_SIZE = 75;
 
     // General field names.
+    public static final String ID = "id";
     public static final String CATEGORY = "category";
-    public static final int PRECISION_STEP = 2;
+    public static final String AUTHOR = "author";
+    public static final String AUTHOR_FIRST_NAME = "firstName";
+    public static final String AUTHOR_LAST_NAME = "lastName";
+    public static final String YEAR = "publicationYear";
+    public static final String PERIOD = "period";
+    public static final String IS_PUBLIC = "isPublicDomain";
+    public static final String TITLE = "title";
     public static final String TOPIC_MODEL = "topic_model";
     public static final String VERSION_TEXT = "version_text";
+    public static final String BEST_FRAGMENT = "context";
 
     // Lucene fuzzy and phrase query constants.
+    public static final int PRECISION_STEP = 2;
     public static final int PREFIX_LENGTH = 0; // How many chars are "fixed" to the front.
     public static final int EDIT_DISTANCE = 2; // Levenstein edit distance.
     public static final int SLOP = 1; // Words are directly adjacent.
-    public static final String AUTHOR = "author";
-    public static final String AUTHOR_FIRST_NAME = "author.firstName";
-    public static final String AUTHOR_LAST_NAME = "author.lastName";
-    public static final String AUTHOR_FIRST_NAME_RAW = "firstName";
-    public static final String AUTHOR_MIDDLE_NAME_RAW = "middleName";
-    public static final String AUTHOR_LAST_NAME_RAW = "lastName";
-    public static final String YEAR = "publicationYear";
-    public static final String TITLE = "title";
-    public static final String PERIOD = "period";
 
     // Item specific field names.
     public static final String POEM_FORM = "poem_form";
@@ -58,9 +59,6 @@ public abstract class SearchConstants {
     public static final String OTHER_SUB_TYPE = "other_sub_type";
     public static final String OTHER_TEXT = "other_text";
     public static final String SOURCE_TITLE = "source_title";
-
-    // Analyzer Names
-    public static final String TEXT_ANALYZER = "textAnalyzer";
 
     // Source field names.
     public static final String EDITION = "edition";

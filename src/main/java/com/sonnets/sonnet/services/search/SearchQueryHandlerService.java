@@ -3,30 +3,29 @@ package com.sonnets.sonnet.services.search;
 import com.google.gson.Gson;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
+import com.sonnets.sonnet.persistence.dtos.web.SearchParamDto;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
-import org.apache.lucene.search.highlight.QueryScorer;
-import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
-import org.apache.lucene.util.QueryBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.highlight.*;
+import org.apache.lucene.store.FSDirectory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Routes a SearchDto into queries based on boolean flags set in the dto.
@@ -34,109 +33,119 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-@Transactional
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
-    private static final StandardAnalyzer standardAnalyzer = new StandardAnalyzer();
     private static final Gson gson = new Gson();
+    private final Analyzer analyzer = new StandardAnalyzer();
 
-    private final EntityManager entityManager;
-
-    @Autowired
-    public SearchQueryHandlerService(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    private static IndexReader getReader(final String itemType) throws IOException {
+        return DirectoryReader.open(FSDirectory.open(
+                Paths.get(String.format("%s/%s", SearchConstants.DOCS_PATH, itemType))
+        ));
     }
 
-    private static Query getQuery(SearchParam param) {
-        if (param.getSearchString().split(" ").length == 1) {
-            return new TermQuery(new Term(param.getFieldName(), param.getSearchString()));
-        }
-        return new QueryBuilder(standardAnalyzer).createPhraseQuery(param.getFieldName(),
-                param.getSearchString());
-    }
+    /**
+     * Parse a List of SearchParams into a valid Lucene query string.
+     *
+     * @param dtos the list of Params to parse.
+     * @return a String formatted into a Lucene query string.
+     */
+    private static String parseSearchParams(List<SearchParamDto> dtos) {
+        StringBuilder sb = new StringBuilder();
 
-    private static String highlightText(Query query, Analyzer analyzer, String fieldName, String text) {
-        QueryScorer queryScorer = new QueryScorer(query);
-        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<span>", "</span>");
-        Highlighter highlighter = new Highlighter(formatter, queryScorer);
-        try {
-            return highlighter.getBestFragment(analyzer, fieldName, text);
-        } catch (IOException | InvalidTokenOffsetsException e) {
-            LOGGER.error(e.getMessage());
-            return null;
-        }
-    }
+        // Handle row one and remove it from the list.
+        sb.append(String.format("(%s: '%s') ", dtos.get(0).getFieldName(), dtos.get(0).getSearchString()));
+        dtos.remove(0);
 
-    private static List<String> parseClasses(final String[] toParse) {
-        if (toParse == null || toParse.length == 0) {
-            return Arrays.asList(
-                    "Book",
-                    "Poem",
-                    "Section",
-                    "ShortStory"
-            );
-        } else { // Otherwise, parse the list into a list of classes and use the list to build a fullTextQuery.
-            ArrayList<String> parsedClasses = new ArrayList<>();
-            for (String s : toParse) {
-                switch (s.toLowerCase()) {
-                    case "book":
-                        parsedClasses.add("Book");
-                        break;
-                    case "poem":
-                        parsedClasses.add("Poem");
-                        break;
-                    case "section":
-                        parsedClasses.add("Section");
-                        break;
-                    case "short story":
-                        parsedClasses.add("ShortStory");
-                        break;
-                    case "any":
-                        parsedClasses.add("Poem");
-                        parsedClasses.add("Section");
-                        parsedClasses.add("ShortStory");
-                        break;
-                }
+        // Parse remaining params.
+        if (!dtos.isEmpty()) {
+            for (SearchParamDto d : dtos) {
+                sb.append(d.getJoinType());
+                sb.append(String.format(" (%s: '%s') ", d.getFieldName(), d.getSearchString()));
             }
-            return parsedClasses;
         }
+
+        return sb.toString().trim();
     }
 
-    private String executeSearch(Query query, String[] itemTypes) throws JSONException {
-        return null;
+    /**
+     * Grabs the most relevant fragment from a completed search result / query.
+     *
+     * @param query    an executed query.
+     * @param topDocs  the TopDocs result.
+     * @param searcher the IndexSearcher used to execute the query.
+     * @return a JSONArray with the relevant fragment.
+     */
+    private List<Map<String, String>> highlightResults(final Query query, final TopDocs topDocs, final IndexSearcher searcher) {
+        Formatter formatter = new SimpleHTMLFormatter();
+        QueryScorer scorer = new QueryScorer(query);
+        Highlighter highlighter = new Highlighter(formatter, scorer);
+        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, SearchConstants.FRAGMENT_SIZE);
+        highlighter.setTextFragmenter(fragmenter);
+
+        // :todo: fix the multiple duplicated docs showing up in results.
+        List<Map<String, String>> out = new ArrayList<>();
+        for (ScoreDoc d : topDocs.scoreDocs) {
+            try {
+                Document document = searcher.doc(d.doc);
+                Map<String, String> objectOut = new HashMap<>();
+
+                objectOut.put(SearchConstants.AUTHOR_FIRST_NAME, document.get(SearchConstants.AUTHOR_FIRST_NAME));
+                objectOut.put(SearchConstants.AUTHOR_LAST_NAME, document.get(SearchConstants.AUTHOR_LAST_NAME));
+                objectOut.put(SearchConstants.ID, document.getField(SearchConstants.ID).stringValue());
+                objectOut.put(SearchConstants.TITLE, document.get(SearchConstants.TITLE));
+                objectOut.put(SearchConstants.CATEGORY, document.get(SearchConstants.CATEGORY));
+                objectOut.put(SearchConstants.PERIOD, document.get(SearchConstants.PERIOD));
+                objectOut.put(SearchConstants.IS_PUBLIC, document.get(SearchConstants.IS_PUBLIC));
+                objectOut.put(SearchConstants.TOPIC_MODEL, document.get(SearchConstants.TOPIC_MODEL));
+                objectOut.put(SearchConstants.TEXT, document.get(SearchConstants.TEXT));
+                objectOut.put(SearchConstants.BEST_FRAGMENT,
+                        highlighter.getBestFragment(this.analyzer, SearchConstants.TEXT,
+                                document.getField(SearchConstants.TEXT).stringValue()));
+
+                out.add(objectOut);
+            } catch (IOException e) {
+                LOGGER.error(e);
+                LOGGER.error(String.format("[SEARCH] :::::: Error processing document '%s'", d.doc));
+            } catch (InvalidTokenOffsetsException e) {
+                LOGGER.error(e);
+            }
+        }
+        return out;
     }
 
-    public String parseSearch(List<SearchParam> params, String[] itemTypes) {
-        LOGGER.debug("Parsing query string: " + params + " on object types " + Arrays.toString(itemTypes));
-        try {
-            // Catch single field queries.
-            if (params.size() == 1) {
-                return executeSearch(getQuery(params.get(0)), itemTypes);
+    /**
+     * Execute a search.
+     *
+     * @param params    the list of search parameters to use.
+     * @param itemTypes the list of item types to search for.
+     * @return a JSON formatted string of the results.
+     */
+    public String search(final List<SearchParamDto> params, final String[] itemTypes) {
+        List<Map<String, String>> out = new ArrayList<>();
+        for (String i : itemTypes) {
+            try (IndexReader reader = getReader(i)) {
+                // Parse params into a query string.
+                String queryString = parseSearchParams(params);
+                LOGGER.debug(String.format("[SEARCH] :::::: Query string: \"%s\"", queryString));
+
+                // Init a searcher and analyzer, and parse the query string into a Query.
+                IndexSearcher searcher = new IndexSearcher(reader);
+                Query query = new QueryParser(null, analyzer).parse(queryString);
+
+                // Execute search and append results to out JSONArray.
+                TopDocs hits = searcher.search(query, SearchConstants.MAX_RESULT_SIZE);
+                out.addAll(highlightResults(query, hits, searcher));
+            } catch (IOException e) {
+                LOGGER.error(String.format("[SEARCH] :::::: Error opening %s index", i));
+                return gson.toJson(e.getMessage());
+            } catch (ParseException e) {
+                LOGGER.error("[SEARCH] :::::: Error parsing query / json");
+                return gson.toJson(e.getMessage());
             }
-
-            // Deal with multi-field query.
-            final BooleanQuery.Builder builder = new BooleanQuery.Builder();
-            for (SearchParam param : params) {
-                BooleanClause.Occur clause;
-                switch (param.getJoinType()) {
-                    case "OR":
-                        clause = BooleanClause.Occur.SHOULD;
-                        break;
-                    case "NOT":
-                        clause = BooleanClause.Occur.MUST_NOT;
-                        break;
-                    default:
-                        clause = BooleanClause.Occur.MUST;
-                }
-                builder.add(getQuery(param), clause);
-            }
-
-            return executeSearch(builder.build(), itemTypes);
-
-        } catch (JSONException e) {
-            LOGGER.error(e);
-            return gson.toJson(e);
         }
+
+        return gson.toJson(out);
     }
 
     /**
