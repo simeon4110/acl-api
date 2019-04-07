@@ -138,6 +138,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.9.7" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-highlighter:8.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:8.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:8.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-memory:8.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:8.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:8.0.0" level="project" />
@@ -171,7 +172,6 @@
     <orderEntry type="library" name="Maven: com.apple:AppleJavaExtensions:1.4" level="project" />
     <orderEntry type="library" name="Maven: de.jollyday:jollyday:0.4.9" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.8.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:4.10.3" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.io7m.xom:xom:1.2.10" level="project" />
     <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.4.01" level="project" />

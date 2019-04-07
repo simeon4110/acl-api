@@ -1,12 +1,11 @@
 package com.sonnets.sonnet.services.search;
 
 import com.google.gson.Gson;
+import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.web.SearchParamDto;
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -33,7 +32,6 @@ import java.util.Map;
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
     private static final Gson gson = new Gson();
-    private final Analyzer analyzer = new StandardAnalyzer();
 
     private static IndexReader getReader(final String itemType) throws IOException {
         return DirectoryReader.open(FSDirectory.open(
@@ -46,14 +44,9 @@ public class SearchQueryHandlerService {
      * @param field the field to search.
      * @return a TermQuery or PhraseQuery depending on the logic below.
      */
-    private static Query parseField(final String in, final String field) {
+    private static Query parseField(String in, final String field) {
+        in = in.toLowerCase();
         if (in.split(" ").length > 1) {
-            // Titles and Authors cannot be handled like phrases.
-            if (field.equals(SearchConstants.PARENT_TITLE) || field.equals(SearchConstants.AUTHOR_FIRST_NAME) ||
-                    field.equals(SearchConstants.AUTHOR_LAST_NAME)) {
-                return new TermQuery(new Term(field, in));
-            }
-
             PhraseQuery.Builder builder = new PhraseQuery.Builder();
             for (String s : in.split(" ")) {
                 builder.add(new Term(field, s));
@@ -128,13 +121,15 @@ public class SearchQueryHandlerService {
                 objectOut.put(SearchConstants.PERIOD, document.get(SearchConstants.PERIOD));
                 objectOut.put(SearchConstants.IS_PUBLIC, document.get(SearchConstants.IS_PUBLIC));
                 objectOut.put(SearchConstants.TOPIC_MODEL, document.get(SearchConstants.TOPIC_MODEL));
-                objectOut.put(SearchConstants.TEXT, document.get(SearchConstants.TEXT));
                 objectOut.put(SearchConstants.PARENT_TITLE, document.get(SearchConstants.PARENT_TITLE));
 
                 // Text highlighting; returns up to MAX_FRAGMENTS matching passages.
                 objectOut.put(SearchConstants.BEST_FRAGMENT,
-                        String.join(" ::: ", highlighter.getBestFragments(this.analyzer, SearchConstants.TEXT,
-                                document.get(SearchConstants.TEXT), SearchConstants.MAX_FRAGMENTS))
+                        String.join(" ::: ", highlighter.getBestFragments(
+                                LuceneConfig.getAnalyzer(),
+                                SearchConstants.TEXT,
+                                document.get(SearchConstants.TEXT),
+                                SearchConstants.MAX_FRAGMENTS))
                                 .replace("\n", " ").trim());
                 out.add(objectOut);
             } catch (IOException e) {

@@ -9,7 +9,10 @@ import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
@@ -20,7 +23,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is where the Lucene indexes are defined. Runs after db initialization and writes Lucene indexes to
@@ -33,12 +38,44 @@ public class LuceneConfig {
     private static final Logger LOGGER = Logger.getLogger(LuceneConfig.class);
     private final PoemRepository poemRepository;
     private final SectionRepositoryBase sectionRepositoryBase;
+    private static PerFieldAnalyzerWrapper analyzer;
 
     @Autowired
     public LuceneConfig(PoemRepository poemRepository, SectionRepositoryBase sectionRepositoryBase) {
         this.poemRepository = poemRepository;
         this.sectionRepositoryBase = sectionRepositoryBase;
+        analyzer = new PerFieldAnalyzerWrapper(
+                new EnglishAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET), getAnalyzerMap());
         this.init();
+    }
+
+    private static Map<String, Analyzer> getAnalyzerMap() {
+        Map<String, Analyzer> analyzerMap = new HashMap<>();
+
+        try {
+            Analyzer lowerCaseStandardAnalyzer = CustomAnalyzer.builder()
+                    .withTokenizer("standard")
+                    .addTokenFilter("lowercase")
+                    .build();
+
+            analyzerMap.put(SearchConstants.TEXT, CustomAnalyzer.builder()
+                    .withTokenizer("standard")
+                    .addTokenFilter("stop")
+                    .addTokenFilter("englishminimalstem")
+                    .addTokenFilter("englishpossessive")
+                    .addTokenFilter("trim")
+                    .addTokenFilter("lowercase")
+                    .build());
+
+            analyzerMap.put(SearchConstants.PARENT_TITLE, lowerCaseStandardAnalyzer);
+            analyzerMap.put(SearchConstants.TITLE, lowerCaseStandardAnalyzer);
+            analyzerMap.put(SearchConstants.AUTHOR_FIRST_NAME, lowerCaseStandardAnalyzer);
+            analyzerMap.put(SearchConstants.AUTHOR_LAST_NAME, lowerCaseStandardAnalyzer);
+            return analyzerMap;
+        } catch (IOException e) {
+            LOGGER.error(e);
+            return null;
+        }
     }
 
     private void init() {
@@ -55,31 +92,12 @@ public class LuceneConfig {
      */
     private static IndexWriter createWriter(final String objectType) throws IOException {
         FSDirectory dir = FSDirectory.open(Paths.get(String.format("%s/%s", SearchConstants.DOCS_PATH, objectType)));
-        IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
         return new IndexWriter(dir, config);
     }
 
-    /**
-     * Parses fields for all Objects that inherit the Item class.
-     *
-     * @param document the document to parse the fields onto.
-     * @param item     the item containing the data.
-     * @return the document with the Item fields added.
-     */
-    private Document parseCommonFields(final Document document, final Item item) {
-        document.add(new StringField(SearchConstants.ID, item.getId().toString(), Field.Store.YES));
-        document.add(new TextField(SearchConstants.TITLE, item.getTitle(), Field.Store.YES));
-        document.add(new TextField(SearchConstants.CATEGORY, item.getCategory(), Field.Store.YES));
-        document.add(new StringField(SearchConstants.AUTHOR_FIRST_NAME, item.getAuthor().getFirstName(),
-                Field.Store.YES));
-        document.add(new StringField(SearchConstants.AUTHOR_LAST_NAME, item.getAuthor().getLastName(),
-                Field.Store.YES));
-        document.add(new StringField(SearchConstants.PERIOD, item.getPeriod(), Field.Store.YES));
-        if (item.getPublicDomain() != null) { // Some items do not have this toggled.
-            document.add(new TextField(SearchConstants.IS_PUBLIC, item.getPublicDomain().toString(),
-                    Field.Store.YES));
-        }
-        return document;
+    public static Analyzer getAnalyzer() {
+        return analyzer;
     }
 
     /**
@@ -130,6 +148,29 @@ public class LuceneConfig {
     }
 
     /**
+     * Parses fields for all Objects that inherit the Item class.
+     *
+     * @param document the document to parse the fields onto.
+     * @param item     the item containing the data.
+     * @return the document with the Item fields added.
+     */
+    private Document parseCommonFields(final Document document, final Item item) {
+        document.add(new StringField(SearchConstants.ID, item.getId().toString(), Field.Store.YES));
+        document.add(new TextField(SearchConstants.TITLE, item.getTitle(), Field.Store.YES));
+        document.add(new TextField(SearchConstants.CATEGORY, item.getCategory(), Field.Store.YES));
+        document.add(new TextField(SearchConstants.AUTHOR_FIRST_NAME, item.getAuthor().getFirstName(),
+                Field.Store.YES));
+        document.add(new TextField(SearchConstants.AUTHOR_LAST_NAME, item.getAuthor().getLastName(),
+                Field.Store.YES));
+        document.add(new StringField(SearchConstants.PERIOD, item.getPeriod(), Field.Store.YES));
+        if (item.getPublicDomain() != null) { // Some items do not have this toggled.
+            document.add(new TextField(SearchConstants.IS_PUBLIC, item.getPublicDomain().toString(),
+                    Field.Store.YES));
+        }
+        return document;
+    }
+
+    /**
      * Writes all sections to a search index. Deletes any existing indexes first.
      */
     private void indexSections() {
@@ -142,7 +183,7 @@ public class LuceneConfig {
             for (Section s : sections) {
                 Document document = parseCommonFields(new Document(), s);
                 document.add(new StringField(SearchConstants.PARENT_ID, s.getParentId().toString(), Field.Store.YES));
-                document.add(new StringField(SearchConstants.PARENT_TITLE, s.getParentTitle(), Field.Store.YES));
+                document.add(new TextField(SearchConstants.PARENT_TITLE, s.getParentTitle(), Field.Store.YES));
                 document.add(getTextField(s.getText()));
 
                 writer.addDocument(document);

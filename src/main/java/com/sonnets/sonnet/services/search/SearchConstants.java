@@ -40,7 +40,7 @@ public abstract class SearchConstants {
     public static final int PRECISION_STEP = 2;
     public static final int PREFIX_LENGTH = 0; // How many chars are "fixed" to the front.
     public static final int EDIT_DISTANCE = 2; // Levenstein edit distance.
-    public static final int SLOP = 1; // Words are separated by no more than 3 words.
+    public static final int SLOP = 2; // Words are separated by no more than 3 words.
 
     // Item specific field names.
     public static final String POEM_FORM = "poem_form";
