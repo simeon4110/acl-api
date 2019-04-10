@@ -7,17 +7,14 @@ import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.web.SearchParamDto;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.*;
-import org.apache.lucene.store.FSDirectory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,12 +29,6 @@ import java.util.Map;
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
     private static final Gson gson = new Gson();
-
-    private static IndexReader getReader(final String itemType) throws IOException {
-        return DirectoryReader.open(FSDirectory.open(
-                Paths.get(String.format("%s/%s", SearchConstants.DOCS_PATH, itemType))
-        ));
-    }
 
     /**
      * @param in    the search string.
@@ -152,7 +143,7 @@ public class SearchQueryHandlerService {
     public String search(final List<SearchParamDto> params, final String[] itemTypes) {
         List<Map<String, String>> out = new ArrayList<>();
         for (String i : itemTypes) {
-            try (IndexReader reader = getReader(i)) {
+            try (IndexReader reader = SearchCRUDService.getReader(i)) {
                 // Init a searcher and analyzer, and parse the query string into a Query.
                 IndexSearcher searcher = new IndexSearcher(reader);
                 Query query = parseSearchParams(params);
