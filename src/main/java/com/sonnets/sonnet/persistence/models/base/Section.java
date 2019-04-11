@@ -1,17 +1,10 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.bridges.CharacterListBridge;
 import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
-import com.sonnets.sonnet.services.search.SearchConstants;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
-import org.hibernate.search.annotations.Parameter;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -42,23 +35,12 @@ import java.util.Objects;
                 procedureName = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE
         ),
 })
-@Indexed
 @Entity
 @DiscriminatorValue(TypeConstants.SECTION)
-@AnalyzerDef(name = SearchConstants.TEXT_ANALYZER,
-        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
-        filters = {
-                @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-                @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
-                        @Parameter(name = "language", value = "English")
-                })
-        })
 public class Section extends Item implements Serializable {
     private static final long serialVersionUID = -7556341244036061332L;
     @Embedded
     private Confirmation confirmation;
-    @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column(columnDefinition = "TEXT")
     private String text;
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
@@ -72,14 +54,11 @@ public class Section extends Item implements Serializable {
     private boolean processed;
     @Column
     private Long parentId;
-    @Field(name = SearchConstants.PARENT_TITLE, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
     @Column
     private String parentTitle;
     @JsonIgnore
     @Embedded
     private TopicModel topicModel;
-    @Field(name = SearchConstants.NARRATOR, store = Store.YES, analyze = Analyze.NO, termVector = TermVector.NO)
-    @FieldBridge(impl = CharacterListBridge.class)
     @ManyToOne(fetch = FetchType.EAGER)
     private BookCharacter narrator;
 

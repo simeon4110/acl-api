@@ -3,8 +3,6 @@ package com.sonnets.sonnet.persistence.models.base;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
-import com.sonnets.sonnet.services.search.SearchConstants;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,15 +15,12 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@Indexed
 @Entity
 @DiscriminatorValue(TypeConstants.SHORT_STORY)
 public class ShortStory extends Item implements Serializable {
     private static final long serialVersionUID = -2972048903052856414L;
     @Embedded
     private Confirmation confirmation;
-    @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @Column(columnDefinition = "TEXT")
     private String text;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

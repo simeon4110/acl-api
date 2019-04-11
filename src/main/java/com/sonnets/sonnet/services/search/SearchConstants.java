@@ -1,5 +1,8 @@
 package com.sonnets.sonnet.services.search;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * Stores all search related content (i.e. field names.)
  */
@@ -9,28 +12,35 @@ public abstract class SearchConstants {
         // Private to block default constructor.
     }
 
+    public static final Path DOCS_PATH = Paths.get("/var/lucene/indexes");
+
     // Numeric range query settings.
     public static final int INT_DISTANCE = 20;
 
+    // Result constants
+    public static final int MAX_RESULT_SIZE = 250;
+    public static final int FRAGMENT_SIZE = 75;
+    public static final int MAX_FRAGMENTS = 5;
+
     // General field names.
+    public static final String ID = "id";
     public static final String CATEGORY = "category";
-    public static final int PRECISION_STEP = 2;
+    public static final String AUTHOR = "author";
+    public static final String AUTHOR_FIRST_NAME = "firstName";
+    public static final String AUTHOR_LAST_NAME = "lastName";
+    public static final String YEAR = "publicationYear";
+    public static final String PERIOD = "period";
+    public static final String IS_PUBLIC = "isPublicDomain";
+    public static final String TITLE = "title";
     public static final String TOPIC_MODEL = "topic_model";
     public static final String VERSION_TEXT = "version_text";
+    public static final String BEST_FRAGMENT = "context";
 
     // Lucene fuzzy and phrase query constants.
+    public static final int PRECISION_STEP = 2;
     public static final int PREFIX_LENGTH = 0; // How many chars are "fixed" to the front.
     public static final int EDIT_DISTANCE = 2; // Levenstein edit distance.
-    public static final int SLOP = 1; // Words are directly adjacent.
-    public static final String AUTHOR = "author";
-    public static final String AUTHOR_FIRST_NAME = "author.firstName";
-    public static final String AUTHOR_LAST_NAME = "author.lastName";
-    public static final String AUTHOR_FIRST_NAME_RAW = "firstName";
-    public static final String AUTHOR_MIDDLE_NAME_RAW = "middleName";
-    public static final String AUTHOR_LAST_NAME_RAW = "lastName";
-    public static final String YEAR = "publicationYear";
-    public static final String TITLE = "title";
-    public static final String PERIOD = "period";
+    public static final int SLOP = 2; // Words are separated by no more than 3 words.
 
     // Item specific field names.
     public static final String POEM_FORM = "poem_form";
@@ -45,14 +55,12 @@ public abstract class SearchConstants {
     public static final String CHARACTER_DIALOG_BODY = "character_dialog.body";
     public static final String DIALOG_BODY = "dialog_body";
     public static final String NARRATOR = "narrator";
-    public static final String PARENT_TITLE = "parent_title";
-    public static final String CHAPTER_TITLE = "chapter_title";
+    public static final String PARENT_ID = "parentId";
+    public static final String PARENT_TITLE = "parentTitle";
+    public static final String CHAPTER_TITLE = "chapterTitle";
     public static final String OTHER_SUB_TYPE = "other_sub_type";
     public static final String OTHER_TEXT = "other_text";
     public static final String SOURCE_TITLE = "source_title";
-
-    // Analyzer Names
-    public static final String TEXT_ANALYZER = "textAnalyzer";
 
     // Source field names.
     public static final String EDITION = "edition";
@@ -65,6 +73,8 @@ public abstract class SearchConstants {
     public static final String JOURNAL_ISSUE = "journalIssue";
     public static final String LANGUAGE = "language";
 
+    // Poem delimiter
+    public static final String LINE_DELIMITER_POEM = " / ";
     /**
      * Used to add a leading period to field names; used in bridges.
      *

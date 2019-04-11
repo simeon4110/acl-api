@@ -1,12 +1,9 @@
 package com.sonnets.sonnet.persistence.models.prose;
 
-import com.sonnets.sonnet.persistence.bridges.DialogBridge;
 import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import com.sonnets.sonnet.persistence.models.base.Auditable;
-import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,29 +15,22 @@ import java.util.Set;
  *
  * @author Josh Harkema
  */
-@Indexed
 @Entity
 public class BookCharacter extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -2343275086044899594L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Field(name = SearchConstants.BOOK_CHARACTER_FN, store = Store.YES, analyze = Analyze.NO)
     @Column
     private String firstName;
-    @Field(name = SearchConstants.BOOK_CHARACTER_LN, store = Store.YES, analyze = Analyze.NO)
     @Column
     private String lastName;
-    @Field(name = SearchConstants.BOOK_CHARACTER_SEX, store = Store.YES, analyze = Analyze.NO)
     @Column
     private String gender;
     @Column
     private String description;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @Field(name = SearchConstants.BOOK_CHARACTER_DIALOG,
-            store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @FieldBridge(impl = DialogBridge.class)
     private Set<Dialog> dialog;
 
     public BookCharacter() {

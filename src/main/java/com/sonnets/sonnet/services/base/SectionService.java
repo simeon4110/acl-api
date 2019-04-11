@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.services.base;
 
+import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
@@ -16,7 +17,13 @@ import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
+import com.sonnets.sonnet.services.search.SearchCRUDService;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -93,6 +100,15 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return book;
     }
 
+    private static void addNewSearchDocument(final Section section) {
+        LOGGER.debug("Updating section's search document...");
+        Document document = SearchCRUDService.parseCommonFields(new Document(), section);
+        document.add(new StringField(SearchConstants.PARENT_ID, section.getParentId().toString(), Field.Store.YES));
+        document.add(new TextField(SearchConstants.PARENT_TITLE, section.getParentTitle(), Field.Store.YES));
+        document.add(LuceneConfig.getTextField(section.getText()));
+        SearchCRUDService.addDocument(document, TypeConstants.SECTION);
+    }
+
     @Override
     @Transactional
     public ResponseEntity<Void> add(SectionDto dto) {
@@ -100,8 +116,12 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         Section section = createOrCopySection(new Section(), author, book, dto);
-        var out = sectionRepository.save(section);
-        bookRepository.save(addBookSection(book, out));
+
+        executor.execute(() -> {
+            Section out = sectionRepository.save(section);
+            bookRepository.save(addBookSection(book, out));
+            addNewSearchDocument(out);
+        });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -110,8 +130,11 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting section with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        removeBookSection(section);
-        executor.execute(() -> sectionRepository.delete(section));
+        executor.execute(() -> {
+            removeBookSection(section);
+            sectionRepository.delete(section);
+            SearchCRUDService.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
+        });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -139,7 +162,10 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (section.getCreatedBy().equals(principal.getName())) {
             removeBookSection(section);
-            executor.execute(() -> sectionRepository.delete(section));
+            executor.execute(() -> {
+                sectionRepository.delete(section);
+                SearchCRUDService.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
+            });
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -198,8 +224,12 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
-        sectionRepository.save(createOrCopySection(section, author, book, dto));
-        bookRepository.save(book);
+
+        executor.execute(() -> {
+            bookRepository.save(book);
+            SearchCRUDService.updateSection(sectionRepository.save(createOrCopySection(section, author, book, dto)));
+
+        });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -221,7 +251,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
 
         // Ensure the user making the request is also the owner of the section.
         if (section.getCreatedBy().equals(principal.getName())) {
-            sectionRepository.save(createOrCopySection(section, author, book, dto));
+            executor.execute(() -> SearchCRUDService.updateSection(sectionRepository.save(
+                    createOrCopySection(section, author, book, dto))));
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -277,7 +308,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
     public ResponseEntity<Void> deleteNarrator(Long sectionId) {
         Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
         section.setNarrator(null);
-        sectionRepository.save(section);
+        executor.execute(() -> sectionRepository.save(section));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -291,6 +322,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         List<Section> sections = book.getSections();
         sections.remove(section);
         book.setSections(sections);
-        bookRepository.save(book);
+        executor.execute(() -> bookRepository.save(book));
     }
 }

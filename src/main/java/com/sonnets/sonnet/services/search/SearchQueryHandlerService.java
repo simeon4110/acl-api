@@ -1,26 +1,24 @@
 package com.sonnets.sonnet.services.search;
 
 import com.google.gson.Gson;
+import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
-import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
-import com.sonnets.sonnet.persistence.models.base.*;
+import com.sonnets.sonnet.persistence.dtos.web.SearchParamDto;
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.Query;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.jpa.Search;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.lucene.search.*;
+import org.apache.lucene.search.highlight.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Routes a SearchDto into queries based on boolean flags set in the dto.
@@ -28,68 +26,142 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-@Transactional
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
     private static final Gson gson = new Gson();
-    private final StandardAnalyzer standardAnalyzer;
-    private final EntityManager entityManager;
 
-    @Autowired
-    public SearchQueryHandlerService(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        this.standardAnalyzer = new StandardAnalyzer();
+    /**
+     * @param in    the search string.
+     * @param field the field to search.
+     * @return a TermQuery or PhraseQuery depending on the logic below.
+     */
+    private static Query parseField(String in, final String field) {
+        in = in.toLowerCase();
+        if (in.split(" ").length > 1) {
+            PhraseQuery.Builder builder = new PhraseQuery.Builder();
+            for (String s : in.split(" ")) {
+                builder.add(new Term(field, s));
+            }
+            builder.setSlop(SearchConstants.SLOP);
+            return builder.build();
+        } else {
+            return new TermQuery(new Term(field, in));
+        }
     }
 
     /**
-     * Parses a Lucene query string and returns the results.
+     * Parse a List of SearchParams into a valid Lucene query string.
      *
-     * @param queryString the query string to parse.
-     * @param itemTypes   a list of class names to search.
-     * @return a list of results.
-     * @throws ParseException if the query string is invalid.
+     * @param dtos the list of Params to parse.
+     * @return a String formatted into a Lucene query string.
      */
-    public String doSearch(String queryString, String[] itemTypes) throws ParseException {
-        LOGGER.debug("Parsing query string: " + queryString + " on object types " + Arrays.toString(itemTypes));
-        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery;
-
-        // Catch empty itemTypes definition.
-        if (itemTypes == null || itemTypes.length == 0) {
-            fullTextQuery = manager.createFullTextQuery(q, Poem.class, Book.class, Section.class, ShortStory.class);
-        } else { // Otherwise, parse the list into a list of classes and use the list to build a fullTextQuery.
-            LOGGER.debug("Item types length: " + itemTypes.length);
-            ArrayList<Class<?>> parsedClasses = new ArrayList<>();
-            for (String s : itemTypes) {
-                switch (s.toLowerCase()) {
-                    case "book":
-                        parsedClasses.add(Section.class);
+    private static Query parseSearchParams(final List<SearchParamDto> dtos) {
+        if (dtos.size() == 1) {
+            return parseField(dtos.get(0).getSearchString(), dtos.get(0).getFieldName());
+        } else {
+            BooleanQuery.Builder builder = new BooleanQuery.Builder();
+            builder.add(parseField(dtos.get(0).getSearchString(), dtos.get(0).getFieldName()),
+                    BooleanClause.Occur.MUST);
+            dtos.remove(0);
+            for (SearchParamDto d : dtos) {
+                BooleanClause.Occur clause;
+                switch (d.getJoinType()) {
+                    case "OR":
+                        clause = BooleanClause.Occur.SHOULD;
                         break;
-                    case "poem":
-                        parsedClasses.add(Poem.class);
+                    case "NOT":
+                        clause = BooleanClause.Occur.MUST_NOT;
                         break;
-                    case "section":
-                        parsedClasses.add(Section.class);
-                        break;
-                    case "short story":
-                        parsedClasses.add(ShortStory.class);
-                        break;
-                    case "any":
-                        parsedClasses.add(Poem.class);
-                        parsedClasses.add(Section.class);
-                        parsedClasses.add(ShortStory.class);
+                    default:
+                        clause = BooleanClause.Occur.MUST;
                         break;
                 }
+                builder.add(parseField(d.getSearchString(), d.getFieldName()), clause);
             }
-
-            // This is very expensive, I will probably optimize it at some point.
-            fullTextQuery = manager.createFullTextQuery(q, parsedClasses.toArray(Class[]::new))
-                    .setProjection(FullTextQuery.DOCUMENT_ID, FullTextQuery.EXPLANATION, FullTextQuery.THIS);
-
-            return gson.toJson(fullTextQuery.getResultList());
+            return builder.build();
         }
-        return gson.toJson(fullTextQuery.getResultList());
+    }
+
+    /**
+     * Grabs the most relevant fragment from a completed search result / query.
+     *
+     * @param query    an executed query.
+     * @param topDocs  the TopDocs result.
+     * @param searcher the IndexSearcher used to execute the query.
+     * @return a JSONArray with the relevant fragment.
+     */
+    private List<Map<String, String>> highlightResults(final Query query, final TopDocs topDocs,
+                                                       final IndexSearcher searcher) {
+        Formatter formatter = new SimpleHTMLFormatter();
+        QueryScorer scorer = new QueryScorer(query);
+        Highlighter highlighter = new Highlighter(formatter, scorer);
+        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, SearchConstants.FRAGMENT_SIZE);
+        highlighter.setTextFragmenter(fragmenter);
+
+        List<Map<String, String>> out = new ArrayList<>();
+        for (ScoreDoc d : topDocs.scoreDocs) {
+            try {
+                Document document = searcher.doc(d.doc);
+                Map<String, String> objectOut = new HashMap<>();
+
+                objectOut.put(SearchConstants.AUTHOR_FIRST_NAME, document.get(SearchConstants.AUTHOR_FIRST_NAME));
+                objectOut.put(SearchConstants.AUTHOR_LAST_NAME, document.get(SearchConstants.AUTHOR_LAST_NAME));
+                objectOut.put(SearchConstants.ID, document.getField(SearchConstants.ID).stringValue());
+                objectOut.put(SearchConstants.TITLE, document.get(SearchConstants.TITLE));
+                objectOut.put(SearchConstants.CATEGORY, document.get(SearchConstants.CATEGORY));
+                objectOut.put(SearchConstants.PERIOD, document.get(SearchConstants.PERIOD));
+                objectOut.put(SearchConstants.IS_PUBLIC, document.get(SearchConstants.IS_PUBLIC));
+                objectOut.put(SearchConstants.TOPIC_MODEL, document.get(SearchConstants.TOPIC_MODEL));
+                objectOut.put(SearchConstants.PARENT_TITLE, document.get(SearchConstants.PARENT_TITLE));
+
+                // Text highlighting; returns up to MAX_FRAGMENTS matching passages.
+                objectOut.put(SearchConstants.BEST_FRAGMENT,
+                        String.join(" ::: ", highlighter.getBestFragments(
+                                LuceneConfig.getAnalyzer(),
+                                SearchConstants.TEXT,
+                                document.get(SearchConstants.TEXT),
+                                SearchConstants.MAX_FRAGMENTS))
+                                .replace("\n", " ").trim());
+                out.add(objectOut);
+            } catch (IOException e) {
+                LOGGER.error(e);
+                LOGGER.error(String.format("[SEARCH] :::::: Error processing document '%s'", d.doc));
+            } catch (InvalidTokenOffsetsException e) {
+                LOGGER.error(e);
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Execute a search.
+     *
+     * @param params    the list of search parameters to use.
+     * @param itemTypes the list of item types to search for.
+     * @return a JSON formatted string of the results.
+     */
+    public String search(final List<SearchParamDto> params, final String[] itemTypes) {
+        List<Map<String, String>> out = new ArrayList<>();
+        for (String i : itemTypes) {
+            try (IndexReader reader = SearchCRUDService.getReader(i)) {
+                // Init a searcher and analyzer, and parse the query string into a Query.
+                IndexSearcher searcher = new IndexSearcher(reader);
+                Query query = parseSearchParams(params);
+                LOGGER.debug(String.format("[SEARCH] :::::: Query string: \"%s\"", query));
+
+                // Execute search and append results to out JSONArray.
+                TopFieldDocs hits = searcher.search(query, SearchConstants.MAX_RESULT_SIZE, Sort.RELEVANCE);
+                out.addAll(highlightResults(query, hits, searcher));
+            } catch (IOException e) {
+                LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", i));
+                Map<String, String> errorOut = new HashMap<>();
+                errorOut.put("error", "Something went wrong with the search indexes; it's not you, it's me.");
+                return gson.toJson(errorOut);
+            }
+        }
+
+        LOGGER.debug("[SEARCH] :::::: Total results: " + out.size());
+        return gson.toJson(out);
     }
 
     /**
@@ -100,13 +172,7 @@ public class SearchQueryHandlerService {
      * @throws ParseException if the query doesn't parse.
      */
     public List searchAuthor(AuthorDto dto) throws ParseException {
-        LOGGER.debug("Searching for author: " + dto.toString());
-        String queryString = "firstName: \"" + dto.getFirstName().toLowerCase() +
-                "\" AND lastName: \"" + dto.getLastName().toLowerCase() + "\"";
-        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
-        return fullTextQuery.getResultList();
+        return null;
     }
 
     /**
@@ -117,16 +183,5 @@ public class SearchQueryHandlerService {
      */
     public void similarExistsPoem(SearchDto dto) throws ParseException {
         LOGGER.debug("Searching form poems similar to: " + dto.toString());
-        String queryString =
-                "author.firstName: \"" + dto.getAuthor().getFirstName() +
-                        "\" AND author.lastName: \"" + dto.getAuthor().getLastName() +
-                        "\" AND title: \"" + dto.getTitle() + "\"";
-        Query q = new QueryParser(null, standardAnalyzer).parse(queryString);
-        FullTextEntityManager manager = Search.getFullTextEntityManager(entityManager);
-        FullTextQuery fullTextQuery = manager.createFullTextQuery(q, Author.class);
-        if (fullTextQuery.getResultSize() > 0) {
-            LOGGER.error("Found a similar poem!!");
-            throw new ItemAlreadyExistsException("Item: '" + dto.toString() + "' already exists.");
-        }
     }
 }

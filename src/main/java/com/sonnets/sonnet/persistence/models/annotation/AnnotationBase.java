@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.persistence.models.annotation;
 
 import com.sonnets.sonnet.persistence.models.base.Auditable;
-import org.hibernate.search.annotations.DocumentId;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,7 +16,6 @@ abstract class AnnotationBase extends Auditable<String> implements Serializable 
     private static final long serialVersionUID = 3250723133420178379L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @DocumentId
     private Long id;
     @Column
     private Long characterOffsetBegin;
