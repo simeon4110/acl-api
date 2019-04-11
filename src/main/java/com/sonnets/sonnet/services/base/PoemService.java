@@ -24,6 +24,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,14 +54,17 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     private final AuthorRepository authorRepository;
     private final SearchQueryHandlerService searchQueryHandlerService;
     private final UserRepository userRepository;
+    private final TaskExecutor executor;
 
     @Autowired
     public PoemService(PoemRepository poemRepository, AuthorRepository authorRepository,
-                       SearchQueryHandlerService searchQueryHandlerService, UserRepository userRepository) {
+                       SearchQueryHandlerService searchQueryHandlerService, UserRepository userRepository,
+                       @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
         this.poemRepository = poemRepository;
         this.authorRepository = authorRepository;
         this.searchQueryHandlerService = searchQueryHandlerService;
         this.userRepository = userRepository;
+        this.executor = executor;
     }
 
     /**
@@ -139,8 +144,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         }
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
-        poem = poemRepository.saveAndFlush(poem);
-        addNewSearchDocument(poem);
+        executor.execute(() -> addNewSearchDocument(poemRepository.saveAndFlush(poem)));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -153,9 +157,10 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
             return new ResponseEntity<>(HttpStatus.LOCKED);
         }
 
-        poemRepository.delete(poem);
-        SearchCRUDService.deleteDocument(id.toString(), TypeConstants.POEM);
-
+        executor.execute(() -> {
+            poemRepository.delete(poem);
+            SearchCRUDService.deleteDocument(id.toString(), TypeConstants.POEM);
+        });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -169,8 +174,10 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         }
 
         if (poem.getCreatedBy().equals(principal.getName())) {
-            poemRepository.delete(poem);
-            SearchCRUDService.deleteDocument(id.toString(), TypeConstants.POEM);
+            executor.execute(() -> {
+                poemRepository.delete(poem);
+                SearchCRUDService.deleteDocument(id.toString(), TypeConstants.POEM);
+            });
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
@@ -246,11 +253,13 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        poem = createOrUpdateFromDto(poem, dto, author);
-        poem = poemRepository.saveAndFlush(poem);
-        this.updateCanConfirm(poem);
-        SearchCRUDService.updatePoem(poem);
+        executor.execute(() -> {
+            Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+            poem = createOrUpdateFromDto(poem, dto, author);
+            poem = poemRepository.saveAndFlush(poem);
+            this.updateCanConfirm(poem);
+            SearchCRUDService.updatePoem(poem);
+        });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

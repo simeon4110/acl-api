@@ -190,7 +190,7 @@ public abstract class SearchCRUDService {
         toUpdate.add(new TextField(SearchConstants.TOPIC_MODEL, String.valueOf(poem.getTopicModel()),
                 Field.Store.YES));
         toUpdate.removeField(SearchConstants.TEXT);
-        toUpdate.add(LuceneConfig.getTextField(String.join(" ", poem.getText())));
+        toUpdate.add(LuceneConfig.getTextField(String.join(SearchConstants.LINE_DELIMITER_POEM, poem.getText())));
         updateDocument(poem.getId().toString(), toUpdate, TypeConstants.POEM);
         LOGGER.debug("[SEARCH] :::::: Poem updated!");
     }

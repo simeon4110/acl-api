@@ -16,7 +16,6 @@ import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
@@ -81,7 +80,6 @@ public class LuceneConfig {
         }
     }
 
-    @Bean
     public static Analyzer getAnalyzer() {
         return analyzer;
     }
@@ -122,7 +120,7 @@ public class LuceneConfig {
             // :todo: this requires its own custom field.
             document.add(new TextField(SearchConstants.TOPIC_MODEL, String.valueOf(p.getTopicModel()),
                     Field.Store.YES));
-            document.add(getTextField(String.join(" ", p.getText())));
+            document.add(getTextField(String.join(SearchConstants.LINE_DELIMITER_POEM, p.getText())));
             documents.add(document);
             LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", p.getId(),
                     p.getTitle()));

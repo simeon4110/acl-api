@@ -73,6 +73,8 @@ public abstract class SearchConstants {
     public static final String JOURNAL_ISSUE = "journalIssue";
     public static final String LANGUAGE = "language";
 
+    // Poem delimiter
+    public static final String LINE_DELIMITER_POEM = " / ";
     /**
      * Used to add a leading period to field names; used in bridges.
      *
