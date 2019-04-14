@@ -1,9 +1,13 @@
 package com.sonnets.sonnet.config;
 
 import com.sonnets.sonnet.persistence.models.TypeConstants;
+import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.models.base.Section;
+import com.sonnets.sonnet.persistence.models.base.ShortStory;
+import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.RepositoryException;
+import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
 import com.sonnets.sonnet.services.search.SearchCRUDService;
@@ -35,12 +39,17 @@ public class LuceneConfig {
     private static final Logger LOGGER = Logger.getLogger(LuceneConfig.class);
     private final PoemRepository poemRepository;
     private final SectionRepositoryBase sectionRepositoryBase;
+    private final ShortStoryRepository shortStoryRepository;
+    private final AuthorRepository authorRepository;
     private static PerFieldAnalyzerWrapper analyzer;
 
     @Autowired
-    public LuceneConfig(PoemRepository poemRepository, SectionRepositoryBase sectionRepositoryBase) {
+    public LuceneConfig(PoemRepository poemRepository, SectionRepositoryBase sectionRepositoryBase,
+                        ShortStoryRepository shortStoryRepository, AuthorRepository authorRepository) {
         this.poemRepository = poemRepository;
         this.sectionRepositoryBase = sectionRepositoryBase;
+        this.shortStoryRepository = shortStoryRepository;
+        this.authorRepository = authorRepository;
         analyzer = new PerFieldAnalyzerWrapper(
                 new EnglishAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET), getAnalyzerMap());
         this.init();
@@ -86,7 +95,7 @@ public class LuceneConfig {
 
     /**
      * Creates a field that stores TermVectors, Vector positions, and Vector offsets from a string. ONLY WORKS WITH
-     * FIELDS NAMED TEXT.
+     * FIELDS NAMED 'TEXT.'
      *
      * @param text the text to add to the field.
      * @return a field with TermVectors, etc., added.
@@ -103,6 +112,8 @@ public class LuceneConfig {
     private void init() {
         this.indexPoems();
         this.indexSections();
+        this.indexAuthors();
+        this.indexShortStories();
     }
 
     /**
@@ -113,6 +124,7 @@ public class LuceneConfig {
         List<Poem> poems = poemRepository.findAllByHidden(false).orElseThrow(RepositoryException::new);
         LOGGER.debug(String.format("[SEARCH] :::::: Poems to index: %s.", poems.size()));
 
+        int counter = 0;
         ArrayList<Document> documents = new ArrayList<>();
         for (Poem p : poems) {
             Document document = SearchCRUDService.parseCommonFields(new Document(), p);
@@ -122,10 +134,12 @@ public class LuceneConfig {
                     Field.Store.YES));
             document.add(getTextField(String.join(SearchConstants.LINE_DELIMITER_POEM, p.getText())));
             documents.add(document);
-            LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", p.getId(),
-                    p.getTitle()));
+            if (counter % 25 == 0) {
+                LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", p.getId(),
+                        p.getTitle()));
+            }
+            counter++;
         }
-
         SearchCRUDService.addDocuments(documents, TypeConstants.POEM, true);
         LOGGER.debug("[SEARCH] :::::: poems indexed successfully!");
     }
@@ -138,6 +152,7 @@ public class LuceneConfig {
         List<Section> sections = sectionRepositoryBase.findAll();
         LOGGER.debug(String.format("[SEARCH] :::::: Sections to index: %s.", sections.size()));
 
+        int counter = 0;
         ArrayList<Document> documents = new ArrayList<>();
         for (Section s : sections) {
             Document document = SearchCRUDService.parseCommonFields(new Document(), s);
@@ -146,11 +161,59 @@ public class LuceneConfig {
             document.add(getTextField(s.getText()));
 
             documents.add(document);
-            LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", s.getId(),
-                    s.getTitle()));
+            if (counter % 25 == 0) {
+                LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", s.getId(),
+                        s.getTitle()));
+            }
+            counter++;
         }
 
         SearchCRUDService.addDocuments(documents, TypeConstants.SECTION, true);
         LOGGER.debug("[SEARCH] :::::: sections indexed successfully!");
+    }
+
+    private void indexShortStories() {
+        LOGGER.debug("[SEARCH] :::::: Starting to write section index...");
+        List<ShortStory> shortStories = shortStoryRepository.findAll();
+        LOGGER.debug(String.format("[SEARCH] :::::: Short stories to index: %s.", shortStories.size()));
+
+        int counter = 0;
+        List<Document> documents = new ArrayList<>();
+        for (ShortStory s : shortStories) {
+            Document document = SearchCRUDService.parseCommonFields(new Document(), s);
+            document.add(getTextField(s.getText()));
+            documents.add(document);
+            if (counter % 25 == 0) {
+                LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", s.getId(),
+                        s.getTitle()));
+            }
+            counter++;
+        }
+        SearchCRUDService.addDocuments(documents, TypeConstants.SHORT_STORY, true);
+        LOGGER.debug("[SEARCH] :::::: Short stories indexed successfully!");
+    }
+
+    private void indexAuthors() {
+        LOGGER.debug("[SEARCH] :::::: Starting to write author index...");
+        List<Author> authors = authorRepository.findAll();
+        LOGGER.debug(String.format("[SEARCH] :::::: Authors to index: %s.", authors.size()));
+
+        int counter = 0;
+        List<Document> documents = new ArrayList<>();
+        for (Author a : authors) {
+            Document document = new Document();
+            document.add(new StringField(SearchConstants.ID, String.valueOf(a.getId()), Field.Store.YES));
+            document.add(new TextField(SearchConstants.AUTHOR_FIRST_NAME, a.getFirstName(), Field.Store.YES));
+            document.add(new TextField(SearchConstants.AUTHOR_LAST_NAME, a.getLastName(), Field.Store.YES));
+            documents.add(document);
+            if (counter % 25 == 0) {
+                LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", a.getId(),
+                        a.getLastName()));
+            }
+            counter++;
+        }
+
+        SearchCRUDService.addDocuments(documents, TypeConstants.AUTHOR, true);
+        LOGGER.debug("[SEARCH] :::::: Authors indexed successfully!");
     }
 }

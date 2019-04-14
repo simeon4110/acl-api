@@ -18,7 +18,7 @@ public abstract class SearchConstants {
     public static final int INT_DISTANCE = 20;
 
     // Result constants
-    public static final int MAX_RESULT_SIZE = 250;
+    public static final int MAX_RESULT_SIZE = 100;
     public static final int FRAGMENT_SIZE = 75;
     public static final int MAX_FRAGMENTS = 5;
 

@@ -23,9 +23,16 @@ public class SearchController {
     }
 
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public String doSearch(@RequestBody List<SearchParamDto> searchParams,
                            @RequestParam(value = "item_types", required = false) String[] itemTypes) {
         return searchQueryHandlerService.search(searchParams, itemTypes);
     }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @GetMapping(value = "/basic_search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String doBasicSearch(@RequestParam(value = "search_string") String searchString) {
+        return searchQueryHandlerService.basicSearch(searchString);
+    }
+
 }

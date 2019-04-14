@@ -3,12 +3,13 @@ package com.sonnets.sonnet.services.search;
 import com.google.gson.Gson;
 import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
-import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
 import com.sonnets.sonnet.persistence.dtos.web.SearchParamDto;
+import com.sonnets.sonnet.persistence.models.TypeConstants;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.*;
@@ -29,6 +30,10 @@ import java.util.Map;
 public class SearchQueryHandlerService {
     private static final Logger LOGGER = Logger.getLogger(SearchQueryHandlerService.class);
     private static final Gson gson = new Gson();
+    private static final String[] itemTypes = new String[]{
+            TypeConstants.POEM,
+            TypeConstants.SECTION
+    };
 
     /**
      * @param in    the search string.
@@ -60,9 +65,6 @@ public class SearchQueryHandlerService {
             return parseField(dtos.get(0).getSearchString(), dtos.get(0).getFieldName());
         } else {
             BooleanQuery.Builder builder = new BooleanQuery.Builder();
-            builder.add(parseField(dtos.get(0).getSearchString(), dtos.get(0).getFieldName()),
-                    BooleanClause.Occur.MUST);
-            dtos.remove(0);
             for (SearchParamDto d : dtos) {
                 BooleanClause.Occur clause;
                 switch (d.getJoinType()) {
@@ -83,6 +85,29 @@ public class SearchQueryHandlerService {
     }
 
     /**
+     * Tests to see if a poem with by an author has the same title.
+     *
+     * @param title    the title of the poem.
+     * @param lastName the last name of the author.
+     * @return true if a similar poem exists, false otherwise (including error.)
+     */
+    public static boolean similarPoemExists(final String title, final String lastName) {
+        LOGGER.debug(String.format("[SEARCH] :::::: Searching for poem with title '%s' by '%s'.", title,
+                lastName));
+        try (IndexReader reader = SearchCRUDService.getReader(TypeConstants.POEM)) {
+            IndexSearcher searcher = new IndexSearcher(reader);
+            BooleanQuery.Builder builder = new BooleanQuery.Builder();
+            builder.add(parseField(title, SearchConstants.TITLE), BooleanClause.Occur.MUST);
+            builder.add(new TermQuery(new Term(SearchConstants.AUTHOR_LAST_NAME, lastName)), BooleanClause.Occur.MUST);
+            TopDocs hits = searcher.search(builder.build(), 1, Sort.RELEVANCE);
+            return hits.totalHits.value == 0;
+        } catch (IOException e) {
+            LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", TypeConstants.POEM));
+            return false;
+        }
+    }
+
+    /**
      * Grabs the most relevant fragment from a completed search result / query.
      *
      * @param query    an executed query.
@@ -92,7 +117,7 @@ public class SearchQueryHandlerService {
      */
     private List<Map<String, String>> highlightResults(final Query query, final TopDocs topDocs,
                                                        final IndexSearcher searcher) {
-        Formatter formatter = new SimpleHTMLFormatter();
+        Formatter formatter = new SimpleHTMLFormatter("<span class='highlight'>", "</span>");
         QueryScorer scorer = new QueryScorer(query);
         Highlighter highlighter = new Highlighter(formatter, scorer);
         Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, SearchConstants.FRAGMENT_SIZE);
@@ -116,12 +141,11 @@ public class SearchQueryHandlerService {
 
                 // Text highlighting; returns up to MAX_FRAGMENTS matching passages.
                 objectOut.put(SearchConstants.BEST_FRAGMENT,
-                        String.join(" ::: ", highlighter.getBestFragments(
+                        String.join("\n\n", highlighter.getBestFragments(
                                 LuceneConfig.getAnalyzer(),
                                 SearchConstants.TEXT,
                                 document.get(SearchConstants.TEXT),
-                                SearchConstants.MAX_FRAGMENTS))
-                                .replace("\n", " ").trim());
+                                SearchConstants.MAX_FRAGMENTS)));
                 out.add(objectOut);
             } catch (IOException e) {
                 LOGGER.error(e);
@@ -143,6 +167,7 @@ public class SearchQueryHandlerService {
     public String search(final List<SearchParamDto> params, final String[] itemTypes) {
         List<Map<String, String>> out = new ArrayList<>();
         for (String i : itemTypes) {
+            i = i.toUpperCase(); // Types are always uppercase.
             try (IndexReader reader = SearchCRUDService.getReader(i)) {
                 // Init a searcher and analyzer, and parse the query string into a Query.
                 IndexSearcher searcher = new IndexSearcher(reader);
@@ -159,7 +184,36 @@ public class SearchQueryHandlerService {
                 return gson.toJson(errorOut);
             }
         }
+        LOGGER.debug("[SEARCH] :::::: Total results: " + out.size());
+        return gson.toJson(out);
+    }
 
+    /**
+     * Runs a basic search on all object types.
+     *
+     * @param searchString the search string (not a query, just the string to search for.)
+     * @return the search results if any.
+     */
+    public String basicSearch(final String searchString) {
+        LOGGER.debug("[SEARCH] :::::: executing basic search: " + searchString);
+        MultiFieldQueryParser parser = new MultiFieldQueryParser(
+                new String[]{"text", "firstName", "lastName", "title"},
+                LuceneConfig.getAnalyzer()
+        );
+        List<Map<String, String>> out = new ArrayList<>();
+        for (String s : itemTypes) {
+            try (IndexReader reader = SearchCRUDService.getReader(s)) {
+                IndexSearcher searcher = new IndexSearcher(reader);
+                Query query = parser.parse(searchString);
+                TopDocs hits = searcher.search(query, SearchConstants.MAX_RESULT_SIZE, Sort.RELEVANCE);
+                out.addAll(highlightResults(query, hits, searcher));
+            } catch (ParseException | IOException e) {
+                LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", s));
+                Map<String, String> errorOut = new HashMap<>();
+                errorOut.put("error", "Something went wrong with the search indexes; it's not you, it's me.");
+                return gson.toJson(errorOut);
+            }
+        }
         LOGGER.debug("[SEARCH] :::::: Total results: " + out.size());
         return gson.toJson(out);
     }
@@ -169,19 +223,40 @@ public class SearchQueryHandlerService {
      *
      * @param dto an AuthorDto with the first and last name.
      * @return the list of results (an empty array if there are not results.)
-     * @throws ParseException if the query doesn't parse.
      */
-    public List searchAuthor(AuthorDto dto) throws ParseException {
-        return null;
-    }
+    public String searchAuthor(AuthorDto dto) {
+        LOGGER.debug("[SEARCH] :::::: Searching for author: " + dto.toString());
+        try (IndexReader reader = SearchCRUDService.getReader(TypeConstants.AUTHOR)) {
+            IndexSearcher searcher = new IndexSearcher(reader);
+            BooleanQuery.Builder builder = new BooleanQuery.Builder();
 
-    /**
-     * Searches for matched poems with the same author first/last name and title.
-     *
-     * @param dto a SearchDto containing the information to search for.
-     * @throws ParseException if the query doesn't parse.
-     */
-    public void similarExistsPoem(SearchDto dto) throws ParseException {
-        LOGGER.debug("Searching form poems similar to: " + dto.toString());
+            if (dto.getFirstName() != null && !dto.getFirstName().isEmpty()) {
+                builder.add(parseField(dto.getFirstName(), SearchConstants.AUTHOR_FIRST_NAME),
+                        BooleanClause.Occur.MUST);
+            }
+
+            if (dto.getFirstName() != null && !dto.getLastName().isEmpty()) {
+                builder.add(parseField(dto.getLastName(), SearchConstants.AUTHOR_LAST_NAME), BooleanClause.Occur.MUST);
+            }
+
+            TopDocs hits = searcher.search(builder.build(), SearchConstants.MAX_RESULT_SIZE, Sort.RELEVANCE);
+            LOGGER.debug(String.format("[SEARCH] :::::: found %s results!", hits.totalHits.value));
+            List<Map<String, String>> out = new ArrayList<>();
+            for (ScoreDoc d : hits.scoreDocs) {
+                Document document = searcher.doc(d.doc);
+                Map<String, String> outMap = new HashMap<>();
+                outMap.put(SearchConstants.ID, document.get(SearchConstants.ID));
+                outMap.put(SearchConstants.AUTHOR_FIRST_NAME, document.get(SearchConstants.AUTHOR_FIRST_NAME));
+                outMap.put(SearchConstants.AUTHOR_LAST_NAME, document.get(SearchConstants.AUTHOR_LAST_NAME));
+                out.add(outMap);
+            }
+            return gson.toJson(out);
+        } catch (IOException e) {
+            LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", TypeConstants.AUTHOR));
+            LOGGER.error(e);
+            Map<String, String> errorOut = new HashMap<>();
+            errorOut.put("error", "Something went wrong with the search indexes; it's not you, it's me.");
+            return gson.toJson(errorOut);
+        }
     }
 }
