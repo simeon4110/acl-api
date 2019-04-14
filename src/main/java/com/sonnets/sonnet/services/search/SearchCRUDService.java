@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.models.base.Section;
+import com.sonnets.sonnet.persistence.models.base.ShortStory;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -44,6 +45,8 @@ public abstract class SearchCRUDService {
     }
 
     /**
+     * Writer's are inherently thread safe, concurrency should not be an issue.
+     *
      * @param itemType TypeConstant of the item being indexed.
      * @return an opened IndexWriter.
      * @throws IOException if any path related issues occur.
@@ -66,7 +69,6 @@ public abstract class SearchCRUDService {
             if (docs.totalHits.value == 1) {
                 return searcher.doc(docs.scoreDocs[0].doc);
             } else {
-                reader.close();
                 throw new RuntimeException("Document not found, or more than one document found.");
             }
         } catch (IOException e) {
@@ -104,7 +106,9 @@ public abstract class SearchCRUDService {
                 Field.Store.YES));
         document.add(new TextField(SearchConstants.AUTHOR_LAST_NAME, item.getAuthor().getLastName(),
                 Field.Store.YES));
-        document.add(new StringField(SearchConstants.PERIOD, item.getPeriod(), Field.Store.YES));
+        if (item.getPeriod() != null) { // Some items don't have periods.
+            document.add(new StringField(SearchConstants.PERIOD, item.getPeriod(), Field.Store.YES));
+        }
         if (item.getPublicDomain() != null) { // Some items do not have this toggled.
             document.add(new TextField(SearchConstants.IS_PUBLIC, item.getPublicDomain().toString(),
                     Field.Store.YES));
@@ -170,18 +174,26 @@ public abstract class SearchCRUDService {
         }
     }
 
+    /**
+     * @param docId    id of Document to delete.
+     * @param itemType itemType of the Document to delete.
+     */
     public static void deleteDocument(final String docId, final String itemType) {
         LOGGER.debug(String.format("[SEARCH] :::::: Deleting %s of type %s.", docId, itemType));
         try (IndexWriter writer = getWriter(itemType)) {
             writer.deleteDocuments(new Term(SearchConstants.ID, docId));
             writer.commit();
-            writer.close();
             LOGGER.debug("[SEARCH] :::::: Item deleted!");
         } catch (IOException e) {
             LOGGER.error(e);
         }
     }
 
+    /**
+     * Updates a poem's search Document.
+     *
+     * @param poem the new poem data.
+     */
     public static void updatePoem(final Poem poem) {
         LOGGER.debug("[SEARCH] :::::: Updating poem: " + poem.getTitle());
         Document toUpdate = parseCommonFields(
@@ -195,6 +207,11 @@ public abstract class SearchCRUDService {
         LOGGER.debug("[SEARCH] :::::: Poem updated!");
     }
 
+    /**
+     * Updates a section's search document.
+     *
+     * @param section the new section data.
+     */
     public static void updateSection(final Section section) {
         LOGGER.debug("[SEARCH] :::::: Updating section: " + section.getTitle());
         Document toUpdate = parseCommonFields(
@@ -204,6 +221,22 @@ public abstract class SearchCRUDService {
         toUpdate.add(LuceneConfig.getTextField(section.getText()));
         updateDocument(section.getId().toString(), toUpdate, TypeConstants.SECTION);
         LOGGER.debug("[SEARCH] :::::: Section updated!");
+    }
+
+    /**
+     * Updates a ShortStory's search document.
+     *
+     * @param shortStory the new ShortStory data.
+     */
+    public static void updateShortStory(final ShortStory shortStory) {
+        LOGGER.debug("[SEARCH] :::::: Updating short story: " + shortStory.getTitle());
+        Document toUpdate = parseCommonFields(
+                Objects.requireNonNull(getLuceneDocument(shortStory.getId().toString(), TypeConstants.SHORT_STORY)),
+                shortStory);
+        toUpdate.removeField(SearchConstants.TEXT);
+        toUpdate.add(LuceneConfig.getTextField(shortStory.getText()));
+        updateDocument(shortStory.getId().toString(), toUpdate, TypeConstants.SHORT_STORY);
+        LOGGER.debug("[SEARCH] :::::: Short story updated!");
     }
 }
 

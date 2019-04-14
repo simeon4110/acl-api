@@ -2,8 +2,6 @@ package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.PoemDto;
-import com.sonnets.sonnet.persistence.dtos.base.SearchDto;
-import com.sonnets.sonnet.persistence.exceptions.ItemAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
@@ -22,7 +20,6 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -136,16 +133,15 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     @Transactional
     public ResponseEntity<Void> add(PoemDto dto) {
         LOGGER.debug("Adding poem: " + dto.toString());
-        try { // Check if poem already exists.
-            similarPoemExists(dto);
-        } catch (ItemAlreadyExistsException | ParseException e) {
-            LOGGER.error(e);
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        if (SearchQueryHandlerService.similarPoemExists(dto.getTitle(), author.getLastName())) {
+            Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
+            addNewSearchDocument(poemRepository.saveAndFlush(poem));
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            LOGGER.error("A poem with the same title is already in the database!");
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
-        executor.execute(() -> addNewSearchDocument(poemRepository.saveAndFlush(poem)));
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
@@ -180,7 +176,6 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
             });
             return new ResponseEntity<>(HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -253,13 +248,10 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     public ResponseEntity<Void> modify(PoemDto dto) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        executor.execute(() -> {
-            Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-            poem = createOrUpdateFromDto(poem, dto, author);
-            poem = poemRepository.saveAndFlush(poem);
-            this.updateCanConfirm(poem);
-            SearchCRUDService.updatePoem(poem);
-        });
+        Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
+        poem = createOrUpdateFromDto(poem, dto, author);
+        this.updateCanConfirm(poem);
+        SearchCRUDService.updatePoem(poemRepository.saveAndFlush(poem));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -328,22 +320,6 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     public String getTwoRandomPoems() {
         LOGGER.debug("Returning two random poems.");
         return poemRepository.getTwoRandomPoems().orElseThrow(StoredProcedureQueryException::new);
-    }
-
-    /**
-     * :todo: fix this.
-     *
-     * @param dto the dto of the poem with all its details.
-     */
-    private void similarPoemExists(PoemDto dto) throws ParseException {
-        LOGGER.debug("Checking if similar poem exists: " + dto.toString());
-        SearchDto searchDto = new SearchDto();
-        Author author = authorRepository.findById(dto.getAuthorId())
-                .orElseThrow(ItemNotFoundException::new);
-        searchDto.setAuthor(author);
-        searchDto.setTitle(dto.getTitle());
-        searchDto.setSearchPoems(true);
-        searchQueryHandlerService.similarExistsPoem(searchDto);
     }
 
     /**
