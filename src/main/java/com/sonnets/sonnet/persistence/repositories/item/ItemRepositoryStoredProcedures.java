@@ -8,7 +8,5 @@ import java.util.Optional;
  * @author Josh Harkema
  */
 public interface ItemRepositoryStoredProcedures {
-    Optional<String> getAllUserItems(final String userName);
-
     Optional<String> getAllItems();
 }

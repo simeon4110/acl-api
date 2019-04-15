@@ -15,14 +15,6 @@ import java.util.Objects;
  */
 @NamedStoredProcedureQueries({
         @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_USER_ITEMS,
-                procedureName = StoredProcedureConstants.GET_ALL_USER_ITEMS_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(name = StoredProcedureConstants.USER_NAME_PARAM,
-                                mode = ParameterMode.IN, type = String.class)
-                }
-        ),
-        @NamedStoredProcedureQuery(
                 name = StoredProcedureConstants.GET_ALL_ITEMS,
                 procedureName = StoredProcedureConstants.GET_ALL_ITEMS_PROCEDURE
         )

@@ -1,12 +1,20 @@
 package com.sonnets.sonnet.services.base;
 
+import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
+import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.item.ItemRepository;
+import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
+import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is for handling requests that span multiple item types.
@@ -17,10 +25,19 @@ import java.security.Principal;
 public class ItemService {
     private static final Logger LOGGER = Logger.getLogger(ItemService.class);
     private final ItemRepository itemRepository;
+    private final BookRepository bookRepository;
+    private final PoemRepository poemRepository;
+    private final SectionRepositoryBase sectionRepositoryBase;
+    private final ShortStoryRepository shortStoryRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, BookRepository bookRepository, PoemRepository poemRepository,
+                       SectionRepositoryBase sectionRepositoryBase, ShortStoryRepository shortStoryRepository) {
         this.itemRepository = itemRepository;
+        this.bookRepository = bookRepository;
+        this.poemRepository = poemRepository;
+        this.sectionRepositoryBase = sectionRepositoryBase;
+        this.shortStoryRepository = shortStoryRepository;
     }
 
     /**
@@ -35,8 +52,16 @@ public class ItemService {
      * @param principal the principal of the user making the request.
      * @return the basic details of all items added by the user making the request.
      */
-    public String getAllUserItems(Principal principal) {
+    public List<Item> getAllUserItems(Principal principal) {
         LOGGER.debug("Returning all items created by user " + principal.getName());
-        return itemRepository.getAllUserItems(principal.getName()).orElseThrow(StoredProcedureQueryException::new);
+        ArrayList<Item> out = new ArrayList<>();
+
+        out.addAll(this.bookRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new));
+        out.addAll(this.poemRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new));
+        out.addAll(this.sectionRepositoryBase.findAllByCreatedBy(principal.getName())
+                .orElseThrow(ItemNotFoundException::new));
+        out.addAll(this.shortStoryRepository.findAllByCreatedBy(principal.getName())
+                .orElseThrow(ItemNotFoundException::new));
+        return out;
     }
 }
