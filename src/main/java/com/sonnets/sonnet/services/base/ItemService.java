@@ -6,7 +6,6 @@ import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.item.ItemRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
-import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -56,12 +56,12 @@ public class ItemService {
         LOGGER.debug("Returning all items created by user " + principal.getName());
         ArrayList<Item> out = new ArrayList<>();
 
-        out.addAll(this.bookRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new));
-        out.addAll(this.poemRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new));
+        out.addAll(this.bookRepository.findAllByCreatedBy(principal.getName()).orElse(Collections.emptyList()));
+        out.addAll(this.poemRepository.findAllByCreatedBy(principal.getName()).orElse(Collections.emptyList()));
         out.addAll(this.sectionRepositoryBase.findAllByCreatedBy(principal.getName())
-                .orElseThrow(ItemNotFoundException::new));
+                .orElse(Collections.emptyList()));
         out.addAll(this.shortStoryRepository.findAllByCreatedBy(principal.getName())
-                .orElseThrow(ItemNotFoundException::new));
+                .orElse(Collections.emptyList()));
         return out;
     }
 }
