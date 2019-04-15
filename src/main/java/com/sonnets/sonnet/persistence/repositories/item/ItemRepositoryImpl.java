@@ -25,16 +25,8 @@ public class ItemRepositoryImpl implements ItemRepositoryStoredProcedures {
 
     @Override
     @Transactional
-    public Optional<String> getAllUserItems(String userName) {
-        StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_USER_ITEMS);
-        query.setParameter(StoredProcedureConstants.USER_NAME_PARAM, userName);
-        return Optional.ofNullable(QueryHandler.queryToString(query, true));
-    }
-
-    @Override
-    @Transactional
     public Optional<String> getAllItems() {
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery(StoredProcedureConstants.GET_ALL_ITEMS);
-        return Optional.ofNullable(QueryHandler.queryToString(query, true));
+        return Optional.ofNullable(QueryHandler.queryToString(query));
     }
 }
