@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 
@@ -16,16 +15,6 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE,
-                procedureName = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PDO,
-                procedureName = StoredProcedureConstants.GET_ALL_BOOKS_SIMPLE_PDO_PROCEDURE
-        )
-})
 @Entity
 @DiscriminatorValue(TypeConstants.BOOK)
 public class Book extends Item implements Serializable {

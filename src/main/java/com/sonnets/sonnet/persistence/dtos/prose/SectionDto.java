@@ -2,7 +2,6 @@ package com.sonnets.sonnet.persistence.dtos.prose;
 
 import com.sonnets.sonnet.persistence.dtos.base.SourceDetailsDto;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -10,7 +9,6 @@ import javax.validation.constraints.NotNull;
  */
 public class SectionDto extends SourceDetailsDto {
     private String title;
-    @NotEmpty
     private String text;
     private String description;
     @NotNull

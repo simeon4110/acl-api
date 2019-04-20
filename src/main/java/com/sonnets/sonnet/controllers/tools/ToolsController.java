@@ -5,8 +5,10 @@ import com.sonnets.sonnet.services.tools.ToolsService;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -56,23 +58,6 @@ public class ToolsController {
     }
 
     /**
-     * Lemmatize corpora content.
-     *
-     * @param corporaId   the corpora db id.
-     * @param stopWordsId the stop words db id.
-     * @return a list of lemmatized words.
-     */
-    @Async
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
-    @GetMapping(value = "/tools/corpora/lemmatize", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<List<String>> lemmatizeCorpora(@RequestParam("corpora_id") Long corporaId,
-                                                            @RequestParam(value = "stop_words_id", required = false)
-                                                                    String stopWordsId) {
-        return toolsService.lemmatizeText(corporaId, stopWordsId);
-    }
-
-    /**
      * Run a freqdist on arbitrary text.
      *
      * @param textDto a textDto with the text and optional custom stop words.
@@ -83,26 +68,6 @@ public class ToolsController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getFrequencyDistribution(@RequestBody @Valid TextDto textDto) {
         return toolsService.frequencyDistribution(textDto);
-    }
-
-    /**
-     * Run a freqdist on corpora content.
-     *
-     * @param corporaId   the corpora db id.
-     * @param stopWordsId the stop words db id.
-     * @return a Map of where key = word and value = frequency of key.
-     */
-    @Async
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
-    @GetMapping(value = "/tools/corpora/freqdist", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<Map<String, Integer>> getFrequencyDistributionCorpora(@RequestParam("corpora_id")
-                                                                                           Long corporaId,
-                                                                                   @RequestParam(
-                                                                                           value = "stop_words_id",
-                                                                                           required = false)
-                                                                                           String stopWordsId) {
-        return toolsService.frequencyDistribution(corporaId, stopWordsId);
     }
 
     /**
@@ -119,22 +84,4 @@ public class ToolsController {
     public CompletableFuture<Map<Integer, Map<Double, String>>> runTopicModel(@RequestBody @Valid TextDto textDto) {
         return toolsService.runMalletTopicModel(textDto);
     }
-
-    /**
-     * Run a topic model on corpora content.
-     *
-     * @param corporaId    the corpora db id.
-     * @param numberTopics the number of topics desired.
-     * @return a Map where the key is an integer (0 = most likely, -1 = trimmed) and the key is a Map where the key
-     * is the exact probability of the model and the value is the model.
-     */
-    @Async
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'GUEST')")
-    @GetMapping(value = "/tools/corpora/topic_model", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture runTopicModelCorpora(@RequestParam("corpora_id") Long corporaId,
-                                                  @RequestParam("number_topics") int numberTopics) {
-        return toolsService.runMalletTopicModel(corporaId, numberTopics);
-    }
-
 }

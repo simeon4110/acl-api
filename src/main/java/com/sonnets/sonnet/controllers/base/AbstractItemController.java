@@ -12,8 +12,9 @@ import java.util.List;
  *
  * @param <T> the object type.
  * @param <S> the object's dto type.
+ * @param <P> the object's outbound projection dto.
  */
-public interface AbstractItemController<T, S> {
+public interface AbstractItemController<T, S, P> {
     ResponseEntity<Void> add(S dto);
 
     ResponseEntity<Void> delete(Long id);
@@ -24,13 +25,9 @@ public interface AbstractItemController<T, S> {
 
     List<T> getByIds(Long[] ids);
 
-    List<T> getAll();
+    List<P> getAll();
 
-    List<T> authedUserGetAll();
-
-    String getAllSimple();
-
-    String authedUserGetAllSimple();
+    List<P> authedUserGetAll();
 
     Page<T> getAllPaged(Pageable pageable);
 

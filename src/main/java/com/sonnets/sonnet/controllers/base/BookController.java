@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.controllers.base;
 
 import com.sonnets.sonnet.helpers.ParseParam;
+import com.sonnets.sonnet.persistence.dtos.base.BookOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Book;
 import com.sonnets.sonnet.services.base.BookService;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @PropertySource("classpath:global.properties")
-public class BookController implements AbstractItemController<Book, BookDto> {
+public class BookController implements AbstractItemController<Book, BookDto, BookOutDto> {
     private final BookService bookService;
 
     @Autowired
@@ -74,7 +75,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Book> getAll() {
+    public List<BookOutDto> getAll() {
         return bookService.getAll();
     }
 
@@ -82,23 +83,8 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/book/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Book> authedUserGetAll() {
+    public List<BookOutDto> authedUserGetAll() {
         return bookService.authedUserGetAll();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/book/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return bookService.getAllSimple();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/book/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String authedUserGetAllSimple() {
-        return bookService.authedUserGetAllSimple();
     }
 
     @Override

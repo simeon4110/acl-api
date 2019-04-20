@@ -1,8 +1,5 @@
 package com.sonnets.sonnet.persistence.models.base;
 
-import com.google.gson.annotations.Expose;
-import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -13,83 +10,55 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_ITEMS,
-                procedureName = StoredProcedureConstants.GET_ALL_ITEMS_PROCEDURE
-        )
-})
 @MappedSuperclass
 public abstract class Item extends Auditable<String> implements Serializable {
     private static final long serialVersionUID = -5596854181341354264L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Expose
     private Long id;
     @Column
-    @Expose
     private String category;
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @Expose
     private Author author;
     @Column
-    @Expose
     private String title;
     @Column
-    @Expose
     private String sourceTitle;
     @Column
     private String description;
     @Column
-    @Expose
     private String period;
     @Column
-    @Expose
     private String edition;
     @Column
-    @Expose
     private String placeOfPublication;
     @Column
-    @Expose
     private String publisher;
     @Column
-    @Expose
     private Date dateOfPublication;
     @Column
-    @Expose
     private String shortTitle;
     @Column
-    @Expose
     private String url;
     @Column
-    @Expose
     private Date dateOfAccess;
     @Column
-    @Expose
     private String journalName;
     @Column
-    @Expose
     private String DOI;
     @Column
-    @Expose
     private int journalVolume;
     @Column
-    @Expose
     private int journalIssue;
     @Column
-    @Expose
     private String journalPageRange;
     @Column
-    @Expose
     private String journalAbbr;
     @Column
-    @Expose
     private String language;
     @Column
-    @Expose
     private Boolean isPublicDomain;
     @Column
-    @Expose
     private String pageRange;
 
     public Item() {

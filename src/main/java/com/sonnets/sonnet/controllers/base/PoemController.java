@@ -2,6 +2,7 @@ package com.sonnets.sonnet.controllers.base;
 
 import com.sonnets.sonnet.helpers.ParseParam;
 import com.sonnets.sonnet.persistence.dtos.base.PoemDto;
+import com.sonnets.sonnet.persistence.dtos.base.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.services.base.PoemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @PropertySource("classpath:global.properties")
-public class PoemController implements AbstractItemController<Poem, PoemDto> {
+public class PoemController implements AbstractItemController<Poem, PoemDto, PoemOutDto> {
     private final PoemService poemService;
 
     @Autowired
@@ -73,7 +74,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Poem> getAll() {
+    public List<PoemOutDto> getAll() {
         return poemService.getAll();
     }
 
@@ -81,23 +82,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto> {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Poem> authedUserGetAll() {
+    public List<PoemOutDto> authedUserGetAll() {
         return poemService.authedUserGetAll();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return poemService.getAllSimple();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/poem/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String authedUserGetAllSimple() {
-        return poemService.authedUserGetAllSimple();
     }
 
     @Override

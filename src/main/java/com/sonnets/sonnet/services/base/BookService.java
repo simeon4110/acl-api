@@ -1,16 +1,16 @@
 package com.sonnets.sonnet.services.base;
 
+import com.sonnets.sonnet.persistence.dtos.base.BookOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Book;
 import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
-import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
-import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
+import com.sonnets.sonnet.persistence.repositories.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +32,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-public class BookService implements AbstractItemService<Book, BookDto> {
+public class BookService implements AbstractItemService<Book, BookDto, BookOutDto> {
     private static final Logger LOGGER = Logger.getLogger(BookService.class);
     private static final ParseSourceDetails<Book, BookDto> parseSourceDetails = new ParseSourceDetails<>();
     private final BookRepository bookRepository;
@@ -138,30 +138,16 @@ public class BookService implements AbstractItemService<Book, BookDto> {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Book> getAll() {
+    public List<BookOutDto> getAll() {
         LOGGER.debug("Returning all books. NOAUTH");
-        return bookRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        return bookRepository.getAllPublicDomain();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Book> authedUserGetAll() {
+    public List<BookOutDto> authedUserGetAll() {
         LOGGER.debug("Returning all books. AUTH");
-        return bookRepository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public String getAllSimple() {
-        LOGGER.debug("Returning all books simple. NOAUTH.");
-        return bookRepository.getAllBooksSimplePDO().orElseThrow(StoredProcedureQueryException::new);
-    }
-
-    @Override
-    @Transactional
-    public String authedUserGetAllSimple() {
-        LOGGER.debug("Returning all books simple. AUTH.");
-        return bookRepository.getAllBooksSimple().orElseThrow(StoredProcedureQueryException::new);
+        return bookRepository.getAll();
     }
 
     @Override

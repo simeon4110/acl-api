@@ -2,7 +2,7 @@ package com.sonnets.sonnet.services.tools;
 
 import com.sonnets.sonnet.persistence.dtos.base.TextDto;
 import com.sonnets.sonnet.persistence.models.tools.CustomStopWords;
-import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
+import com.sonnets.sonnet.persistence.repositories.CorporaRepository;
 import com.sonnets.sonnet.services.web.CustomStopWordsService;
 import com.sonnets.sonnet.wordtools.FrequencyDistribution;
 import com.sonnets.sonnet.wordtools.MalletTools;
@@ -65,20 +65,6 @@ public class ToolsService {
         return pipeline.getListOfLemmatizedWords(text);
     }
 
-    /**
-     * @param corporaId   a corpora db id.
-     * @param stopWordsId a stop words id.
-     * @return a list of lemmatized strings.
-     */
-    @Async
-    public CompletableFuture<List<String>> lemmatizeText(Long corporaId, String stopWordsId) {
-        LOGGER.debug("Running text lemmatizer (corpora): " + corporaId);
-        TextDto dto = parseCorporaToTextDto(stopWordsId);
-        String items = corporaRepository.getCorporaItems(corporaId);
-        dto.setText(parseCorporaItems(items));
-        return pipeline.getListOfLemmatizedWords(dto);
-    }
-
     private TextDto parseCorporaToTextDto(String stopWordsId) {
         TextDto dto = new TextDto();
         CustomStopWords customStopWords;
@@ -100,7 +86,6 @@ public class ToolsService {
         return CompletableFuture.completedFuture(result);
     }
 
-
     /**
      * @param textDto a textDto with the text to lemmatize and optional custom stop words.
      * @return a sorted freqdist of the top 20 results.
@@ -108,20 +93,6 @@ public class ToolsService {
     public Map<String, Object> frequencyDistribution(TextDto textDto) {
         LOGGER.debug("Running frequency distribution (raw text.)");
         return tools.FrequencyDistribution.getFrequencyDistribution(textDto.getText(), textDto.getNumberOfTerms());
-    }
-
-    /**
-     * @param corporaId   a corpora db id.
-     * @param stopWordsId a stop words id.
-     * @return a list of lemmatized strings.
-     */
-    @Async
-    public CompletableFuture<Map<String, Integer>> frequencyDistribution(Long corporaId, String stopWordsId) {
-        LOGGER.debug("Running frequency distribution (corpora): " + corporaId);
-        TextDto dto = parseCorporaToTextDto(stopWordsId);
-        dto.setText(parseCorporaItems(corporaRepository.getCorporaItems(corporaId)));
-        CompletableFuture<List<String>> strings = pipeline.getListOfLemmatizedWords(dto);
-        return strings.thenApply(freqDist::getFrequency);
     }
 
     /**
@@ -135,21 +106,6 @@ public class ToolsService {
     public CompletableFuture<Map<Integer, Map<Double, String>>> runMalletTopicModel(TextDto textDto) {
         LOGGER.debug("Running topic model (raw text).");
         return malletTools.topicModel(textDto.getText(), textDto.getNumberOfTopics())
-                .orTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Runs a mallet topic model on corpora text.
-     *
-     * @param corporaId      a corpora db id.
-     * @param numberOfTopics a number of topics.
-     * @return a Map where the key is an integer (0 = most likely, -1 = trimmed) and the key is a Map where the key
-     * is the exact probability of the model and the value is the model.
-     */
-    @Async
-    public CompletableFuture runMalletTopicModel(Long corporaId, int numberOfTopics) {
-        LOGGER.debug("Running topic model (corpora): " + corporaId);
-        return malletTools.topicModel(parseCorporaItems(corporaRepository.getCorporaItems(corporaId)), numberOfTopics)
                 .orTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
     }
 }

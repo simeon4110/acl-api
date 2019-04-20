@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.models.web;
 
-import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Dialog;
 import com.sonnets.sonnet.persistence.models.annotation.WordTranslation;
@@ -24,84 +23,6 @@ import java.util.Set;
  *
  * @author Josh Harkema
  */
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.ADD_CORPORA_ITEM,
-                procedureName = StoredProcedureConstants.ADD_CORPORA_ITEM_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.ITEM_ID, mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.ITEM_TYPE, mode = ParameterMode.IN, type = String.class)
-                }
-
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_CORPORA,
-                procedureName = StoredProcedureConstants.GET_CORPORA_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class)
-                },
-                resultSetMappings = {
-                        "CorporaMap"
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_CORPORA_ITEMS,
-                procedureName = StoredProcedureConstants.GET_CORPORA_ITEMS_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class)
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_CORPORA_ITEMS_SIMPLE,
-                procedureName = StoredProcedureConstants.GET_CORPORA_ITEMS_SIMPLE_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class)
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_CORPORA_USER,
-                procedureName = StoredProcedureConstants.GET_CORPORA_USER_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.CREATED_BY_PARAM, mode = ParameterMode.IN, type = String.class)
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.DELETE_CORPORA_ITEM,
-                procedureName = StoredProcedureConstants.DELETE_CORPORA_ITEM_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.CORPORA_ID, mode = ParameterMode.IN, type = Long.class),
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.ITEM_TYPE, mode = ParameterMode.IN, type = String.class),
-                        @StoredProcedureParameter(
-                                name = StoredProcedureConstants.ITEM_ID, mode = ParameterMode.IN, type = Long.class)
-                }
-        )
-})
-@SqlResultSetMapping(
-        name = "CorporaMap",
-        classes = @ConstructorResult(
-                targetClass = Corpora.class,
-                columns = {
-                        @ColumnResult(name = "id", type = BigDecimal.class),
-                        @ColumnResult(name = "created_by"),
-                        @ColumnResult(name = "created_date", type = Date.class),
-                        @ColumnResult(name = "last_modified_by"),
-                        @ColumnResult(name = "last_modified_date", type = Date.class),
-                        @ColumnResult(name = "description"),
-                        @ColumnResult(name = "name"),
-                        @ColumnResult(name = "total_items", type = int.class)
-                }
-        )
-)
 @Entity
 @Table(name = "corpora")
 public class Corpora extends Auditable<String> implements Serializable {

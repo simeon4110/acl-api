@@ -2,6 +2,7 @@ package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
+import com.sonnets.sonnet.persistence.dtos.base.SectionOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -10,13 +11,12 @@ import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
-import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
-import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
+import com.sonnets.sonnet.persistence.repositories.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -46,7 +46,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-public class SectionService implements AbstractItemService<Section, SectionDto> {
+public class SectionService implements AbstractItemService<Section, SectionDto, SectionOutDto> {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
     private static final ParseSourceDetails<Section, SectionDto> parseSourceDetails = new ParseSourceDetails<>();
     private final SectionRepositoryBase sectionRepository;
@@ -171,30 +171,16 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
 
     @Override
     @Transactional(readOnly = true)
-    public List<Section> getAll() {
+    public List<SectionOutDto> getAll() {
         LOGGER.debug("Returning all sections. NOAUTH.");
-        return sectionRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        return sectionRepository.getAllPublicDomain();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Section> authedUserGetAll() {
+    public List<SectionOutDto> authedUserGetAll() {
         LOGGER.debug("Returning all sections. AUTH.");
-        return sectionRepository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public String getAllSimple() {
-        LOGGER.debug("Returning all sections simple. NOAUTH.");
-        return sectionRepository.getAllSectionsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
-    }
-
-    @Override
-    @Transactional
-    public String authedUserGetAllSimple() {
-        LOGGER.debug("Returning all sections simple. AUTH.");
-        return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
+        return sectionRepository.getAll();
     }
 
     @Override
@@ -290,15 +276,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
                 .orElseThrow(ItemNotFoundException::new);
         section.setNarrator(character);
         return sectionRepository.save(section);
-    }
-
-    /**
-     * @param bookId the book to get the sections from.
-     * @return a JSON string of all the sections.
-     */
-    public String getAllFromBookSimple(Long bookId) {
-        LOGGER.debug(String.format("Returning all sections from book id '%s' as JSON.", bookId));
-        return sectionRepository.getBookSectionsSimple(bookId).orElseThrow(ItemNotFoundException::new);
     }
 
     public ResponseEntity<Void> deleteNarrator(Long sectionId) {

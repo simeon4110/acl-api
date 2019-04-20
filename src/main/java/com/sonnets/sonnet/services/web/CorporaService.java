@@ -1,22 +1,16 @@
 package com.sonnets.sonnet.services.web;
 
-import com.sonnets.sonnet.helpers.ItemKeyValuePair;
 import com.sonnets.sonnet.persistence.dtos.web.CorporaDto;
-import com.sonnets.sonnet.persistence.dtos.web.CorporaItemsDto;
 import com.sonnets.sonnet.persistence.models.web.Corpora;
-import com.sonnets.sonnet.persistence.repositories.corpora.CorporaRepository;
+import com.sonnets.sonnet.persistence.repositories.CorporaRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.exceptions.NoResultsException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Handles CRUD for Corpora. Input queries run async so the user's thread isn't blocked while waiting for the query
@@ -50,62 +44,6 @@ public class CorporaService {
     }
 
     /**
-     * Get a single corpora by db id. Runs async in anon executors.
-     *
-     * @param corporaId the id of the corpora to get.
-     * @return the corpora or null if not found.
-     */
-    public Corpora getSingle(String corporaId) {
-        LOGGER.debug("Getting corpora by id:" + corporaId);
-        return corporaRepository.getCorpora(Long.valueOf(corporaId)).orElseThrow(ItemNotFoundException::new);
-    }
-
-    /**
-     * Add a single item to a corpora.
-     *
-     * @param type      the item's type ('BOOK', 'POEM', 'SECT')
-     * @param corporaId the db id of the corpora to add the item to.
-     * @param itemId    the db id of the item to add.
-     * @return 200 if successful.
-     */
-    public ResponseEntity<Void> addSingleItem(String type, String corporaId, String itemId) {
-        LOGGER.debug("Adding single item: " + type + ' ' + corporaId + ' ' + itemId);
-        CompletableFuture.runAsync(() ->
-                corporaRepository.addCorporaItem(Long.valueOf(corporaId), Long.valueOf(itemId), type));
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Add items to a corpora. Runs async in anon executors.
-     *
-     * @param dto the dto with the items to add.
-     * @return OK if the items are added.
-     */
-    public ResponseEntity<Void> addItems(CorporaItemsDto dto) {
-        LOGGER.debug("Adding items: " + dto.getIds());
-        for (ItemKeyValuePair<String, String> pair : dto.getIds()) {
-            CompletableFuture.runAsync(() ->
-                    corporaRepository.addCorporaItem(dto.getId(), Long.valueOf(pair.getValue()), pair.getKey()));
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Remove items from a corpora. Runs async in anon executors.
-     *
-     * @param dto the dto with the items to remove.
-     * @return OK if the items are removed.
-     */
-    public ResponseEntity<Void> removeItems(CorporaItemsDto dto) {
-        LOGGER.debug("Removing items: " + dto.getIds());
-        for (ItemKeyValuePair<String, String> pair : dto.getIds()) {
-            CompletableFuture.runAsync(() ->
-                    corporaRepository.removeCorporaItem(dto.getId(), Long.valueOf(pair.getValue()), pair.getKey()));
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
      * Modify an existing corpora.
      *
      * @param corporaId   the id of the corpora to modifyUser.
@@ -135,28 +73,6 @@ public class CorporaService {
         assert corpora != null;
         corporaRepository.delete(corpora);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Get all corpora by a given user.
-     *
-     * @param principal the principal of the request.
-     * @return a list of corpora (empty if nothing is found.)
-     */
-    public List getUserCorpora(Principal principal) {
-        LOGGER.debug("Returning corpera for user: " + principal.getName());
-        return corporaRepository.getCorporaUser(principal.getName()).orElseThrow(NoResultsException::new);
-    }
-
-    /**
-     * Gets just the basics of a corpora's items. The getCorporaItemsSimple method runs async.
-     *
-     * @param id the db id of the corpora's items to get.
-     * @return a set of the basic details for all items in a corpora.
-     */
-    public String getCorporaItemsSimple(String id) {
-        LOGGER.debug("Getting corpora items simple: " + id);
-        return corporaRepository.getCorporaItemsSimple(Long.parseLong(id));
     }
 
     /**

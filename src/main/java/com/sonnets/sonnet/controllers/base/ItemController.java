@@ -28,15 +28,6 @@ public class ItemController {
     }
 
     /**
-     * @return basic details of all items in the database.
-     */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/item/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAll() {
-        return itemService.getAll();
-    }
-
-    /**
      * @param principal of the user making the request.
      * @return basic details of all items added by the user making the request.
      */
