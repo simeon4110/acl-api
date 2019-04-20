@@ -9,7 +9,6 @@ import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.search.SearchCRUDService;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import search.SearchRepository;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
@@ -60,9 +60,9 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
 
     private static void addNewSearchDocument(final ShortStory shortStory) {
         LOGGER.debug("Adding new ShortStory search document...");
-        Document document = SearchCRUDService.parseCommonFields(new Document(), shortStory);
+        Document document = SearchRepository.parseCommonFields(new Document(), shortStory);
         document.add(LuceneConfig.getTextField(shortStory.getText()));
-        SearchCRUDService.addDocument(document, TypeConstants.SHORT_STORY);
+        SearchRepository.addDocument(document, TypeConstants.SHORT_STORY);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         ShortStory shortStory = shortStoryRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         executor.execute(() -> {
             shortStoryRepository.delete(shortStory);
-            SearchCRUDService.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
+            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
         });
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -95,7 +95,7 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         if (shortStory.getCreatedBy().equals(principal.getName())) {
             executor.execute(() -> {
                 shortStoryRepository.delete(shortStory);
-                SearchCRUDService.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
+                SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
             });
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -166,7 +166,7 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         ShortStory shortStory = shortStoryRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         shortStory = createOrCopyShortStory(shortStory, author, dto);
         shortStory = shortStoryRepository.saveAndFlush(shortStory);
-        SearchCRUDService.updateShortStory(shortStory);
+        SearchRepository.updateShortStory(shortStory);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

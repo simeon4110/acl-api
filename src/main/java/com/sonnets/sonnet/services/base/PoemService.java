@@ -13,7 +13,6 @@ import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
-import com.sonnets.sonnet.services.search.SearchCRUDService;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
 import org.apache.log4j.Logger;
@@ -29,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import search.SearchRepository;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sonnets.sonnet.services.search.SearchCRUDService.parseCommonFields;
 
 /**
  * Handles all CRUD for the poem repository.
@@ -49,17 +48,14 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     private static final ParseSourceDetails<Poem, PoemDto> parseSourceDetails = new ParseSourceDetails<>();
     private final PoemRepository poemRepository;
     private final AuthorRepository authorRepository;
-    private final SearchQueryHandlerService searchQueryHandlerService;
     private final UserRepository userRepository;
     private final TaskExecutor executor;
 
     @Autowired
     public PoemService(PoemRepository poemRepository, AuthorRepository authorRepository,
-                       SearchQueryHandlerService searchQueryHandlerService, UserRepository userRepository,
-                       @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
+                       UserRepository userRepository, @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
         this.poemRepository = poemRepository;
         this.authorRepository = authorRepository;
-        this.searchQueryHandlerService = searchQueryHandlerService;
         this.userRepository = userRepository;
         this.executor = executor;
     }
@@ -119,13 +115,13 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
     // :todo: add this method to AbstractItemService
     private static void addNewSearchDocument(final Poem poem) {
         LOGGER.debug("Updating poem's search document...");
-        Document document = parseCommonFields(new Document(), poem);
+        Document document = SearchRepository.parseCommonFields(new Document(), poem);
         document.add(new TextField(SearchConstants.POEM_FORM, poem.getForm(), Field.Store.YES));
         // :todo: this requires its own custom field.
         document.add(new TextField(SearchConstants.TOPIC_MODEL, String.valueOf(poem.getTopicModel()),
                 Field.Store.YES));
         document.add(LuceneConfig.getTextField(String.join(" ", poem.getText())));
-        SearchCRUDService.addDocument(document, TypeConstants.POEM);
+        SearchRepository.addDocument(document, TypeConstants.POEM);
         LOGGER.debug("Poem's search document updated successfully.");
     }
 
@@ -155,7 +151,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
 
         executor.execute(() -> {
             poemRepository.delete(poem);
-            SearchCRUDService.deleteDocument(id.toString(), TypeConstants.POEM);
+            SearchRepository.deleteDocument(id.toString(), TypeConstants.POEM);
         });
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -172,7 +168,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         if (poem.getCreatedBy().equals(principal.getName())) {
             executor.execute(() -> {
                 poemRepository.delete(poem);
-                SearchCRUDService.deleteDocument(id.toString(), TypeConstants.POEM);
+                SearchRepository.deleteDocument(id.toString(), TypeConstants.POEM);
             });
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -251,7 +247,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
         Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         poem = createOrUpdateFromDto(poem, dto, author);
         this.updateCanConfirm(poem);
-        SearchCRUDService.updatePoem(poemRepository.saveAndFlush(poem));
+        SearchRepository.updatePoem(poemRepository.saveAndFlush(poem));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -272,7 +268,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
 
         poem = poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
         this.updateCanConfirm(poem);
-        SearchCRUDService.updatePoem(poem);
+        SearchRepository.updatePoem(poem);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -61,10 +61,12 @@ public class BookService implements AbstractItemService<Book, BookDto> {
         book.setPeriod(dto.getPeriod());
         book.setCategory(TypeConstants.BOOK);
         book.setType(dto.getType());
-        if (book.getSections().size() != 0) {
+        if (book.getSections() == null) {
             book.setSections(new ArrayList<>());
         }
-        book.setBookCharacters(new ArrayList<>());
+        if (book.getBookCharacters() == null) {
+            book.setBookCharacters(new ArrayList<>());
+        }
         return book;
     }
 

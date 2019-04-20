@@ -10,7 +10,6 @@ import com.sonnets.sonnet.persistence.repositories.RepositoryException;
 import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
 import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
-import com.sonnets.sonnet.services.search.SearchCRUDService;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -21,6 +20,7 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import search.SearchRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -127,7 +127,7 @@ public class LuceneConfig {
         int counter = 0;
         ArrayList<Document> documents = new ArrayList<>();
         for (Poem p : poems) {
-            Document document = SearchCRUDService.parseCommonFields(new Document(), p);
+            Document document = SearchRepository.parseCommonFields(new Document(), p);
             document.add(new TextField(SearchConstants.POEM_FORM, p.getForm(), Field.Store.YES));
             // :todo: this requires its own custom field.
             document.add(new TextField(SearchConstants.TOPIC_MODEL, String.valueOf(p.getTopicModel()),
@@ -140,7 +140,7 @@ public class LuceneConfig {
             }
             counter++;
         }
-        SearchCRUDService.addDocuments(documents, TypeConstants.POEM, true);
+        SearchRepository.addDocuments(documents, TypeConstants.POEM);
         LOGGER.debug("[SEARCH] :::::: poems indexed successfully!");
     }
 
@@ -155,7 +155,7 @@ public class LuceneConfig {
         int counter = 0;
         ArrayList<Document> documents = new ArrayList<>();
         for (Section s : sections) {
-            Document document = SearchCRUDService.parseCommonFields(new Document(), s);
+            Document document = SearchRepository.parseCommonFields(new Document(), s);
             document.add(new StringField(SearchConstants.PARENT_ID, s.getParentId().toString(), Field.Store.YES));
             document.add(new TextField(SearchConstants.PARENT_TITLE, s.getParentTitle(), Field.Store.YES));
             document.add(getTextField(s.getText()));
@@ -168,7 +168,7 @@ public class LuceneConfig {
             counter++;
         }
 
-        SearchCRUDService.addDocuments(documents, TypeConstants.SECTION, true);
+        SearchRepository.addDocuments(documents, TypeConstants.SECTION);
         LOGGER.debug("[SEARCH] :::::: sections indexed successfully!");
     }
 
@@ -180,7 +180,7 @@ public class LuceneConfig {
         int counter = 0;
         List<Document> documents = new ArrayList<>();
         for (ShortStory s : shortStories) {
-            Document document = SearchCRUDService.parseCommonFields(new Document(), s);
+            Document document = SearchRepository.parseCommonFields(new Document(), s);
             document.add(getTextField(s.getText()));
             documents.add(document);
             if (counter % 25 == 0) {
@@ -189,7 +189,7 @@ public class LuceneConfig {
             }
             counter++;
         }
-        SearchCRUDService.addDocuments(documents, TypeConstants.SHORT_STORY, true);
+        SearchRepository.addDocuments(documents, TypeConstants.SHORT_STORY);
         LOGGER.debug("[SEARCH] :::::: Short stories indexed successfully!");
     }
 
@@ -213,7 +213,7 @@ public class LuceneConfig {
             counter++;
         }
 
-        SearchCRUDService.addDocuments(documents, TypeConstants.AUTHOR, true);
+        SearchRepository.addDocuments(documents, TypeConstants.AUTHOR);
         LOGGER.debug("[SEARCH] :::::: Authors indexed successfully!");
     }
 }
