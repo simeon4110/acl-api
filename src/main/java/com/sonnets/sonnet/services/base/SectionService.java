@@ -17,7 +17,6 @@ import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
-import com.sonnets.sonnet.services.search.SearchCRUDService;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -33,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import search.SearchRepository;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
@@ -102,11 +102,11 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
 
     private static void addNewSearchDocument(final Section section) {
         LOGGER.debug("Updating section's search document...");
-        Document document = SearchCRUDService.parseCommonFields(new Document(), section);
+        Document document = SearchRepository.parseCommonFields(new Document(), section);
         document.add(new StringField(SearchConstants.PARENT_ID, section.getParentId().toString(), Field.Store.YES));
         document.add(new TextField(SearchConstants.PARENT_TITLE, section.getParentTitle(), Field.Store.YES));
         document.add(LuceneConfig.getTextField(section.getText()));
-        SearchCRUDService.addDocument(document, TypeConstants.SECTION);
+        SearchRepository.addDocument(document, TypeConstants.SECTION);
     }
 
     @Override
@@ -117,11 +117,9 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         Section section = createOrCopySection(new Section(), author, book, dto);
 
-        executor.execute(() -> {
-            Section out = sectionRepository.save(section);
-            bookRepository.save(addBookSection(book, out));
-            addNewSearchDocument(out);
-        });
+        Section out = sectionRepository.save(section);
+        bookRepository.save(addBookSection(book, out));
+        addNewSearchDocument(out);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -133,7 +131,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         executor.execute(() -> {
             removeBookSection(section);
             sectionRepository.delete(section);
-            SearchCRUDService.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
+            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
         });
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -164,7 +162,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
             removeBookSection(section);
             executor.execute(() -> {
                 sectionRepository.delete(section);
-                SearchCRUDService.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
+                SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
             });
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -225,11 +223,9 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
 
-        executor.execute(() -> {
-            bookRepository.save(book);
-            SearchCRUDService.updateSection(sectionRepository.save(createOrCopySection(section, author, book, dto)));
+        bookRepository.save(book);
+        SearchRepository.updateSection(sectionRepository.save(createOrCopySection(section, author, book, dto)));
 
-        });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -251,8 +247,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
 
         // Ensure the user making the request is also the owner of the section.
         if (section.getCreatedBy().equals(principal.getName())) {
-            executor.execute(() -> SearchCRUDService.updateSection(sectionRepository.save(
-                    createOrCopySection(section, author, book, dto))));
+            SearchRepository.updateSection(sectionRepository.save(
+                    createOrCopySection(section, author, book, dto)));
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

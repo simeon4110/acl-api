@@ -43,7 +43,7 @@ public abstract class SearchConstants {
     public static final int SLOP = 2; // Words are separated by no more than 3 words.
 
     // Item specific field names.
-    public static final String POEM_FORM = "poem_form";
+    public static final String POEM_FORM = "poem_form"; // :todo: fix this improper naming convention.
     public static final String TEXT = "text";
     public static final String BOOK_TYPE = "book_type";
     public static final String BOOK_SECTION = "book_section";

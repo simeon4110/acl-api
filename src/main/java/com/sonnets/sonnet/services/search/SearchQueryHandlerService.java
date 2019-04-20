@@ -14,6 +14,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.highlight.*;
 import org.springframework.stereotype.Service;
+import search.SearchRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,7 +95,7 @@ public class SearchQueryHandlerService {
     public static boolean similarPoemExists(final String title, final String lastName) {
         LOGGER.debug(String.format("[SEARCH] :::::: Searching for poem with title '%s' by '%s'.", title,
                 lastName));
-        try (IndexReader reader = SearchCRUDService.getReader(TypeConstants.POEM)) {
+        try (IndexReader reader = SearchRepository.getReader(TypeConstants.POEM)) {
             IndexSearcher searcher = new IndexSearcher(reader);
             BooleanQuery.Builder builder = new BooleanQuery.Builder();
             builder.add(parseField(title, SearchConstants.TITLE), BooleanClause.Occur.MUST);
@@ -168,7 +169,7 @@ public class SearchQueryHandlerService {
         List<Map<String, String>> out = new ArrayList<>();
         for (String i : itemTypes) {
             i = i.toUpperCase(); // Types are always uppercase.
-            try (IndexReader reader = SearchCRUDService.getReader(i)) {
+            try (IndexReader reader = SearchRepository.getReader(i)) {
                 // Init a searcher and analyzer, and parse the query string into a Query.
                 IndexSearcher searcher = new IndexSearcher(reader);
                 Query query = parseSearchParams(params);
@@ -202,7 +203,7 @@ public class SearchQueryHandlerService {
         );
         List<Map<String, String>> out = new ArrayList<>();
         for (String s : itemTypes) {
-            try (IndexReader reader = SearchCRUDService.getReader(s)) {
+            try (IndexReader reader = SearchRepository.getReader(s)) {
                 IndexSearcher searcher = new IndexSearcher(reader);
                 Query query = parser.parse(searchString);
                 TopDocs hits = searcher.search(query, SearchConstants.MAX_RESULT_SIZE, Sort.RELEVANCE);
@@ -226,7 +227,7 @@ public class SearchQueryHandlerService {
      */
     public String searchAuthor(AuthorDto dto) {
         LOGGER.debug("[SEARCH] :::::: Searching for author: " + dto.toString());
-        try (IndexReader reader = SearchCRUDService.getReader(TypeConstants.AUTHOR)) {
+        try (IndexReader reader = SearchRepository.getReader(TypeConstants.AUTHOR)) {
             IndexSearcher searcher = new IndexSearcher(reader);
             BooleanQuery.Builder builder = new BooleanQuery.Builder();
 
