@@ -1,5 +1,6 @@
 package com.sonnets.sonnet.controllers.base;
 
+import com.sonnets.sonnet.SonnetApplication;
 import com.sonnets.sonnet.helpers.JsonHelper;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -12,12 +13,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -31,12 +30,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Josh Harkema
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties = {"spring.profiles.active=test"})
+@SpringBootTest(classes = {SonnetApplication.class})
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-@Transactional
-public class AuthorControllerTest {
-    private static final Logger LOGGER = Logger.getLogger(AuthorControllerTest.class);
+public class AuthorControllerIntegrationTest {
+    private static final Logger LOGGER = Logger.getLogger(AuthorControllerIntegrationTest.class);
     private static final String FIRST_NAME = "test-first-name";
     private static final String LAST_NAME = "test-last-name";
     @Autowired

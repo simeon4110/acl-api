@@ -6,7 +6,6 @@ import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.models.base.ShortStory;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
-import com.sonnets.sonnet.persistence.repositories.RepositoryException;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
@@ -23,10 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import search.SearchRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This is where the Lucene indexes are built. Runs after db initialization and writes Lucene indexes to
@@ -121,7 +117,7 @@ public class LuceneConfig {
      */
     private void indexPoems() {
         LOGGER.debug("[SEARCH] :::::: Starting to write poem index...");
-        List<Poem> poems = poemRepository.findAllByHidden(false).orElseThrow(RepositoryException::new);
+        List<Poem> poems = poemRepository.findAllByHidden(false).orElse(Collections.emptyList());
         LOGGER.debug(String.format("[SEARCH] :::::: Poems to index: %s.", poems.size()));
 
         int counter = 0;
