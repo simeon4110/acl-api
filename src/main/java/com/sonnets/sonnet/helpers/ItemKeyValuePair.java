@@ -10,23 +10,20 @@ import java.util.Objects;
  * @param <V> the Value.
  */
 public class ItemKeyValuePair<K, V> {
-    private K key;
-    private V value;
+    private K type;
+    private V id;
 
-    public ItemKeyValuePair() {
+    public ItemKeyValuePair(K type, V id) {
+        this.type = type;
+        this.id = id;
     }
 
-    public ItemKeyValuePair(K key, V value) {
-        this.key = key;
-        this.value = value;
+    public K getType() {
+        return type;
     }
 
-    public K getKey() {
-        return key;
-    }
-
-    public V getValue() {
-        return value;
+    public V getId() {
+        return id;
     }
 
     @Override
@@ -34,20 +31,20 @@ public class ItemKeyValuePair<K, V> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemKeyValuePair<?, ?> that = (ItemKeyValuePair<?, ?>) o;
-        return Objects.equals(key, that.key) &&
-                Objects.equals(value, that.value);
+        return Objects.equals(type, that.type) &&
+                Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(type, id);
     }
 
     @Override
     public String toString() {
         return "ItemKeyValuePair{" +
-                "K=" + key +
-                ", V=" + value +
+                "K=" + type +
+                ", V=" + id +
                 '}';
     }
 }

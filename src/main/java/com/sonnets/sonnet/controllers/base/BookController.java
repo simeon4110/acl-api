@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.controllers.base;
 
-import com.sonnets.sonnet.helpers.ParseParam;
 import com.sonnets.sonnet.persistence.dtos.base.BookOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Book;
@@ -13,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tools.FormatTools;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -124,7 +124,7 @@ public class BookController implements AbstractItemController<Book, BookDto, Boo
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/get_by_title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Book getByTitle(@PathVariable("title") String title) {
-        title = ParseParam.parse(title);
+        title = FormatTools.parseParam(title);
         return bookService.getBookByTitle(title);
     }
 }

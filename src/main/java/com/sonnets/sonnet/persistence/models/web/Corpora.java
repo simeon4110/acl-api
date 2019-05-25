@@ -1,10 +1,7 @@
 package com.sonnets.sonnet.persistence.models.web;
 
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import com.sonnets.sonnet.persistence.models.annotation.Dialog;
-import com.sonnets.sonnet.persistence.models.annotation.WordTranslation;
 import com.sonnets.sonnet.persistence.models.base.*;
-import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.*;
 
@@ -12,14 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 /**
- * Model object for corpera.
+ * Model object for corpora.
  *
  * @author Josh Harkema
  */
@@ -34,44 +29,28 @@ public class Corpora extends Auditable<String> implements Serializable {
     private String name;
     @Column
     private String description;
-    @ManyToAny(metaDef = "itemMetaDef", metaColumn = @Column(name = "item_type", length = 4), fetch = FetchType.LAZY)
+    @ManyToAny(metaColumn = @Column(name = "item_type", length = 4), fetch = FetchType.LAZY)
     @AnyMetaDef(
-            name = "itemMetaDef", metaType = "string", idType = "long",
+            metaType = "string", idType = "long",
             metaValues = {
                     @MetaValue(targetEntity = Book.class, value = TypeConstants.BOOK),
                     @MetaValue(targetEntity = Poem.class, value = TypeConstants.POEM),
                     @MetaValue(targetEntity = Section.class, value = TypeConstants.SECTION),
-                    @MetaValue(targetEntity = Other.class, value = TypeConstants.OTHER),
-                    @MetaValue(targetEntity = BookCharacter.class, value = TypeConstants.BOOK_CHARACTER),
-                    @MetaValue(targetEntity = Dialog.class, value = TypeConstants.DIALOG),
-                    @MetaValue(targetEntity = WordTranslation.class, value = TypeConstants.WORD_TRANSLATION)
+                    @MetaValue(targetEntity = Other.class, value = TypeConstants.OTHER)
             }
     )
+    @Cascade({CascadeType.ALL})
     @JoinTable(
             name = "corpora_items",
-            joinColumns = @JoinColumn(name = "corpora_id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "item_id", nullable = false)
+            joinColumns = @JoinColumn(name = "item_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "corpora_id", nullable = false)
     )
-    @Cascade({CascadeType.DETACH, CascadeType.REMOVE})
     private Set<Item> items = new HashSet<>();
 
     private int totalItems;
 
     public Corpora() {
         super();
-    }
-
-    public Corpora(final BigDecimal id, final String createdBy, final Date createdDate, final String lastModifiedBy,
-                   final Date lastModifiedDate, final String description, final String name, final int totalItems) {
-        super();
-        super.setCreatedBy(createdBy);
-        super.setCreatedDate(createdDate);
-        super.setLastModifiedBy(lastModifiedBy);
-        super.setLastModifiedDate(lastModifiedDate);
-        this.id = id.longValue();
-        this.description = description;
-        this.name = name;
-        this.totalItems = totalItems;
     }
 
     public Long getId() {

@@ -26,7 +26,7 @@
 @REM Optional ENV vars
 @REM M2_HOME - location of maven2's installed home dir
 @REM MAVEN_BATCH_ECHO - set toUser 'on' toUser enable the echoing of the batch commands
-@REM MAVEN_BATCH_PAUSE - set toUser 'on' toUser wait for a key stroke before ending
+@REM MAVEN_BATCH_PAUSE - set toUser 'on' toUser wait for a type stroke before ending
 @REM MAVEN_OPTS - parameters passed toUser the Java VM when running Maven
 @REM     e.g. toUser debug Maven itself, use
 @REM set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000

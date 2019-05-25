@@ -2,7 +2,10 @@ package com.sonnets.sonnet.persistence.dtos.base;
 
 import com.sonnets.sonnet.persistence.models.base.Author;
 
-public class PoemOutDto {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class PoemOutDto implements Serializable {
     protected String period;
     private Long id;
     private Author author;
@@ -65,6 +68,24 @@ public class PoemOutDto {
 
     public void setForm(String form) {
         this.form = form;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PoemOutDto that = (PoemOutDto) o;
+        return Objects.equals(period, that.period) &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(author, that.author) &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(sourceTitle, that.sourceTitle) &&
+                Objects.equals(form, that.form);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(period, id, author, title, sourceTitle, form);
     }
 
     @Override
