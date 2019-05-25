@@ -37,7 +37,6 @@ public class LuceneConfig {
     private final SectionRepositoryBase sectionRepositoryBase;
     private final ShortStoryRepository shortStoryRepository;
     private final AuthorRepository authorRepository;
-    private static PerFieldAnalyzerWrapper analyzer;
 
     @Autowired
     public LuceneConfig(PoemRepository poemRepository, SectionRepositoryBase sectionRepositoryBase,
@@ -46,10 +45,7 @@ public class LuceneConfig {
         this.sectionRepositoryBase = sectionRepositoryBase;
         this.shortStoryRepository = shortStoryRepository;
         this.authorRepository = authorRepository;
-        analyzer = new PerFieldAnalyzerWrapper(
-                new EnglishAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET), getAnalyzerMap());
         this.init();
-        analyzer.close();
     }
 
     /**
@@ -87,7 +83,8 @@ public class LuceneConfig {
     }
 
     public static Analyzer getAnalyzer() {
-        return analyzer;
+        return new PerFieldAnalyzerWrapper(
+                new EnglishAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET), getAnalyzerMap());
     }
 
     /**

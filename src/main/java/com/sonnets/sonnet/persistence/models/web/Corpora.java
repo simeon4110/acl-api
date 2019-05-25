@@ -42,8 +42,8 @@ public class Corpora extends Auditable<String> implements Serializable {
     @Cascade({CascadeType.ALL})
     @JoinTable(
             name = "corpora_items",
-            joinColumns = @JoinColumn(name = "item_id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "corpora_id", nullable = false)
+            joinColumns = @JoinColumn(name = "corpora_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "item_id", nullable = false)
     )
     private Set<Item> items = new HashSet<>();
 

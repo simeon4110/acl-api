@@ -23,8 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Handles CRUD for Corpora. Input queries run async so the user's thread isn't blocked while waiting for the query
- * to complete.
+ * Handles CRUD for Corpora.
  *
  * @author Josh Harkema
  */

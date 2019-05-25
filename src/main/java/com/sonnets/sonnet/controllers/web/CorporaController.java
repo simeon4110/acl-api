@@ -53,7 +53,7 @@ public class CorporaController {
 
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
-    @PutMapping(value = "/secure/corpora/change_name", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/secure/corpora/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modify(@RequestBody @Valid CorporaDto dto, Principal principal) {
         return corporaService.modify(dto, principal);
     }
