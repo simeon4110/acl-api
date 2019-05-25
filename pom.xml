@@ -389,7 +389,7 @@
             <properties>
                 <sonar.host.url>http://192.168.0.11:9000</sonar.host.url>
                 <sonar.projectKey>acl-api</sonar.projectKey>
-                <sonar.login>c8fa5a32d6c29bba51f99c6950fa553c826502ed</sonar.login>
+                <sonar.login>1f3e1812ec788b8a97cfc2964d1c9c9a3dc24eed</sonar.login>
                 <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
                 <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
                 <sonar.jacoco.reportPaths>${project.build.directory}/jacoco.exec</sonar.jacoco.reportPaths>

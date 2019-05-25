@@ -72,7 +72,10 @@ public class MessageService {
         User userTo = userDetailsService.loadUserObjectByUsername(messageDto.getUserTo());
         assert userFrom != null;
         assert userTo != null;
-        assert principal.getName().equals(userFrom.getUsername());
+
+        if (!principal.getName().equals(userFrom.getUsername())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
         message.setUserFrom(userFrom.getUsername());
         message.setUserTo(userTo.getUsername());

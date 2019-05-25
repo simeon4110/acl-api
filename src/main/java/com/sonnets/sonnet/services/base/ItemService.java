@@ -2,7 +2,6 @@ package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.persistence.models.base.Item;
 import com.sonnets.sonnet.persistence.repositories.BookRepository;
-import com.sonnets.sonnet.persistence.repositories.ItemRepository;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
@@ -23,16 +22,14 @@ import java.util.List;
 @Service
 public class ItemService {
     private static final Logger LOGGER = Logger.getLogger(ItemService.class);
-    private final ItemRepository itemRepository;
     private final BookRepository bookRepository;
     private final PoemRepository poemRepository;
     private final SectionRepositoryBase sectionRepositoryBase;
     private final ShortStoryRepository shortStoryRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, BookRepository bookRepository, PoemRepository poemRepository,
+    public ItemService(BookRepository bookRepository, PoemRepository poemRepository,
                        SectionRepositoryBase sectionRepositoryBase, ShortStoryRepository shortStoryRepository) {
-        this.itemRepository = itemRepository;
         this.bookRepository = bookRepository;
         this.poemRepository = poemRepository;
         this.sectionRepositoryBase = sectionRepositoryBase;

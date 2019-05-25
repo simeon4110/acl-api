@@ -101,8 +101,9 @@ public class ConfirmationService {
             case 24:
                 poem = poemRepository.findById(2110L).orElseThrow(ItemNotFoundException::new);
                 return gson.toJson(parseToJson(poem));
+            default:
+                return poemRepository.getPoemToConfirm(principal.getName()).orElse(null);
         }
-        return poemRepository.getPoemToConfirm(principal.getName()).orElse(null);
     }
 
     /**

@@ -49,6 +49,7 @@ public class LuceneConfig {
         analyzer = new PerFieldAnalyzerWrapper(
                 new EnglishAnalyzer(EnglishAnalyzer.ENGLISH_STOP_WORDS_SET), getAnalyzerMap());
         this.init();
+        analyzer.close();
     }
 
     /**

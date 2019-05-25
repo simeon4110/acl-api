@@ -70,6 +70,8 @@ public class CorporaService {
                 case TypeConstants.OTHER:
                     items.add(otherRepository.getOne(pair.getId()));
                     break;
+                default:
+                    break;
             }
         }
         return items;
