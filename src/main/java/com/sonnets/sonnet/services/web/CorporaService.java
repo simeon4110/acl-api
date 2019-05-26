@@ -19,7 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -58,16 +60,16 @@ public class CorporaService {
             LOGGER.debug("Key value pair: " + pair.toString());
             switch (pair.getType()) {
                 case TypeConstants.BOOK:
-                    items.add(bookRepository.getOne(pair.getId()));
+                    items.add(bookRepository.findById(pair.getId()).orElse(null));
                     break;
                 case TypeConstants.POEM:
-                    items.add(poemRepository.getOne(pair.getId()));
+                    items.add(poemRepository.findById(pair.getId()).orElse(null));
                     break;
                 case TypeConstants.SECTION:
-                    items.add(sectionRepositoryBase.getOne(pair.getId()));
+                    items.add(sectionRepositoryBase.findById(pair.getId()).orElse(null));
                     break;
                 case TypeConstants.OTHER:
-                    items.add(otherRepository.getOne(pair.getId()));
+                    items.add(otherRepository.findById(pair.getId()).orElse(null));
                     break;
                 default:
                     break;
@@ -197,5 +199,16 @@ public class CorporaService {
         }
         corporaRepository.delete(corpora);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Get all corpora created by the user making the request.
+     *
+     * @param principal of the user making the request.
+     * @return a list of corpora, an empty list is returned if the user has no corpora.
+     */
+    public List<Corpora> getAllUser(Principal principal) {
+        LOGGER.debug("Returning all corpora by user: " + principal.getName());
+        return corporaRepository.getAllByCreatedBy(principal.getName()).orElse(Collections.emptyList());
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Handles all corpora related REST endpoints.
@@ -72,10 +73,17 @@ public class CorporaController {
         return corporaService.removeItems(dto, principal);
     }
 
-    @CrossOrigin(origins = "${allowed-origin}", methods = RequestMethod.DELETE)
+    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @DeleteMapping(value = "/secure/corpora/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id, Principal principal) {
         return corporaService.delete(id, principal);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}")
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
+    @GetMapping(value = "/secure/corpora/get_user", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Corpora> getAllUser(Principal principal) {
+        return corporaService.getAllUser(principal);
     }
 }

@@ -21,7 +21,7 @@ public class Book extends Item implements Serializable {
     private static final long serialVersionUID = -5579725087589223758L;
     @Column
     private String type;
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Section> sections;
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "book_characters", joinColumns = {

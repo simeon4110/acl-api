@@ -24,8 +24,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -53,17 +51,14 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final BookCharacterRepository bookCharacterRepository;
-    private final TaskExecutor executor;
 
     @Autowired
     public SectionService(SectionRepositoryBase sectionRepository, BookRepository bookRepository,
-                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository,
-                          @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
+                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository) {
         this.sectionRepository = sectionRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.bookCharacterRepository = bookCharacterRepository;
-        this.executor = executor;
     }
 
     /**
@@ -128,11 +123,9 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting section with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        executor.execute(() -> {
-            removeBookSection(section);
-            sectionRepository.delete(section);
-            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
-        });
+        removeBookSection(section);
+        sectionRepository.delete(section);
+        SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -160,10 +153,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (section.getCreatedBy().equals(principal.getName())) {
             removeBookSection(section);
-            executor.execute(() -> {
-                sectionRepository.delete(section);
-                SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
-            });
+            sectionRepository.delete(section);
+            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -281,7 +272,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
     public ResponseEntity<Void> deleteNarrator(Long sectionId) {
         Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
         section.setNarrator(null);
-        executor.execute(() -> sectionRepository.save(section));
+        sectionRepository.saveAndFlush(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -292,9 +283,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
      */
     private void removeBookSection(Section section) {
         Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemNotFoundException::new);
-        List<Section> sections = book.getSections();
-        sections.remove(section);
-        book.setSections(sections);
-        executor.execute(() -> bookRepository.save(book));
+        book.getSections().remove(section);
+        bookRepository.saveAndFlush(book);
     }
 }

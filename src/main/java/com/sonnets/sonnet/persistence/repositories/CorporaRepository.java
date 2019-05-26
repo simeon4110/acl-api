@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,4 +24,12 @@ public interface CorporaRepository extends CrudRepository<Corpora, Long> {
             "FROM Corpora c " +
             "WHERE c.id = ?1")
     Optional<CorporaBasicOutDto> getByIdBasic(final Long id);
+
+    @SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
+    Optional<List<Corpora>> getAllByCreatedBy(final String createdBy);
+
+    @Query(value = "DELETE FROM corpora_items i " +
+            "WHERE i.item_type = ?1 " +
+            "AND i.item_id = ?2", nativeQuery = true)
+    void deleteOrphan(final String itemType, final Long itemId);
 }
