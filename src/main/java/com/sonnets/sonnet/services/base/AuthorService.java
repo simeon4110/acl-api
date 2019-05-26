@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.services.base;
 
-import com.sonnets.sonnet.helpers.ParseParam;
 import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import tools.FormatTools;
 
 /**
  * Deals with all author related functions.
@@ -118,7 +118,7 @@ public class AuthorService {
      */
     public Author getByLastName(String lastName) {
         LOGGER.debug("Looking for author with last name: " + lastName);
-        lastName = ParseParam.parse(lastName);
+        lastName = FormatTools.parseParam(lastName);
         try {
             return authorRepository.findByLastName(lastName).orElseThrow(NoResultsException::new);
         } catch (NoResultsException e) {

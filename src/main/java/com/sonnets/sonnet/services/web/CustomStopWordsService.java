@@ -62,8 +62,13 @@ public class CustomStopWordsService {
      */
     public ResponseEntity<Void> modify(CustomStopWordsDto dto, Principal principal) {
         LOGGER.debug("Modifying stop words: " + dto.toString());
-        CustomStopWords stopWords = getWordsListOrThrowNotFound(dto.getId().toString());
-        assert stopWords.getCreatedBy().equals(principal.getName());
+        CustomStopWords stopWords = customStopWordsRepository.findById(dto.getId())
+                .orElseThrow(ItemNotFoundException::new);
+
+        if (!stopWords.getCreatedBy().equals(principal.getName())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         stopWords.setName(dto.getName());
         stopWords.setWords(Arrays.asList(dto.getWords()));
         customStopWordsRepository.saveAndFlush(stopWords);
@@ -77,24 +82,17 @@ public class CustomStopWordsService {
      * @param principal the user deleting the list.
      * @return OK if the list is deleted.
      */
-    public ResponseEntity<Void> delete(String id, Principal principal) {
+    public ResponseEntity<Void> delete(Long id, Principal principal) {
         LOGGER.debug("Deleting custom stop words with id: " + id);
-        CustomStopWords stopWords = getWordsListOrThrowNotFound(id);
-        assert stopWords.getCreatedBy().equals(principal.getName());
+        CustomStopWords stopWords = customStopWordsRepository.findById(id)
+                .orElseThrow(ItemNotFoundException::new);
+
+        if (!stopWords.getCreatedBy().equals(principal.getName())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         customStopWordsRepository.delete(stopWords);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * Get a list of words.
-     *
-     * @param id the id of the list.
-     * @return the list of words.
-     */
-    public List<String> getWords(String id) {
-        LOGGER.debug("Getting stop words list with id: " + id);
-        CustomStopWords stopWords = getWordsListOrThrowNotFound(id);
-        return stopWords.getWords();
     }
 
     /**
@@ -106,22 +104,5 @@ public class CustomStopWordsService {
     public List<CustomStopWords> getAllByUser(Principal principal) {
         LOGGER.debug("Getting all lists of stop words by: " + principal.getName());
         return customStopWordsRepository.findAllByCreatedBy(principal.getName());
-    }
-
-    /**
-     * Helper for getting lists, returns null if a list isn't found.
-     *
-     * @param id the id of the list to find.
-     * @return the list or null.
-     */
-    public CustomStopWords getWordsListOrThrowNotFound(String id) {
-        long parsedId;
-        try {
-            parsedId = Long.parseLong(id);
-        } catch (NumberFormatException e) {
-            LOGGER.error(id + " is not a number.");
-            return null;
-        }
-        return customStopWordsRepository.findById(parsedId).orElseThrow(ItemNotFoundException::new);
     }
 }

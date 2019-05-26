@@ -1,21 +1,17 @@
 package com.sonnets.sonnet.persistence.dtos.web;
 
-import javax.validation.constraints.NotEmpty;
-import java.util.Arrays;
-
-/**
- * DTO POJO for creating a new Corpora.
- *
- * @author Josh Harkema
- */
-public class CorporaDto {
+public class CorporaBasicOutDto {
     private Long id;
-    @NotEmpty
     private String name;
-
     private String description;
+    private int totalItems;
 
-    private String[] itemIds;
+    public CorporaBasicOutDto(Long id, String name, String description, int totalItems) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.totalItems = totalItems;
+    }
 
     public Long getId() {
         return id;
@@ -41,21 +37,21 @@ public class CorporaDto {
         this.description = description;
     }
 
-    public String[] getItemIds() {
-        return itemIds;
+    public int getTotalItems() {
+        return totalItems;
     }
 
-    public void setItemIds(String[] itemIds) {
-        this.itemIds = itemIds;
+    public void setTotalItems(int totalItems) {
+        this.totalItems = totalItems;
     }
 
     @Override
     public String toString() {
-        return "CorporaDto{" +
+        return "CorporaBasicOutDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", itemIds=" + Arrays.toString(itemIds) +
+                ", totalItems=" + totalItems +
                 '}';
     }
 }

@@ -1,12 +1,10 @@
 package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.persistence.models.base.Item;
+import com.sonnets.sonnet.persistence.repositories.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
-import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
-import com.sonnets.sonnet.persistence.repositories.item.ItemRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
-import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
-import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,28 +22,18 @@ import java.util.List;
 @Service
 public class ItemService {
     private static final Logger LOGGER = Logger.getLogger(ItemService.class);
-    private final ItemRepository itemRepository;
     private final BookRepository bookRepository;
     private final PoemRepository poemRepository;
     private final SectionRepositoryBase sectionRepositoryBase;
     private final ShortStoryRepository shortStoryRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, BookRepository bookRepository, PoemRepository poemRepository,
+    public ItemService(BookRepository bookRepository, PoemRepository poemRepository,
                        SectionRepositoryBase sectionRepositoryBase, ShortStoryRepository shortStoryRepository) {
-        this.itemRepository = itemRepository;
         this.bookRepository = bookRepository;
         this.poemRepository = poemRepository;
         this.sectionRepositoryBase = sectionRepositoryBase;
         this.shortStoryRepository = shortStoryRepository;
-    }
-
-    /**
-     * @return the basic details of all items in the database.
-     */
-    public String getAll() {
-        LOGGER.debug("Returning all items.");
-        return itemRepository.getAllItems().orElseThrow(StoredProcedureQueryException::new);
     }
 
     /**

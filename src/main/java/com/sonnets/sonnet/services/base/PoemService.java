@@ -2,6 +2,7 @@ package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.PoemDto;
+import com.sonnets.sonnet.persistence.dtos.base.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.Confirmation;
@@ -43,7 +44,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-public class PoemService implements AbstractItemService<Poem, PoemDto> {
+public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDto> {
     private static final Logger LOGGER = Logger.getLogger(PoemService.class);
     private static final ParseSourceDetails<Poem, PoemDto> parseSourceDetails = new ParseSourceDetails<>();
     private final PoemRepository poemRepository;
@@ -198,30 +199,16 @@ public class PoemService implements AbstractItemService<Poem, PoemDto> {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Poem> getAll() {
+    public List<PoemOutDto> getAll() {
         LOGGER.debug("Returning all poems. NOAUTH");
-        return poemRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        return poemRepository.getAllPublicDomain();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Poem> authedUserGetAll() {
+    public List<PoemOutDto> authedUserGetAll() {
         LOGGER.debug("Returning all poems. AUTH");
-        return poemRepository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public String getAllSimple() {
-        LOGGER.debug("Returning all poems as JSON. NOAUTH");
-        return poemRepository.getAllPoemsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
-    }
-
-    @Override
-    @Transactional
-    public String authedUserGetAllSimple() {
-        LOGGER.debug("Returning all poems as JSON. AUTH");
-        return poemRepository.getAllPoemsSimple().orElseThrow(StoredProcedureQueryException::new);
+        return poemRepository.getAll();
     }
 
     @Override

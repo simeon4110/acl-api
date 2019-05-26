@@ -1,7 +1,7 @@
 package com.sonnets.sonnet.controllers.base;
 
-import com.sonnets.sonnet.helpers.ParseParam;
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
+import com.sonnets.sonnet.persistence.dtos.base.SectionOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.services.base.SectionService;
@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tools.FormatTools;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @PropertySource("classpath:global.properties")
-public class SectionController implements AbstractItemController<Section, SectionDto> {
+public class SectionController implements AbstractItemController<Section, SectionDto, SectionOutDto> {
     private final SectionService sectionService;
 
     @Autowired
@@ -74,7 +75,7 @@ public class SectionController implements AbstractItemController<Section, Sectio
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Section> getAll() {
+    public List<SectionOutDto> getAll() {
         return sectionService.getAll();
     }
 
@@ -82,23 +83,8 @@ public class SectionController implements AbstractItemController<Section, Sectio
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/section/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Section> authedUserGetAll() {
+    public List<SectionOutDto> authedUserGetAll() {
         return sectionService.authedUserGetAll();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return sectionService.getAllSimple();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/section/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String authedUserGetAllSimple() {
-        return sectionService.authedUserGetAllSimple();
     }
 
     @Override
@@ -143,23 +129,13 @@ public class SectionController implements AbstractItemController<Section, Sectio
     }
 
     /**
-     * @param bookId the id of the book to get all sections from.
-     * @return a JSON formatted string of the sections' most basic details.
-     */
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/from_book_simple/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllFromBookSimple(@PathVariable("id") Long bookId) {
-        return sectionService.getAllFromBookSimple(bookId);
-    }
-
-    /**
      * @param lastName the last name of the author to look for.
      * @return a list of all the sections matching the author.
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/section/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllByAuthorLastName(@PathVariable("lastName") String lastName) {
-        lastName = ParseParam.parse(lastName);
+        lastName = FormatTools.parseParam(lastName);
         return sectionService.getAllByAuthorLastName(lastName);
     }
 

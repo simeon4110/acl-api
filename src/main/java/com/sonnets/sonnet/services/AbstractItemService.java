@@ -12,8 +12,9 @@ import java.util.List;
  *
  * @param <T> the object the service provides access to.
  * @param <S> the dto the service uses.
+ * @param <P> the outbound dto the service uses for bulk queries.
  */
-public interface AbstractItemService<T, S> {
+public interface AbstractItemService<T, S, P> {
     /**
      * Add item to the database.
      *
@@ -58,22 +59,12 @@ public interface AbstractItemService<T, S> {
     /**
      * @return all *public domain* works in the database.
      */
-    List<T> getAll();
+    List<P> getAll();
 
     /**
      * @return all works in the database.
      */
-    List<T> authedUserGetAll();
-
-    /**
-     * @return basic details of all *public domain* works in the database.
-     */
-    String getAllSimple();
-
-    /**
-     * @return basic details of all works in the database.
-     */
-    String authedUserGetAllSimple();
+    List<P> authedUserGetAll();
 
     /**
      * :todo: this needs to be separated into authed/non-authed.

@@ -13,7 +13,7 @@ import java.util.List;
 public class CorporaItemsDto {
     @NotNull
     private Long id;
-    private List<ItemKeyValuePair<String, String>> ids;
+    private List<ItemKeyValuePair<String, Long>> ids;
 
     public Long getId() {
         return id;
@@ -23,11 +23,11 @@ public class CorporaItemsDto {
         this.id = id;
     }
 
-    public List<ItemKeyValuePair<String, String>> getIds() {
+    public List<ItemKeyValuePair<String, Long>> getIds() {
         return ids;
     }
 
-    public void setIds(List<ItemKeyValuePair<String, String>> ids) {
+    public void setIds(List<ItemKeyValuePair<String, Long>> ids) {
         this.ids = ids;
     }
 

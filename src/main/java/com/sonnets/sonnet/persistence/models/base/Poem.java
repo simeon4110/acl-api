@@ -1,6 +1,5 @@
 package com.sonnets.sonnet.persistence.models.base;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
@@ -17,28 +16,19 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE,
-                procedureName = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PDO,
-                procedureName = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_TWO_RANDOM_POEMS,
-                procedureName = StoredProcedureConstants.GET_TWO_RANDOM_POEMS_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_POEM_TO_CONFIRM,
-                procedureName = StoredProcedureConstants.GET_POEM_TO_CONFIRM_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(name = StoredProcedureConstants.USER_NAME_PARAM,
-                                mode = ParameterMode.IN, type = String.class)
-                }
-        )
-})
+
+@NamedStoredProcedureQuery(
+        name = StoredProcedureConstants.GET_TWO_RANDOM_POEMS,
+        procedureName = StoredProcedureConstants.GET_TWO_RANDOM_POEMS_PROCEDURE
+)
+@NamedStoredProcedureQuery(
+        name = StoredProcedureConstants.GET_POEM_TO_CONFIRM,
+        procedureName = StoredProcedureConstants.GET_POEM_TO_CONFIRM_PROCEDURE,
+        parameters = {
+                @StoredProcedureParameter(name = StoredProcedureConstants.USER_NAME_PARAM,
+                        mode = ParameterMode.IN, type = String.class)
+        }
+)
 @Entity
 @DiscriminatorValue(TypeConstants.POEM)
 public class Poem extends Item implements Serializable {
@@ -49,24 +39,18 @@ public class Poem extends Item implements Serializable {
     private Confirmation confirmation;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> text;
-    @JsonIgnore
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Version> versions;
-    @JsonIgnore
     @Column
     private boolean processed;
-    @JsonIgnore
     @Embedded
     private TopicModel topicModel;
-    @JsonIgnore
     @Column
     private boolean hidden;
-    @JsonIgnore
     @Column
     private boolean testing;
 

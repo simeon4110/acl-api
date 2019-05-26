@@ -2,6 +2,7 @@ package com.sonnets.sonnet.services.base;
 
 import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.ShortStoryDto;
+import com.sonnets.sonnet.persistence.dtos.base.ShortStoryOutDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.ShortStory;
@@ -34,7 +35,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-public class ShortStoryService implements AbstractItemService<ShortStory, ShortStoryDto> {
+public class ShortStoryService implements AbstractItemService<ShortStory, ShortStoryDto, ShortStoryOutDto> {
     private static final Logger LOGGER = Logger.getLogger(ShortStoryService.class);
     private static final ParseSourceDetails<ShortStory, ShortStoryDto> parseSourceDetails = new ParseSourceDetails<>();
     private final ShortStoryRepository shortStoryRepository;
@@ -121,28 +122,16 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShortStory> getAll() {
+    public List<ShortStoryOutDto> getAll() {
         LOGGER.debug("Returning all short stories. NOAUTH.");
-        return shortStoryRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        return shortStoryRepository.getAllPublicDomain();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShortStory> authedUserGetAll() {
+    public List<ShortStoryOutDto> authedUserGetAll() {
         LOGGER.debug("Returning all short stories. AUTH.");
-        return shortStoryRepository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public String getAllSimple() {
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public String authedUserGetAllSimple() {
-        return null;
+        return shortStoryRepository.getAll();
     }
 
     @Override

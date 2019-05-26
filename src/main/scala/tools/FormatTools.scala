@@ -42,16 +42,10 @@ object FormatTools {
   def tokenizeWords(input: String, stripPunctuation: Boolean, lowerCase: Boolean,
                     stripStopWords: Boolean): Array[String] = {
     var text: String = ""
-    if (stripPunctuation) {
-      text = removePunctuation(input)
-    }
-    if (lowerCase) {
-      text = text.toLowerCase
-    }
+    if (stripPunctuation) text = removePunctuation(input)
+    if (lowerCase) text = text.toLowerCase
     val tokens: Array[String] = text.split(" ")
-    if (stripStopWords) {
-      tokens.filter(containsStopWords)
-    }
+    if (stripStopWords) tokens.filter(containsStopWords)
     tokens
   }
 
@@ -74,5 +68,15 @@ object FormatTools {
 
   def getStopWords: Array[String] = {
     STOPWORDS
+  }
+
+  /**
+    * Replace _'s with spaces.
+    *
+    * @param s the string to replace _ in.
+    * @return a string without _'s.
+    */
+  def parseParam(s: String): String = {
+    s.replace("_", " ")
   }
 }

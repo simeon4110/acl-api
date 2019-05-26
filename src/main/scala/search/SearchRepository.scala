@@ -19,6 +19,29 @@ import scala.collection.JavaConverters._
   * @author Josh Harkema
   */
 object SearchRepository {
+  val retryAttempts = 3
+
+  /**
+    * Attempts to run a function n times before rethrowing the exception and failing. This is 100% thread
+    * blocking.
+    *
+    * @param n  number of times to retry.
+    * @param fn the function to run.
+    * @tparam T the fn return type.
+    * @return the fn results.
+    */
+  def retry[T](n: Int)(fn: => T): T = {
+    try {
+      fn
+    } catch {
+      case e: Throwable =>
+        if (n > 1) {
+          Thread.sleep(1000) // hold for a second.
+          retry(n - 1)(fn)
+        }
+        else throw e
+    }
+  }
 
   /**
     * Adds a new document to an existing Lucene index.
@@ -27,10 +50,12 @@ object SearchRepository {
     * @param itemType the item type of the document.
     */
   def addDocument(document: Document, itemType: String): Unit = {
-    val writer = getWriter(itemType)
-    writer.addDocument(document)
-    writer.commit()
-    writer.close()
+    retry(retryAttempts) {
+      val writer = getWriter(itemType)
+      writer.addDocument(document)
+      writer.commit()
+      writer.close()
+    }
   }
 
   /**
@@ -40,11 +65,13 @@ object SearchRepository {
     * @param itemType  the type of item the documents are comprised of.
     */
   def addDocuments(documents: java.util.List[Document], itemType: String): Unit = {
-    val writer = getWriter(itemType)
-    writer.deleteAll()
-    documents.asScala.foreach(writer.addDocument(_))
-    writer.commit()
-    writer.close()
+    retry(retryAttempts) {
+      val writer = getWriter(itemType)
+      writer.deleteAll()
+      documents.asScala.foreach(writer.addDocument(_))
+      writer.commit()
+      writer.close()
+    }
   }
 
   /**
@@ -54,10 +81,12 @@ object SearchRepository {
     * @param itemType the type of the item to delete.
     */
   def deleteDocument(docId: String, itemType: String): Unit = {
-    val writer = getWriter(itemType)
-    writer.deleteDocuments(new Term(SearchConstants.ID, docId))
-    writer.commit()
-    writer.close()
+    retry(retryAttempts) {
+      val writer = getWriter(itemType)
+      writer.deleteDocuments(new Term(SearchConstants.ID, docId))
+      writer.commit()
+      writer.close()
+    }
   }
 
   /**
@@ -103,10 +132,12 @@ object SearchRepository {
   }
 
   private def updateDocument(docId: String, document: Document, itemType: String): Unit = {
-    val writer = getWriter(itemType)
-    writer.updateDocument(new Term(SearchConstants.ID, docId), document)
-    writer.commit()
-    writer.close()
+    retry(retryAttempts) {
+      val writer = getWriter(itemType)
+      writer.updateDocument(new Term(SearchConstants.ID, docId), document)
+      writer.commit()
+      writer.close()
+    }
   }
 
   private def getWriter(itemType: String): IndexWriter = {

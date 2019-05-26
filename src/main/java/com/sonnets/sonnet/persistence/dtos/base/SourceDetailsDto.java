@@ -21,7 +21,7 @@ public abstract class SourceDetailsDto {
     private String journalPageRange;
     private String journalAbbr;
     private String language;
-    private String publicDomain;
+    private Boolean publicDomain;
     private String pageRange;
 
     public Long getId() {
@@ -152,11 +152,11 @@ public abstract class SourceDetailsDto {
         this.language = language;
     }
 
-    public String getPublicDomain() {
+    public Boolean getPublicDomain() {
         return publicDomain;
     }
 
-    public void setPublicDomain(String publicDomain) {
+    public void setPublicDomain(Boolean publicDomain) {
         this.publicDomain = publicDomain;
     }
 

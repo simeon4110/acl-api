@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaSbtSettings">
-    <option name="customVMPath" />
+    <option name="customVMPath" value="C:/Program Files/AdoptOpenJDK/jdk-8.0.212.03-openj9" />
   </component>
 </project>

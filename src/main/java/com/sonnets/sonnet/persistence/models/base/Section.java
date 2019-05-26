@@ -1,7 +1,5 @@
 package com.sonnets.sonnet.persistence.models.base;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
@@ -17,24 +15,6 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_BOOK_SECTIONS_SIMPLE,
-                procedureName = StoredProcedureConstants.GET_BOOK_SECTIONS_SIMPLE_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(name = StoredProcedureConstants.BOOK_ID_PARAM,
-                                mode = ParameterMode.IN, type = Long.class)
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE,
-                procedureName = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO,
-                procedureName = StoredProcedureConstants.GET_ALL_SECTIONS_SIMPLE_PDO_PROCEDURE
-        ),
-})
 @Entity
 @DiscriminatorValue(TypeConstants.SECTION)
 public class Section extends Item implements Serializable {
@@ -46,17 +26,14 @@ public class Section extends Item implements Serializable {
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Version> versions;
-    @JsonIgnore
     @Column
     private boolean processed;
     @Column
     private Long parentId;
     @Column
     private String parentTitle;
-    @JsonIgnore
     @Embedded
     private TopicModel topicModel;
     @ManyToOne(fetch = FetchType.EAGER)
