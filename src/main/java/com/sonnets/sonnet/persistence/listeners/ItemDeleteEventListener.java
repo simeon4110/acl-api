@@ -19,6 +19,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ItemDeleteEventListener implements PreDeleteEventListener {
     public static final ItemDeleteEventListener INSTANCE = new ItemDeleteEventListener();
+    private static final String QUERY = "DELETE FROM corpora_items " +
+            "WHERE item_type = :itemType " +
+            "AND item_id = :itemId";
 
     /**
      * Defines extra deletion SQL for when a Book, Poem, Section, or Other object is
@@ -31,40 +34,28 @@ public class ItemDeleteEventListener implements PreDeleteEventListener {
     public boolean onPreDelete(PreDeleteEvent event) {
         final Object entity = event.getEntity();
         if (entity instanceof Book) {
-            event.getSession().createNativeQuery(
-                    "DELETE FROM corpora_items " +
-                            "WHERE item_type = :itemType " +
-                            "AND item_id = :itemId")
+            event.getSession().createNativeQuery(QUERY)
                     .setParameter("itemType", TypeConstants.BOOK)
                     .setParameter("itemId", ((Book) entity).getId())
                     .setFlushMode(FlushMode.MANUAL)
                     .executeUpdate();
         }
         if (entity instanceof Poem) {
-            event.getSession().createNativeQuery(
-                    "DELETE FROM corpora_items " +
-                            "WHERE item_type = :itemType " +
-                            "AND item_id = :itemId")
+            event.getSession().createNativeQuery(QUERY)
                     .setParameter("itemType", TypeConstants.POEM)
                     .setParameter("itemId", ((Poem) entity).getId())
                     .setFlushMode(FlushMode.MANUAL)
                     .executeUpdate();
         }
         if (entity instanceof Section) {
-            event.getSession().createNativeQuery(
-                    "DELETE FROM corpora_items " +
-                            "WHERE item_type = :itemType " +
-                            "AND item_id = :itemId")
+            event.getSession().createNativeQuery(QUERY)
                     .setParameter("itemType", TypeConstants.SECTION)
                     .setParameter("itemId", ((Section) entity).getId())
                     .setFlushMode(FlushMode.MANUAL)
                     .executeUpdate();
         }
         if (entity instanceof Other) {
-            event.getSession().createNativeQuery(
-                    "DELETE FROM corpora_items " +
-                            "WHERE item_type = :itemType " +
-                            "AND item_id = :itemId")
+            event.getSession().createNativeQuery(QUERY)
                     .setParameter("itemType", TypeConstants.OTHER)
                     .setParameter("itemId", ((Other) entity).getId())
                     .setFlushMode(FlushMode.MANUAL)
