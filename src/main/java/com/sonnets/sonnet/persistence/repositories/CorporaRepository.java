@@ -27,9 +27,4 @@ public interface CorporaRepository extends CrudRepository<Corpora, Long> {
 
     @SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
     Optional<List<Corpora>> getAllByCreatedBy(final String createdBy);
-
-    @Query(value = "DELETE FROM corpora_items i " +
-            "WHERE i.item_type = ?1 " +
-            "AND i.item_id = ?2", nativeQuery = true)
-    void deleteOrphan(final String itemType, final Long itemId);
 }
