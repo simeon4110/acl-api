@@ -4,7 +4,6 @@ import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.services.base.AuthorService;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -13,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Handles all author related REST endpoints.
@@ -91,7 +89,7 @@ public class AuthorController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PutMapping(value = "/author/search", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List search(@RequestBody AuthorDto authorDto) throws ParseException {
+    public String search(@RequestBody AuthorDto authorDto) {
         return searchQueryHandlerService.searchAuthor(authorDto);
     }
 }

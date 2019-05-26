@@ -1,13 +1,10 @@
 package com.sonnets.sonnet.persistence.models.base;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
-import com.sonnets.sonnet.services.search.SearchConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,61 +16,41 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE,
-                procedureName = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PDO,
-                procedureName = StoredProcedureConstants.GET_ALL_POEMS_SIMPLE_PDO_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_TWO_RANDOM_POEMS,
-                procedureName = StoredProcedureConstants.GET_TWO_RANDOM_POEMS_PROCEDURE
-        ),
-        @NamedStoredProcedureQuery(
-                name = StoredProcedureConstants.GET_POEM_TO_CONFIRM,
-                procedureName = StoredProcedureConstants.GET_POEM_TO_CONFIRM_PROCEDURE,
-                parameters = {
-                        @StoredProcedureParameter(name = StoredProcedureConstants.USER_NAME_PARAM,
-                                mode = ParameterMode.IN, type = String.class)
-                }
-        )
-})
-@Indexed
+
+@NamedStoredProcedureQuery(
+        name = StoredProcedureConstants.GET_TWO_RANDOM_POEMS,
+        procedureName = StoredProcedureConstants.GET_TWO_RANDOM_POEMS_PROCEDURE
+)
+@NamedStoredProcedureQuery(
+        name = StoredProcedureConstants.GET_POEM_TO_CONFIRM,
+        procedureName = StoredProcedureConstants.GET_POEM_TO_CONFIRM_PROCEDURE,
+        parameters = {
+                @StoredProcedureParameter(name = StoredProcedureConstants.USER_NAME_PARAM,
+                        mode = ParameterMode.IN, type = String.class)
+        }
+)
 @Entity
 @DiscriminatorValue(TypeConstants.POEM)
 public class Poem extends Item implements Serializable {
     private static final long serialVersionUID = 3631244231926795794L;
-    @Field(name = SearchConstants.POEM_FORM, store = Store.YES, analyze = Analyze.YES)
     @Column
     private String form; // The form of genre of the poem.
     @Embedded
     private Confirmation confirmation;
-    @Field(name = SearchConstants.TEXT, store = Store.YES, analyze = Analyze.YES, termVector = TermVector.YES)
-    @Analyzer(definition = SearchConstants.TEXT_ANALYZER)
     @ElementCollection(fetch = FetchType.EAGER)
-    @IndexedEmbedded
     private List<String> text;
-    @JsonIgnore
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Version> versions;
-    @JsonIgnore
     @Column
     private boolean processed;
-    @JsonIgnore
     @Embedded
     private TopicModel topicModel;
-    @JsonIgnore
     @Column
     private boolean hidden;
-    @JsonIgnore
     @Column
     private boolean testing;
 

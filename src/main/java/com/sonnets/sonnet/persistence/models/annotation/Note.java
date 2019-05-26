@@ -1,7 +1,6 @@
 package com.sonnets.sonnet.persistence.models.annotation;
 
 import com.sonnets.sonnet.persistence.models.TypeConstants;
-import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -14,7 +13,6 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@Indexed
 @Entity
 @Table
 @DiscriminatorValue(TypeConstants.NOTE)

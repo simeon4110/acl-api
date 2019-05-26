@@ -5,7 +5,7 @@ import com.sonnets.sonnet.persistence.exceptions.AuthorAlreadyExistsException;
 import com.sonnets.sonnet.persistence.models.base.Book;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
-import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.BookRepository;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

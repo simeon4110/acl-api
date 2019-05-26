@@ -1,6 +1,7 @@
 package com.sonnets.sonnet.controllers.base;
 
 import com.sonnets.sonnet.persistence.dtos.base.ShortStoryDto;
+import com.sonnets.sonnet.persistence.dtos.base.ShortStoryOutDto;
 import com.sonnets.sonnet.persistence.models.base.ShortStory;
 import com.sonnets.sonnet.services.base.ShortStoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 @RestController
 @PropertySource("classpath:global.properties")
-public class ShortStoryController implements AbstractItemController<ShortStory, ShortStoryDto> {
+public class ShortStoryController implements AbstractItemController<ShortStory, ShortStoryDto, ShortStoryOutDto> {
     private final ShortStoryService shortStoryService;
 
     @Autowired
@@ -72,7 +73,7 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/short_story/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ShortStory> getAll() {
+    public List<ShortStoryOutDto> getAll() {
         return shortStoryService.getAll();
     }
 
@@ -80,23 +81,8 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/short_story/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ShortStory> authedUserGetAll() {
+    public List<ShortStoryOutDto> authedUserGetAll() {
         return shortStoryService.authedUserGetAll();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/short_story/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return shortStoryService.getAllSimple();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/short_story/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String authedUserGetAllSimple() {
-        return shortStoryService.authedUserGetAllSimple();
     }
 
     @Override

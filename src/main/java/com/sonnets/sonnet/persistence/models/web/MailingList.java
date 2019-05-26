@@ -1,7 +1,5 @@
 package com.sonnets.sonnet.persistence.models.web;
 
-import org.hibernate.search.annotations.DocumentId;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -15,7 +13,6 @@ import java.util.Objects;
 public class MailingList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @DocumentId
     private Long id;
     @Column
     private String name;

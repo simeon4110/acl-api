@@ -26,12 +26,25 @@ class ParseSourceDetails[T <: Item, D <: SourceDetailsDto] {
     obj.setJournalIssue(dto.getJournalIssue)
     obj.setJournalPageRange(dto.getJournalPageRange)
     obj.setJournalAbbr(dto.getJournalAbbr)
-    obj.setLanguage("English")
-    obj.setPublicDomain(dto.getPublicDomain.toBoolean)
+
+    // Set default language to English
+    if (dto.getLanguage == null) obj.setLanguage("English")
+    else obj.setLanguage(dto.getLanguage)
+
+    // Set default public domain to false.
+    if (dto.getPublicDomain == null) obj.setPublicDomain(false)
+    else obj.setPublicDomain(dto.getPublicDomain)
+
     obj.setPageRange(dto.getPageRange)
     obj
   }
 
+  /**
+    * Converts a string date into a java Date obj.
+    *
+    * @param dateStr the string to parse.
+    * @return a java Date obj.
+    */
   def convertDate(dateStr: String): java.util.Date = {
     if (dateStr == null || dateStr == "") { // Prevent null strings from causing parse error.
       return null

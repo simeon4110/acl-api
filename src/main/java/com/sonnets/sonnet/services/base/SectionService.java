@@ -1,6 +1,8 @@
 package com.sonnets.sonnet.services.base;
 
+import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.AnnotationDto;
+import com.sonnets.sonnet.persistence.dtos.base.SectionOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
@@ -9,23 +11,26 @@ import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.persistence.models.prose.BookCharacter;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
-import com.sonnets.sonnet.persistence.repositories.book.BookRepository;
-import com.sonnets.sonnet.persistence.repositories.section.SectionRepositoryBase;
+import com.sonnets.sonnet.persistence.repositories.BookRepository;
+import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
-import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
+import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import search.SearchRepository;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
@@ -39,24 +44,21 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-public class SectionService implements AbstractItemService<Section, SectionDto> {
+public class SectionService implements AbstractItemService<Section, SectionDto, SectionOutDto> {
     private static final Logger LOGGER = Logger.getLogger(SectionService.class);
     private static final ParseSourceDetails<Section, SectionDto> parseSourceDetails = new ParseSourceDetails<>();
     private final SectionRepositoryBase sectionRepository;
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final BookCharacterRepository bookCharacterRepository;
-    private final TaskExecutor executor;
 
     @Autowired
     public SectionService(SectionRepositoryBase sectionRepository, BookRepository bookRepository,
-                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository,
-                          @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
+                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository) {
         this.sectionRepository = sectionRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.bookCharacterRepository = bookCharacterRepository;
-        this.executor = executor;
     }
 
     /**
@@ -93,6 +95,15 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return book;
     }
 
+    private static void addNewSearchDocument(final Section section) {
+        LOGGER.debug("Updating section's search document...");
+        Document document = SearchRepository.parseCommonFields(new Document(), section);
+        document.add(new StringField(SearchConstants.PARENT_ID, section.getParentId().toString(), Field.Store.YES));
+        document.add(new TextField(SearchConstants.PARENT_TITLE, section.getParentTitle(), Field.Store.YES));
+        document.add(LuceneConfig.getTextField(section.getText()));
+        SearchRepository.addDocument(document, TypeConstants.SECTION);
+    }
+
     @Override
     @Transactional
     public ResponseEntity<Void> add(SectionDto dto) {
@@ -100,8 +111,10 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
         Section section = createOrCopySection(new Section(), author, book, dto);
-        var out = sectionRepository.save(section);
+
+        Section out = sectionRepository.save(section);
         bookRepository.save(addBookSection(book, out));
+        addNewSearchDocument(out);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -111,7 +124,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         LOGGER.debug("Deleting section with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         removeBookSection(section);
-        executor.execute(() -> sectionRepository.delete(section));
+        sectionRepository.delete(section);
+        SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -139,7 +153,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (section.getCreatedBy().equals(principal.getName())) {
             removeBookSection(section);
-            executor.execute(() -> sectionRepository.delete(section));
+            sectionRepository.delete(section);
+            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -147,30 +162,16 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
 
     @Override
     @Transactional(readOnly = true)
-    public List<Section> getAll() {
+    public List<SectionOutDto> getAll() {
         LOGGER.debug("Returning all sections. NOAUTH.");
-        return sectionRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        return sectionRepository.getAllPublicDomain();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Section> authedUserGetAll() {
+    public List<SectionOutDto> authedUserGetAll() {
         LOGGER.debug("Returning all sections. AUTH.");
-        return sectionRepository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public String getAllSimple() {
-        LOGGER.debug("Returning all sections simple. NOAUTH.");
-        return sectionRepository.getAllSectionsSimplePDO().orElseThrow(StoredProcedureQueryException::new);
-    }
-
-    @Override
-    @Transactional
-    public String authedUserGetAllSimple() {
-        LOGGER.debug("Returning all sections simple. AUTH.");
-        return sectionRepository.getAllSectionsSimple().orElseThrow(StoredProcedureQueryException::new);
+        return sectionRepository.getAll();
     }
 
     @Override
@@ -198,8 +199,10 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
-        sectionRepository.save(createOrCopySection(section, author, book, dto));
+
         bookRepository.save(book);
+        SearchRepository.updateSection(sectionRepository.save(createOrCopySection(section, author, book, dto)));
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -221,7 +224,8 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
 
         // Ensure the user making the request is also the owner of the section.
         if (section.getCreatedBy().equals(principal.getName())) {
-            sectionRepository.save(createOrCopySection(section, author, book, dto));
+            SearchRepository.updateSection(sectionRepository.save(
+                    createOrCopySection(section, author, book, dto)));
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -265,19 +269,10 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
         return sectionRepository.save(section);
     }
 
-    /**
-     * @param bookId the book to get the sections from.
-     * @return a JSON string of all the sections.
-     */
-    public String getAllFromBookSimple(Long bookId) {
-        LOGGER.debug(String.format("Returning all sections from book id '%s' as JSON.", bookId));
-        return sectionRepository.getBookSectionsSimple(bookId).orElseThrow(ItemNotFoundException::new);
-    }
-
     public ResponseEntity<Void> deleteNarrator(Long sectionId) {
         Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
         section.setNarrator(null);
-        sectionRepository.save(section);
+        sectionRepository.saveAndFlush(section);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -288,9 +283,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto> 
      */
     private void removeBookSection(Section section) {
         Book book = bookRepository.findById(section.getParentId()).orElseThrow(ItemNotFoundException::new);
-        List<Section> sections = book.getSections();
-        sections.remove(section);
-        book.setSections(sections);
-        bookRepository.save(book);
+        book.getSections().remove(section);
+        bookRepository.saveAndFlush(book);
     }
 }

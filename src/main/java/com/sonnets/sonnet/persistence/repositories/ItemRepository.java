@@ -1,4 +1,4 @@
-package com.sonnets.sonnet.persistence.repositories.item;
+package com.sonnets.sonnet.persistence.repositories;
 
 import com.sonnets.sonnet.persistence.models.base.Item;
 import org.springframework.data.repository.CrudRepository;
@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  * @author Josh Harkema
  */
 @Repository
-public interface ItemRepository extends CrudRepository<Item, Long>, ItemRepositoryStoredProcedures {
+public interface ItemRepository extends CrudRepository<Item, Long> {
 }

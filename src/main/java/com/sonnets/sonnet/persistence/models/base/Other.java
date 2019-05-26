@@ -3,11 +3,6 @@ package com.sonnets.sonnet.persistence.models.base;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.annotation.Annotation;
-import com.sonnets.sonnet.services.search.SearchConstants;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
-import org.hibernate.search.annotations.TermVector;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,18 +14,15 @@ import java.util.Objects;
  *
  * @author Josh Harkema
  */
-@Indexed
 @Entity
 @Table
 @DiscriminatorValue(TypeConstants.OTHER)
 public class Other extends Item implements Serializable {
     private static final long serialVersionUID = -1512828565413718191L;
-    @Field(name = SearchConstants.OTHER_SUB_TYPE, store = Store.YES)
     @Column
     private String subType;
     @Embedded
     private Confirmation confirmation;
-    @Field(name = SearchConstants.OTHER_TEXT, store = Store.YES, termVector = TermVector.YES)
     @Column(columnDefinition = "TEXT")
     private String text;
     @Column

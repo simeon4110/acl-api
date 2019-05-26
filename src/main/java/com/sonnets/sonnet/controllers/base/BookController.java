@@ -1,6 +1,6 @@
 package com.sonnets.sonnet.controllers.base;
 
-import com.sonnets.sonnet.helpers.ParseParam;
+import com.sonnets.sonnet.persistence.dtos.base.BookOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Book;
 import com.sonnets.sonnet.services.base.BookService;
@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import tools.FormatTools;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @PropertySource("classpath:global.properties")
-public class BookController implements AbstractItemController<Book, BookDto> {
+public class BookController implements AbstractItemController<Book, BookDto, BookOutDto> {
     private final BookService bookService;
 
     @Autowired
@@ -74,7 +75,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Book> getAll() {
+    public List<BookOutDto> getAll() {
         return bookService.getAll();
     }
 
@@ -82,23 +83,8 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/book/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Book> authedUserGetAll() {
+    public List<BookOutDto> authedUserGetAll() {
         return bookService.authedUserGetAll();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/book/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllSimple() {
-        return bookService.getAllSimple();
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/book/all_simple", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String authedUserGetAllSimple() {
-        return bookService.authedUserGetAllSimple();
     }
 
     @Override
@@ -138,7 +124,7 @@ public class BookController implements AbstractItemController<Book, BookDto> {
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/book/get_by_title/{title}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Book getByTitle(@PathVariable("title") String title) {
-        title = ParseParam.parse(title);
+        title = FormatTools.parseParam(title);
         return bookService.getBookByTitle(title);
     }
 }

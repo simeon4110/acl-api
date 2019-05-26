@@ -62,7 +62,7 @@ public class BookControllerTest {
         dto.setTitle(BOOK_TITLE);
         dto.setPeriod(BOOK_PERIOD);
         dto.setType(BOOK_TYPE);
-        dto.setPublicDomain("true");
+        dto.setPublicDomain(true);
         dto.setPlaceOfPublication(BOOK_PLACE_OF_PUB);
         dto.setPublisher(BOOK_PUBLISHER);
         return dto;

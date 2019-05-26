@@ -1,6 +1,8 @@
 package com.sonnets.sonnet.services.base;
 
+import com.sonnets.sonnet.config.LuceneConfig;
 import com.sonnets.sonnet.persistence.dtos.base.ShortStoryDto;
+import com.sonnets.sonnet.persistence.dtos.base.ShortStoryOutDto;
 import com.sonnets.sonnet.persistence.models.TypeConstants;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.ShortStory;
@@ -9,6 +11,7 @@ import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -18,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import search.SearchRepository;
 import tools.ParseSourceDetails;
 
 import java.security.Principal;
@@ -31,7 +35,7 @@ import java.util.List;
  * @author Josh Harkema
  */
 @Service
-public class ShortStoryService implements AbstractItemService<ShortStory, ShortStoryDto> {
+public class ShortStoryService implements AbstractItemService<ShortStory, ShortStoryDto, ShortStoryOutDto> {
     private static final Logger LOGGER = Logger.getLogger(ShortStoryService.class);
     private static final ParseSourceDetails<ShortStory, ShortStoryDto> parseSourceDetails = new ParseSourceDetails<>();
     private final ShortStoryRepository shortStoryRepository;
@@ -55,13 +59,20 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         return shortStory;
     }
 
+    private static void addNewSearchDocument(final ShortStory shortStory) {
+        LOGGER.debug("Adding new ShortStory search document...");
+        Document document = SearchRepository.parseCommonFields(new Document(), shortStory);
+        document.add(LuceneConfig.getTextField(shortStory.getText()));
+        SearchRepository.addDocument(document, TypeConstants.SHORT_STORY);
+    }
+
     @Override
     @Transactional
     public ResponseEntity<Void> add(ShortStoryDto dto) {
         LOGGER.debug("Adding new short story: " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         ShortStory shortStory = createOrCopyShortStory(new ShortStory(), author, dto);
-        shortStoryRepository.save(shortStory);
+        addNewSearchDocument(shortStoryRepository.save(shortStory));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -70,7 +81,10 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting short story with id (ADMIN): " + id);
         ShortStory shortStory = shortStoryRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        executor.execute(() -> shortStoryRepository.delete(shortStory));
+        executor.execute(() -> {
+            shortStoryRepository.delete(shortStory);
+            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
+        });
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -80,7 +94,10 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         LOGGER.debug("Deleting short story with id (USER): " + id);
         ShortStory shortStory = shortStoryRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (shortStory.getCreatedBy().equals(principal.getName())) {
-            executor.execute(() -> shortStoryRepository.delete(shortStory));
+            executor.execute(() -> {
+                shortStoryRepository.delete(shortStory);
+                SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
+            });
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -105,28 +122,16 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShortStory> getAll() {
+    public List<ShortStoryOutDto> getAll() {
         LOGGER.debug("Returning all short stories. NOAUTH.");
-        return shortStoryRepository.findAllByIsPublicDomain(true).orElseThrow(ItemNotFoundException::new);
+        return shortStoryRepository.getAllPublicDomain();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShortStory> authedUserGetAll() {
+    public List<ShortStoryOutDto> authedUserGetAll() {
         LOGGER.debug("Returning all short stories. AUTH.");
-        return shortStoryRepository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public String getAllSimple() {
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public String authedUserGetAllSimple() {
-        return null;
+        return shortStoryRepository.getAll();
     }
 
     @Override
@@ -148,7 +153,9 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         LOGGER.debug("Modifying short story (ADMIN): " + dto.toString());
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         ShortStory shortStory = shortStoryRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        shortStoryRepository.save(createOrCopyShortStory(shortStory, author, dto));
+        shortStory = createOrCopyShortStory(shortStory, author, dto);
+        shortStory = shortStoryRepository.saveAndFlush(shortStory);
+        SearchRepository.updateShortStory(shortStory);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
