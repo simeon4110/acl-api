@@ -4,7 +4,7 @@
 
     <groupId>com.sonnets</groupId>
     <artifactId>sonnet</artifactId>
-    <version>3.2.1</version>
+    <version>3.2.2-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>ACL API</name>
     <description>The Augmented Criticism Lab's database.</description>
@@ -27,7 +27,7 @@
 
     <scm>
         <connection>scm:git:https://git.acriticismlab.org/jharkema/acl-spring-api</connection>
-      <tag>sonnet-3.2.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
