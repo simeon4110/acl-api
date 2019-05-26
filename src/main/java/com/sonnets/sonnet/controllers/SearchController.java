@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Handles all general-purpose search related endpoints.
+ * Handles all general-purpose com.sonnets.sonnet.search related endpoints.
  *
  * @author Josh Harkema
  */
@@ -23,7 +23,7 @@ public class SearchController {
     }
 
     @CrossOrigin(origins = "${allowed-origin}")
-    @PutMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/com/sonnets/sonnet/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public String doSearch(@RequestBody List<SearchParamDto> searchParams,
                            @RequestParam(value = "item_types", required = false) String[] itemTypes) {
         return searchQueryHandlerService.search(searchParams, itemTypes);

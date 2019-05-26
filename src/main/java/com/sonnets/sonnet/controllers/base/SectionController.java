@@ -5,6 +5,7 @@ import com.sonnets.sonnet.persistence.dtos.base.SectionOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.SectionDto;
 import com.sonnets.sonnet.persistence.models.base.Section;
 import com.sonnets.sonnet.services.base.SectionService;
+import com.sonnets.sonnet.tools.FormatTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import tools.FormatTools;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -133,7 +133,7 @@ public class SectionController implements AbstractItemController<Section, Sectio
      * @return a list of all the sections matching the author.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/section/com.sonnets.sonnet.search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllByAuthorLastName(@PathVariable("lastName") String lastName) {
         lastName = FormatTools.parseParam(lastName);
         return sectionService.getAllByAuthorLastName(lastName);

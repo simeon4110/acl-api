@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.PoemDto;
 import com.sonnets.sonnet.persistence.dtos.base.PoemOutDto;
 import com.sonnets.sonnet.persistence.models.base.Poem;
 import com.sonnets.sonnet.services.base.PoemService;
+import com.sonnets.sonnet.tools.FormatTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import tools.FormatTools;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -175,11 +175,11 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     }
 
     /**
-     * @param lastName the last name of the author to search for.
+     * @param lastName the last name of the author to com.sonnets.sonnet.search for.
      * @return a list of poems matching the last name.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/poem/com.sonnets.sonnet.search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getByAuthorLastName(@PathVariable("lastName") String lastName) {
         lastName = FormatTools.parseParam(lastName);
         return poemService.getAllByAuthorLastName(lastName);

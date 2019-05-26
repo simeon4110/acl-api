@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.BookOutDto;
 import com.sonnets.sonnet.persistence.dtos.prose.BookDto;
 import com.sonnets.sonnet.persistence.models.base.Book;
 import com.sonnets.sonnet.services.base.BookService;
+import com.sonnets.sonnet.tools.FormatTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import tools.FormatTools;
 
 import javax.validation.Valid;
 import java.security.Principal;

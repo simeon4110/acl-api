@@ -3,7 +3,7 @@ package com.sonnets.sonnet.persistence.dtos.base;
 import com.sonnets.sonnet.persistence.models.base.Author;
 
 /**
- * Massive all-purpose search related DTO.
+ * Massive all-purpose com.sonnets.sonnet.search related DTO.
  *
  * @author Josh Harkema
  */

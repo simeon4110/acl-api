@@ -11,6 +11,7 @@ import com.sonnets.sonnet.persistence.repositories.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.tools.ParseSourceDetails;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.ParseSourceDetails;
 
 import java.security.Principal;
 import java.util.ArrayList;

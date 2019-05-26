@@ -1,4 +1,4 @@
-package search
+package com.sonnets.sonnet.search
 
 import java.nio.file.Paths
 
@@ -14,7 +14,7 @@ import org.apache.lucene.store.FSDirectory
 import scala.collection.JavaConverters._
 
 /**
-  * Repository for handling search documents.
+  * Repository for handling com.sonnets.sonnet.search documents.
   *
   * @author Josh Harkema
   */

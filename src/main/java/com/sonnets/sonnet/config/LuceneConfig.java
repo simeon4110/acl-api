@@ -9,6 +9,7 @@ import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
 import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.search.SearchRepository;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
@@ -19,7 +20,6 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import search.SearchRepository;
 
 import java.io.IOException;
 import java.util.*;
@@ -111,7 +111,7 @@ public class LuceneConfig {
     }
 
     /**
-     * Writes all non-hidden poems to a search index. Delete any existing indexes first.
+     * Writes all non-hidden poems to a com.sonnets.sonnet.search index. Delete any existing indexes first.
      */
     private void indexPoems() {
         LOGGER.debug("[SEARCH] :::::: Starting to write poem index...");
@@ -139,7 +139,7 @@ public class LuceneConfig {
     }
 
     /**
-     * Writes all sections to a search index. Deletes any existing indexes first.
+     * Writes all sections to a com.sonnets.sonnet.search index. Deletes any existing indexes first.
      */
     private void indexSections() {
         LOGGER.debug("[SEARCH] :::::: Starting to write section index...");

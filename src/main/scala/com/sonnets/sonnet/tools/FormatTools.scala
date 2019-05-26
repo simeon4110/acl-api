@@ -1,4 +1,4 @@
-package tools
+package com.sonnets.sonnet.tools
 
 import java.net.URL
 
@@ -11,12 +11,14 @@ import scala.io.Source
   */
 object FormatTools {
   val filename: URL = getClass.getResource("/STOPWORDS.txt")
-  var STOPWORDS: Array[String] = _
+  var STOP_WORDS: Array[String] = _
 
   {
-    STOPWORDS = Source.fromFile(filename.getPath).getLines.toArray
-    STOPWORDS.map(_.toLowerCase)
-    STOPWORDS.map(_.trim)
+    val fileSource = Source.fromFile(filename.getPath)
+    STOP_WORDS = fileSource.getLines.toArray
+    STOP_WORDS.map(_.toLowerCase)
+    STOP_WORDS.map(_.trim)
+    fileSource.close()
   }
 
   /**
@@ -63,11 +65,11 @@ object FormatTools {
   }
 
   def containsStopWords(s: String): Boolean = {
-    STOPWORDS contains s
+    STOP_WORDS contains s
   }
 
   def getStopWords: Array[String] = {
-    STOPWORDS
+    STOP_WORDS
   }
 
   /**
