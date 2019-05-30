@@ -179,7 +179,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
      * @return a list of poems matching the last name.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/com.sonnets.sonnet.search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/poem/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Poem> getByAuthorLastName(@PathVariable("lastName") String lastName) {
         lastName = FormatTools.parseParam(lastName);
         return poemService.getAllByAuthorLastName(lastName);
