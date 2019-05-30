@@ -84,10 +84,10 @@ public class AuthorController {
     /**
      * Search endpoint specific to author objects.
      *
-     * @return the result's of the search.
+     * @return the result's of the com.sonnets.sonnet.search.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @PutMapping(value = "/author/search", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PutMapping(value = "/author/com.sonnets.sonnet.search", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public String search(@RequestBody AuthorDto authorDto) {
         return searchQueryHandlerService.searchAuthor(authorDto);

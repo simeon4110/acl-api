@@ -61,9 +61,29 @@ public class CorporaController {
 
     @CrossOrigin(origins = "${allowed-origin}") //
     @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
+    @GetMapping(value = "/secure/corpora/add_item/{id}/{type}/{itemId}")
+    public ResponseEntity<Void> addItem(@PathVariable("id") Long id,
+                                        @PathVariable("type") String type,
+                                        @PathVariable("itemId") Long itemId,
+                                        Principal principal) {
+        return corporaService.addItem(id, type, itemId, principal);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}") //
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
     @PutMapping(value = "/secure/corpora/add_items", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addItems(@RequestBody @Valid CorporaItemsDto dto, Principal principal) {
         return corporaService.addItems(dto, principal);
+    }
+
+    @CrossOrigin(origins = "${allowed-origin}") //
+    @PreAuthorize("hasAnyAuthority('USER', 'GUEST')")
+    @GetMapping(value = "/secure/corpora/remove_item/{id}/{type}/{itemId}")
+    public ResponseEntity<Void> removeItem(@PathVariable("id") Long id,
+                                           @PathVariable("type") String type,
+                                           @PathVariable("itemId") Long itemId,
+                                           Principal principal) {
+        return corporaService.removeItem(id, type, itemId, principal);
     }
 
     @CrossOrigin(origins = "${allowed-origin}") //

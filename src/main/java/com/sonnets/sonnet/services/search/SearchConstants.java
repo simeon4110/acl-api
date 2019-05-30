@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Stores all search related content (i.e. field names.)
+ * Stores all com.sonnets.sonnet.search related content (i.e. field names.)
  */
 @SuppressWarnings("WeakerAccess")
 public abstract class SearchConstants {

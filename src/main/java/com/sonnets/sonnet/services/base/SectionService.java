@@ -13,11 +13,13 @@ import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.BookCharacterRepository;
 import com.sonnets.sonnet.persistence.repositories.BookRepository;
 import com.sonnets.sonnet.persistence.repositories.SectionRepositoryBase;
+import com.sonnets.sonnet.search.SearchRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.AnnotationTypeMismatchException;
 import com.sonnets.sonnet.services.exceptions.ItemAlreadyConfirmedException;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.search.SearchConstants;
+import com.sonnets.sonnet.tools.ParseSourceDetails;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -30,8 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import search.SearchRepository;
-import tools.ParseSourceDetails;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
     }
 
     private static void addNewSearchDocument(final Section section) {
-        LOGGER.debug("Updating section's search document...");
+        LOGGER.debug("Updating section's com.sonnets.sonnet.search document...");
         Document document = SearchRepository.parseCommonFields(new Document(), section);
         document.add(new StringField(SearchConstants.PARENT_ID, section.getParentId().toString(), Field.Store.YES));
         document.add(new TextField(SearchConstants.PARENT_TITLE, section.getParentTitle(), Field.Store.YES));

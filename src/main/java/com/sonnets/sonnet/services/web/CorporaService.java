@@ -79,6 +79,21 @@ public class CorporaService {
     }
 
     /**
+     * Parse a single item into a Set of Item objects.
+     *
+     * @param id     the corpora id.
+     * @param type   the type of item to parse.
+     * @param itemId the id of the item to parse.
+     * @return a set of items.
+     */
+    private Set<Item> parseSingleItem(final Long id, final String type, final Long itemId) {
+        CorporaItemsDto dto = new CorporaItemsDto();
+        dto.setId(id);
+        dto.setIds(Collections.singletonList(new ItemKeyValuePair<>(type, itemId)));
+        return parseItems(dto);
+    }
+
+    /**
      * Add a new corpora.
      *
      * @param dto with the details for the new corpora.
@@ -90,6 +105,30 @@ public class CorporaService {
         newCorpora.setName(dto.getName());
         newCorpora.setDescription(dto.getDescription());
         corporaRepository.save(newCorpora);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Add a single item to a corpora.
+     *
+     * @param id        of the corpora.
+     * @param type      of the item to add.
+     * @param itemId    of the item to add (database id.)
+     * @param principal of the user making the request.
+     * @return OK if good, UNAUTHORIZED if user does not own corpora.
+     */
+    public ResponseEntity<Void> addItem(final Long id, final String type, final Long itemId, Principal principal) {
+        LOGGER.debug(String.format("Adding item to corpora: %s, %s, %s", id, type, itemId));
+        Corpora corpora = corporaRepository.findById(id).orElseThrow(CorporaNotFoundException::new);
+
+        // Verify user owns corpora.
+        if (!corpora.getCreatedBy().equals(principal.getName())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        corpora.getItems().addAll(parseSingleItem(id, type, itemId));
+        corpora.setTotalItems(corpora.getItems().size());
+        corporaRepository.save(corpora);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -110,6 +149,30 @@ public class CorporaService {
         }
 
         corpora.getItems().addAll(parseItems(dto));
+        corpora.setTotalItems(corpora.getItems().size());
+        corporaRepository.save(corpora);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Remove a single item from a corpora.
+     *
+     * @param id        of the corpora.
+     * @param type      of the item to remove.
+     * @param itemId    of the item to remove (database id.)
+     * @param principal of the user making the request.
+     * @return OK if good, UNAUTHORIZED if user does not own corpora.
+     */
+    public ResponseEntity<Void> removeItem(final Long id, final String type, final Long itemId, Principal principal) {
+        LOGGER.debug(String.format("Removing item from corpora: %s, %s, %s", id, type, itemId));
+        Corpora corpora = corporaRepository.findById(id).orElseThrow(CorporaNotFoundException::new);
+
+        // Verify user owns corpora.
+        if (!corpora.getCreatedBy().equals(principal.getName())) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        corpora.getItems().removeAll(parseSingleItem(id, type, itemId));
         corpora.setTotalItems(corpora.getItems().size());
         corporaRepository.save(corpora);
         return new ResponseEntity<>(HttpStatus.OK);

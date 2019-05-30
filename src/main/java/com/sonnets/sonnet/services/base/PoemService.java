@@ -11,11 +11,13 @@ import com.sonnets.sonnet.persistence.models.web.User;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.UserRepository;
 import com.sonnets.sonnet.persistence.repositories.poem.PoemRepository;
+import com.sonnets.sonnet.search.SearchRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
 import com.sonnets.sonnet.services.exceptions.StoredProcedureQueryException;
 import com.sonnets.sonnet.services.search.SearchConstants;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
+import com.sonnets.sonnet.tools.ParseSourceDetails;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -29,8 +31,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import search.SearchRepository;
-import tools.ParseSourceDetails;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -115,7 +115,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
 
     // :todo: add this method to AbstractItemService
     private static void addNewSearchDocument(final Poem poem) {
-        LOGGER.debug("Updating poem's search document...");
+        LOGGER.debug("Updating poem's com.sonnets.sonnet.search document...");
         Document document = SearchRepository.parseCommonFields(new Document(), poem);
         document.add(new TextField(SearchConstants.POEM_FORM, poem.getForm(), Field.Store.YES));
         // :todo: this requires its own custom field.
@@ -123,7 +123,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
                 Field.Store.YES));
         document.add(LuceneConfig.getTextField(String.join(" ", poem.getText())));
         SearchRepository.addDocument(document, TypeConstants.POEM);
-        LOGGER.debug("Poem's search document updated successfully.");
+        LOGGER.debug("Poem's com.sonnets.sonnet.search document updated successfully.");
     }
 
     @Override

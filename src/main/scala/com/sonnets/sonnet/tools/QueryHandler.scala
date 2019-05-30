@@ -1,4 +1,4 @@
-package tools
+package com.sonnets.sonnet.tools
 
 import javax.persistence.StoredProcedureQuery
 

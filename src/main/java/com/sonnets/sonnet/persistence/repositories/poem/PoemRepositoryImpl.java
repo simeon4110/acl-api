@@ -1,9 +1,9 @@
 package com.sonnets.sonnet.persistence.repositories.poem;
 
 import com.sonnets.sonnet.persistence.models.StoredProcedureConstants;
+import com.sonnets.sonnet.tools.QueryHandler;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import tools.QueryHandler;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;

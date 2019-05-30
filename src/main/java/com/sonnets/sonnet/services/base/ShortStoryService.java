@@ -8,8 +8,10 @@ import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.persistence.models.base.ShortStory;
 import com.sonnets.sonnet.persistence.repositories.AuthorRepository;
 import com.sonnets.sonnet.persistence.repositories.ShortStoryRepository;
+import com.sonnets.sonnet.search.SearchRepository;
 import com.sonnets.sonnet.services.AbstractItemService;
 import com.sonnets.sonnet.services.exceptions.ItemNotFoundException;
+import com.sonnets.sonnet.tools.ParseSourceDetails;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import search.SearchRepository;
-import tools.ParseSourceDetails;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
     }
 
     private static void addNewSearchDocument(final ShortStory shortStory) {
-        LOGGER.debug("Adding new ShortStory search document...");
+        LOGGER.debug("Adding new ShortStory com.sonnets.sonnet.search document...");
         Document document = SearchRepository.parseCommonFields(new Document(), shortStory);
         document.add(LuceneConfig.getTextField(shortStory.getText()));
         SearchRepository.addDocument(document, TypeConstants.SHORT_STORY);
