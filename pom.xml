@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.sonnets</groupId>
-    <artifactId>sonnet</artifactId>
-    <version>3.2.2-SNAPSHOT</version>
+    <groupId>org.acl</groupId>
+    <artifactId>database</artifactId>
+    <version>3.2.3-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>ACL API</name>
-    <description>The Augmented Criticism Lab's database.</description>
+    <name>ACL Database and API</name>
+    <description>The Augmented Criticism Lab's database and public interface API.</description>
     <url>https://acriticismlab.org</url>
 
     <contributors>
@@ -16,6 +16,18 @@
             <name>Josh Harkema</name>
             <email>joshua.harkema@ucalgary.ca</email>
             <organization>University of Calgary</organization>
+            <roles>
+                <role>Lead Developer</role>
+                <role>Program Architect</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Dr. Michael Ullyot</name>
+            <email>Michael Ullyot</email>
+            <organization>University of Calgary</organization>
+            <roles>
+                <role>Project Coordinator</role>
+            </roles>
         </contributor>
     </contributors>
 
@@ -51,13 +63,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
         <dependency>
@@ -69,7 +81,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -80,21 +92,21 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
         <dependency>
@@ -126,7 +138,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.security.oauth/spring-security-oauth2 -->
         <dependency>
@@ -138,13 +150,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
-            <version>2.1.4.RELEASE</version>
+            <version>2.1.5.RELEASE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.1.6.RELEASE</version>
+            <version>5.1.7.RELEASE</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
@@ -156,7 +168,7 @@
         <dependency>
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
@@ -236,12 +248,6 @@
             <artifactId>commons-collections4</artifactId>
             <version>4.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/cc.mallet/mallet -->
-        <dependency>
-            <groupId>cc.mallet</groupId>
-            <artifactId>mallet</artifactId>
-            <version>2.0.8</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -279,6 +285,21 @@
             <artifactId>scala-compiler</artifactId>
             <version>2.12.8</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>api</finalName>
