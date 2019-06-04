@@ -44,7 +44,7 @@ public class Poem extends Item implements Serializable {
     private Annotation annotation;
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<org.acl.database.persistence.models.base.Version> versions;
+    private List<Version> versions;
     @Column
     private boolean processed;
     @Embedded
