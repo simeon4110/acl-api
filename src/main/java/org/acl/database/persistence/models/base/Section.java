@@ -1,5 +1,6 @@
 package org.acl.database.persistence.models.base;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.acl.database.persistence.models.TypeConstants;
 import org.acl.database.persistence.models.annotation.Annotation;
 import org.acl.database.persistence.models.prose.BookCharacter;
@@ -27,6 +28,7 @@ public class Section extends Item implements Serializable {
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Version> versions;
     @Column
     private boolean processed;
@@ -35,6 +37,7 @@ public class Section extends Item implements Serializable {
     @Column
     private String parentTitle;
     @Embedded
+    @JsonIgnore
     private TopicModel topicModel;
     @ManyToOne(fetch = FetchType.EAGER)
     private BookCharacter narrator;

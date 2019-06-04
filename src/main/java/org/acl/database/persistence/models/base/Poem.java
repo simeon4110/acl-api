@@ -1,10 +1,9 @@
 package org.acl.database.persistence.models.base;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.acl.database.persistence.models.StoredProcedureConstants;
 import org.acl.database.persistence.models.TypeConstants;
 import org.acl.database.persistence.models.annotation.Annotation;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -43,15 +42,18 @@ public class Poem extends Item implements Serializable {
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @Fetch(value = FetchMode.SUBSELECT)
+    @JsonIgnore
     private List<Version> versions;
     @Column
     private boolean processed;
     @Embedded
+    @JsonIgnore
     private TopicModel topicModel;
     @Column
+    @JsonIgnore
     private boolean hidden;
     @Column
+    @JsonIgnore
     private boolean testing;
 
     public Poem() {

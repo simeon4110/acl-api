@@ -26,9 +26,9 @@ public class ShortStory extends Item implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "annotation_id")
     private Annotation annotation;
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<org.acl.database.persistence.models.base.Version> versions;
+    @JsonIgnore
+    private List<Version> versions;
 
     public ShortStory() {
         super();
