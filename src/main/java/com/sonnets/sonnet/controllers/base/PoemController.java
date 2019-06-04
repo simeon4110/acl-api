@@ -34,6 +34,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     private static final String CACHE_ALL = "POEM_ALL";
     private static final String CACHE_BY_ID = "POEM_BY_ID";
     private static final String CACHE_BY_IDS = "POEM_BY_IDS";
+    private static final String CACHE_BY_FORM = "POEM_BY_FORM";
 
     @Autowired
     public PoemController(PoemService poemService) {
@@ -46,7 +47,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @PostMapping(value = "/secure/poem/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Caching(evict = {
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
-            @CacheEvict(value = CACHE_ALL, allEntries = true)
+            @CacheEvict(value = CACHE_ALL, allEntries = true),
+            @CacheEvict(value = CACHE_BY_FORM, key = "#dto.form")
     })
     public ResponseEntity<Void> add(@RequestBody @Valid PoemDto dto) {
         return poemService.add(dto);
@@ -60,7 +62,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
             @CacheEvict(value = CACHE_ALL, allEntries = true),
             @CacheEvict(value = CACHE_BY_IDS, allEntries = true),
-            @CacheEvict(value = CACHE_BY_ID, key = "#id")
+            @CacheEvict(value = CACHE_BY_ID, key = "#id"),
+            @CacheEvict(value = CACHE_BY_FORM, allEntries = true)
     })
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         return poemService.delete(id);
@@ -74,7 +77,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
             @CacheEvict(value = CACHE_ALL, allEntries = true),
             @CacheEvict(value = CACHE_BY_IDS, allEntries = true),
-            @CacheEvict(value = CACHE_BY_ID, key = "#id")
+            @CacheEvict(value = CACHE_BY_ID, key = "#id"),
+            @CacheEvict(value = CACHE_BY_FORM, allEntries = true)
     })
     public ResponseEntity<Void> userDelete(@PathVariable("id") Long id, Principal principal) {
         return poemService.userDelete(id, principal);
@@ -134,8 +138,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @Caching(evict = {
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
             @CacheEvict(value = CACHE_ALL, allEntries = true),
-            @CacheEvict(value = CACHE_BY_ID, key = "#dto.id")
-
+            @CacheEvict(value = CACHE_BY_ID, key = "#dto.id"),
+            @CacheEvict(value = CACHE_BY_FORM, key = "#dto.form")
     })
     public ResponseEntity<Void> modify(@RequestBody @Valid PoemDto dto) {
         return poemService.modify(dto);
@@ -148,7 +152,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @Caching(evict = {
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
             @CacheEvict(value = CACHE_ALL, allEntries = true),
-            @CacheEvict(value = CACHE_BY_ID, key = "#dto.id")
+            @CacheEvict(value = CACHE_BY_ID, key = "#dto.id"),
+            @CacheEvict(value = CACHE_BY_FORM, key = "#dto.form")
     })
     public ResponseEntity<Void> modifyUser(@RequestBody @Valid PoemDto dto, Principal principal) {
         return poemService.modifyUser(dto, principal);
@@ -160,6 +165,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/by_form/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Cacheable(value = CACHE_BY_FORM, key = "#form")
     public List<Poem> getAllByForm(@PathVariable("form") String form) {
         return poemService.getAllByForm(form);
     }

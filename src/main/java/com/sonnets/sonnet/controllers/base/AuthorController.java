@@ -4,6 +4,7 @@ import com.sonnets.sonnet.persistence.dtos.base.AuthorDto;
 import com.sonnets.sonnet.persistence.models.base.Author;
 import com.sonnets.sonnet.services.base.AuthorService;
 import com.sonnets.sonnet.services.search.SearchQueryHandlerService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -36,6 +37,7 @@ public class AuthorController {
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/author/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Add Author", notes = "Add a new author to the database.")
     public ResponseEntity<Void> add(@RequestBody @Valid AuthorDto authorDto) {
         return authorService.add(authorDto);
     }
@@ -87,7 +89,7 @@ public class AuthorController {
      * @return the result's of the com.sonnets.sonnet.search.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @PutMapping(value = "/author/com.sonnets.sonnet.search", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PutMapping(value = "/author/search", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public String search(@RequestBody AuthorDto authorDto) {
         return searchQueryHandlerService.searchAuthor(authorDto);

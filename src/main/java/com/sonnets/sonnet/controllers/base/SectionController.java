@@ -133,7 +133,7 @@ public class SectionController implements AbstractItemController<Section, Sectio
      * @return a list of all the sections matching the author.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/section/com.sonnets.sonnet.search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/section/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Section> getAllByAuthorLastName(@PathVariable("lastName") String lastName) {
         lastName = FormatTools.parseParam(lastName);
         return sectionService.getAllByAuthorLastName(lastName);
