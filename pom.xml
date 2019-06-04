@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.acl</groupId>
-    <artifactId>acl-database</artifactId>
+    <artifactId>database</artifactId>
     <version>3.2.3-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>ACL Database and API</name>
