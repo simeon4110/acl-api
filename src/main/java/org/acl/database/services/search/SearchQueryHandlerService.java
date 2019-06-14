@@ -37,8 +37,8 @@ public class SearchQueryHandlerService {
     };
 
     /**
-     * @param in    the com.sonnets.sonnet.search string.
-     * @param field the field to com.sonnets.sonnet.search.
+     * @param in    the search string.
+     * @param field the field to search.
      * @return a TermQuery or PhraseQuery depending on the logic below.
      */
     private static Query parseField(String in, final String field) {
@@ -46,12 +46,12 @@ public class SearchQueryHandlerService {
         if (in.split(" ").length > 1) {
             PhraseQuery.Builder builder = new PhraseQuery.Builder();
             for (String s : in.split(" ")) {
-                builder.add(new Term(field, s));
+                builder.add(new Term(field, s.trim()));
             }
             builder.setSlop(SearchConstants.SLOP);
             return builder.build();
         } else {
-            return new TermQuery(new Term(field, in));
+            return new TermQuery(new Term(field, in.trim()));
         }
     }
 
@@ -109,7 +109,7 @@ public class SearchQueryHandlerService {
     }
 
     /**
-     * Grabs the most relevant fragment from a completed com.sonnets.sonnet.search result / query.
+     * Grabs the most relevant fragment from a completed search result / query.
      *
      * @param query    an executed query.
      * @param topDocs  the TopDocs result.
@@ -159,10 +159,10 @@ public class SearchQueryHandlerService {
     }
 
     /**
-     * Execute a com.sonnets.sonnet.search.
+     * Execute a search.
      *
-     * @param params    the list of com.sonnets.sonnet.search parameters to use.
-     * @param itemTypes the list of item types to com.sonnets.sonnet.search for.
+     * @param params    the list of search parameters to use.
+     * @param itemTypes the list of item types to search for.
      * @return a JSON formatted string of the results.
      */
     public String search(final List<SearchParamDto> params, final String[] itemTypes) {
@@ -175,13 +175,13 @@ public class SearchQueryHandlerService {
                 Query query = parseSearchParams(params);
                 LOGGER.debug(String.format("[SEARCH] :::::: Query string: \"%s\"", query));
 
-                // Execute com.sonnets.sonnet.search and append results to out JSONArray.
+                // Execute search and append results to out JSONArray.
                 TopFieldDocs hits = searcher.search(query, SearchConstants.MAX_RESULT_SIZE, Sort.RELEVANCE);
                 out.addAll(highlightResults(query, hits, searcher));
             } catch (IOException e) {
                 LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", i));
                 Map<String, String> errorOut = new HashMap<>();
-                errorOut.put("error", "Something went wrong with the com.sonnets.sonnet.search indexes; it's not you, it's me.");
+                errorOut.put("error", "Something went wrong with the search indexes; it's not you, it's me.");
                 return gson.toJson(errorOut);
             }
         }
@@ -190,15 +190,16 @@ public class SearchQueryHandlerService {
     }
 
     /**
-     * Runs a basic com.sonnets.sonnet.search on all object types.
+     * Runs a basic search on all object types.
      *
-     * @param searchString the com.sonnets.sonnet.search string (not a query, just the string to com.sonnets.sonnet.search for.)
-     * @return the com.sonnets.sonnet.search results if any.
+     * @param searchString the search string (not a query, just the string to search for.)
+     * @return the search results if any.
      */
     public String basicSearch(final String searchString) {
-        LOGGER.debug("[SEARCH] :::::: executing basic com.sonnets.sonnet.search: " + searchString);
+        LOGGER.debug("[SEARCH] :::::: executing basic search: " + searchString);
         MultiFieldQueryParser parser = new MultiFieldQueryParser(
-                new String[]{"text", "firstName", "lastName", "title"},
+                new String[]{SearchConstants.TEXT, SearchConstants.AUTHOR_FIRST_NAME,
+                        SearchConstants.AUTHOR_LAST_NAME, SearchConstants.TITLE},
                 LuceneConfig.getAnalyzer()
         );
         List<Map<String, String>> out = new ArrayList<>();
@@ -211,7 +212,7 @@ public class SearchQueryHandlerService {
             } catch (ParseException | IOException e) {
                 LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", s));
                 Map<String, String> errorOut = new HashMap<>();
-                errorOut.put("error", "Something went wrong with the com.sonnets.sonnet.search indexes; it's not you, it's me.");
+                errorOut.put("error", "Something went wrong with the search indexes; it's not you, it's me.");
                 return gson.toJson(errorOut);
             }
         }
@@ -256,7 +257,7 @@ public class SearchQueryHandlerService {
             LOGGER.error(String.format("[SEARCH] :::::: Error opening \"%s\" index.", TypeConstants.AUTHOR));
             LOGGER.error(e);
             Map<String, String> errorOut = new HashMap<>();
-            errorOut.put("error", "Something went wrong with the com.sonnets.sonnet.search indexes; it's not you, it's me.");
+            errorOut.put("error", "Something went wrong with the search indexes; it's not you, it's me.");
             return gson.toJson(errorOut);
         }
     }

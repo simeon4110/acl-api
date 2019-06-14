@@ -330,4 +330,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         result[1] = user.getConfirmedSonnets();
         return result;
     }
+
+    public boolean userIsAdmin(Principal principal) {
+        LOGGER.debug("Confirming admin privilege for: " + principal.getName());
+        User user = loadUserObjectByUsername(principal.getName());
+        return user.getAdmin();
+    }
 }

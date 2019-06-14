@@ -1,9 +1,10 @@
 package org.acl.database.services.exceptions;
 
-import java.io.Serializable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class ItemAlreadyConfirmedException extends RuntimeException implements Serializable {
-    private static final long serialVersionUID = -1879938924601341871L;
+@ResponseStatus(value = HttpStatus.CONFLICT)
+public class ItemAlreadyConfirmedException extends RuntimeException {
 
     public ItemAlreadyConfirmedException() {
         super();
@@ -11,5 +12,10 @@ public class ItemAlreadyConfirmedException extends RuntimeException implements S
 
     public ItemAlreadyConfirmedException(String message) {
         super(message);
+    }
+
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return null;
     }
 }

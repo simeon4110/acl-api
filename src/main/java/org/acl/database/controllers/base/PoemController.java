@@ -1,5 +1,6 @@
 package org.acl.database.controllers.base;
 
+import io.swagger.annotations.*;
 import org.acl.database.persistence.dtos.base.PoemDto;
 import org.acl.database.persistence.dtos.base.PoemOutDto;
 import org.acl.database.persistence.models.base.Poem;
@@ -28,6 +29,7 @@ import java.util.List;
  */
 @RestController
 @PropertySource("classpath:global.properties")
+@Api(tags = "Poem Endpoints")
 public class PoemController implements AbstractItemController<Poem, PoemDto, PoemOutDto> {
     private final PoemService poemService;
     private static final String CACHE_ALL_SECURE = "POEM_ALL_SECURE";
@@ -44,11 +46,26 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secure/poem/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/secure/poem", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Caching(evict = {
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
             @CacheEvict(value = CACHE_ALL, allEntries = true),
             @CacheEvict(value = CACHE_BY_FORM, key = "#dto.form")
+    })
+    @ApiOperation(value = "Add Poem",
+            notes = "Adds a new poem to the database.",
+            authorizations = {
+                    @Authorization(value = "oauth",
+                            scopes = {
+                                    @AuthorizationScope(scope = "admin", description = "Administrative scope."),
+                                    @AuthorizationScope(scope = "user", description = "User scope.")
+                            }
+                    )
+            })
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Poem added successfully."),
+            @ApiResponse(code = 409, message = "A poem with that title and author already exists."),
+            @ApiResponse(code = 401, message = "Unauthorized request.")
     })
     public ResponseEntity<Void> add(@RequestBody @Valid PoemDto dto) {
         return poemService.add(dto);
@@ -56,23 +73,8 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping(value = "/secure/poem/delete/{id}")
-    @Caching(evict = {
-            @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
-            @CacheEvict(value = CACHE_ALL, allEntries = true),
-            @CacheEvict(value = CACHE_BY_IDS, allEntries = true),
-            @CacheEvict(value = CACHE_BY_ID, key = "#id"),
-            @CacheEvict(value = CACHE_BY_FORM, allEntries = true)
-    })
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        return poemService.delete(id);
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @DeleteMapping(value = "/secure/poem/user_delete/{id}")
+    @DeleteMapping(value = "/secure/poem/{id}")
     @Caching(evict = {
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
             @CacheEvict(value = CACHE_ALL, allEntries = true),
@@ -80,14 +82,35 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
             @CacheEvict(value = CACHE_BY_ID, key = "#id"),
             @CacheEvict(value = CACHE_BY_FORM, allEntries = true)
     })
-    public ResponseEntity<Void> userDelete(@PathVariable("id") Long id, Principal principal) {
-        return poemService.userDelete(id, principal);
+    @ApiOperation(value = "Delete Poem",
+            notes = "Delete an existing poem.",
+            authorizations = {
+                    @Authorization(value = "oauth",
+                            scopes = {
+                                    @AuthorizationScope(scope = "admin", description = "Administrative scope."),
+                                    @AuthorizationScope(scope = "user", description = "User scope.")
+                            }
+                    )
+            })
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Deletion completed successfully."),
+            @ApiResponse(code = 401, message = "Unauthorized request."),
+            @ApiResponse(code = 423, message = "This poem is confirmed, to delete it contact Josh."),
+            @ApiResponse(code = 404, message = "A poem with the requested ID does not exist.")
+    })
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id, Principal principal) {
+        return poemService.delete(id, principal);
     }
 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/poem/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(value = CACHE_BY_ID, key = "#id")
+    @ApiOperation(value = "Get Poem by ID", notes = "Returns a poem from its database ID.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, response = Poem.class, message = "OK"),
+            @ApiResponse(code = 404, message = "A poem with the requested ID does not exist.")
+    })
     public Poem getById(@PathVariable("id") Long id) {
         return poemService.getById(id);
     }
@@ -96,6 +119,11 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/by_ids/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(value = CACHE_BY_IDS, key = "#ids")
+    @ApiOperation(value = "Get Poems by List of IDs", notes = "Returns a poem from a list of database ID.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, response = Poem.class, responseContainer = "List", message = "OK"),
+            @ApiResponse(code = 404, message = "A poem with the requested ID does not exist.")
+    })
     public List<Poem> getByIds(@PathVariable Long[] ids) {
         return poemService.getByIds(ids);
     }
@@ -104,6 +132,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all", produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(value = CACHE_ALL)
+    @ApiOperation(value = "Get all Public Domain Poems", notes = "Returns a list of all public domain poems in the db.")
     public List<PoemOutDto> getAll() {
         return poemService.getAll();
     }
@@ -113,6 +142,17 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping(value = "/secure/poem/all", produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(value = CACHE_ALL_SECURE)
+    @ApiOperation(value = "Get all Poems",
+            notes = "Returns a list of all poems in the database",
+            authorizations = {
+                    @Authorization(value = "oauth",
+                            scopes = {
+                                    @AuthorizationScope(scope = "admin", description = "Administrative scope."),
+                                    @AuthorizationScope(scope = "user", description = "User scope.")
+                            }
+                    )
+            }
+    )
     public List<PoemOutDto> authedUserGetAll() {
         return poemService.authedUserGetAll();
     }
@@ -120,43 +160,57 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/all/paged", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get All Poems Paged", notes = "Returns a paginated list of all the public domain poems in " +
+            "the database.")
     public Page<Poem> getAllPaged(Pageable pageable) {
         return poemService.getAllPaged(pageable);
     }
 
     @Override
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping(value = "/secure/poem/all_user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/secure/poem/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get All Poems Added by User",
+            notes = "Returns a list of all the poems in the database added by the user making the request.",
+            authorizations = {
+                    @Authorization(value = "oauth",
+                            scopes = {
+                                    @AuthorizationScope(scope = "admin", description = "Administrative scope."),
+                                    @AuthorizationScope(scope = "user", description = "User scope.")
+                            }
+                    )
+            }
+    )
     public List<Poem> getAllByUser(Principal principal) {
         return poemService.getAllByUser(principal);
     }
 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @PutMapping(value = "/secure/poem/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Caching(evict = {
-            @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
-            @CacheEvict(value = CACHE_ALL, allEntries = true),
-            @CacheEvict(value = CACHE_BY_ID, key = "#dto.id"),
-            @CacheEvict(value = CACHE_BY_FORM, key = "#dto.form")
-    })
-    public ResponseEntity<Void> modify(@RequestBody @Valid PoemDto dto) {
-        return poemService.modify(dto);
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PutMapping(value = "/secure/poem/modify_user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/secure/poem", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Caching(evict = {
             @CacheEvict(value = CACHE_ALL_SECURE, allEntries = true),
             @CacheEvict(value = CACHE_ALL, allEntries = true),
             @CacheEvict(value = CACHE_BY_ID, key = "#dto.id"),
             @CacheEvict(value = CACHE_BY_FORM, key = "#dto.form")
     })
-    public ResponseEntity<Void> modifyUser(@RequestBody @Valid PoemDto dto, Principal principal) {
-        return poemService.modifyUser(dto, principal);
+    @ApiOperation(value = "Modify Poem",
+            notes = "Modify an existing poem.",
+            authorizations = {
+                    @Authorization(value = "oauth",
+                            scopes = {
+                                    @AuthorizationScope(scope = "admin", description = "Administrative scope."),
+                                    @AuthorizationScope(scope = "user", description = "User scope.")
+                            }
+                    )
+            })
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Modification completed successfully."),
+            @ApiResponse(code = 401, message = "Unauthorized request."),
+            @ApiResponse(code = 404, message = "A poem with the requested ID does not exist.")
+    })
+    public ResponseEntity<Void> modify(@RequestBody @Valid PoemDto dto, Principal principal) {
+        return poemService.modify(dto, principal);
     }
 
     /**
@@ -166,6 +220,11 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/by_form/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(value = CACHE_BY_FORM, key = "#form")
+    @ApiOperation(value = "Get all Poems by Form", notes = "Returns a list of poems by form (i.e. sonnet)")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, response = Poem.class, responseContainer = "List", message = "OK"),
+            @ApiResponse(code = 404, message = "No poems matching that form are found in the db.")
+    })
     public List<Poem> getAllByForm(@PathVariable("form") String form) {
         return poemService.getAllByForm(form);
     }
@@ -176,6 +235,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/by_form_paged/{form}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all Poems by Form Paged", notes = "Returns a list of poems by form (i.e. sonnet)")
     public Page<Poem> getAllByFormPaged(@PathVariable("form") String form, Pageable pageable) {
         return poemService.getAllByFormPaged(form, pageable);
     }
@@ -185,7 +245,13 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
      * @return a list of poems matching the last name.
      */
     @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/poem/search/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/poem/by_last_name/{lastName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all Poems by Author's Last Name", notes = "Returns a list of poems by an Author's last " +
+            "name (i.e. 'Shakespeare')")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, response = Poem.class, responseContainer = "List", message = "OK"),
+            @ApiResponse(code = 404, message = "No poems matching that last name found in the db.")
+    })
     public List<Poem> getByAuthorLastName(@PathVariable("lastName") String lastName) {
         lastName = FormatTools.parseParam(lastName);
         return poemService.getAllByAuthorLastName(lastName);
@@ -196,6 +262,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
      */
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/two_random", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get Two Random Poems", notes = "Returns two random public domain poems from the db.")
     public String getTwoRandomPoems() {
         return poemService.getTwoRandomPoems();
     }

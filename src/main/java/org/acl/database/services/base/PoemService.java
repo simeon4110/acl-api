@@ -23,8 +23,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -50,15 +48,13 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
     private final PoemRepository poemRepository;
     private final AuthorRepository authorRepository;
     private final UserRepository userRepository;
-    private final TaskExecutor executor;
 
     @Autowired
     public PoemService(PoemRepository poemRepository, AuthorRepository authorRepository,
-                       UserRepository userRepository, @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
+                       UserRepository userRepository) {
         this.poemRepository = poemRepository;
         this.authorRepository = authorRepository;
         this.userRepository = userRepository;
-        this.executor = executor;
     }
 
     /**
@@ -115,7 +111,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
 
     // :todo: add this method to AbstractItemService
     private static void addNewSearchDocument(final Poem poem) {
-        LOGGER.debug("Updating poem's com.sonnets.sonnet.search document...");
+        LOGGER.debug("Updating poem's search document...");
         Document document = SearchRepository.parseCommonFields(new Document(), poem);
         document.add(new TextField(SearchConstants.POEM_FORM, poem.getForm(), Field.Store.YES));
         // :todo: this requires its own custom field.
@@ -123,7 +119,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
                 Field.Store.YES));
         document.add(LuceneConfig.getTextField(String.join(" ", poem.getText())));
         SearchRepository.addDocument(document, TypeConstants.POEM);
-        LOGGER.debug("Poem's com.sonnets.sonnet.search document updated successfully.");
+        LOGGER.debug("Poem's search document updated successfully.");
     }
 
     @Override
@@ -134,7 +130,7 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
         if (SearchQueryHandlerService.similarPoemExists(dto.getTitle(), author.getLastName())) {
             Poem poem = createOrUpdateFromDto(new Poem(), dto, author);
             addNewSearchDocument(poemRepository.saveAndFlush(poem));
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             LOGGER.error("A poem with the same title is already in the database!");
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -143,37 +139,21 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
 
     @Override
     @Transactional
-    public ResponseEntity<Void> delete(Long id) {
+    public ResponseEntity<Void> delete(Long id, Principal principal) {
         LOGGER.debug("Deleting poem with id (ADMIN): " + id);
         Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         if (poem.getConfirmation().isConfirmed()) {
             return new ResponseEntity<>(HttpStatus.LOCKED);
         }
 
-        executor.execute(() -> {
+        if (principal.getName().equals(poem.getCreatedBy()) ||
+                userRepository.findByUsername(principal.getName()).getAdmin()) {
             poemRepository.delete(poem);
             SearchRepository.deleteDocument(id.toString(), TypeConstants.POEM);
-        });
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
-        LOGGER.debug("Deleting poem with id (USER): " + id);
-        Poem poem = poemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        if (poem.getConfirmation().isConfirmed()) {
-            return new ResponseEntity<>(HttpStatus.LOCKED);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        if (poem.getCreatedBy().equals(principal.getName())) {
-            executor.execute(() -> {
-                poemRepository.delete(poem);
-                SearchRepository.deleteDocument(id.toString(), TypeConstants.POEM);
-            });
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @Override
@@ -228,35 +208,20 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
 
     @Override
     @Transactional
-    public ResponseEntity<Void> modify(PoemDto dto) {
+    public ResponseEntity<Void> modify(PoemDto dto, Principal principal) {
         LOGGER.debug("Modifying poem (ADMIN): " + dto.toString());
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        poem = createOrUpdateFromDto(poem, dto, author);
-        this.updateCanConfirm(poem);
-        SearchRepository.updatePoem(poemRepository.saveAndFlush(poem));
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
-    @Override
-    @Transactional
-    public ResponseEntity<Void> modifyUser(PoemDto dto, Principal principal) {
-        LOGGER.debug("Modifying poem (USER): " + dto.toString());
-        Poem poem = poemRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-
-        if (poem.getConfirmation().isConfirmed()) {
-            return new ResponseEntity<>(HttpStatus.LOCKED);
+        if (principal.getName().equals(poem.getCreatedBy()) ||
+                userRepository.findByUsername(principal.getName()).getAdmin()) {
+            Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+            poem = createOrUpdateFromDto(poem, dto, author);
+            this.updateCanConfirm(poem);
+            SearchRepository.updatePoem(poemRepository.saveAndFlush(poem));
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        if (!principal.getName().equals(poem.getCreatedBy())) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        poem = poemRepository.saveAndFlush(createOrUpdateFromDto(poem, dto, author));
-        this.updateCanConfirm(poem);
-        SearchRepository.updatePoem(poem);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     /**

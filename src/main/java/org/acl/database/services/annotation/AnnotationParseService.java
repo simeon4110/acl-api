@@ -125,7 +125,7 @@ public class AnnotationParseService {
     }
 
     /**
-     * Parses dialog objects from RAW JSON into database objects. Saves the dialog into the db's Dialog table, as
+     * Parses dialog objects from RAW JSON into database objects. Saves the dialog into the db's DialogLines table, as
      * well as the respective character table.
      *
      * @param annotationsArray a loaded JSONArray of all the annotations.

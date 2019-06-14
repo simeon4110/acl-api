@@ -35,7 +35,7 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping(value = "/secure/short_story/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/secure/short_story", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> add(@RequestBody @Valid ShortStoryDto dto) {
         return shortStoryService.add(dto);
     }
@@ -43,22 +43,14 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping(value = "/secure/short_story/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        return shortStoryService.delete(id);
+    @DeleteMapping(value = "/secure/short_story/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id, Principal principal) {
+        return shortStoryService.delete(id, principal);
     }
 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @DeleteMapping(value = "/secure/short_story/user_delete/{id}")
-    public ResponseEntity<Void> userDelete(@PathVariable("id") Long id, Principal principal) {
-        return shortStoryService.userDelete(id, principal);
-    }
-
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @GetMapping(value = "/short_story/by_id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/short_story/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ShortStory getById(@PathVariable("id") Long id) {
         return shortStoryService.getById(id);
     }
@@ -103,16 +95,9 @@ public class ShortStoryController implements AbstractItemController<ShortStory, 
     @Override
     @CrossOrigin(origins = "${allowed-origin}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @PutMapping(value = "/secure/short_story/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modify(@RequestBody @Valid ShortStoryDto dto) {
-        return shortStoryService.modify(dto);
+    @PutMapping(value = "/secure/short_story", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> modify(@RequestBody @Valid ShortStoryDto dto, Principal principal) {
+        return shortStoryService.modify(dto, principal);
     }
 
-    @Override
-    @CrossOrigin(origins = "${allowed-origin}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PutMapping(value = "/secure/short_story/modify_user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> modifyUser(@RequestBody @Valid ShortStoryDto dto, Principal principal) {
-        return shortStoryService.modifyUser(dto, principal);
-    }
 }

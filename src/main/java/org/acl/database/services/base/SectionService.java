@@ -14,6 +14,7 @@ import org.acl.database.persistence.repositories.BookCharacterRepository;
 import org.acl.database.persistence.repositories.BookRepository;
 import org.acl.database.persistence.repositories.SectionRepositoryBase;
 import org.acl.database.search.SearchRepository;
+import org.acl.database.security.UserDetailsServiceImpl;
 import org.acl.database.services.AbstractItemService;
 import org.acl.database.services.exceptions.AnnotationTypeMismatchException;
 import org.acl.database.services.exceptions.ItemAlreadyConfirmedException;
@@ -51,14 +52,17 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final BookCharacterRepository bookCharacterRepository;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     public SectionService(SectionRepositoryBase sectionRepository, BookRepository bookRepository,
-                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository) {
+                          AuthorRepository authorRepository, BookCharacterRepository bookCharacterRepository,
+                          UserDetailsServiceImpl userDetailsService) {
         this.sectionRepository = sectionRepository;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.bookCharacterRepository = bookCharacterRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -115,18 +119,23 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
         Section out = sectionRepository.save(section);
         bookRepository.save(addBookSection(book, out));
         addNewSearchDocument(out);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Void> delete(Long id) {
+    public ResponseEntity<Void> delete(Long id, Principal principal) {
         LOGGER.debug("Deleting section with id (ADMIN): " + id);
         Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        removeBookSection(section);
-        sectionRepository.delete(section);
-        SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        if (principal.getName().equals(section.getCreatedBy()) || userDetailsService.userIsAdmin(principal)) {
+            removeBookSection(section);
+            sectionRepository.delete(section);
+            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @Override
@@ -144,20 +153,6 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
         for (Long l : ids)
             results.add(sectionRepository.findById(l).orElseThrow(ItemNotFoundException::new));
         return results;
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
-        LOGGER.debug("Deleting section (user): " + id);
-        Section section = sectionRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        if (section.getCreatedBy().equals(principal.getName())) {
-            removeBookSection(section);
-            sectionRepository.delete(section);
-            SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SECTION);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @Override
@@ -194,41 +189,19 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
      */
     @Override
     @Transactional
-    public ResponseEntity<Void> modify(SectionDto dto) {
+    public ResponseEntity<Void> modify(SectionDto dto, Principal principal) {
         LOGGER.debug("Modifying section (ADMIN): " + dto.toString());
         Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
 
-        bookRepository.save(book);
-        SearchRepository.updateSection(sectionRepository.save(createOrCopySection(section, author, book, dto)));
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * @param dto       the new information.
-     * @param principal the user making the request.
-     * @return OK if the section is modified.
-     */
-    @Override
-    @Transactional
-    public ResponseEntity<Void> modifyUser(SectionDto dto, Principal principal) {
-        LOGGER.debug("Modifying section (USER): " + dto.toString());
-        Section section = sectionRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        if (section.getConfirmation().isConfirmed()) {
-            throw new ItemAlreadyConfirmedException("This item has already been confirmed.");
+        if (principal.getName().equals(section.getCreatedBy()) || userDetailsService.userIsAdmin(principal)) {
+            Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+            Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
+            bookRepository.save(book);
+            SearchRepository.updateSection(sectionRepository.save(createOrCopySection(section, author, book, dto)));
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        Book book = bookRepository.findById(dto.getBookId()).orElseThrow(ItemAlreadyConfirmedException::new);
 
-        // Ensure the user making the request is also the owner of the section.
-        if (section.getCreatedBy().equals(principal.getName())) {
-            SearchRepository.updateSection(sectionRepository.save(
-                    createOrCopySection(section, author, book, dto)));
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -273,7 +246,7 @@ public class SectionService implements AbstractItemService<Section, SectionDto, 
         Section section = sectionRepository.findById(sectionId).orElseThrow(ItemNotFoundException::new);
         section.setNarrator(null);
         sectionRepository.saveAndFlush(section);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**

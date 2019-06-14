@@ -4,8 +4,8 @@ import org.acl.database.persistence.models.base.Auditable;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Josh Harkema
@@ -22,7 +22,7 @@ public class CustomStopWords extends Auditable<String> implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "custom_stop_words_words", joinColumns = @JoinColumn(name = "custom_stop_words_id"))
     @Column
-    private List<String> words;
+    private Set<String> words;
 
     public CustomStopWords() {
         super();
@@ -44,11 +44,11 @@ public class CustomStopWords extends Auditable<String> implements Serializable {
         this.name = name;
     }
 
-    public List<String> getWords() {
+    public Set<String> getWords() {
         return words;
     }
 
-    public void setWords(List<String> words) {
+    public void setWords(Set<String> words) {
         this.words = words;
     }
 

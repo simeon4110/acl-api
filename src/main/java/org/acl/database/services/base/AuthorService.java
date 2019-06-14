@@ -55,7 +55,7 @@ public class AuthorService {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         authorRepository.saveAndFlush(createOrCopyAuthor(new Author(), authorDto));
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /**
@@ -66,14 +66,9 @@ public class AuthorService {
      */
     public ResponseEntity<Void> modify(AuthorDto authorDto) {
         LOGGER.debug("Modifying author: " + authorDto.toString());
-        try {
-            Author author = authorRepository.findById(authorDto.getId()).orElseThrow(ItemNotFoundException::new);
-            authorRepository.saveAndFlush(createOrCopyAuthor(author, authorDto));
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (ItemNotFoundException e) {
-            LOGGER.error(e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Author author = authorRepository.findById(authorDto.getId()).orElseThrow(ItemNotFoundException::new);
+        authorRepository.saveAndFlush(createOrCopyAuthor(author, authorDto));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -84,14 +79,9 @@ public class AuthorService {
      */
     public ResponseEntity<Void> delete(Long id) {
         LOGGER.debug("Deleting author with id: " + id);
-        try {
-            Author author = authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-            authorRepository.delete(author);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (ItemNotFoundException e) {
-            LOGGER.error(e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Author author = authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        authorRepository.delete(author);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -102,16 +92,11 @@ public class AuthorService {
      */
     public Author get(Long id) {
         LOGGER.debug("Looking for author with id: " + id);
-        try {
-            return authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        } catch (ItemNotFoundException e) {
-            LOGGER.error(e);
-            return null;
-        }
+        return authorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
     /**
-     * Get an author by last name. Return null if nothing is found.
+     * Get an author by last name. Return 404 if nothing is found.
      *
      * @param lastName the last name to look for.
      * @return the author, if found, or null.
@@ -119,11 +104,6 @@ public class AuthorService {
     public Author getByLastName(String lastName) {
         LOGGER.debug("Looking for author with last name: " + lastName);
         lastName = FormatTools.parseParam(lastName);
-        try {
-            return authorRepository.findByLastName(lastName).orElseThrow(NoResultsException::new);
-        } catch (NoResultsException e) {
-            LOGGER.error(e);
-            return null;
-        }
+        return authorRepository.findByLastName(lastName).orElseThrow(NoResultsException::new);
     }
 }

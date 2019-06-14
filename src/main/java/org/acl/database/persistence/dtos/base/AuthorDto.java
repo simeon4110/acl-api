@@ -1,5 +1,7 @@
 package org.acl.database.persistence.dtos.base;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -12,6 +14,7 @@ public class AuthorDto {
     @NotEmpty
     private String lastName;
 
+    @ApiModelProperty(notes = "Required for all modification-type operations.")
     public Long getId() {
         return id;
     }
@@ -36,6 +39,7 @@ public class AuthorDto {
         this.middleName = middleName;
     }
 
+    @ApiModelProperty(required = true)
     public String getLastName() {
         return lastName;
     }

@@ -1,5 +1,6 @@
 package org.acl.database.persistence.dtos.prose;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.acl.database.persistence.dtos.base.SourceDetailsDto;
 
 import javax.validation.constraints.NotEmpty;
@@ -22,6 +23,7 @@ public class BookDto extends SourceDetailsDto {
         super();
     }
 
+    @ApiModelProperty(required = true)
     public Long getAuthorId() {
         return authorId;
     }
@@ -30,6 +32,7 @@ public class BookDto extends SourceDetailsDto {
         this.authorId = authorId;
     }
 
+    @ApiModelProperty(required = true)
     public String getTitle() {
         return title;
     }
@@ -38,6 +41,7 @@ public class BookDto extends SourceDetailsDto {
         this.title = title;
     }
 
+    @ApiModelProperty(required = true)
     public String getPeriod() {
         return period;
     }
@@ -46,6 +50,7 @@ public class BookDto extends SourceDetailsDto {
         this.period = period;
     }
 
+    @ApiModelProperty(required = true)
     public String getType() {
         return type;
     }

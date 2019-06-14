@@ -29,16 +29,7 @@ public interface AbstractItemService<T, S, P> {
      * @param id the id of the item to delete.
      * @return 200 if successful.
      */
-    ResponseEntity<Void> delete(Long id);
-
-    /**
-     * Delete an item from the database. (Item owner only).
-     *
-     * @param id        the id of the item to delete.
-     * @param principal the principal of the user making the request.
-     * @return 200 if successful.
-     */
-    ResponseEntity<Void> userDelete(Long id, Principal principal);
+    ResponseEntity<Void> delete(Long id, Principal principal);
 
     /**
      * Get an item by its database id.
@@ -86,15 +77,6 @@ public interface AbstractItemService<T, S, P> {
      * @param dto the dto with then new details.
      * @return 200 if successful.
      */
-    ResponseEntity<Void> modify(S dto);
-
-    /**
-     * Allows an item's owner to modify said item.
-     *
-     * @param dto       the dto with the new details.
-     * @param principal of the user making the request.
-     * @return 200 if successful, 401 if user doesn't own item.
-     */
-    ResponseEntity<Void> modifyUser(S dto, Principal principal);
+    ResponseEntity<Void> modify(S dto, Principal principal);
 
 }

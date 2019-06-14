@@ -61,6 +61,11 @@ public abstract class SearchConstants {
     public static final String OTHER_SUB_TYPE = "other_sub_type";
     public static final String OTHER_TEXT = "other_text";
     public static final String SOURCE_TITLE = "source_title";
+    public static final String ACT_NUMBER = "act_number";
+    public static final String SCENE_NUMBER = "scene_number";
+    public static final String ACTOR_FIRST_NAME = "actor_first_name";
+    public static final String ACTOR_MIDDLE_NAME = "actor_middle_name";
+    public static final String ACTOR_LAST_NAME = "actor_last_name";
 
     // Source field names.
     public static final String EDITION = "edition";

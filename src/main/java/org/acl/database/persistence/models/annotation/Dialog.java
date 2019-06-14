@@ -82,7 +82,7 @@ public class Dialog extends AnnotationBase {
 
     @Override
     public String toString() {
-        return "Dialog{" +
+        return "DialogLines{" +
                 "itemId=" + itemId +
                 ", itemFriendly='" + itemFriendly + '\'' +
                 ", sectionId=" + sectionId +

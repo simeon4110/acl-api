@@ -1,5 +1,7 @@
 package org.acl.database.persistence.dtos.base;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotEmpty;
 
 public abstract class SourceDetailsDto {
@@ -40,6 +42,7 @@ public abstract class SourceDetailsDto {
         this.edition = edition;
     }
 
+    @ApiModelProperty(required = true)
     public String getPlaceOfPublication() {
         return placeOfPublication;
     }
@@ -48,6 +51,7 @@ public abstract class SourceDetailsDto {
         this.placeOfPublication = placeOfPublication;
     }
 
+    @ApiModelProperty(required = true)
     public String getPublisher() {
         return publisher;
     }

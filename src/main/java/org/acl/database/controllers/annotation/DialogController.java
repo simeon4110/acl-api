@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * REST controller for Dialog stuff.
+ * REST controller for DialogLines stuff.
  *
  * @author Josh Harkema
  */
