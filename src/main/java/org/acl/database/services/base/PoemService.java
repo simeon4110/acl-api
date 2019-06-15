@@ -18,6 +18,7 @@ import org.acl.database.services.exceptions.StoredProcedureQueryException;
 import org.acl.database.services.search.SearchConstants;
 import org.acl.database.services.search.SearchQueryHandlerService;
 import org.acl.database.tools.ParseSourceDetails;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -34,6 +35,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -94,19 +96,17 @@ public class PoemService implements AbstractItemService<Poem, PoemDto, PoemOutDt
     }
 
     /**
-     * Converts a string split up with \n or \\n into a clean array of strings.
+     * Converts a string split up with \n into a clean List of strings.
      *
      * @param input the input string to parse.
-     * @return a parsed ArrayList.
+     * @return a parsed List.
      */
-    private static ArrayList<String> parsePoemText(final String input) {
-        ArrayList<String> arrayOut = new ArrayList<>();
-        for (String s : input.split("\n")) {
-            if (!s.equals("")) {
-                arrayOut.add(s.trim());
-            }
-        }
-        return arrayOut;
+    private static List<String> parsePoemText(final String input) {
+        return Arrays.stream(input.split("\n"))
+                .map(String::trim)
+                .filter(StringUtils::isNotEmpty)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     // :todo: add this method to AbstractItemService

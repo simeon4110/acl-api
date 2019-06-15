@@ -1,6 +1,6 @@
 package org.acl.database.helpers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.springframework.test.web.servlet.MvcResult;
 
 /**
@@ -9,13 +9,13 @@ import org.springframework.test.web.servlet.MvcResult;
  * @author Josh Harkema
  */
 public class JsonHelper {
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static Gson gson = new Gson();
 
     public static <T> T fromJsonResult(MvcResult result, Class<T> tClass) throws Exception {
-        return mapper.readValue(result.getResponse().getContentAsString(), tClass);
+        return gson.fromJson(result.getResponse().getContentAsString(), tClass);
     }
 
-    public static byte[] toJson(Object object) throws Exception {
-        return mapper.writeValueAsString(object).getBytes();
+    public static byte[] toJson(Object object) {
+        return gson.toJson(object).getBytes();
     }
 }
