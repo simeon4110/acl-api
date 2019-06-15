@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * CRUD service for Dialog annotations.
+ * CRUD service for DialogLines annotations.
  *
  * @author Josh Harkema
  */

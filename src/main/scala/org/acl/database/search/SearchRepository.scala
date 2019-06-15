@@ -5,6 +5,7 @@ import java.nio.file.Paths
 import org.acl.database.config.LuceneConfig
 import org.acl.database.persistence.models.TypeConstants
 import org.acl.database.persistence.models.base.{Item, Poem, Section, ShortStory}
+import org.acl.database.persistence.models.theater.Play
 import org.acl.database.services.search.SearchConstants
 import org.apache.lucene.document.{Document, Field, StringField, TextField}
 import org.apache.lucene.index._
@@ -74,6 +75,15 @@ object SearchRepository {
     }
   }
 
+  def clearIndex(itemType: String): Unit = {
+    retry(retryAttempts) {
+      val writer = getWriter(itemType)
+      writer.deleteAll()
+      writer.commit()
+      writer.close()
+    }
+  }
+
   /**
     * Removes a document from an existing Lucene index.
     *
@@ -131,7 +141,7 @@ object SearchRepository {
     DirectoryReader.open(FSDirectory.open(Paths.get(getPath(itemType))))
   }
 
-  private def updateDocument(docId: String, document: Document, itemType: String): Unit = {
+  def updateDocument(docId: String, document: Document, itemType: String): Unit = {
     retry(retryAttempts) {
       val writer = getWriter(itemType)
       writer.updateDocument(new Term(SearchConstants.ID, docId), document)
@@ -161,7 +171,9 @@ object SearchRepository {
   def parseCommonFields(document: Document, item: Item): Document = {
     document.add(new StringField(SearchConstants.ID, item.getId.toString, Field.Store.YES))
     document.add(new TextField(SearchConstants.TITLE, item.getTitle, Field.Store.YES))
-    document.add(new TextField(SearchConstants.CATEGORY, item.getCategory, Field.Store.YES))
+    if (item.getCategory != null) {
+      document.add(new TextField(SearchConstants.CATEGORY, item.getCategory, Field.Store.YES))
+    }
     document.add(new TextField(SearchConstants.AUTHOR_FIRST_NAME, item.getAuthor.getFirstName, Field.Store.YES))
     document.add(new TextField(SearchConstants.AUTHOR_LAST_NAME, item.getAuthor.getLastName, Field.Store.YES))
     if (item.getPeriod != null) { // Some items don't have periods.
@@ -183,5 +195,10 @@ object SearchRepository {
     toUpdate.removeField(SearchConstants.TEXT)
     toUpdate.add(LuceneConfig.getTextField(shortStory.getText))
     updateDocument(shortStory.getId.toString, toUpdate, TypeConstants.SHORT_STORY)
+  }
+
+  def updatePlay(play: Play): Unit = {
+    val toUpdate = parseCommonFields(getDocument(play.getId.toString, TypeConstants.PLAY), play)
+    updateDocument(play.getId.toString, toUpdate, TypeConstants.PLAY)
   }
 }

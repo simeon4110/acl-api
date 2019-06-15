@@ -17,9 +17,7 @@ import java.util.List;
 public interface AbstractItemController<T, S, P> {
     ResponseEntity<Void> add(S dto);
 
-    ResponseEntity<Void> delete(Long id);
-
-    ResponseEntity<Void> userDelete(Long id, Principal principal);
+    ResponseEntity<Void> delete(Long id, Principal principal);
 
     T getById(Long id);
 
@@ -33,7 +31,5 @@ public interface AbstractItemController<T, S, P> {
 
     List<T> getAllByUser(Principal principal);
 
-    ResponseEntity<Void> modify(S dto);
-
-    ResponseEntity<Void> modifyUser(S dto, Principal principal);
+    ResponseEntity<Void> modify(S dto, Principal principal);
 }

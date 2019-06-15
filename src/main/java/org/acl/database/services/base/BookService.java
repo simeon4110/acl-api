@@ -9,6 +9,7 @@ import org.acl.database.persistence.models.base.Section;
 import org.acl.database.persistence.repositories.AuthorRepository;
 import org.acl.database.persistence.repositories.BookRepository;
 import org.acl.database.persistence.repositories.SectionRepositoryBase;
+import org.acl.database.security.UserDetailsServiceImpl;
 import org.acl.database.services.AbstractItemService;
 import org.acl.database.services.exceptions.ItemNotFoundException;
 import org.acl.database.tools.ParseSourceDetails;
@@ -38,12 +39,15 @@ public class BookService implements AbstractItemService<Book, BookDto, BookOutDt
     private final BookRepository bookRepository;
     private final SectionRepositoryBase sectionRepositoryBase;
     private final AuthorRepository authorRepository;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    public BookService(BookRepository bookRepository, SectionRepositoryBase sectionRepositoryBase, AuthorRepository authorRepository) {
+    public BookService(BookRepository bookRepository, SectionRepositoryBase sectionRepositoryBase,
+                       AuthorRepository authorRepository, UserDetailsServiceImpl userDetailsService) {
         this.bookRepository = bookRepository;
         this.sectionRepositoryBase = sectionRepositoryBase;
         this.authorRepository = authorRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -75,46 +79,26 @@ public class BookService implements AbstractItemService<Book, BookDto, BookOutDt
     public ResponseEntity<Void> add(BookDto dto) {
         LOGGER.debug("Adding new book: " + dto.toString());
         Book book = new Book();
-        try { // :todo: duplicate detection is not working as it should be.
-            Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-            // Check if book does not exist exists.
-            if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()).isEmpty()) {
-                bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
-        } catch (ItemNotFoundException e) {
-            LOGGER.error(e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> delete(Long id) {
-        LOGGER.debug("Deleting book: " + id);
-        try {
-            Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-            bookRepository.delete(book);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (ItemNotFoundException e) {
-            LOGGER.error(e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
-        LOGGER.debug("Deleting book (USER): " + id);
-        Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        if (book.getCreatedBy().equals(principal.getName())) {
-            bookRepository.delete(book);
-            return new ResponseEntity<>(HttpStatus.OK);
+        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+        // Check if book does not exist exists.
+        if (bookRepository.findByAuthor_IdAndTitle(dto.getAuthorId(), dto.getTitle()).isEmpty()) {
+            bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Void> delete(Long id, Principal principal) {
+        LOGGER.debug("Deleting book: " + id);
+        Book book = bookRepository.findById(id).orElseThrow(ItemNotFoundException::new);
+        if (principal.getName().equals(book.getCreatedBy()) || userDetailsService.userIsAdmin(principal)) {
+            bookRepository.delete(book);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @Override
@@ -162,31 +146,21 @@ public class BookService implements AbstractItemService<Book, BookDto, BookOutDt
     @Transactional(readOnly = true)
     public List<Book> getAllByUser(Principal principal) {
         LOGGER.debug("Returning all books added by user: " + principal.getName());
-        return bookRepository.findAllByCreatedBy(principal.getName()).orElseThrow(ItemNotFoundException::new);
+        return bookRepository.findAllByCreatedBy(principal.getName())
+                .orElseThrow(ItemNotFoundException::new);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Void> modify(BookDto dto) {
+    public ResponseEntity<Void> modify(BookDto dto, Principal principal) {
         LOGGER.debug("Modifying book (ADMIN): " + dto.toString());
         Book book = bookRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
-        bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> modifyUser(BookDto dto, Principal principal) {
-        LOGGER.debug("Modifying book (USER):" + dto.toString());
-        Book book = bookRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        if (!book.getCreatedBy().equals(principal.getName())) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        } else {
+        if (principal.getName().equals(book.getCreatedBy()) || userDetailsService.userIsAdmin(principal)) {
             Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
             bookRepository.saveAndFlush(createOrUpdateFromDto(book, author, dto));
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @Transactional
@@ -196,7 +170,7 @@ public class BookService implements AbstractItemService<Book, BookDto, BookOutDt
         Section section = sectionRepositoryBase.findById(sectionId).orElseThrow(ItemNotFoundException::new);
         List<Section> sections = book.getSections();
         sections.add(section);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**

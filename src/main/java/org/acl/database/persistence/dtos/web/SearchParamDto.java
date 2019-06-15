@@ -1,5 +1,7 @@
 package org.acl.database.persistence.dtos.web;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * An object for managing SearchParam lists from the front-end.
  *
@@ -10,6 +12,7 @@ public class SearchParamDto {
     private String joinType;
     private String searchString;
 
+    @ApiModelProperty(required = true)
     public String getFieldName() {
         return fieldName;
     }
@@ -18,6 +21,7 @@ public class SearchParamDto {
         this.fieldName = fieldName;
     }
 
+    @ApiModelProperty(required = true)
     public String getJoinType() {
         return joinType;
     }
@@ -26,6 +30,7 @@ public class SearchParamDto {
         this.joinType = joinType;
     }
 
+    @ApiModelProperty(required = true)
     public String getSearchString() {
         return searchString;
     }

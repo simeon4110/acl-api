@@ -9,14 +9,12 @@ import org.acl.database.persistence.models.base.ShortStory;
 import org.acl.database.persistence.repositories.AuthorRepository;
 import org.acl.database.persistence.repositories.ShortStoryRepository;
 import org.acl.database.search.SearchRepository;
+import org.acl.database.security.UserDetailsServiceImpl;
 import org.acl.database.services.AbstractItemService;
 import org.acl.database.services.exceptions.ItemNotFoundException;
 import org.acl.database.tools.ParseSourceDetails;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -40,14 +38,13 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
     private static final ParseSourceDetails<ShortStory, ShortStoryDto> parseSourceDetails = new ParseSourceDetails<>();
     private final ShortStoryRepository shortStoryRepository;
     private final AuthorRepository authorRepository;
-    private final TaskExecutor executor;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
     public ShortStoryService(ShortStoryRepository shortStoryRepository, AuthorRepository authorRepository,
-                             @Qualifier("threadPoolTaskExecutor") TaskExecutor executor) {
+                             UserDetailsServiceImpl userDetailsService) {
         this.shortStoryRepository = shortStoryRepository;
         this.authorRepository = authorRepository;
-        this.executor = executor;
+        this.userDetailsService = userDetailsService;
     }
 
     private static ShortStory createOrCopyShortStory(ShortStory shortStory, Author author, ShortStoryDto dto) {
@@ -73,33 +70,21 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
         Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         ShortStory shortStory = createOrCopyShortStory(new ShortStory(), author, dto);
         addNewSearchDocument(shortStoryRepository.save(shortStory));
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Void> delete(Long id) {
+    public ResponseEntity<Void> delete(Long id, Principal principal) {
         LOGGER.debug("Deleting short story with id (ADMIN): " + id);
         ShortStory shortStory = shortStoryRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        executor.execute(() -> {
+
+        if (principal.getName().equals(shortStory.getCreatedBy()) || userDetailsService.userIsAdmin(principal)) {
             shortStoryRepository.delete(shortStory);
             SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
-        });
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<Void> userDelete(Long id, Principal principal) {
-        LOGGER.debug("Deleting short story with id (USER): " + id);
-        ShortStory shortStory = shortStoryRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        if (shortStory.getCreatedBy().equals(principal.getName())) {
-            executor.execute(() -> {
-                shortStoryRepository.delete(shortStory);
-                SearchRepository.deleteDocument(String.valueOf(id), TypeConstants.SHORT_STORY);
-            });
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
@@ -149,24 +134,18 @@ public class ShortStoryService implements AbstractItemService<ShortStory, ShortS
 
     @Override
     @Transactional
-    public ResponseEntity<Void> modify(ShortStoryDto dto) {
+    public ResponseEntity<Void> modify(ShortStoryDto dto, Principal principal) {
         LOGGER.debug("Modifying short story (ADMIN): " + dto.toString());
-        Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
         ShortStory shortStory = shortStoryRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        shortStory = createOrCopyShortStory(shortStory, author, dto);
-        shortStory = shortStoryRepository.saveAndFlush(shortStory);
-        SearchRepository.updateShortStory(shortStory);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
-    @Override
-    @Transactional
-    public ResponseEntity<Void> modifyUser(ShortStoryDto dto, Principal principal) {
-        LOGGER.debug("Modifying short story (USER): " + dto.toString());
-        ShortStory shortStory = shortStoryRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
-        if (shortStory.getCreatedBy().equals(principal.getName())) {
-            return modify(dto);
+        if (principal.getName().equals(shortStory.getCreatedBy()) || userDetailsService.userIsAdmin(principal)) {
+            Author author = authorRepository.findById(dto.getAuthorId()).orElseThrow(ItemNotFoundException::new);
+            shortStory = createOrCopyShortStory(shortStory, author, dto);
+            shortStory = shortStoryRepository.saveAndFlush(shortStory);
+            SearchRepository.updateShortStory(shortStory);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

@@ -64,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            // pass 'true' to the constructor to create a multipart message
+            // pass 'true' to the constructor to add a multipart message
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setTo(to);

@@ -1,7 +1,9 @@
 package org.acl.database.persistence.dtos.web;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotEmpty;
-import java.util.Arrays;
+import java.util.Set;
 
 /**
  * @author Josh Harkema
@@ -10,7 +12,7 @@ public class CustomStopWordsDto {
     private Long id;
     @NotEmpty
     private String name;
-    private String[] words;
+    private Set<String> words;
 
     public Long getId() {
         return id;
@@ -20,6 +22,7 @@ public class CustomStopWordsDto {
         this.id = id;
     }
 
+    @ApiModelProperty(required = true)
     public String getName() {
         return name;
     }
@@ -28,11 +31,12 @@ public class CustomStopWordsDto {
         this.name = name;
     }
 
-    public String[] getWords() {
+    @ApiModelProperty(required = true)
+    public Set<String> getWords() {
         return words;
     }
 
-    public void setWords(String[] words) {
+    public void setWords(Set<String> words) {
         this.words = words;
     }
 
@@ -41,7 +45,7 @@ public class CustomStopWordsDto {
         return "CustomStopWordsDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", words=" + Arrays.toString(words) +
+                ", words=" + words.toString() +
                 '}';
     }
 }

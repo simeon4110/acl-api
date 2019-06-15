@@ -5,12 +5,15 @@ import org.acl.database.persistence.models.base.Author;
 import org.acl.database.persistence.models.base.Poem;
 import org.acl.database.persistence.models.base.Section;
 import org.acl.database.persistence.models.base.ShortStory;
+import org.acl.database.persistence.models.theater.Play;
 import org.acl.database.persistence.repositories.AuthorRepository;
 import org.acl.database.persistence.repositories.SectionRepositoryBase;
 import org.acl.database.persistence.repositories.ShortStoryRepository;
 import org.acl.database.persistence.repositories.poem.PoemRepository;
+import org.acl.database.persistence.repositories.theater.PlayRepository;
 import org.acl.database.search.SearchRepository;
 import org.acl.database.services.search.SearchConstants;
+import org.acl.database.services.theater.PlayService;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
@@ -37,14 +40,17 @@ public class LuceneConfig {
     private final SectionRepositoryBase sectionRepositoryBase;
     private final ShortStoryRepository shortStoryRepository;
     private final AuthorRepository authorRepository;
+    private final PlayRepository playRepository;
 
     @Autowired
     public LuceneConfig(PoemRepository poemRepository, SectionRepositoryBase sectionRepositoryBase,
-                        ShortStoryRepository shortStoryRepository, AuthorRepository authorRepository) {
+                        ShortStoryRepository shortStoryRepository, AuthorRepository authorRepository,
+                        PlayRepository playRepository) {
         this.poemRepository = poemRepository;
         this.sectionRepositoryBase = sectionRepositoryBase;
         this.shortStoryRepository = shortStoryRepository;
         this.authorRepository = authorRepository;
+        this.playRepository = playRepository;
         this.init();
     }
 
@@ -75,6 +81,9 @@ public class LuceneConfig {
             analyzerMap.put(SearchConstants.TITLE, lowerCaseStandardAnalyzer);
             analyzerMap.put(SearchConstants.AUTHOR_FIRST_NAME, lowerCaseStandardAnalyzer);
             analyzerMap.put(SearchConstants.AUTHOR_LAST_NAME, lowerCaseStandardAnalyzer);
+            analyzerMap.put(SearchConstants.ACTOR_FIRST_NAME, lowerCaseStandardAnalyzer);
+            analyzerMap.put(SearchConstants.ACTOR_MIDDLE_NAME, lowerCaseStandardAnalyzer);
+            analyzerMap.put(SearchConstants.ACTOR_LAST_NAME, lowerCaseStandardAnalyzer);
             return analyzerMap;
         } catch (IOException e) {
             LOGGER.error(e);
@@ -108,6 +117,7 @@ public class LuceneConfig {
         this.indexSections();
         this.indexAuthors();
         this.indexShortStories();
+        this.indexPlays();
     }
 
     /**
@@ -185,6 +195,26 @@ public class LuceneConfig {
         }
         SearchRepository.addDocuments(documents, TypeConstants.SHORT_STORY);
         LOGGER.debug("[SEARCH] :::::: Short stories indexed successfully!");
+    }
+
+    private void indexPlays() {
+        LOGGER.debug("[SEARCH] :::::: Starting to write play index...");
+        // Clear the play and dialog lines indexes manually.
+        SearchRepository.clearIndex(TypeConstants.PLAY);
+        SearchRepository.clearIndex(TypeConstants.DILI);
+        List<Play> plays = playRepository.findAll();
+        LOGGER.debug(String.format("[SEARCH] :::::: Plays to index: %s.", plays.size()));
+
+        int counter = 0;
+        for (Play p : plays) {
+            PlayService.addSearchDocument(p);
+            if (counter % 25 == 0) {
+                LOGGER.debug(String.format("[SEARCH] :::::: id: %s | '%s' added to document index.", p.getId(),
+                        p.getTitle()));
+            }
+            counter++;
+        }
+        LOGGER.debug("[SEARCH] :::::: Plays indexed successfully!");
     }
 
     private void indexAuthors() {

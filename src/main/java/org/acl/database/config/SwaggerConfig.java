@@ -26,6 +26,7 @@ public class SwaggerConfig {
     public Docket produceApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.acl.database.controllers"))
                 .paths(paths())
@@ -36,13 +37,23 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                 .title("ACL public database API")
                 .description("This page lists all the api endpoints for the ACL public literature database.")
-                .version("1.0.3-SNAPSHOT")
+                .version("3.2.3-SNAPSHOT")
                 .build();
     }
 
+    /**
+     * Define the paths for SwaggerFox to generate auto docs for.
+     *
+     * @return a Guava predicate of paths.
+     */
+    @SuppressWarnings({"unchecked", "Guava"})
     private Predicate<String> paths() {
         return Predicates.and(
-                PathSelectors.regex("/.*"),
+                PathSelectors.regex(
+                        "/author.*|/book.*|/poem.*|/section.*|/short_story.*|/search.*|/basic_search.*|" +
+                                "/secure/author.*|/secure/book.*|/secure/poem.*|/secure/section.*|" +
+                                "/secure/short_story.*|/secure/stop_words.*|/secure/play.*|/play.*"
+                ),
                 Predicates.not(PathSelectors.regex("/error.*")),
                 Predicates.not(PathSelectors.regex("/about.*"))
         );

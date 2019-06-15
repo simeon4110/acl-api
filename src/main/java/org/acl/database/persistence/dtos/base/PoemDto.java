@@ -1,5 +1,7 @@
 package org.acl.database.persistence.dtos.base;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -12,6 +14,7 @@ public class PoemDto extends SourceDetailsDto {
     private String title;
     @NotEmpty
     private String period;
+    @NotEmpty
     private String form;
     @NotEmpty
     private String text;
@@ -20,6 +23,7 @@ public class PoemDto extends SourceDetailsDto {
         super();
     }
 
+    @ApiModelProperty(required = true)
     public Long getAuthorId() {
         return authorId;
     }
@@ -36,6 +40,7 @@ public class PoemDto extends SourceDetailsDto {
         this.title = title;
     }
 
+    @ApiModelProperty(required = true)
     public String getPeriod() {
         return period;
     }
@@ -44,6 +49,7 @@ public class PoemDto extends SourceDetailsDto {
         this.period = period;
     }
 
+    @ApiModelProperty(required = true)
     public String getForm() {
         return form;
     }
@@ -52,6 +58,7 @@ public class PoemDto extends SourceDetailsDto {
         this.form = form;
     }
 
+    @ApiModelProperty(required = true)
     public String getText() {
         return text;
     }

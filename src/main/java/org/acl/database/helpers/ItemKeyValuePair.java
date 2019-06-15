@@ -2,7 +2,7 @@ package org.acl.database.helpers;
 
 /**
  * Apparently, Java doesn't implement an generic tuple class. Here one is. For reals, there is no way to
- * create a list of tuples in Java.
+ * add a list of tuples in Java.
  *
  * @param <K> the Key.
  * @param <V> the Value.

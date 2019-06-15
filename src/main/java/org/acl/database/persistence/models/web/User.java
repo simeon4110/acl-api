@@ -2,11 +2,9 @@ package org.acl.database.persistence.models.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.acl.database.persistence.models.base.Auditable;
-import org.acl.database.persistence.models.tools.CustomStopWords;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,10 +40,6 @@ public class User extends Auditable<String> implements Serializable {
     @JoinTable(name = "users_privileges", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
     private Set<Privilege> privileges;
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "id")
-    private List<UserPrivateText> privateTexts;
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "id")
-    private List<CustomStopWords> customStopWords;
 
     public User() {
         super();
@@ -123,22 +117,6 @@ public class User extends Auditable<String> implements Serializable {
         this.privileges = privileges;
     }
 
-    public List<UserPrivateText> getPrivateTexts() {
-        return privateTexts;
-    }
-
-    public void setPrivateTexts(List<UserPrivateText> privateTexts) {
-        this.privateTexts = privateTexts;
-    }
-
-    public List<CustomStopWords> getCustomStopWords() {
-        return customStopWords;
-    }
-
-    public void setCustomStopWords(List<CustomStopWords> customStopWords) {
-        this.customStopWords = customStopWords;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -153,15 +131,13 @@ public class User extends Auditable<String> implements Serializable {
                 Objects.equals(email, user.email) &&
                 Objects.equals(isAdmin, user.isAdmin) &&
                 Objects.equals(canConfirm, user.canConfirm) &&
-                Objects.equals(privileges, user.privileges) &&
-                Objects.equals(privateTexts, user.privateTexts) &&
-                Objects.equals(customStopWords, user.customStopWords);
+                Objects.equals(privileges, user.privileges);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, username, password, email, isAdmin, requiredSonnets, confirmedSonnets,
-                canConfirm, privileges, privateTexts, customStopWords);
+                canConfirm, privileges);
     }
 
     @Override
@@ -176,8 +152,6 @@ public class User extends Auditable<String> implements Serializable {
                 ", confirmedSonnets=" + confirmedSonnets +
                 ", canConfirm=" + canConfirm +
                 ", privileges=" + privileges +
-                ", privateTexts=" + privateTexts +
-                ", customStopWords=" + customStopWords +
-                "} " + super.toString();
+                '}';
     }
 }
