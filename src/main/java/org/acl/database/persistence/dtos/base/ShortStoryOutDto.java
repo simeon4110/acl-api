@@ -7,12 +7,14 @@ public class ShortStoryOutDto {
     private Author author;
     private String title;
     private String sourceTitle;
+    private String category;
 
-    public ShortStoryOutDto(Long id, Author author, String title, String sourceTitle) {
+    public ShortStoryOutDto(Long id, Author author, String title, String sourceTitle, String category) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.sourceTitle = sourceTitle;
+        this.category = category;
     }
 
     public Long getId() {
@@ -47,6 +49,14 @@ public class ShortStoryOutDto {
         this.sourceTitle = sourceTitle;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "ShortStoryOutDto{" +
@@ -54,6 +64,7 @@ public class ShortStoryOutDto {
                 ", author=" + author +
                 ", title='" + title + '\'' +
                 ", sourceTitle='" + sourceTitle + '\'' +
+                ", category='" + category + '\'' +
                 '}';
     }
 }

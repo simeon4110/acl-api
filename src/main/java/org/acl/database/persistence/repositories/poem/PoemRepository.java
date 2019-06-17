@@ -23,7 +23,8 @@ public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositor
             "p.title, " +
             "p.sourceTitle, " +
             "p.period, " +
-            "p.form) " +
+            "p.form, " +
+            "p.category) " +
             "FROM Poem p " +
             "WHERE p.isPublicDomain = TRUE")
     List<PoemOutDto> getAllPublicDomain();
@@ -34,7 +35,8 @@ public interface PoemRepository extends JpaRepository<Poem, Long>, PoemRepositor
             "p.title, " +
             "p.sourceTitle, " +
             "p.period, " +
-            "p.form) " +
+            "p.form, " +
+            "p.category) " +
             "FROM Poem p")
     List<PoemOutDto> getAll();
 

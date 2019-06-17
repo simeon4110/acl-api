@@ -17,7 +17,8 @@ public interface ShortStoryRepository extends JpaRepository<ShortStory, Long> {
             "s.id, " +
             "s.author, " +
             "s.title, " +
-            "s.sourceTitle) " +
+            "s.sourceTitle, " +
+            "s.category) " +
             "FROM ShortStory s " +
             "WHERE s.isPublicDomain = TRUE")
     List<ShortStoryOutDto> getAllPublicDomain();
@@ -26,7 +27,8 @@ public interface ShortStoryRepository extends JpaRepository<ShortStory, Long> {
             "s.id, " +
             "s.author, " +
             "s.title, " +
-            "s.sourceTitle) " +
+            "s.sourceTitle, " +
+            "s.category) " +
             "FROM ShortStory s")
     List<ShortStoryOutDto> getAll();
 

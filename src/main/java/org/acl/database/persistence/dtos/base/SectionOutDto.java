@@ -8,13 +8,15 @@ public class SectionOutDto {
     private String title;
     private String parentTitle;
     private Long parentId;
+    private String category;
 
-    public SectionOutDto(Long id, Author author, String title, String parentTitle, Long parentId) {
+    public SectionOutDto(Long id, Author author, String title, String parentTitle, Long parentId, String category) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.parentTitle = parentTitle;
         this.parentId = parentId;
+        this.category = category;
     }
 
     public Long getId() {
@@ -57,6 +59,14 @@ public class SectionOutDto {
         this.parentId = parentId;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "SectionOutDto{" +
@@ -65,6 +75,7 @@ public class SectionOutDto {
                 ", title='" + title + '\'' +
                 ", parentTitle='" + parentTitle + '\'' +
                 ", parentId=" + parentId +
+                ", category='" + category + '\'' +
                 '}';
     }
 }
