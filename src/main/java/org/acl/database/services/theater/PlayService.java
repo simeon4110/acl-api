@@ -75,7 +75,7 @@ public class PlayService {
                 .forEach(act -> act.getScenes()
                         .forEach(scene -> {
                             scene.getLines().forEach(dialogLines -> SearchRepository.addDocument(
-                                    DialogLinesAndStageDirectionService.getSearchDocument(dialogLines, act.getId(),
+                                    DialogLinesAndStageDirectionService.parseSearchDocument(dialogLines, act.getId(),
                                             scene.getId(), play), TypeConstants.DILI
                             ));
                         }));

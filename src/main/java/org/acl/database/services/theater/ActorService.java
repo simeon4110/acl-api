@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 
@@ -36,6 +37,7 @@ public class ActorService {
      * @param dto the dto with the new Author's details.
      * @return 201 if good.
      */
+    @Transactional
     public ResponseEntity<Void> add(final ActorDto dto) {
         LOGGER.debug("Adding new actor: " + dto.toString());
         Actor actor = new Actor(dto.getFirstName(), dto.getMiddleName(), dto.getLastName(), dto.getNotes());
@@ -49,6 +51,7 @@ public class ActorService {
      * @param id the id of the object.
      * @return the object if found, 404 if Actor with 'id' does not exist.
      */
+    @Transactional(readOnly = true)
     public Actor getById(final Long id) {
         LOGGER.debug("Returning actor: " + id);
         return actorRepository.findById(id).orElseThrow(ItemNotFoundException::new);
@@ -61,6 +64,7 @@ public class ActorService {
      * @param principal of the user making the request.
      * @return 204 if good, 401 if user is not authorized.
      */
+    @Transactional
     public ResponseEntity<Void> modify(final ActorDto dto, final Principal principal) {
         LOGGER.debug("Modifying actor: " + dto.toString());
         Actor actor = actorRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -82,6 +86,7 @@ public class ActorService {
      * @param principal of the user making the request.
      * @return 204 if good, 401 if user is not authorized.
      */
+    @Transactional
     public ResponseEntity<Void> delete(final Long id, final Principal principal) {
         LOGGER.debug("Deleting actor: " + id);
         Actor actor = actorRepository.findById(id).orElseThrow(ItemNotFoundException::new);

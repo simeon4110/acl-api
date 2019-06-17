@@ -18,6 +18,7 @@ import org.apache.lucene.document.TextField;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -106,23 +107,27 @@ public class DialogLinesAndStageDirectionService {
      * @param play        the parent play.
      * @return a Lucene doc with the details added.
      */
-    static Document getSearchDocument(final DialogLines dialogLines, final Long actId, final Long sceneId,
-                                      final Play play) {
+    static Document parseSearchDocument(final DialogLines dialogLines, final Long actId, final Long sceneId,
+                                        final Play play) {
         Document document = new Document();
         document.add(new StringField(SearchConstants.ID, dialogLines.getId().toString(), Field.Store.YES));
         document.add(new StringField(SearchConstants.ACT_NUMBER, actId.toString(), Field.Store.YES));
         document.add(new StringField(SearchConstants.SCENE_NUMBER, sceneId.toString(), Field.Store.YES));
         document.add(new TextField(SearchConstants.TITLE, play.getTitle(), Field.Store.YES));
-        document.add(new TextField(SearchConstants.AUTHOR_FIRST_NAME, play.getAuthor().getFirstName(), Field.Store.YES));
+        document.add(new TextField(SearchConstants.AUTHOR_FIRST_NAME, play.getAuthor().getFirstName(),
+                Field.Store.YES));
         document.add(new TextField(SearchConstants.AUTHOR_LAST_NAME, play.getAuthor().getLastName(), Field.Store.YES));
         if (dialogLines.getActor().getFirstName() != null) {
-            document.add(new TextField(SearchConstants.ACTOR_FIRST_NAME, dialogLines.getActor().getFirstName(), Field.Store.YES));
+            document.add(new TextField(SearchConstants.ACTOR_FIRST_NAME, dialogLines.getActor().getFirstName(),
+                    Field.Store.YES));
         }
         if (dialogLines.getActor().getMiddleName() != null) {
-            document.add(new TextField(SearchConstants.ACTOR_MIDDLE_NAME, dialogLines.getActor().getMiddleName(), Field.Store.YES));
+            document.add(new TextField(SearchConstants.ACTOR_MIDDLE_NAME, dialogLines.getActor().getMiddleName(),
+                    Field.Store.YES));
         }
         if (dialogLines.getActor().getLastName() != null) {
-            document.add(new TextField(SearchConstants.ACTOR_LAST_NAME, dialogLines.getActor().getLastName(), Field.Store.YES));
+            document.add(new TextField(SearchConstants.ACTOR_LAST_NAME, dialogLines.getActor().getLastName(),
+                    Field.Store.YES));
         }
         document.add(LuceneConfig.getTextField(String.join(" ", dialogLines.getBody())));
         return document;
@@ -134,6 +139,7 @@ public class DialogLinesAndStageDirectionService {
      * @param dto the dto with the new object's details.
      * @return 201 if good.
      */
+    @Transactional
     public ResponseEntity<Void> addDialogLines(final DialogLinesDto dto) {
         LOGGER.debug("Adding dialogLines: " + dto.toString());
         Actor actor = actorRepository.findById(dto.getActorId()).orElseThrow(ItemNotFoundException::new);
@@ -143,7 +149,7 @@ public class DialogLinesAndStageDirectionService {
 
         // Add new search doc.
         SearchRepository.addDocument(
-                getSearchDocument(dialogLines, dto.getActId(), dto.getSceneId(),
+                parseSearchDocument(dialogLines, dto.getActId(), dto.getSceneId(),
                         playRepository.findById(dto.getPlayId()).orElseThrow(ItemNotFoundException::new)),
                 TypeConstants.DILI
         );
@@ -160,6 +166,7 @@ public class DialogLinesAndStageDirectionService {
      * @param principal the principal of the user making the request.
      * @return 204 if good, 401 if user is not authorized.
      */
+    @Transactional
     public ResponseEntity<Void> modifyDialogLines(final DialogLinesDto dto, final Principal principal) {
         LOGGER.debug("Modifying dialog lines: " + dto.toString());
         DialogLines lines = dialogLinesRepository.findById(dto.getId()).orElseThrow(ItemNotFoundException::new);
@@ -172,7 +179,7 @@ public class DialogLinesAndStageDirectionService {
 
             // Update the search doc.
             SearchRepository.updateDocument(lines.getId().toString(),
-                    getSearchDocument(lines, dto.getActId(), dto.getSceneId(),
+                    parseSearchDocument(lines, dto.getActId(), dto.getSceneId(),
                             playRepository.findById(dto.getPlayId()).orElseThrow(ItemNotFoundException::new)),
                     TypeConstants.DILI);
 
@@ -188,6 +195,7 @@ public class DialogLinesAndStageDirectionService {
      * @param dto the dto with the new object's details.
      * @return 201 if good.
      */
+    @Transactional
     public ResponseEntity<Void> addStageDirection(final StageDirectionDto dto) {
         LOGGER.debug("Adding stage direction: " + dto.toString());
         Set<Actor> actors = dto.getActorIds().stream()
@@ -208,6 +216,7 @@ public class DialogLinesAndStageDirectionService {
      * @param principal the principal of the user making the request.
      * @return 204 if good, 401 if user is not authorized.
      */
+    @Transactional
     public ResponseEntity<Void> modifyStageDirection(final StageDirectionDto dto, final Principal principal) {
         LOGGER.debug("Modifying stage direction: " + dto.toString());
         StageDirection direction = stageDirectionRepository.findById(

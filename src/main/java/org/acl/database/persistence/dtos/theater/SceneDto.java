@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 public class SceneDto {
     private Long id;
     @NotNull
+    private Long playId;
+    @NotNull
     private Long actId;
     @NotNull
     private int number;
@@ -19,6 +21,15 @@ public class SceneDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @ApiModelProperty(required = true)
+    public Long getPlayId() {
+        return playId;
+    }
+
+    public void setPlayId(Long playId) {
+        this.playId = playId;
     }
 
     @ApiModelProperty(required = true)
@@ -59,6 +70,7 @@ public class SceneDto {
     public String toString() {
         return "SceneDto{" +
                 "id=" + id +
+                ", playId=" + playId +
                 ", actId=" + actId +
                 ", number=" + number +
                 ", notes='" + notes + '\'' +

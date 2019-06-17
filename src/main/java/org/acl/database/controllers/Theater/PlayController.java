@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 
+/**
+ * Controller handles all Play related CRUD.
+ *
+ * @author Josh Harkema
+ */
 @RestController
 @PropertySource("classpath:global.properties")
-@Api(tags = "Play Endpoints")
+@Api(tags = "Play (Theater) Endpoints")
 public class PlayController {
     private final PlayService playService;
 
