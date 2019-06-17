@@ -10,13 +10,15 @@ public class BookOutDto {
     private String title;
     private String type;
     private Date dateOfPublication;
+    private String category;
 
-    public BookOutDto(Long id, Author author, String title, String type, Date dateOfPublication) {
+    public BookOutDto(Long id, Author author, String title, String type, Date dateOfPublication, String category) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.type = type;
         this.dateOfPublication = dateOfPublication;
+        this.category = category;
     }
 
     public Long getId() {
@@ -59,6 +61,14 @@ public class BookOutDto {
         this.dateOfPublication = dateOfPublication;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "BookOutDto{" +
@@ -67,6 +77,7 @@ public class BookOutDto {
                 ", title='" + title + '\'' +
                 ", type='" + type + '\'' +
                 ", dateOfPublication=" + dateOfPublication +
+                ", category='" + category + '\'' +
                 '}';
     }
 }

@@ -3,23 +3,25 @@ package org.acl.database.persistence.dtos.base;
 import org.acl.database.persistence.models.base.Author;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class PoemOutDto implements Serializable {
-    protected String period;
     private Long id;
     private Author author;
     private String title;
     private String sourceTitle;
+    private String period;
     private String form;
+    private String category;
 
-    public PoemOutDto(Long id, Author author, String title, String sourceTitle, String period, String form) {
+    public PoemOutDto(Long id, Author author, String title, String sourceTitle, String period, String form,
+                      String category) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.sourceTitle = sourceTitle;
         this.period = period;
         this.form = form;
+        this.category = category;
     }
 
     public Long getId() {
@@ -70,22 +72,12 @@ public class PoemOutDto implements Serializable {
         this.form = form;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PoemOutDto that = (PoemOutDto) o;
-        return Objects.equals(period, that.period) &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(author, that.author) &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(sourceTitle, that.sourceTitle) &&
-                Objects.equals(form, that.form);
+    public String getCategory() {
+        return category;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(period, id, author, title, sourceTitle, form);
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     @Override
@@ -97,6 +89,7 @@ public class PoemOutDto implements Serializable {
                 ", sourceTitle='" + sourceTitle + '\'' +
                 ", period='" + period + '\'' +
                 ", form='" + form + '\'' +
+                ", category='" + category + '\'' +
                 '}';
     }
 }

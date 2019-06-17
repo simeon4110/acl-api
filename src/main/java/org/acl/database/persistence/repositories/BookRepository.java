@@ -22,7 +22,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             "b.author, " +
             "b.title, " +
             "b.type, " +
-            "b.dateOfPublication) " +
+            "b.dateOfPublication, " +
+            "b.category) " +
             "FROM Book b " +
             "WHERE b.isPublicDomain = TRUE")
     List<BookOutDto> getAllPublicDomain();
@@ -32,7 +33,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             "b.author, " +
             "b.title, " +
             "b.type, " +
-            "b.dateOfPublication) " +
+            "b.dateOfPublication, " +
+            "b.category) " +
             "FROM Book b")
     List<BookOutDto> getAll();
 

@@ -20,7 +20,8 @@ public interface SectionRepositoryBase extends JpaRepository<Section, Long> {
             "s.author, " +
             "s.title, " +
             "s.parentTitle, " +
-            "s.parentId) " +
+            "s.parentId, " +
+            "s.category) " +
             "FROM Section s " +
             "WHERE s.isPublicDomain = TRUE")
     List<SectionOutDto> getAllPublicDomain();
@@ -30,7 +31,8 @@ public interface SectionRepositoryBase extends JpaRepository<Section, Long> {
             "s.author, " +
             "s.title, " +
             "s.parentTitle, " +
-            "s.parentId) " +
+            "s.parentId, " +
+            "s.category) " +
             "FROM Section s")
     List<SectionOutDto> getAll();
 
