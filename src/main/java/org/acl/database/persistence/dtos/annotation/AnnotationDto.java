@@ -1,4 +1,4 @@
-package org.acl.database.persistence.dtos.base;
+package org.acl.database.persistence.dtos.annotation;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

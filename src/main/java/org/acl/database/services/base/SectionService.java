@@ -1,14 +1,14 @@
 package org.acl.database.services.base;
 
 import org.acl.database.config.LuceneConfig;
-import org.acl.database.persistence.dtos.base.AnnotationDto;
+import org.acl.database.persistence.dtos.annotation.AnnotationDto;
+import org.acl.database.persistence.dtos.base.SectionDto;
 import org.acl.database.persistence.dtos.base.SectionOutDto;
-import org.acl.database.persistence.dtos.prose.SectionDto;
 import org.acl.database.persistence.models.TypeConstants;
 import org.acl.database.persistence.models.base.Author;
 import org.acl.database.persistence.models.base.Book;
+import org.acl.database.persistence.models.base.BookCharacter;
 import org.acl.database.persistence.models.base.Section;
-import org.acl.database.persistence.models.prose.BookCharacter;
 import org.acl.database.persistence.repositories.AuthorRepository;
 import org.acl.database.persistence.repositories.BookCharacterRepository;
 import org.acl.database.persistence.repositories.BookRepository;

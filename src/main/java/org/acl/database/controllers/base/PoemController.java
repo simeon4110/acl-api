@@ -119,7 +119,7 @@ public class PoemController implements AbstractItemController<Poem, PoemDto, Poe
     @CrossOrigin(origins = "${allowed-origin}")
     @GetMapping(value = "/poem/by_ids/{ids}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(value = CACHE_BY_IDS, key = "#ids")
-    @ApiOperation(value = "Get Poems by List of IDs", notes = "Returns a poem from a list of database ID.")
+    @ApiOperation(value = "Get Poems by List of IDs", notes = "Returns a list of poems from a list of database IDs.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, response = Poem.class, responseContainer = "List", message = "OK"),
             @ApiResponse(code = 404, message = "A poem with the requested ID does not exist.")

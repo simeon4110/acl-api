@@ -1,6 +1,6 @@
 package org.acl.database.controllers.annotation;
 
-import org.acl.database.persistence.dtos.base.AnnotationDto;
+import org.acl.database.persistence.dtos.annotation.AnnotationDto;
 import org.acl.database.persistence.models.annotation.Dialog;
 import org.acl.database.services.annotation.DialogService;
 import org.springframework.beans.factory.annotation.Autowired;

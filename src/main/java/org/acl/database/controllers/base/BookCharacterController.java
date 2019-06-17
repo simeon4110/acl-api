@@ -1,7 +1,7 @@
-package org.acl.database.controllers.prose;
+package org.acl.database.controllers.base;
 
-import org.acl.database.persistence.dtos.prose.CharacterDto;
-import org.acl.database.services.prose.CharacterService;
+import org.acl.database.persistence.dtos.base.CharacterDto;
+import org.acl.database.services.base.BookCharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -19,11 +19,11 @@ import javax.validation.Valid;
 @RestController
 @PropertySource("classpath:global.properties")
 public class BookCharacterController {
-    private final CharacterService characterService;
+    private final BookCharacterService bookCharacterService;
 
     @Autowired
-    public BookCharacterController(CharacterService characterService) {
-        this.characterService = characterService;
+    public BookCharacterController(BookCharacterService bookCharacterService) {
+        this.bookCharacterService = bookCharacterService;
     }
 
     /**
@@ -33,7 +33,7 @@ public class BookCharacterController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping(value = "/secure/character/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> add(@RequestBody @Valid CharacterDto dto) {
-        return characterService.add(dto);
+        return bookCharacterService.add(dto);
     }
 
     /**
@@ -43,7 +43,7 @@ public class BookCharacterController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/secure/character/modify", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modify(@RequestBody @Valid CharacterDto dto) {
-        return characterService.modify(dto);
+        return bookCharacterService.modify(dto);
     }
 
     /**
@@ -55,6 +55,6 @@ public class BookCharacterController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/secure/character/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
-        return characterService.delete(id);
+        return bookCharacterService.delete(id);
     }
 }

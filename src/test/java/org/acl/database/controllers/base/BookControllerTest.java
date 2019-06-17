@@ -2,7 +2,7 @@ package org.acl.database.controllers.base;
 
 import org.acl.database.helpers.JsonHelper;
 import org.acl.database.persistence.dtos.base.AuthorDto;
-import org.acl.database.persistence.dtos.prose.BookDto;
+import org.acl.database.persistence.dtos.base.BookDto;
 import org.acl.database.persistence.models.base.Author;
 import org.acl.database.persistence.models.base.Book;
 import org.acl.database.persistence.repositories.AuthorRepository;

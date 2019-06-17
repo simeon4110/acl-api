@@ -1,7 +1,6 @@
-package org.acl.database.persistence.models.prose;
+package org.acl.database.persistence.models.base;
 
 import org.acl.database.persistence.models.annotation.Dialog;
-import org.acl.database.persistence.models.base.Auditable;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 

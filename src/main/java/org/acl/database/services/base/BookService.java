@@ -1,7 +1,7 @@
 package org.acl.database.services.base;
 
+import org.acl.database.persistence.dtos.base.BookDto;
 import org.acl.database.persistence.dtos.base.BookOutDto;
-import org.acl.database.persistence.dtos.prose.BookDto;
 import org.acl.database.persistence.models.TypeConstants;
 import org.acl.database.persistence.models.base.Author;
 import org.acl.database.persistence.models.base.Book;
@@ -177,6 +177,7 @@ public class BookService implements AbstractItemService<Book, BookDto, BookOutDt
      * @param title title of the book to get.
      * @return the book, if found, throws ItemNotFoundException otherwise.
      */
+    @Transactional(readOnly = true)
     public Book getBookByTitle(String title) {
         LOGGER.debug("Getting book by title: " + title);
         return bookRepository.findByTitle(title).orElse(null);

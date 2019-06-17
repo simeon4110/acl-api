@@ -1,4 +1,4 @@
-package org.acl.database.controllers.Theater;
+package org.acl.database.controllers.theater;
 
 import io.swagger.annotations.*;
 import org.acl.database.persistence.dtos.theater.DialogLinesDto;
@@ -22,7 +22,7 @@ import java.security.Principal;
  */
 @RestController
 @PropertySource("classpath:global.properties")
-@Api(tags = "Dialog Lines and Stage Direction Endpoints")
+@Api(tags = "Play (Theater) Endpoints")
 public class DialogLinesAndStageDirectionController {
     private final DialogLinesAndStageDirectionService dialogLinesAndStageDirectionService;
 

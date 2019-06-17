@@ -1,9 +1,9 @@
 package org.acl.database.controllers.base;
 
 import io.swagger.annotations.*;
-import org.acl.database.persistence.dtos.base.AnnotationDto;
+import org.acl.database.persistence.dtos.annotation.AnnotationDto;
+import org.acl.database.persistence.dtos.base.SectionDto;
 import org.acl.database.persistence.dtos.base.SectionOutDto;
-import org.acl.database.persistence.dtos.prose.SectionDto;
 import org.acl.database.persistence.models.base.Section;
 import org.acl.database.services.base.SectionService;
 import org.acl.database.tools.FormatTools;

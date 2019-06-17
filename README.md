@@ -48,9 +48,6 @@ database interfacing. Anything weird is handled via direct JPQL in the
 repository interface. (Note: there are still a few stored procedures that have
 not yet been converted to JPQL in the PoemRepository).   
 
-Things are still a bit disorganized package wise, but should be cleaned up
-and finalized before version 4.0 sometime mid-July. 
-
 ### Persistence (Spring JPA / Hibernate)
 
 **Database Tech:** MariaDB.

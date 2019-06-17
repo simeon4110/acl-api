@@ -1,7 +1,6 @@
-package org.acl.database.persistence.dtos.prose;
+package org.acl.database.persistence.dtos.base;
 
 import io.swagger.annotations.ApiModelProperty;
-import org.acl.database.persistence.dtos.base.SourceDetailsDto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.acl.database.persistence.models.annotation.Annotation;
 import org.acl.database.persistence.models.annotation.Dialog;
+import org.acl.database.persistence.models.base.BookCharacter;
 import org.acl.database.persistence.models.base.Section;
-import org.acl.database.persistence.models.prose.BookCharacter;
 import org.acl.database.persistence.repositories.annotation.DialogRepository;
+import org.acl.database.services.base.BookCharacterService;
 import org.acl.database.services.exceptions.ItemNotFoundException;
-import org.acl.database.services.prose.CharacterService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -32,14 +32,14 @@ public class AnnotationParseService {
     private static final Logger LOGGER = Logger.getLogger(AnnotationParseService.class);
     private static final String SENTENCES = "sentences";
     private static final String ANNOTATIONS = "annotations";
-    private final CharacterService characterService;
+    private final BookCharacterService bookCharacterService;
     private final DialogRepository dialogRepository;
     private final Environment env;
 
     @Autowired
-    public AnnotationParseService(CharacterService characterService, DialogRepository dialogRepository,
+    public AnnotationParseService(BookCharacterService bookCharacterService, DialogRepository dialogRepository,
                                   Environment env) {
-        this.characterService = characterService;
+        this.bookCharacterService = bookCharacterService;
         this.dialogRepository = dialogRepository;
         this.env = env;
     }
@@ -136,7 +136,7 @@ public class AnnotationParseService {
         for (int i = 0; i < annotationsArray.length(); i++) {
             JSONObject o = annotationsArray.getJSONObject(i);
             if (o.getString(env.getProperty("annotation.type")).equals(env.getProperty("annotation.type.character"))) {
-                BookCharacter character = characterService.getCharacterOrThrowNotFound(
+                BookCharacter character = bookCharacterService.getCharacterOrThrowNotFound(
                         String.valueOf(o.getString(env.getProperty("annotation.itemId")))
                 );
                 Dialog dialog = this.loadDialogOrCreateNew(o);
@@ -147,7 +147,7 @@ public class AnnotationParseService {
                 dialog.setCharacterOffsetEnd(o.getLong(env.getProperty("annotation.offsetEnd")));
                 dialog.setSectionId(sectionId);
                 character.getDialog().add(dialog);
-                characterService.save(character);
+                bookCharacterService.save(character);
             }
         }
     }
@@ -213,7 +213,7 @@ public class AnnotationParseService {
         for (int i = 0; i < annotationsArray.length(); i++) {
             JSONObject o = annotationsArray.getJSONObject(i);
             if (o.getString(env.getProperty("annotation.type")).equals(env.getProperty("annotation.type.narrator"))) {
-                return characterService.getCharacterOrThrowNotFound(o.getLong("itemId"));
+                return bookCharacterService.getCharacterOrThrowNotFound(o.getLong("itemId"));
             }
         }
         return null;

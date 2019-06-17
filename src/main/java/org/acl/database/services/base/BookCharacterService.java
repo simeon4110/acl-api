@@ -1,9 +1,9 @@
-package org.acl.database.services.prose;
+package org.acl.database.services.base;
 
-import org.acl.database.persistence.dtos.prose.CharacterDto;
+import org.acl.database.persistence.dtos.base.CharacterDto;
 import org.acl.database.persistence.exceptions.AuthorAlreadyExistsException;
 import org.acl.database.persistence.models.base.Book;
-import org.acl.database.persistence.models.prose.BookCharacter;
+import org.acl.database.persistence.models.base.BookCharacter;
 import org.acl.database.persistence.repositories.BookCharacterRepository;
 import org.acl.database.persistence.repositories.BookRepository;
 import org.acl.database.services.exceptions.ItemNotFoundException;
@@ -23,13 +23,13 @@ import java.util.concurrent.CompletableFuture;
  * @author Josh Harkema.
  */
 @Service
-public class CharacterService {
-    private static final Logger LOGGER = Logger.getLogger(CharacterService.class);
+public class BookCharacterService {
+    private static final Logger LOGGER = Logger.getLogger(BookCharacterService.class);
     private final BookCharacterRepository bookCharacterRepository;
     private final BookRepository bookRepository;
 
     @Autowired
-    public CharacterService(BookCharacterRepository bookCharacterRepository, BookRepository bookRepository) {
+    public BookCharacterService(BookCharacterRepository bookCharacterRepository, BookRepository bookRepository) {
         this.bookCharacterRepository = bookCharacterRepository;
         this.bookRepository = bookRepository;
     }
