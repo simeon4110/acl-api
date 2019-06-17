@@ -1,6 +1,4 @@
-package org.acl.database.persistence.dtos.prose;
-
-import org.acl.database.persistence.dtos.base.SourceDetailsDto;
+package org.acl.database.persistence.dtos.base;
 
 import javax.validation.constraints.NotEmpty;
 

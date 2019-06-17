@@ -1,12 +1,12 @@
 package org.acl.database.services.annotation;
 
-import org.acl.database.persistence.dtos.base.AnnotationDto;
+import org.acl.database.persistence.dtos.annotation.AnnotationDto;
 import org.acl.database.persistence.models.annotation.Dialog;
-import org.acl.database.persistence.models.prose.BookCharacter;
+import org.acl.database.persistence.models.base.BookCharacter;
 import org.acl.database.persistence.repositories.annotation.DialogRepository;
+import org.acl.database.services.base.BookCharacterService;
 import org.acl.database.services.exceptions.AnnotationTypeMismatchException;
 import org.acl.database.services.exceptions.ItemNotFoundException;
-import org.acl.database.services.prose.CharacterService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,12 +25,12 @@ import java.util.List;
 public class DialogService {
     private static final Logger LOGGER = Logger.getLogger(DialogService.class);
     private final DialogRepository dialogRepository;
-    private final CharacterService characterService;
+    private final BookCharacterService bookCharacterService;
 
     @Autowired
-    public DialogService(DialogRepository dialogRepository, CharacterService characterService) {
+    public DialogService(DialogRepository dialogRepository, BookCharacterService bookCharacterService) {
         this.dialogRepository = dialogRepository;
-        this.characterService = characterService;
+        this.bookCharacterService = bookCharacterService;
     }
 
     /**
@@ -67,9 +67,9 @@ public class DialogService {
     public ResponseEntity<Void> delete(final Long id) {
         LOGGER.debug("Deleting dialog: " + id);
         Dialog dialog = dialogRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        BookCharacter character = characterService.getCharacterOrThrowNotFound(dialog.getItemId());
+        BookCharacter character = bookCharacterService.getCharacterOrThrowNotFound(dialog.getItemId());
         character.getDialog().remove(dialog);
-        characterService.save(character);
+        bookCharacterService.save(character);
         dialogRepository.delete(dialog);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -91,9 +91,9 @@ public class DialogService {
             throw new AnnotationTypeMismatchException(dto.getType() + " is not a valid dialog annotation type.");
         }
         Dialog dialog = createOrCopy(new Dialog(), dto);
-        BookCharacter character = characterService.getCharacterOrThrowNotFound(dto.getItemId());
+        BookCharacter character = bookCharacterService.getCharacterOrThrowNotFound(dto.getItemId());
         character.getDialog().add(dialog);
-        characterService.save(character);
+        bookCharacterService.save(character);
         return dialog;
     }
 

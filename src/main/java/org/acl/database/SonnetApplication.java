@@ -18,7 +18,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EntityScan(basePackages = {
         "org.acl.database.persistence.models.annotation",
         "org.acl.database.persistence.models.base",
-        "org.acl.database.persistence.models.prose",
         "org.acl.database.persistence.models.theater",
         "org.acl.database.persistence.models.tools",
         "org.acl.database.persistence.models.web"

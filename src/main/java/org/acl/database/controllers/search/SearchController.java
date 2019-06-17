@@ -1,4 +1,4 @@
-package org.acl.database.controllers;
+package org.acl.database.controllers.search;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

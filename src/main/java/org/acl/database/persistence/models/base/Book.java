@@ -2,7 +2,6 @@ package org.acl.database.persistence.models.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.acl.database.persistence.models.TypeConstants;
-import org.acl.database.persistence.models.prose.BookCharacter;
 
 import javax.persistence.*;
 import java.io.Serializable;

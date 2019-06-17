@@ -1,4 +1,4 @@
-package org.acl.database.controllers.Theater;
+package org.acl.database.controllers.theater;
 
 import io.swagger.annotations.*;
 import org.acl.database.persistence.dtos.theater.PlayDto;

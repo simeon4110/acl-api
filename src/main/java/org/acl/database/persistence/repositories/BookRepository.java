@@ -20,7 +20,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = "SELECT new org.acl.database.persistence.dtos.base.BookOutDto(" +
             "b.id, " +
             "b.author, " +
-            "b.title) " +
+            "b.title, " +
+            "b.type, " +
+            "b.dateOfPublication) " +
             "FROM Book b " +
             "WHERE b.isPublicDomain = TRUE")
     List<BookOutDto> getAllPublicDomain();
@@ -28,7 +30,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = "SELECT new org.acl.database.persistence.dtos.base.BookOutDto(" +
             "b.id, " +
             "b.author, " +
-            "b.title) " +
+            "b.title, " +
+            "b.type, " +
+            "b.dateOfPublication) " +
             "FROM Book b")
     List<BookOutDto> getAll();
 
