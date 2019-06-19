@@ -26,7 +26,8 @@ public class SearchController {
     }
 
     @CrossOrigin(origins = "${allowed-origin}")
-    @PostMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Run an Advanced Search", notes = "Execute an advanced search on the database.")
     public String doSearch(@RequestBody List<SearchParamDto> searchParams,
                            @RequestParam(value = "item_types", required = false) String[] itemTypes) {
