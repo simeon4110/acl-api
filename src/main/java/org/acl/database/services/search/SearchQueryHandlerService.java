@@ -33,7 +33,9 @@ public class SearchQueryHandlerService {
     private static final Gson gson = new Gson();
     private static final String[] itemTypes = new String[]{
             TypeConstants.POEM,
-            TypeConstants.SECTION
+            TypeConstants.SECTION,
+            TypeConstants.PLAY,
+            TypeConstants.DILI
     };
 
     /**
@@ -142,7 +144,7 @@ public class SearchQueryHandlerService {
 
                 // Text highlighting; returns up to MAX_FRAGMENTS matching passages.
                 objectOut.put(SearchConstants.BEST_FRAGMENT,
-                        String.join("\n\n", highlighter.getBestFragments(
+                        String.join(SearchConstants.FRAGMENT_DELIMITER, highlighter.getBestFragments(
                                 LuceneConfig.getAnalyzer(),
                                 SearchConstants.TEXT,
                                 document.get(SearchConstants.TEXT),

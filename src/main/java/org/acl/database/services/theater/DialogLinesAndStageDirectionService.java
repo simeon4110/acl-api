@@ -113,6 +113,7 @@ public class DialogLinesAndStageDirectionService {
         document.add(new StringField(SearchConstants.ID, dialogLines.getId().toString(), Field.Store.YES));
         document.add(new StringField(SearchConstants.ACT_NUMBER, actId.toString(), Field.Store.YES));
         document.add(new StringField(SearchConstants.SCENE_NUMBER, sceneId.toString(), Field.Store.YES));
+        document.add(new StringField(SearchConstants.CATEGORY, TypeConstants.DILI, Field.Store.YES));
         document.add(new TextField(SearchConstants.TITLE, play.getTitle(), Field.Store.YES));
         document.add(new TextField(SearchConstants.AUTHOR_FIRST_NAME, play.getAuthor().getFirstName(),
                 Field.Store.YES));
@@ -129,7 +130,7 @@ public class DialogLinesAndStageDirectionService {
             document.add(new TextField(SearchConstants.ACTOR_LAST_NAME, dialogLines.getActor().getLastName(),
                     Field.Store.YES));
         }
-        document.add(LuceneConfig.getTextField(String.join(" ", dialogLines.getBody())));
+        document.add(LuceneConfig.getTextField(String.join("\n", dialogLines.getBody())));
         return document;
     }
 
